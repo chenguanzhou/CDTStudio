@@ -1,18 +1,15 @@
 #ifndef CDTATTRIBUTES_H
 #define CDTATTRIBUTES_H
 
-#include <QObject>
+#include <QtCore>
 
-class CDTAttributes : public QObject
+class CDTAttributes
 {
-    Q_OBJECT
 public:
-    explicit CDTAttributes(QObject *parent = 0);
+    explicit CDTAttributes();
 
-signals:
-
-public slots:
-
+private:
+    QString dbPath;
 };
 
 #endif // CDTATTRIBUTES_H

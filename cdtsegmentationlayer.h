@@ -5,8 +5,8 @@
 #include <QMap>
 #include <QVector>
 #include <QVariant>
+#include "cdtattributes.h"
 
-class CDTAttributes;
 class CDTClassification;
 class CDTSample;
 
@@ -16,12 +16,11 @@ public:
     explicit CDTSegmentationLayer();
 private:
     QString name;
-    QString shapefilePath;
-    QString dbPath;
+    QString shapefilePath;    
     QString method;
     QMap<QString,QVariant> params;
     QVector<CDTClassification *> classifications;
-    CDTAttributes *attributes;
+    CDTAttributes attributes;
     QMap<QString,CDTSample*> samples;
 };
 
