@@ -20,7 +20,11 @@ SOURCES += main.cpp\
     cdtclassification.cpp \
     cdtattributes.cpp \
     cdtsample.cpp \
-    cdtprojectmanager.cpp
+    cdtprojecttabwidget.cpp \
+    cdtprojectwidget.cpp \
+    cdtprojecttreemodel.cpp \
+    cdtprojecttreeitem.cpp \
+    dialognewproject.cpp
 
 HEADERS  += mainwindow.h \
     cdtproject.h \
@@ -29,6 +33,11 @@ HEADERS  += mainwindow.h \
     cdtclassification.h \
     cdtattributes.h \
     cdtsample.h \
-    cdtprojectmanager.h
+    cdtprojecttabwidget.h \
+    cdtprojectwidget.h \
+    cdtprojecttreemodel.h \
+    cdtprojecttreeitem.h \
+    dialognewproject.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dialognewproject.ui

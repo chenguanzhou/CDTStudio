@@ -1,7 +1,24 @@
 #include "cdtproject.h"
+#include "cdtprojecttreeitem.h"
 
-CDTProject::CDTProject()
+CDTProject::CDTProject(QObject *parent):
+    QObject(parent)
 {
+}
+
+void CDTProject::setName(const QString &n)
+{
+    name = n;
+}
+
+void CDTProject::setPath(const QString &p)
+{
+    path = p;
+}
+
+void CDTProject::updateTreeModel(CDTProjectTreeModel *model)
+{
+
 }
 
 
