@@ -8,22 +8,20 @@
 class CDTClassification
 {
 public:
-    explicit CDTClassification(const QString &name,
-                               const QString &shapefilePath,
-                               const QString method,
-                               const QMap<QString,QVariant> &params);
-
+    explicit CDTClassification();
+    friend QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
+    friend QDataStream &operator>>(QDataStream &in, CDTClassification &classification);
 public:
-    QString name()const{return _name;}
-    QString shapefilePath()const{return _shapefilePath;}
-    QString method()const{return _method;}
-    QMap<QString,QVariant> params()const{return _params;}
+//    QString name()const{return _name;}
+//    QString shapefilePath()const{return _shapefilePath;}
+//    QString method()const{return _method;}
+//    QMap<QString,QVariant> params()const{return _params;}
 
 private:
-    QString _name;
-    QString _shapefilePath;
-    QString _method;
-    QMap<QString,QVariant> _params;
+    QString name;
+    QString shapefilePath;
+    QString method;
+    QMap<QString,QVariant> params;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
