@@ -4,6 +4,11 @@ CDTImageLayer::CDTImageLayer()
 {
 }
 
+void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
+{
+
+}
+
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
 {
     out<<image.path<<image.segmentations;

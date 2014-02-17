@@ -16,11 +16,6 @@ void CDTProject::setPath(const QString &p)
     path = p;
 }
 
-void CDTProject::updateTreeModel(CDTProjectTreeModel *model)
-{
-
-}
-
 
 
 QDataStream &operator <<(QDataStream &out,const CDTProject &project)

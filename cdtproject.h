@@ -26,7 +26,7 @@ private:
     bool    isFileExsit;
     QVector<CDTImageLayer> images;    
 
-    void updateTreeModel(CDTProjectTreeModel* model);
+//    void updateTreeModel(CDTProjectTreeModel* model);
 };
 
 #endif // CDTPROJECT_H
