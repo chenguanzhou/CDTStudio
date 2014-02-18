@@ -11,36 +11,45 @@
 
 
 class CDTClassification;
-class CDTSegmentationLayer
+class CDTSegmentationLayer:public QObject
 {
-
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QString shapefilePath READ shapefilePath WRITE setShapefilePath NOTIFY shapefilePathChanged)
+    Q_PROPERTY(QString method READ method)
 public:
-    explicit CDTSegmentationLayer();
-//    explicit CDTSegmentationLayer(const QString &n,const QString &s,const QString &m);
-
+    explicit CDTSegmentationLayer(QObject *parent = 0);
 
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
     friend QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);
 
+    void addClassification(CDTClassification* classification);
+
+    QString name()const;
+    QString shapefilePath() const;
+    QString method()const;
+
+    void setName(const QString& name);
+    void setShapefilePath(const QString &shpPath);
+    void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
+
+signals:
+    void nameChanged();
+    void shapefilePathChanged();
+    void methodParamsChanged();
+
+public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
 
-//    QString                      name()const {return _name;}
-//    QString                      shapefilePath()const {return _shapefilePath;}
-//    QString                      method()const {return _method;}
-//    QMap<QString,QVariant>       params()const {return _params;}
-//    QVector<CDTClassification >  classifications()const {return _classifications;}
-//    CDTAttributes                attributes()const {return _attributes;}
-//    QMap<QString,CDTSample>      samples()const{return _samples;}
 private:
-    QString name;
-    QString shapefilePath;
-    QString method;
-    QMap<QString,QVariant> params;
-    QVector<CDTClassification> classifications;
+    QString m_name;
+    QString m_shapefilePath;
+    QString m_method;
+    QMap<QString,QVariant> m_params;
+    QVector<CDTClassification *> classifications;
     CDTAttributes attributes;
     QMap<QString,CDTSample> samples;
 
-//    void setclassifications( QVector<CDTClassification> &c);
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
 QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);

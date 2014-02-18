@@ -6,26 +6,39 @@
 #include <QVariant>
 #include "cdtprojecttreeitem.h"
 
-class CDTClassification
+class CDTClassification:public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QString shapefilePath READ shapefilePath WRITE setShapefilePath NOTIFY shapefilePathChanged)
+    Q_PROPERTY(QString method READ method)
 public:
-    explicit CDTClassification();
-//    explicit CDTClassification(const QString &n,const QString &s,const QString &m);
+    explicit CDTClassification(QObject* parent=0);
 
     friend QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
     friend QDataStream &operator>>(QDataStream &in, CDTClassification &classification);
-public:
+
+    QString name()const;
+    QString shapefilePath() const;
+    QString method()const;
+
+    void setName(const QString& name);
+    void setShapefilePath(const QString &shpPath);
+    void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
+
+signals:
+    void nameChanged();
+    void shapefilePathChanged();
+    void methodParamsChanged();
+
+public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
-//    QString name()const{return _name;}
-//    QString shapefilePath()const{return _shapefilePath;}
-//    QString method()const{return _method;}
-//    QMap<QString,QVariant> params()const{return _params;}
 
 private:
-    QString name;
-    QString shapefilePath;
-    QString method;
-    QMap<QString,QVariant> params;
+    QString m_name;
+    QString m_shapefilePath;
+    QString m_method;
+    QMap<QString,QVariant> m_params;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);

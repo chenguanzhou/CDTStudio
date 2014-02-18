@@ -17,7 +17,6 @@ public slots:
     void createNewProject();
     void addProjectTab(const QString& path);//load project file
 private:
-//    QVector<CDTProjectWidget *> projectWidgets;
 };
 
 #endif // CDTPROJECTTABWIDGET_H

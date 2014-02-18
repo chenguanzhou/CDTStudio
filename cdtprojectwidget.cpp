@@ -7,7 +7,8 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     treeModel(new CDTProjectTreeModel(this))
 {
     connect(this,SIGNAL(projectChanged(CDTProject*)),treeModel,SLOT(update(CDTProject*)));
-
+    project->addImageLayer("image.1","c:/image1.tif");
+    project->addImageLayer("image.2","c:/image2.tif");
 }
 
 void CDTProjectWidget::setProjectName(const QString &name)

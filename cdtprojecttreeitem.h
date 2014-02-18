@@ -10,18 +10,22 @@ public:
         PROJECT_ROOT,
         IMAGE_ROOT,
         SEGMENTION_ROOT,
+        SEGMENTION,
         CLASSIFICATION_ROOT,
+        CLASSIFICATION,
         METHOD_PARAMS,
         PARAM,
         VALUE
     };
 
-    CDTProjectTreeItem(Type type, const QString &text );
+    CDTProjectTreeItem(Type tp, const QString &text );
 
 
 private:
+    void initAlignment();
     void initFont();
     void initColor();
+    Type type;
 };
 
 #endif // CDTPROJECTTREEITEM_H

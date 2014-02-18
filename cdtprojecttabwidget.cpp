@@ -23,11 +23,11 @@ void CDTProjectTabWidget::createNewProject()
         projectWidget->setProjectName(dlg->projectName());
 //        projectWidget->setimagelayer(t_images);
         addTab(projectWidget,dlg->projectName());
-//        projectWidgets.push_back(projectWidget);
+//        projectWidgets.push_back(projectWidget);        
     }
 }
 
 void CDTProjectTabWidget::addProjectTab(const QString &path)
 {
-    CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
+//    CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
 }

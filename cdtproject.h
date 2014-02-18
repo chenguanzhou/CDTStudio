@@ -16,16 +16,18 @@ public:
     friend QDataStream &operator >>(QDataStream &in, CDTProject &project);
     friend class CDTProjectTreeModel;
 
+    void addImageLayer(CDTImageLayer *image);
+    void addImageLayer(const QString name,const QString path);
     void setName(const QString& n);
     void setPath(const QString& p);
-    void setimage(const QVector<CDTImageLayer>& m);
+
 signals:
 public slots:
 private:
     QString name;
     QString path;
     bool    isFileExsit;
-    QVector<CDTImageLayer> images;    
+    QVector<CDTImageLayer *> images;
 
 //    void updateTreeModel(CDTProjectTreeModel* model);
 };

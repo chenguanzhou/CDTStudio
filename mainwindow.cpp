@@ -24,6 +24,7 @@ void MainWindow::onCurrentTabChanged(int i)
     CDTProjectWidget* projectWidget = (CDTProjectWidget*)(projectTabWidget->currentWidget());
     ui->treeViewProject->setModel(projectWidget->treeModel);
     ui->treeViewProject->expandAll();
+    ui->treeViewProject->resizeColumnToContents(0);
 }
 
 void MainWindow::on_action_New_triggered()

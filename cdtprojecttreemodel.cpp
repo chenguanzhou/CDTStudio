@@ -20,6 +20,6 @@ void CDTProjectTreeModel::update(CDTProject *project)
 
     for (int i=0;i<(project->images).size();++i)
     {
-         project->images[i].updateTreeModel(item);
+         project->images[i]->updateTreeModel(item);
     }
 }

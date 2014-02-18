@@ -6,6 +6,19 @@ CDTProject::CDTProject(QObject *parent):
 {
 }
 
+void CDTProject::addImageLayer(CDTImageLayer *image)
+{
+    images.push_back(image);
+}
+
+void CDTProject::addImageLayer(const QString name, const QString path)
+{
+    CDTImageLayer *image = new CDTImageLayer();
+    image->setName(name);
+    image->setPath(path);
+    addImageLayer(image);
+}
+
 void CDTProject::setName(const QString &n)
 {
     name = n;
@@ -16,25 +29,28 @@ void CDTProject::setPath(const QString &p)
     path = p;
 }
 
-void CDTProject::setimage(const QVector<CDTImageLayer> &m)
-{
-    for(int i=0;i<m.size();i++)
-    {
-        images.push_back(m[i]);
-    }
-}
-
-
 
 QDataStream &operator <<(QDataStream &out,const CDTProject &project)
 {
-    out<<project.images<<project.isFileExsit<<project.name<<project.path;
+    out<<project.images.size();
+    foreach (CDTImageLayer* image, project.images) {
+        out<<*image;
+    }
+    out<<project.isFileExsit<<project.name<<project.path;
     return out;
 }
 
 
 QDataStream &operator >>(QDataStream &in, CDTProject &project)
 {
-    in>>project.images>>project.isFileExsit>>project.name>>project.path;
+    int count;
+    in>>count;
+    for (int i=0;i<count;++i)
+    {
+        CDTImageLayer* image = new CDTImageLayer();
+        in>>*image;
+        project.images.push_back(image);
+    }
+    in>>project.isFileExsit>>project.name>>project.path;
     return in;
 }
