@@ -5,11 +5,11 @@ CDTClassification::CDTClassification()
 
 }
 
-CDTClassification::CDTClassification(const QString &n, const QString &s, const QString &m):
-    name(n),shapefilePath(s),method(m)
-{
-    params["K"] =100;
-}
+//CDTClassification::CDTClassification(const QString &n, const QString &s, const QString &m):
+//    name(n),shapefilePath(s),method(m)
+//{
+//    params["K"] =100;
+//}
 
 void CDTClassification::updateTreeModel(CDTProjectTreeItem *parent)
 {

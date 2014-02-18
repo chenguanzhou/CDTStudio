@@ -12,7 +12,7 @@ class CDTImageLayer
 {
 public:
     explicit CDTImageLayer();
-    explicit CDTImageLayer(const QString &p,const QString &n);
+//    explicit CDTImageLayer(const QString &p,const QString &n);
 
     friend QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image);
     friend QDataStream &operator>>(QDataStream &in, CDTImageLayer &image);
@@ -24,7 +24,7 @@ private:
     QString path;
     QString name;
     QVector<CDTSegmentationLayer> segmentations;
-    void setsegmentations(QVector<CDTSegmentationLayer> &s);
+//    void setsegmentations(QVector<CDTSegmentationLayer> &s);
 
 };
 

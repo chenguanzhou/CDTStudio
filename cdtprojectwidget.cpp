@@ -22,9 +22,9 @@ void CDTProjectWidget::setProjectPath(const QString &path)
     emit projectChanged(project);
 }
 
-void CDTProjectWidget::setimagelayer(const QVector<CDTImageLayer> &image)//using for test
-{
-    project->setimage(image);
-    emit projectChanged(project);
-}
+//void CDTProjectWidget::setimagelayer(const QVector<CDTImageLayer> &image)//using for test
+//{
+//    project->setimage(image);
+//    emit projectChanged(project);
+//}
 

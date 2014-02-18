@@ -16,7 +16,7 @@ class CDTSegmentationLayer
 
 public:
     explicit CDTSegmentationLayer();
-    explicit CDTSegmentationLayer(const QString &n,const QString &s,const QString &m);
+//    explicit CDTSegmentationLayer(const QString &n,const QString &s,const QString &m);
 
 
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
@@ -40,7 +40,7 @@ private:
     CDTAttributes attributes;
     QMap<QString,CDTSample> samples;
 
-    void setclassifications( QVector<CDTClassification> &c);
+//    void setclassifications( QVector<CDTClassification> &c);
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
 QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);

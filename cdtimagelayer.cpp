@@ -4,14 +4,14 @@ CDTImageLayer::CDTImageLayer()
 {
 }
 
-CDTImageLayer::CDTImageLayer(const QString &p, const QString &n):
-    path(p),name(n) //for test
-{
-    QVector<CDTSegmentationLayer> s;
-    s.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
-    s.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
-    setsegmentations(s);
-}
+//CDTImageLayer::CDTImageLayer(const QString &p, const QString &n):
+//    path(p),name(n) //for test
+//{
+//    QVector<CDTSegmentationLayer> s;
+//    s.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
+//    s.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
+//    setsegmentations(s);
+//}
 
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
@@ -31,13 +31,13 @@ void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
     }
 }
 
-void CDTImageLayer::setsegmentations(QVector<CDTSegmentationLayer> &s)
-{
-    for(int i=0;i<s.size();++i)
-    {
-        segmentations.push_back(s[i]);
-    }
-}
+//void CDTImageLayer::setsegmentations(QVector<CDTSegmentationLayer> &s)
+//{
+//    for(int i=0;i<s.size();++i)
+//    {
+//        segmentations.push_back(s[i]);
+//    }
+//}
 
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
 {

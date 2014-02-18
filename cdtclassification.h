@@ -10,7 +10,7 @@ class CDTClassification
 {
 public:
     explicit CDTClassification();
-    explicit CDTClassification(const QString &n,const QString &s,const QString &m);
+//    explicit CDTClassification(const QString &n,const QString &s,const QString &m);
 
     friend QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
     friend QDataStream &operator>>(QDataStream &in, CDTClassification &classification);

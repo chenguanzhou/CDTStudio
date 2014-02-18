@@ -8,17 +8,17 @@ CDTSegmentationLayer::CDTSegmentationLayer()
 {
 }
 
-CDTSegmentationLayer::CDTSegmentationLayer(const QString &n, const QString &s, const QString &m):
-    name(n),shapefilePath(s),method(m)
-{
-    params["threshold"] =25;
-    params["minArea"] =100;
+//CDTSegmentationLayer::CDTSegmentationLayer(const QString &n, const QString &s, const QString &m):
+//    name(n),shapefilePath(s),method(m)
+//{
+//    params["threshold"] =25;
+//    params["minArea"] =100;
 
-    QVector<CDTClassification> c;
-    c.push_back(CDTClassification("cls1","c:/","knn"));
-    c.push_back(CDTClassification("cls2","c:/","knn"));
-    setclassifications(c);
-}
+//    QVector<CDTClassification> c;
+//    c.push_back(CDTClassification("cls1","c:/","knn"));
+//    c.push_back(CDTClassification("cls2","c:/","knn"));
+//    setclassifications(c);
+//}
 
 void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
@@ -54,13 +54,13 @@ void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
 
 }
 
-void CDTSegmentationLayer::setclassifications(QVector<CDTClassification> &c)
-{
-    for(int i=0;i<c.size();++i)
-    {
-        classifications.push_back(c[i]);
-    }
-}
+//void CDTSegmentationLayer::setclassifications(QVector<CDTClassification> &c)
+//{
+//    for(int i=0;i<c.size();++i)
+//    {
+//        classifications.push_back(c[i]);
+//    }
+//}
 
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
 {
