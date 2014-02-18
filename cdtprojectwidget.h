@@ -16,11 +16,13 @@ public:
     explicit CDTProjectWidget(QWidget *parent = 0);    
 
 signals:
-    void projectChanged(CDTProject*);
+    void projectChanged(CDTProject*);//?
 public slots:
     void setProjectName(const QString& name);
     void setProjectPath(const QString& path);
+    void setimagelayer(const QVector<CDTImageLayer> &image);//using for test
 private:
+//    QVector<CDTImageLayer> image;//using for test
     CDTProject *project;
     CDTProjectTreeModel* treeModel;
 };

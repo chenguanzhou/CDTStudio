@@ -18,6 +18,7 @@ public:
 
     void setName(const QString& n);
     void setPath(const QString& p);
+    void setimage(const QVector<CDTImageLayer>& m);
 signals:
 public slots:
 private:

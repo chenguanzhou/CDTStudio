@@ -7,6 +7,7 @@
 #include <QVariant>
 #include "cdtattributes.h"
 #include "cdtsample.h"
+#include "cdtprojecttreeitem.h"
 
 
 class CDTClassification;
@@ -15,9 +16,13 @@ class CDTSegmentationLayer
 
 public:
     explicit CDTSegmentationLayer();
+    explicit CDTSegmentationLayer(const QString &n,const QString &s,const QString &m);
+
 
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
     friend QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);
+
+    void updateTreeModel(CDTProjectTreeItem* parent);
 
 //    QString                      name()const {return _name;}
 //    QString                      shapefilePath()const {return _shapefilePath;}
@@ -34,6 +39,8 @@ private:
     QVector<CDTClassification> classifications;
     CDTAttributes attributes;
     QMap<QString,CDTSample> samples;
+
+    void setclassifications( QVector<CDTClassification> &c);
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
 QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);

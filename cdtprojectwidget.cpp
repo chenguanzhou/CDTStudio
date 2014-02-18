@@ -7,6 +7,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     treeModel(new CDTProjectTreeModel(this))
 {
     connect(this,SIGNAL(projectChanged(CDTProject*)),treeModel,SLOT(update(CDTProject*)));
+
 }
 
 void CDTProjectWidget::setProjectName(const QString &name)
@@ -18,6 +19,12 @@ void CDTProjectWidget::setProjectName(const QString &name)
 void CDTProjectWidget::setProjectPath(const QString &path)
 {
     project->setPath(path);
+    emit projectChanged(project);
+}
+
+void CDTProjectWidget::setimagelayer(const QVector<CDTImageLayer> &image)//using for test
+{
+    project->setimage(image);
     emit projectChanged(project);
 }
 

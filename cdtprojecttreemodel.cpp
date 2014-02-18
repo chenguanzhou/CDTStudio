@@ -18,7 +18,7 @@ void CDTProjectTreeModel::update(CDTProject *project)
     item->setChild(0,0,param);
     item->setChild(0,1,value);
 
-    for (int i=0;i<images.size();++i)
+    for (int i=0;i<(project->images).size();++i)
     {
          project->images[i].updateTreeModel(item);
     }

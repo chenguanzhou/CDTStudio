@@ -16,6 +16,14 @@ void CDTProject::setPath(const QString &p)
     path = p;
 }
 
+void CDTProject::setimage(const QVector<CDTImageLayer> &m)
+{
+    for(int i=0;i<m.size();i++)
+    {
+        images.push_back(m[i]);
+    }
+}
+
 
 
 QDataStream &operator <<(QDataStream &out,const CDTProject &project)

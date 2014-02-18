@@ -4,14 +4,18 @@
 #include <QtCore>
 #include <QMap>
 #include <QVariant>
+#include "cdtprojecttreeitem.h"
 
 class CDTClassification
 {
 public:
     explicit CDTClassification();
+    explicit CDTClassification(const QString &n,const QString &s,const QString &m);
+
     friend QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
     friend QDataStream &operator>>(QDataStream &in, CDTClassification &classification);
 public:
+    void updateTreeModel(CDTProjectTreeItem* parent);
 //    QString name()const{return _name;}
 //    QString shapefilePath()const{return _shapefilePath;}
 //    QString method()const{return _method;}
