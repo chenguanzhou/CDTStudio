@@ -39,8 +39,6 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
         emit projectChanged(project);
     }
 
-
-
 }
 
 void CDTProjectWidget::setProjectName(const QString &name)
