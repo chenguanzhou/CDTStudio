@@ -5,6 +5,8 @@
 #include "cdtproject.h"
 #include "cdtprojecttreemodel.h"
 #include "mainwindow.h"
+#include <QPoint>
+#include <QModelIndex>
 
 
 class CDTProjectWidget : public QWidget
@@ -13,7 +15,8 @@ class CDTProjectWidget : public QWidget
 public:
     friend class CDTProjectTabWidget;
     friend class MainWindow;
-    explicit CDTProjectWidget(QWidget *parent = 0);    
+    explicit CDTProjectWidget(QWidget *parent = 0);
+    void onContextMenu(QPoint pt,QModelIndex index);
 
 signals:
     void projectChanged(CDTProject*);//?

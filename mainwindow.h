@@ -19,7 +19,7 @@ public:
 
 public slots:
     void onCurrentTabChanged(int i);
-
+    void oncreatContextMenu(QPoint pt);
 private slots:
     void on_action_New_triggered();
 

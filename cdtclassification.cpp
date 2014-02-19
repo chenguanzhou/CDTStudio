@@ -8,17 +8,17 @@ CDTClassification::CDTClassification(QObject* parent)
 
 void CDTClassification::updateTreeModel(CDTProjectTreeItem *parent)
 {
-    CDTProjectTreeItem *classification =new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,m_name);
-    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("shapefilePath"));
-    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_shapefilePath);
-    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,tr("method"));
-    CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_method);
+    CDTProjectTreeItem *classification =new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,m_name,NULL);
+    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("shapefilePath"),NULL);
+    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_shapefilePath,NULL);
+    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,tr("method"),NULL);
+    CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_method,NULL);
 
     for(int i=0;i<m_params.size();++i)
     {
         QList<QString> keys =m_params.keys();
-        CDTProjectTreeItem *methodparam =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,keys[i]);
-        CDTProjectTreeItem *methodvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_params[keys[i]].toString());
+        CDTProjectTreeItem *methodparam =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,keys[i],NULL);
+        CDTProjectTreeItem *methodvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_params[keys[i]].toString(),NULL);
         methodroot->setChild(i,0,methodparam);
         methodroot->setChild(i,1,methodvalue);
     }

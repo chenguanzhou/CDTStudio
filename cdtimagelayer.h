@@ -2,6 +2,7 @@
 #define CDTIMAGELAYER_H
 
 #include <QtCore>
+#include <QAction>
 #include "cdtsegmentationlayer.h"
 #include "cdtclassification.h"
 #include "cdtprojecttreeitem.h"
@@ -23,17 +24,20 @@ public:
     inline QString name()const{return m_name;}    
 
     void addSegmentation(CDTSegmentationLayer* segmentation);
+
 signals:
     void pathChanged(QString);
     void nameChanged(QString);
 
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
-
+    void onContextMenu();
+    void addSegmentation();
 private:
     QString m_path;
     QString m_name;
     QVector<CDTSegmentationLayer *> segmentations;
+    QAction* addSegmentationLayer;
 
 };
 

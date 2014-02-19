@@ -6,6 +6,7 @@
 #include <QStandardItemModel>
 #include "cdtimagelayer.h"
 #include "cdtprojecttreemodel.h"
+#include <QAction>
 
 class CDTProject: public QObject
 {
@@ -23,11 +24,15 @@ public:
 
 signals:
 public slots:
+    void addImageLayer();
+    void onContextMenu();
 private:
     QString name;
     QString path;
     bool    isFileExsit;
     QVector<CDTImageLayer *> images;
+
+    QAction* actionAddImage;
 
 //    void updateTreeModel(CDTProjectTreeModel* model);
 };

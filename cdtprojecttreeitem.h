@@ -18,14 +18,16 @@ public:
         VALUE
     };
 
-    CDTProjectTreeItem(Type tp, const QString &text );
-
+    CDTProjectTreeItem(Type tp, const QString &text,QObject *crspdObject );
+    Type getType()const {return type;}
+    QObject* getcorrespondingObject()const {return correspondingObject;}
 
 private:
     void initAlignment();
     void initFont();
     void initColor();
     Type type;
+    QObject* correspondingObject;
 };
 
 #endif // CDTPROJECTTREEITEM_H

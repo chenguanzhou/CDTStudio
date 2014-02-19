@@ -8,6 +8,7 @@
 #include "cdtattributes.h"
 #include "cdtsample.h"
 #include "cdtprojecttreeitem.h"
+#include "QAction"
 
 
 class CDTClassification;
@@ -40,6 +41,8 @@ signals:
 
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
+    void onContextMenu();
+    void addClassification();
 
 private:
     QString m_name;
@@ -49,6 +52,7 @@ private:
     QVector<CDTClassification *> classifications;
     CDTAttributes attributes;
     QMap<QString,CDTSample> samples;
+    QAction *addClassifications;
 
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);

@@ -11,10 +11,10 @@ CDTProjectTreeModel::CDTProjectTreeModel(QObject *parent) :
 void CDTProjectTreeModel::update(CDTProject *project)
 {
     this->removeRows(0,this->rowCount());
-    CDTProjectTreeItem *item = new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,project->name);
+    CDTProjectTreeItem *item = new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,project->name,project);
     appendRow(item);
-    CDTProjectTreeItem *param = new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("path"));
-    CDTProjectTreeItem *value = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,project->path);
+    CDTProjectTreeItem *param = new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("path"),NULL);
+    CDTProjectTreeItem *value = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,project->path,NULL);
     item->setChild(0,0,param);
     item->setChild(0,1,value);
 
@@ -22,4 +22,5 @@ void CDTProjectTreeModel::update(CDTProject *project)
     {
          project->images[i]->updateTreeModel(item);
     }
+
 }

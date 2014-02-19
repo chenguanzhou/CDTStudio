@@ -1,7 +1,7 @@
 #include "cdtprojecttreeitem.h"
 
-CDTProjectTreeItem::CDTProjectTreeItem(Type tp, const QString &text)
-    :type(tp)
+CDTProjectTreeItem::CDTProjectTreeItem(Type tp, const QString &text,QObject *crspdObject)
+    :type(tp),correspondingObject(crspdObject)
 {
     setText(text);
     initAlignment();

@@ -1,9 +1,21 @@
 #include "cdtproject.h"
 #include "cdtprojecttreeitem.h"
+#include <QMenu>
 
 CDTProject::CDTProject(QObject *parent):
-    QObject(parent)
+    QObject(parent),
+    actionAddImage(new QAction(tr("Add Image"),this))
 {
+    connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
+}
+
+void CDTProject::addImageLayer()
+{
+    CDTImageLayer *image = new CDTImageLayer();
+    image->setName("name");
+    image->setPath("path");
+    addImageLayer(image);
+
 }
 
 void CDTProject::addImageLayer(CDTImageLayer *image)
@@ -27,6 +39,14 @@ void CDTProject::setName(const QString &n)
 void CDTProject::setPath(const QString &p)
 {
     path = p;
+}
+
+void CDTProject::onContextMenu()
+{
+    QMenu* menu =new QMenu;
+    menu->addAction(actionAddImage);
+    menu->exec(QCursor::pos());
+
 }
 
 

@@ -1,7 +1,8 @@
 #include "cdtimagelayer.h"
+#include <QMenu>
 
 CDTImageLayer::CDTImageLayer(QObject *parent)
-    :QObject(parent)
+    :QObject(parent),addSegmentationLayer(new QAction(tr("Add Segmentation"),this))
 {
 //    segmentations.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
 //    segmentations.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
@@ -21,6 +22,8 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
 
     addSegmentation(segment1);
     addSegmentation(segment2);
+
+    connect(addSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
 }
 
 void CDTImageLayer::setPath(const QString &path)
@@ -40,12 +43,26 @@ void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
     segmentations.push_back(segmentation);
 }
 
+void CDTImageLayer::addSegmentation()
+{
+    QMap<QString, QVariant> param;
+    param["threshold"] = "new threshold";
+    param["minArea"] = "new minArea";
+
+    CDTSegmentationLayer *segmentation = new CDTSegmentationLayer();
+    segmentation->setName("new segment");
+    segmentation->setShapefilePath("new shapefilepath");
+    segmentation->setMethodParams("new mst",param);
+
+    segmentations.push_back(segmentation);
+}
+
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
-    CDTProjectTreeItem *imageroot =new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,m_name);
-    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,QObject::tr("path"));
-    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_path);
-    CDTProjectTreeItem *segmentationsroot =new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,QObject::tr("segmentations"));
+    CDTProjectTreeItem *imageroot =new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,m_name,this);
+    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("path"),NULL);
+    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_path,NULL);
+    CDTProjectTreeItem *segmentationsroot =new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,tr("segmentations"),this);
 
     imageroot->setChild(0,0,param);
     imageroot->setChild(0,1,value);
@@ -56,6 +73,14 @@ void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
     {
         segmentations[i]->updateTreeModel(segmentationsroot);
     }
+}
+
+void CDTImageLayer::onContextMenu()
+{
+    QMenu *menu =new QMenu();
+
+    menu->addAction(addSegmentationLayer);
+    menu->exec(QCursor::pos());
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)

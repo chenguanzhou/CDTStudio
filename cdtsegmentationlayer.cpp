@@ -2,10 +2,11 @@
 #include "cdtclassification.h"
 #include "cdtsegmentationlayer.h"
 #include <QList>
+#include <QMenu>
 
 
 CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
-    :QObject(parent)
+    :QObject(parent),addClassifications(new QAction(tr("Add Classification"),this))
 {
     QMap<QString,QVariant> params;
     params["K"] = 32;
@@ -14,6 +15,8 @@ CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
     classification->setShapefilePath("c:/cls1.shp");
     classification->setMethodParams("knn",params);
     classifications.push_back(classification);
+
+    connect(addClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
 }
 
 void CDTSegmentationLayer::addClassification(CDTClassification *classification)
@@ -34,18 +37,18 @@ void CDTSegmentationLayer::addClassification(CDTClassification *classification)
 
 void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
-    CDTProjectTreeItem *segment =new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,m_name);
-    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("shapefilePath"));
-    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_shapefilePath);
-    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,tr("method"));
-    CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_method);
-    CDTProjectTreeItem *classificationsroot =new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,tr("classifications"));
+    CDTProjectTreeItem *segment =new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,m_name,this);
+    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("shapefilePath"),NULL);
+    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_shapefilePath,NULL);
+    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,tr("method"),this);
+    CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_method,NULL);
+    CDTProjectTreeItem *classificationsroot =new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,tr("classifications"),this);
 
     for(int i=0;i<m_params.size();++i)
     {
         QList<QString> keys =m_params.keys();
-        CDTProjectTreeItem *methodparam =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,keys[i]);
-        CDTProjectTreeItem *methodvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_params[keys[i]].toString());
+        CDTProjectTreeItem *methodparam =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,keys[i],NULL);
+        CDTProjectTreeItem *methodvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_params[keys[i]].toString(),NULL);
         methodroot->setChild(i,0,methodparam);
         methodroot->setChild(i,1,methodvalue);
     }
@@ -63,6 +66,28 @@ void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
         classifications[i]->updateTreeModel(classificationsroot);
     }
 
+
+}
+
+void CDTSegmentationLayer::onContextMenu()
+{
+    QMenu *menu =new QMenu;
+    menu->addAction(addClassifications);
+
+    menu->exec(QCursor::pos());
+}
+
+void CDTSegmentationLayer::addClassification()
+{
+    QMap<QString,QVariant> param;
+    param["k"] ="new k";
+
+    CDTClassification *classification =new CDTClassification();
+    classification->setName("new classification");
+    classification->setShapefilePath("new shapefilepath");
+    classification->setMethodParams("new knn",param);
+
+    classifications.push_back(classification);
 
 }
 
