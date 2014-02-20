@@ -23,9 +23,8 @@ signals:
 public slots:
     void setProjectName(const QString& name);
     void setProjectPath(const QString& path);
-//    void setimagelayer(const QVector<CDTImageLayer> &image);//using for test
+
 private:
-//    QVector<CDTImageLayer> image;//using for test
     CDTProject *project;
     CDTProjectTreeModel* treeModel;
 };

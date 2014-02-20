@@ -31,7 +31,7 @@ signals:
 
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
-    void onContextMenu();
+    void onContextMenu(QWidget *parent);
     void addSegmentation();
 private:
     QString m_path;

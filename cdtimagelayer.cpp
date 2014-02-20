@@ -1,11 +1,12 @@
 #include "cdtimagelayer.h"
 #include <QMenu>
+#include "dialognewsegmentation.h"
 
 CDTImageLayer::CDTImageLayer(QObject *parent)
     :QObject(parent),addSegmentationLayer(new QAction(tr("Add Segmentation"),this))
 {
-//    segmentations.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
-//    segmentations.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
+    //    segmentations.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
+    //    segmentations.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
     QMap<QString,QVariant> params;
     params["threshold"] = 25;
     params["minArea"] = 100;
@@ -45,16 +46,16 @@ void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
 
 void CDTImageLayer::addSegmentation()
 {
-    QMap<QString, QVariant> param;
-    param["threshold"] = "new threshold";
-    param["minArea"] = "new minArea";
-
-    CDTSegmentationLayer *segmentation = new CDTSegmentationLayer();
-    segmentation->setName("new segment");
-    segmentation->setShapefilePath("new shapefilepath");
-    segmentation->setMethodParams("new mst",param);
-
-    segmentations.push_back(segmentation);
+    DialogNewSegmentation* dlg = new DialogNewSegmentation(m_path);
+    if(dlg->exec()==DialogNewSegmentation::Accepted)
+    {
+        CDTSegmentationLayer *segmentation = new CDTSegmentationLayer();
+        segmentation->setName(dlg->name());
+        segmentation->setShapefilePath(dlg->shapefilePath());
+        segmentation->setMarkfilePath(dlg->markfilePath());
+        segmentation->setMethodParams(dlg->method(),dlg->params());
+        segmentations.push_back(segmentation);
+    }
 }
 
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
@@ -75,9 +76,9 @@ void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
     }
 }
 
-void CDTImageLayer::onContextMenu()
+void CDTImageLayer::onContextMenu(QWidget *parent)
 {
-    QMenu *menu =new QMenu();
+    QMenu *menu =new QMenu(parent);
 
     menu->addAction(addSegmentationLayer);
     menu->exec(QCursor::pos());

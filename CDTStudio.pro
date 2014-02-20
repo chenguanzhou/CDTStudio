@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     cdtprojectwidget.cpp \
     cdtprojecttreemodel.cpp \
     cdtprojecttreeitem.cpp \
-    dialognewproject.cpp
+    dialognewproject.cpp \
+    dialognewsegmentation.cpp
 
 HEADERS  += mainwindow.h \
     cdtproject.h \
@@ -37,7 +38,9 @@ HEADERS  += mainwindow.h \
     cdtprojectwidget.h \
     cdtprojecttreemodel.h \
     cdtprojecttreeitem.h \
-    dialognewproject.h
+    dialognewproject.h \
+    dialognewsegmentation.h
 
 FORMS    += mainwindow.ui \
-    dialognewproject.ui
+    dialognewproject.ui \
+    dialognewsegmentation.ui

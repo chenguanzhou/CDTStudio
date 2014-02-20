@@ -21,26 +21,23 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
     if(type ==CDTProjectTreeItem::PROJECT_ROOT)
     {
         CDTProject *correspondingObject =(CDTProject*) item->getcorrespondingObject();
-        correspondingObject->onContextMenu();
+        correspondingObject->onContextMenu(this);
         emit projectChanged(project);
     }
 
     else if(type ==CDTProjectTreeItem::IMAGE_ROOT||type ==CDTProjectTreeItem::SEGMENTION_ROOT)
     {
         CDTImageLayer *correspondingObject =(CDTImageLayer*) item->getcorrespondingObject();
-        correspondingObject->onContextMenu();
+        correspondingObject->onContextMenu(this);
         emit projectChanged(project);
     }
 
     else if(type ==CDTProjectTreeItem::SEGMENTION||type ==CDTProjectTreeItem::CLASSIFICATION_ROOT)
     {
         CDTSegmentationLayer *correspondingObject =(CDTSegmentationLayer*) item->getcorrespondingObject();
-        correspondingObject->onContextMenu();
+        correspondingObject->onContextMenu(this);
         emit projectChanged(project);
     }
-
-
-
 }
 
 void CDTProjectWidget::setProjectName(const QString &name)
@@ -54,10 +51,4 @@ void CDTProjectWidget::setProjectPath(const QString &path)
     project->setPath(path);
     emit projectChanged(project);
 }
-
-//void CDTProjectWidget::setimagelayer(const QVector<CDTImageLayer> &image)//using for test
-//{
-//    project->setimage(image);
-//    emit projectChanged(project);
-//}
 

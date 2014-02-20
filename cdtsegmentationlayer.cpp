@@ -69,7 +69,7 @@ void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
 
 }
 
-void CDTSegmentationLayer::onContextMenu()
+void CDTSegmentationLayer::onContextMenu(QWidget *parent)
 {
     QMenu *menu =new QMenu;
     menu->addAction(addClassifications);
@@ -101,6 +101,11 @@ QString CDTSegmentationLayer::shapefilePath() const
     return m_shapefilePath;
 }
 
+QString CDTSegmentationLayer::markfilePath() const
+{
+    return m_markfilePath;
+}
+
 QString CDTSegmentationLayer::method() const
 {
     return m_method;
@@ -116,6 +121,12 @@ void CDTSegmentationLayer::setShapefilePath(const QString &shpPath)
 {
     m_shapefilePath = shpPath;
     emit shapefilePathChanged();
+}
+
+void CDTSegmentationLayer::setMarkfilePath(const QString &mkPath)
+{
+    m_markfilePath = mkPath;
+    emit markfilePathChanged();
 }
 
 void CDTSegmentationLayer::setMethodParams(const QString &methodName, const QMap<QString, QVariant> &params)

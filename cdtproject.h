@@ -19,13 +19,14 @@ public:
 
     void addImageLayer(CDTImageLayer *image);
     void addImageLayer(const QString name,const QString path);
+
     void setName(const QString& n);
     void setPath(const QString& p);
 
 signals:
 public slots:
     void addImageLayer();
-    void onContextMenu();
+    void onContextMenu(QWidget *parent);
 private:
     QString name;
     QString path;

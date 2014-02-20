@@ -16,6 +16,7 @@ void CDTProject::addImageLayer()
     image->setPath("path");
     addImageLayer(image);
 
+
 }
 
 void CDTProject::addImageLayer(CDTImageLayer *image)
@@ -41,12 +42,11 @@ void CDTProject::setPath(const QString &p)
     path = p;
 }
 
-void CDTProject::onContextMenu()
+void CDTProject::onContextMenu(QWidget* parent)
 {
-    QMenu* menu =new QMenu;
+    QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);
     menu->exec(QCursor::pos());
-
 }
 
 
