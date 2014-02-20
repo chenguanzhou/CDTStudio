@@ -3,7 +3,8 @@
 #include "dialognewsegmentation.h"
 
 CDTImageLayer::CDTImageLayer(QObject *parent)
-    :QObject(parent),addSegmentationLayer(new QAction(tr("Add Segmentation"),this))
+    :CDTBaseObject(parent),
+      addSegmentationLayer(new QAction(tr("Add Segmentation"),this))
 {
     //    segmentations.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
     //    segmentations.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
@@ -61,14 +62,12 @@ void CDTImageLayer::addSegmentation()
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
     CDTProjectTreeItem *imageroot =new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,m_name,this);
-    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("path"),NULL);
-    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_path,NULL);
+    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_path,this);
     CDTProjectTreeItem *segmentationsroot =new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,tr("segmentations"),this);
 
-    imageroot->setChild(0,0,param);
-    imageroot->setChild(0,1,value);
-    imageroot->setChild(1,segmentationsroot);
-    parent->appendRow(imageroot);
+    parent->setChild(0,0,imageroot);
+    parent->setChild(0,1,value);
+    imageroot->setChild(0,segmentationsroot);
 
     for(int i=0;i<segmentations.size();++i)
     {
@@ -76,7 +75,7 @@ void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
     }
 }
 
-void CDTImageLayer::onContextMenu(QWidget *parent)
+void CDTImageLayer::onContextMenuRequest(QWidget *parent)
 {
     QMenu *menu =new QMenu(parent);
 

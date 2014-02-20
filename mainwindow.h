@@ -19,9 +19,9 @@ public:
 
 public slots:
     void onCurrentTabChanged(int i);
-    void oncreatContextMenu(QPoint pt);
 private slots:
     void on_action_New_triggered();
+    void on_treeViewProject_customContextMenuRequested(const QPoint &pos);
 
 private:
     Ui::MainWindow *ui;

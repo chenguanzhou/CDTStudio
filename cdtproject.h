@@ -7,8 +7,9 @@
 #include "cdtimagelayer.h"
 #include "cdtprojecttreemodel.h"
 #include <QAction>
+#include "cdtbaseobject.h"
 
-class CDTProject: public QObject
+class CDTProject: public CDTBaseObject
 {
     Q_OBJECT
 public:
@@ -26,7 +27,7 @@ public:
 signals:
 public slots:
     void addImageLayer();
-    void onContextMenu(QWidget *parent);
+    void onContextMenuRequest(QWidget *parent);
 private:
     QString name;
     QString path;

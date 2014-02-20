@@ -1,6 +1,6 @@
 #include "cdtprojecttreeitem.h"
 
-CDTProjectTreeItem::CDTProjectTreeItem(Type tp, const QString &text,QObject *crspdObject)
+CDTProjectTreeItem::CDTProjectTreeItem(Type tp, const QString &text, CDTBaseObject *crspdObject)
     :type(tp),correspondingObject(crspdObject)
 {
     setText(text);

@@ -1,6 +1,6 @@
 #include "cdtprojectwidget.h"
 #include "cdtprojecttabwidget.h"
-
+#include "cdtbaseobject.h"
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
@@ -18,24 +18,30 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
     CDTProjectTreeItem *item =(CDTProjectTreeItem*)treeModel->itemFromIndex(index);
     int type = item->getType();
 
-    if(type ==CDTProjectTreeItem::PROJECT_ROOT)
+/*    if(type ==CDTProjectTreeItem::PROJECT_ROOT)
     {
-        CDTProject *correspondingObject =(CDTProject*) item->getcorrespondingObject();
+        CDTProject *correspondingObject =(CDTProject*) item->getCorrespondingObject();
         correspondingObject->onContextMenu(this);
         emit projectChanged(project);
     }
 
     else if(type ==CDTProjectTreeItem::IMAGE_ROOT||type ==CDTProjectTreeItem::SEGMENTION_ROOT)
     {
-        CDTImageLayer *correspondingObject =(CDTImageLayer*) item->getcorrespondingObject();
+        CDTImageLayer *correspondingObject =(CDTImageLayer*) item->getCorrespondingObject();
         correspondingObject->onContextMenu(this);
         emit projectChanged(project);
     }
 
     else if(type ==CDTProjectTreeItem::SEGMENTION||type ==CDTProjectTreeItem::CLASSIFICATION_ROOT)
     {
-        CDTSegmentationLayer *correspondingObject =(CDTSegmentationLayer*) item->getcorrespondingObject();
+        CDTSegmentationLayer *correspondingObject =(CDTSegmentationLayer*) item->getCorrespondingObject();
         correspondingObject->onContextMenu(this);
+        emit projectChanged(project);
+    }*/
+    CDTBaseObject* correspondingObject = item->getCorrespondingObject();
+    if (item && correspondingObject)
+    {
+        correspondingObject->onContextMenuRequest(this);
         emit projectChanged(project);
     }
 }
@@ -44,6 +50,7 @@ void CDTProjectWidget::setProjectName(const QString &name)
 {
     project->setName(name);
     emit projectChanged(project);
+
 }
 
 void CDTProjectWidget::setProjectPath(const QString &path)

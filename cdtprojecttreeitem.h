@@ -2,6 +2,7 @@
 #define CDTPROJECTTREEITEM_H
 
 #include <QStandardItem>
+#include "cdtbaseobject.h"
 
 class CDTProjectTreeItem : public QStandardItem
 {
@@ -18,16 +19,16 @@ public:
         VALUE
     };
 
-    CDTProjectTreeItem(Type tp, const QString &text,QObject *crspdObject );
+    CDTProjectTreeItem(Type tp, const QString &text,CDTBaseObject *crspdObject );
     Type getType()const {return type;}
-    QObject* getcorrespondingObject()const {return correspondingObject;}
+    CDTBaseObject* getCorrespondingObject()const {return correspondingObject;}
 
 private:
     void initAlignment();
     void initFont();
     void initColor();
     Type type;
-    QObject* correspondingObject;
+    CDTBaseObject* correspondingObject;
 };
 
 #endif // CDTPROJECTTREEITEM_H

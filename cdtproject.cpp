@@ -1,10 +1,9 @@
 #include "cdtproject.h"
-#include "cdtprojecttreeitem.h"
 #include "dialognewimage.h"
 #include <QMenu>
 
 CDTProject::CDTProject(QObject *parent):
-    QObject(parent),
+    CDTBaseObject(parent),
     actionAddImage(new QAction(tr("Add Image"),this))
 {
     connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
@@ -24,7 +23,7 @@ void CDTProject::addImageLayer()
 
 void CDTProject::addImageLayer(CDTImageLayer *image)
 {
-    images.push_back(image);
+    images.push_back(image);    
 }
 
 void CDTProject::addImageLayer(const QString name, const QString path)
@@ -45,7 +44,7 @@ void CDTProject::setPath(const QString &p)
     path = p;
 }
 
-void CDTProject::onContextMenu(QWidget* parent)
+void CDTProject::onContextMenuRequest(QWidget* parent)
 {
     QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);

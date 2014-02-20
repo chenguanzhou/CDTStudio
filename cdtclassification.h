@@ -5,8 +5,9 @@
 #include <QMap>
 #include <QVariant>
 #include "cdtprojecttreeitem.h"
+#include "cdtbaseobject.h"
 
-class CDTClassification:public QObject
+class CDTClassification:public CDTBaseObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
@@ -33,6 +34,7 @@ signals:
 
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
+    void onContextMenuRequest(QWidget *parent);
 
 private:
     QString m_name;
