@@ -19,7 +19,7 @@ public:
     void onContextMenu(QPoint pt,QModelIndex index);
 
 signals:
-    void projectChanged(CDTProject*);//?
+    void projectChanged(CDTProject*);
 public slots:
     void setProjectName(const QString& name);
     void setProjectPath(const QString& path);

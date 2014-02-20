@@ -1,5 +1,6 @@
 #include "cdtproject.h"
 #include "cdtprojecttreeitem.h"
+#include "dialognewimage.h"
 #include <QMenu>
 
 CDTProject::CDTProject(QObject *parent):
@@ -11,12 +12,14 @@ CDTProject::CDTProject(QObject *parent):
 
 void CDTProject::addImageLayer()
 {
-    CDTImageLayer *image = new CDTImageLayer();
-    image->setName("name");
-    image->setPath("path");
-    addImageLayer(image);
-
-
+    DialogNewImage *dlg = new DialogNewImage;
+    if(dlg->exec() == DialogNewImage::Accepted)
+    {
+        CDTImageLayer *image = new CDTImageLayer();
+        image->setName(dlg->imageName());
+        image->setPath(dlg->imagePath());
+        addImageLayer(image);
+    }
 }
 
 void CDTProject::addImageLayer(CDTImageLayer *image)
