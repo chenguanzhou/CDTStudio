@@ -19,6 +19,7 @@ public slots:
     void saveProject();
     void saveAllProject();
     void addProjectTab(const QString& path);//load project file
+    void closeTab(const int &index);
 private:
 };
 

@@ -12,6 +12,8 @@ CDTProjectTabWidget::CDTProjectTabWidget(QWidget *parent) :
     setTabsClosable(true);
     setTabShape(Triangular);
     currentWidget();
+    setTabsClosable(true);
+    connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
 }
 
 void CDTProjectTabWidget::createNewProject()
@@ -65,5 +67,17 @@ void CDTProjectTabWidget::saveAllProject()
 
 void CDTProjectTabWidget::addProjectTab(const QString &path)
 {
-//    CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
+    //    CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
+}
+
+void CDTProjectTabWidget::closeTab(const int &index)
+{
+    if(index < 0)
+    {
+        return ;
+    }
+    CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
+    this->removeTab(index);
+    delete(tabItem);
+    tabItem = nullptr;
 }
