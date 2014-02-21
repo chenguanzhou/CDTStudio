@@ -46,3 +46,18 @@ void MainWindow::oncreatContextMenu(QPoint pt)
     ui->treeViewProject->expandAll();
 }
 
+
+void MainWindow::on_actionOpen_triggered()
+{
+    projectTabWidget->openProject();
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    projectTabWidget->saveProject();
+}
+
+void MainWindow::on_actionSave_All_triggered()
+{
+    projectTabWidget->saveAllProject();
+}

@@ -23,6 +23,12 @@ public slots:
 private slots:
     void on_action_New_triggered();
 
+    void on_actionOpen_triggered();
+
+    void on_actionSave_triggered();
+
+    void on_actionSave_All_triggered();
+
 private:
     Ui::MainWindow *ui;
     CDTProjectTabWidget* projectTabWidget;

@@ -1,6 +1,7 @@
 #include "dialognewproject.h"
 #include "ui_dialognewproject.h"
 #include <QFileDialog>
+#include <QDebug>
 
 DialogNewProject::DialogNewProject(QWidget *parent) :
     QDialog(parent),
@@ -26,8 +27,12 @@ QString DialogNewProject::projectPath() const
 
 void DialogNewProject::on_pushButton_clicked()
 {
-    QString path = QFileDialog::getOpenFileName(this,tr("Create project file"),QString(),"*.cdtpro");
+    QString path = QFileDialog::getSaveFileName(this,tr("Create project file"),QString(),"*.cdtpro");
+    qDebug()<<path;
     if (path.isEmpty())
         return;
+
+    QFileInfo fileinfo(path);
     ui->lineEditPath->setText(path);
+    ui->lineEditName->setText(fileinfo.fileName());
 }

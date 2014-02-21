@@ -28,6 +28,9 @@
      <string>&amp;File</string>
     </property>
     <addaction name="action_New"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_All"/>
    </widget>
    <addaction name="menu_File"/>
   </widget>
@@ -39,6 +42,9 @@
     <bool>false</bool>
    </attribute>
    <addaction name="action_New"/>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="actionSave_All"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidgetProject">
@@ -60,6 +66,21 @@
   <action name="action_New">
    <property name="text">
     <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>&amp;Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+  </action>
+  <action name="actionSave_All">
+   <property name="text">
+    <string>&amp;Save All</string>
    </property>
   </action>
  </widget>
