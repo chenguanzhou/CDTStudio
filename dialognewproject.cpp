@@ -28,7 +28,6 @@ QString DialogNewProject::projectPath() const
 void DialogNewProject::on_pushButton_clicked()
 {
     QString path = QFileDialog::getSaveFileName(this,tr("Create project file"),QString(),"*.cdtpro");
-    qDebug()<<path;
     if (path.isEmpty())
         return;
 

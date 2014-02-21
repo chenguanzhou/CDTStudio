@@ -38,14 +38,15 @@ void MainWindow::on_action_New_triggered()
     projectTabWidget->createNewProject();
 }
 
-void MainWindow::oncreatContextMenu(QPoint pt)
+void MainWindow::on_treeViewProject_customContextMenuRequested(const QPoint &pos)
 {
-    QModelIndex index =ui->treeViewProject->indexAt(pt);
+    QModelIndex index =ui->treeViewProject->indexAt(pos);
     CDTProjectWidget* curwidget =(CDTProjectWidget*) projectTabWidget->currentWidget();
-    curwidget->onContextMenu(pt,index);
+    if(curwidget == NULL)
+        return;
+    curwidget->onContextMenu(pos,index);
     ui->treeViewProject->expandAll();
 }
-
 
 void MainWindow::on_actionOpen_triggered()
 {

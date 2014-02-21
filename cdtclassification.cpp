@@ -1,7 +1,7 @@
 #include "cdtclassification.h"
 
 CDTClassification::CDTClassification(QObject* parent)
-    :QObject(parent)
+    :CDTBaseObject(parent)
 {
 
 }
@@ -9,9 +9,9 @@ CDTClassification::CDTClassification(QObject* parent)
 void CDTClassification::updateTreeModel(CDTProjectTreeItem *parent)
 {
     CDTProjectTreeItem *classification =new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,m_name,NULL);
-    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("shapefilePath"),NULL);
+    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("Shapefile path"),NULL);
     CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_shapefilePath,NULL);
-    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,tr("method"),NULL);
+    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,tr("Method"),NULL);
     CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_method,NULL);
 
     for(int i=0;i<m_params.size();++i)
@@ -29,6 +29,11 @@ void CDTClassification::updateTreeModel(CDTProjectTreeItem *parent)
     classification->setChild(1,1,methodrootvalue);
 
     parent->appendRow(classification);
+}
+
+void CDTClassification::onContextMenuRequest(QWidget *parent)
+{
+
 }
 
 QString CDTClassification::name() const

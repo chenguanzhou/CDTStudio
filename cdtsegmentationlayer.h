@@ -5,14 +5,15 @@
 #include <QMap>
 #include <QVector>
 #include <QVariant>
+#include <QAction>
 #include "cdtattributes.h"
 #include "cdtsample.h"
 #include "cdtprojecttreeitem.h"
-#include "QAction"
+#include "cdtbaseobject.h"
 
 
 class CDTClassification;
-class CDTSegmentationLayer:public QObject
+class CDTSegmentationLayer:public CDTBaseObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
@@ -45,7 +46,7 @@ signals:
 
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
-    void onContextMenu(QWidget *parent);
+    void onContextMenuRequest(QWidget *parent);
     void addClassification();
 
 private:

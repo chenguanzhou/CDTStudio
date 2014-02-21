@@ -6,8 +6,9 @@
 #include "cdtsegmentationlayer.h"
 #include "cdtclassification.h"
 #include "cdtprojecttreeitem.h"
+#include "cdtbaseobject.h"
 
-class CDTImageLayer:public QObject
+class CDTImageLayer:public CDTBaseObject
 {
     Q_OBJECT
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
@@ -31,7 +32,7 @@ signals:
 
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
-    void onContextMenu(QWidget *parent);
+    void onContextMenuRequest(QWidget *parent);
     void addSegmentation();
 private:
     QString m_path;
