@@ -72,12 +72,12 @@ void CDTProjectTabWidget::addProjectTab(const QString &path)
 
 void CDTProjectTabWidget::closeTab(const int &index)
 {
-    if(index < 0)
-    {
-        return ;
-    }
+//    if(index < 0)
+//    {
+//        return ;
+//    }
     CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
     this->removeTab(index);
     delete(tabItem);
-    tabItem = nullptr;
+    //tabItem = nullptr;
 }

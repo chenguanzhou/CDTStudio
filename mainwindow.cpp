@@ -25,7 +25,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::onCurrentTabChanged(int i)
 {
-    //ui->treeViewProject->setModel(projectTabWidget->projectWidgets[i]->treeModel);
+    if (i==-1)
+        return;
     CDTProjectWidget* projectWidget = (CDTProjectWidget*)(projectTabWidget->currentWidget());
     ui->treeViewProject->setModel(projectWidget->treeModel);
     ui->treeViewProject->expandAll();
