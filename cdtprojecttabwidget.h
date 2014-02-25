@@ -9,18 +9,23 @@ class CDTProjectTabWidget : public QTabWidget
     Q_OBJECT
 public:
     friend class MainWindow;
+//    friend QString openDefaultPath;
     explicit CDTProjectTabWidget(QWidget *parent = 0);
 
 signals:
 
 public slots:
-    void createNewProject();
-    void openProject();
-    void saveProject();
-    void saveAllProject();
+    bool createNewProject();
+    bool openProject();
+    bool saveProject();
+    bool saveAllProject();
+    bool saveAsProject();
     void addProjectTab(const QString& path);//load project file
-    void closeTab(const int &index);
+    bool closeTab(const int &index);
+    bool closeAll();
 private:
+    QString openDefaultPath ;
+    QString saveDefaultPath ;
 };
 
 #endif // CDTPROJECTTABWIDGET_H

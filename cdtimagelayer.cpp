@@ -65,8 +65,8 @@ void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
     CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_path,this);
     CDTProjectTreeItem *segmentationsroot =new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,tr("segmentations"),this);
 
-    parent->setChild(0,0,imageroot);
-    parent->setChild(0,1,value);
+    parent->setChild(parent->rowCount(),0,imageroot);
+    parent->setChild(parent->rowCount()-1,1,value);
     imageroot->setChild(0,segmentationsroot);
 
     for(int i=0;i<segmentations.size();++i)

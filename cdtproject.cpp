@@ -11,12 +11,21 @@ CDTProject::CDTProject(QObject *parent):
 
 void CDTProject::addImageLayer()
 {
-    DialogNewImage *dlg = new DialogNewImage;
-    if(dlg->exec() == DialogNewImage::Accepted)
+//    DialogNewImage *dlg = new DialogNewImage;
+//    if(dlg->exec() == DialogNewImage::Accepted)
+//    {
+//        CDTImageLayer *image = new CDTImageLayer();
+//        image->setName(dlg->imageName());
+//        image->setPath(dlg->imagePath());
+//        addImageLayer(image);
+//    }
+
+    DialogNewImage dlg;
+    if(dlg.exec() == DialogNewImage::Accepted)
     {
-        CDTImageLayer *image = new CDTImageLayer();
-        image->setName(dlg->imageName());
-        image->setPath(dlg->imagePath());
+        CDTImageLayer *image = new CDTImageLayer(this);
+        image->setName(dlg.imageName());
+        image->setPath(dlg.imagePath());
         addImageLayer(image);
     }
 }
