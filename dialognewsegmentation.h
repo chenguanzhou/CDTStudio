@@ -26,6 +26,15 @@ public:
 private slots:
     void on_comboBox_currentIndexChanged(const QString &arg1);
     void on_pushButtonStart_clicked();
+    void on_pushButtonBrowseMarkfilePath_clicked();
+    void on_pushButtonBrowseshapefilePath_clicked();
+    void onLineEditChanged(int);
+    void onSegmentationFinished();
+    void onWarningMessage(QString msg);
+
+    void on_lineEditName_textChanged(const QString &arg1);
+    void on_lineEditMarkfile_textChanged(const QString &arg1);
+    void on_lineEditShapefile_textChanged(const QString &arg1);
 
 private:
     Ui::DialogNewSegmentation *ui;
