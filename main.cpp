@@ -10,7 +10,6 @@ int main(int argc, char *argv[])
     appTranslator.load(":/trans/" + QLocale::system().name()+".qm");
     a.installTranslator(&appTranslator);
     MainWindow w;
-    w.showMaximized();
-
+    w.showMaximized();    
     return a.exec();
 }

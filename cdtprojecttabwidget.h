@@ -24,8 +24,8 @@ public slots:
     bool closeTab(const int &index);
     bool closeAll();
 private:
-    QString openDefaultPath ;
-    QString saveDefaultPath ;
+    QString readLastProjectDir();
+    void writeLastProjectDir(QString &path);
 };
 
 #endif // CDTPROJECTTABWIDGET_H

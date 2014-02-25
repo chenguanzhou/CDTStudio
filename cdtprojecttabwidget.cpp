@@ -5,9 +5,10 @@
 #include <QFileInfo>
 #include <QList>
 #include <QMessageBox>
+#include <QSettings>
 
 CDTProjectTabWidget::CDTProjectTabWidget(QWidget *parent) :
-    QTabWidget(parent),openDefaultPath("."),saveDefaultPath(".")
+    QTabWidget(parent)
 {
     setTabsClosable(true);
     setTabShape(Triangular);
@@ -25,8 +26,7 @@ bool CDTProjectTabWidget::createNewProject()
         projectWidget->setProjectPath(dlg->projectPath());
         projectWidget->setProjectName(dlg->projectName());
         projectWidget->setProjectFile(dlg->projectPath());
-        addTab(projectWidget,dlg->projectName());
-
+        addTab(projectWidget,dlg->projectName());      
         return true;
     }
     delete dlg;
@@ -35,10 +35,11 @@ bool CDTProjectTabWidget::createNewProject()
 
 bool CDTProjectTabWidget::openProject()
 {
-    QString filepath = QFileDialog::getOpenFileName(this,tr("Open an project file"),openDefaultPath,"*.cdtpro");
-    openDefaultPath = filepath;
+    QString dir = readLastProjectDir();
+    QString filepath = QFileDialog::getOpenFileName(this,tr("Open an project file"),dir,"*.cdtpro");
     if(!filepath.isEmpty())
     {
+        writeLastProjectDir(QFileInfo(filepath).absolutePath());
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
         if (projectWidget->readProject(filepath) == false)
         {
@@ -98,8 +99,9 @@ bool CDTProjectTabWidget::saveAsProject()
     }
     else
     {
-        QString fileName = QFileDialog::getSaveFileName(this,tr("Save project file"),saveDefaultPath,"*.cdtpro");
-        saveDefaultPath = fileName;
+        QString dir = readLastProjectDir();
+        QString fileName = QFileDialog::getSaveFileName(this,tr("Save project file"),dir,"*.cdtpro");
+        writeLastProjectDir(QFileInfo(fileName).absolutePath());
         ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
         return true;
     }
@@ -139,4 +141,21 @@ bool CDTProjectTabWidget::closeAll()
         }
         return true;
     }
+}
+
+QString CDTProjectTabWidget::readLastProjectDir()
+{
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("lastDir");
+    QString dir =setting.value("lastDir",".").toString();
+    setting.endGroup();
+    return dir;
+}
+
+void CDTProjectTabWidget::writeLastProjectDir(QString &path)
+{
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("lastDir");
+    setting.setValue("lastDir",path);
+    setting.endGroup();
 }
