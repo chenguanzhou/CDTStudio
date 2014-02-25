@@ -25,6 +25,7 @@ public:
 
 private slots:
     void on_comboBox_currentIndexChanged(const QString &arg1);
+    void on_pushButtonStart_clicked();
 
 private:
     Ui::DialogNewSegmentation *ui;

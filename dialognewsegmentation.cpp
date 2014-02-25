@@ -1,6 +1,7 @@
 #include "dialognewsegmentation.h"
 #include "ui_dialognewsegmentation.h"
 #include <QDebug>
+#include <CDTBaseThread.h>
 
 DialogNewSegmentation::DialogNewSegmentation(const QString &inputImage, QWidget *parent) :
     QDialog(parent),
@@ -81,3 +82,9 @@ void DialogNewSegmentation::initSegmentationMethod()
     ui->comboBox->addItem(tr("slic"));
     ui->comboBox->setCurrentIndex(0);
 }
+
+void DialogNewSegmentation::on_pushButtonStart_clicked()
+{
+
+}
+
