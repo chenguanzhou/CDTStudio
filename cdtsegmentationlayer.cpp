@@ -9,13 +9,13 @@ CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
     :CDTBaseObject(parent),
       addClassifications(new QAction(tr("Add Classification"),this))
 {
-    QMap<QString,QVariant> params;
-    params["K"] = 32;
-    CDTClassification *classification = new CDTClassification(this);
-    classification->setName("cls1");
-    classification->setShapefilePath("c:/cls1.shp");
-    classification->setMethodParams("knn",params);
-    classifications.push_back(classification);
+//    QMap<QString,QVariant> params;
+//    params["K"] = 32;
+//    CDTClassification *classification = new CDTClassification(this);
+//    classification->setName("cls1");
+//    classification->setShapefilePath("c:/cls1.shp");
+//    classification->setMethodParams("knn",params);
+//    classifications.push_back(classification);
 
     connect(addClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
 }

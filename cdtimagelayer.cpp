@@ -8,22 +8,22 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
 {
     //    segmentations.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
     //    segmentations.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
-    QMap<QString,QVariant> params;
-    params["threshold"] = 25;
-    params["minArea"] = 100;
+//    QMap<QString,QVariant> params;
+//    params["threshold"] = 25;
+//    params["minArea"] = 100;
 
-    CDTSegmentationLayer *segment1 = new CDTSegmentationLayer(this);
-    segment1->setName("seg1");
-    segment1->setShapefilePath("c:/seg1.shp");
-    segment1->setMethodParams("mst",params);
+//    CDTSegmentationLayer *segment1 = new CDTSegmentationLayer(this);
+//    segment1->setName("seg1");
+//    segment1->setShapefilePath("c:/seg1.shp");
+//    segment1->setMethodParams("mst",params);
 
-    CDTSegmentationLayer *segment2 = new CDTSegmentationLayer(this);
-    segment2->setName("seg2");
-    segment2->setShapefilePath("c:/seg1.shp");
-    segment2->setMethodParams("mst",params);
+//    CDTSegmentationLayer *segment2 = new CDTSegmentationLayer(this);
+//    segment2->setName("seg2");
+//    segment2->setShapefilePath("c:/seg1.shp");
+//    segment2->setMethodParams("mst",params);
 
-    addSegmentation(segment1);
-    addSegmentation(segment2);
+//    addSegmentation(segment1);
+//    addSegmentation(segment2);
 
     connect(addSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
 }
@@ -65,8 +65,8 @@ void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
     CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_path,this);
     CDTProjectTreeItem *segmentationsroot =new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,tr("segmentations"),this);
 
-    parent->setChild(0,0,imageroot);
-    parent->setChild(0,1,value);
+    parent->setChild(parent->rowCount(),0,imageroot);
+    parent->setChild(parent->rowCount()-1,1,value);
     imageroot->setChild(0,segmentationsroot);
 
     for(int i=0;i<segmentations.size();++i)

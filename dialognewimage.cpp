@@ -2,7 +2,8 @@
 #include "ui_dialognewimage.h"
 #include <QFileDialog>
 #include <QFileInfo>
-
+#include <QDebug>
+#include <QDir>
 DialogNewImage::DialogNewImage(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogNewImage)
@@ -28,7 +29,8 @@ QString DialogNewImage::imagePath() const
 
 void DialogNewImage::on_pushButton_clicked()
 {
-    QString path = QFileDialog::getOpenFileName(this,tr("Open image"),QString(),"Images (*.png *.xpm *.jpg *.img)");
+    qDebug()<<ui->lineEditName->text();
+    QString path = QFileDialog::getOpenFileName(this,tr("Open image"),QDir::currentPath(),"Images (*.png *.xpm *.jpg *.img)");
     if(path.isEmpty())
         return;
     QFileInfo fileinfo(path);

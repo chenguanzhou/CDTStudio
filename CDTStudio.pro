@@ -49,5 +49,9 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     dialognewproject.ui \
     dialognewsegmentation.ui\
-	dialognewimage.ui
+        dialognewimage.ui
+TRANSLATIONS  += trans/zh_CN.ts
+
+RESOURCES += \
+    resource.qrc
 
