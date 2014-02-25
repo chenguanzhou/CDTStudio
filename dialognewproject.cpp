@@ -28,7 +28,7 @@ QString DialogNewProject::projectPath() const
 void DialogNewProject::on_pushButton_clicked()
 {
     QSettings setting("WHU","CDTStudio");
-    setting.beginGroup("lastDir");
+    setting.beginGroup("Project");
     QString filepath = setting.value("lastDir",".").toString();
     QString path = QFileDialog::getSaveFileName(this,tr("Create project file"),filepath,"*.cdtpro");
     if (path.isEmpty())

@@ -12,6 +12,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 {
     connect(this,SIGNAL(projectChanged(CDTProject*)),treeModel,SLOT(update(CDTProject*)));
     connect(this,SIGNAL(projectChanged(CDTProject*)),this,SLOT(setIsChanged()));
+    connect(project,SIGNAL(projectChanged(CDTProject*)),this,SIGNAL(projectChanged(CDTProject*)));
 
 //    project->addImageLayer("image.1","c:/image1.tif");
 //    project->addImageLayer("image.2","c:/image2.tif");
@@ -46,7 +47,7 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
     if (item && correspondingObject)
     {
         correspondingObject->onContextMenuRequest(this);
-        emit projectChanged(project);
+//        emit projectChanged(project);
     }
 }
 
@@ -119,7 +120,7 @@ bool CDTProjectWidget::saveFile(QString &filepath)
     return true;
 }
 
-void CDTProjectWidget::maybeSave()
+int CDTProjectWidget::maybeSave()
 {
     if(isChanged)
     {
@@ -127,20 +128,29 @@ void CDTProjectWidget::maybeSave()
         ret = QMessageBox::warning(this, tr("Application"),
                      tr("The document has been modified.\n"
                         "Do you want to save your changes?"),
-                     QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+                                   QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
         if (ret == QMessageBox::Save)
-             writeProject();
-        else if (ret == QMessageBox::Cancel)
-            return ;
-    }
+        {
+            writeProject();
 
+        }
+        return ret;
+    }
+    return -1;
 }
 
 bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index)
 {
-    this->maybeSave();
-    parent->removeTab(index);
-    return true;
+    int a = this->maybeSave();
+    if(a == QMessageBox::Cancel  )
+    {
+        return false;
+    }
+    else
+    {
+        parent->removeTab(index);
+        return true;
+    }
 }
 
 

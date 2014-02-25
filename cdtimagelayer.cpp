@@ -32,17 +32,21 @@ void CDTImageLayer::setPath(const QString &path)
 {
     m_path = path;
     emit pathChanged(m_path);
+    emit imageLayerChanged();
 }
 
 void CDTImageLayer::setName(const QString &name)
 {
     m_name = name;
     emit nameChanged(m_name);
+    emit imageLayerChanged();
 }
 
 void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
 {
     segmentations.push_back(segmentation);
+    emit imageLayerChanged();
+    connect(segmentation,SIGNAL(segmentationChanged()),this,SIGNAL(imageLayerChanged()));
 }
 
 void CDTImageLayer::addSegmentation()
@@ -55,7 +59,7 @@ void CDTImageLayer::addSegmentation()
         segmentation->setShapefilePath(dlg->shapefilePath());
         segmentation->setMarkfilePath(dlg->markfilePath());
         segmentation->setMethodParams(dlg->method(),dlg->params());
-        segmentations.push_back(segmentation);
+        addSegmentation(segmentation);
     }
 }
 

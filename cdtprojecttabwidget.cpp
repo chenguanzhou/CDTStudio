@@ -26,7 +26,8 @@ bool CDTProjectTabWidget::createNewProject()
         projectWidget->setProjectPath(dlg->projectPath());
         projectWidget->setProjectName(dlg->projectName());
         projectWidget->setProjectFile(dlg->projectPath());
-        addTab(projectWidget,dlg->projectName());      
+        addTab(projectWidget,dlg->projectName());
+        saveProject();
         return true;
     }
     delete dlg;
@@ -119,9 +120,12 @@ bool CDTProjectTabWidget::closeTab(const int &index)
         return false;
     }
     CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
-    tabItem->closeProject(this,index);
-    delete(tabItem);
-    tabItem = nullptr;
+    if(tabItem->closeProject(this,index))
+    {
+        delete (tabItem);//???
+        tabItem = nullptr;
+    }
+
     return true;
 }
 
@@ -146,7 +150,7 @@ bool CDTProjectTabWidget::closeAll()
 QString CDTProjectTabWidget::readLastProjectDir()
 {
     QSettings setting("WHU","CDTStudio");
-    setting.beginGroup("lastDir");
+    setting.beginGroup("Project");
     QString dir =setting.value("lastDir",".").toString();
     setting.endGroup();
     return dir;
@@ -155,7 +159,7 @@ QString CDTProjectTabWidget::readLastProjectDir()
 void CDTProjectTabWidget::writeLastProjectDir(QString &path)
 {
     QSettings setting("WHU","CDTStudio");
-    setting.beginGroup("lastDir");
+    setting.beginGroup("Project");
     setting.setValue("lastDir",path);
     setting.endGroup();
 }

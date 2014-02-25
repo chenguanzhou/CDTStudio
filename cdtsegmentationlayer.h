@@ -43,6 +43,7 @@ signals:
     void shapefilePathChanged();
     void markfilePathChanged();
     void methodParamsChanged();
+    void segmentationChanged();
 
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);

@@ -9,32 +9,19 @@ CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
     :CDTBaseObject(parent),
       addClassifications(new QAction(tr("Add Classification"),this))
 {
-//    QMap<QString,QVariant> params;
-//    params["K"] = 32;
-//    CDTClassification *classification = new CDTClassification(this);
-//    classification->setName("cls1");
-//    classification->setShapefilePath("c:/cls1.shp");
-//    classification->setMethodParams("knn",params);
-//    classifications.push_back(classification);
-
     connect(addClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
+
+    connect(this,SIGNAL(markfilePathChanged()),this,SIGNAL(segmentationChanged()));
+    connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
+    connect(this,SIGNAL(shapefilePathChanged()),this,SIGNAL(segmentationChanged()));
+    connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
 }
 
 void CDTSegmentationLayer::addClassification(CDTClassification *classification)
 {
     classifications.push_back(classification);
+    emit methodParamsChanged();
 }
-
-//CDTSegmentationLayer::CDTSegmentationLayer(const QString &n, const QString &s, const QString &m):
-//    name(n),shapefilePath(s),method(m)
-//{
-//    params["threshold"] =25;
-//    params["minArea"] =100;
-
-//    classifications.push_back(CDTClassification("cls1","c:/","knn"));
-//    classifications.push_back(CDTClassification("cls2","c:/","knn"));
-
-//}
 
 void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
@@ -119,7 +106,7 @@ QString CDTSegmentationLayer::method() const
 void CDTSegmentationLayer::setName(const QString &name)
 {
     m_name = name;
-    emit nameChanged();
+    emit nameChanged();    
 }
 
 void CDTSegmentationLayer::setShapefilePath(const QString &shpPath)

@@ -19,15 +19,19 @@ public:
     friend class CDTProjectTreeModel;
 
     void addImageLayer(CDTImageLayer *image);
-    void addImageLayer(const QString name,const QString path);
 
     void setName(const QString& n);
     void setPath(const QString& p);
 
 signals:
-public slots:
+    void projectChanged(CDTProject*);
+
+public slots:    
     void addImageLayer();
     void onContextMenuRequest(QWidget *parent);
+
+private slots:
+    void childrenChanged();
 private:
     QString name;
     QString path;

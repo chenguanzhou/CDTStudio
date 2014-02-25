@@ -32,15 +32,9 @@ void CDTProject::addImageLayer()
 
 void CDTProject::addImageLayer(CDTImageLayer *image)
 {
-    images.push_back(image);    
-}
-
-void CDTProject::addImageLayer(const QString name, const QString path)
-{
-    CDTImageLayer *image = new CDTImageLayer();
-    image->setName(name);
-    image->setPath(path);
-    addImageLayer(image);
+    images.push_back(image);
+    connect(image,SIGNAL(imageLayerChanged()),this,SLOT(childrenChanged()));
+    emit projectChanged(this);
 }
 
 void CDTProject::setName(const QString &n)
@@ -58,6 +52,11 @@ void CDTProject::onContextMenuRequest(QWidget* parent)
     QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);
     menu->exec(QCursor::pos());
+}
+
+void CDTProject::childrenChanged()
+{
+    emit projectChanged(this);
 }
 
 
@@ -80,6 +79,7 @@ QDataStream &operator >>(QDataStream &in, CDTProject &project)
     {
         CDTImageLayer* image = new CDTImageLayer();
         in>>*image;
+        CDTProject::connect(image,SIGNAL(imageLayerChanged()),&project,SLOT(childrenChanged()));
         project.images.push_back(image);
     }
     in>>project.isFileExsit>>project.name>>project.path;

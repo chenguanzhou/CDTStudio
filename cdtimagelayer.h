@@ -29,6 +29,7 @@ public:
 signals:
     void pathChanged(QString);
     void nameChanged(QString);
+    void imageLayerChanged();
 
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
