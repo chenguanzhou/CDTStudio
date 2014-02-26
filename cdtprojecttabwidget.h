@@ -26,6 +26,7 @@ public slots:
 private:
     QString readLastProjectDir();
     void writeLastProjectDir(QString &path);
+    void writeRecentFilePath(QString &path);
 };
 
 #endif // CDTPROJECTTABWIDGET_H

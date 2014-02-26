@@ -102,9 +102,13 @@ bool CDTProjectTabWidget::saveAsProject()
     {
         QString dir = readLastProjectDir();
         QString fileName = QFileDialog::getSaveFileName(this,tr("Save project file"),dir,"*.cdtpro");
-        writeLastProjectDir(QFileInfo(fileName).absolutePath());
-        ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
-        return true;
+        if(!fileName.isEmpty())
+        {
+            writeLastProjectDir(QFileInfo(fileName).absolutePath());
+            ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
+            return true;
+        }
+        return false;
     }
 }
 
@@ -162,4 +166,9 @@ void CDTProjectTabWidget::writeLastProjectDir(QString &path)
     setting.beginGroup("Project");
     setting.setValue("lastDir",path);
     setting.endGroup();
+}
+
+void CDTProjectTabWidget::writeRecentFilePath(QString &path)
+{
+
 }

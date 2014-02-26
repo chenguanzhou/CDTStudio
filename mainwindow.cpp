@@ -3,6 +3,7 @@
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
 #include <QMenu>
+#include <QVector>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -12,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setCentralWidget(projectTabWidget);
     connect(projectTabWidget,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
+
+
 //    connect(qApp,SIGNAL(close()),projectTabWidget,SLOT(closeAll()));
     //connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(oncreatContextMenu(QPoint)));
 //    connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onCurrentTabChanged(int)));
@@ -33,7 +36,6 @@ void MainWindow::onCurrentTabChanged(int i)
     ui->treeViewProject->setModel(projectWidget->treeModel);
     ui->treeViewProject->expandAll();
     ui->treeViewProject->resizeColumnToContents(0);
-
 }
 
 
