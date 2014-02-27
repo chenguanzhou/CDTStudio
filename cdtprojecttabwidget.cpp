@@ -128,16 +128,8 @@ void CDTProjectTabWidget::addProjectTab(const QString &path)
 
 bool CDTProjectTabWidget::closeTab(const int &index)
 {
-    if(index < 0)
-    {
-        return false;
-    }
     CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
-    if(tabItem->closeProject(this,index))
-    {
-        delete (tabItem);//???
-        tabItem = nullptr;
-    }
+    tabItem->closeProject(this,index);
 
     return true;
 }
