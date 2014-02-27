@@ -3,7 +3,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QDebug>
-#include <QDir>
+#include <QSettings>
 DialogNewImage::DialogNewImage(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogNewImage)
@@ -29,11 +29,16 @@ QString DialogNewImage::imagePath() const
 
 void DialogNewImage::on_pushButton_clicked()
 {
-    qDebug()<<ui->lineEditName->text();
-    QString path = QFileDialog::getOpenFileName(this,tr("Open image"),QDir::currentPath(),"Images (*.png *.xpm *.jpg *.img)");
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("Project");
+    QString imagedir = setting.value("lastImageDir",".").toString();
+    QString path = QFileDialog::getOpenFileName(this,tr("Open image"),imagedir,"Images (*.png *.xpm *.jpg *.img)");
     if(path.isEmpty())
         return;
+    setting.setValue("lastImageDir",path);
+    setting.endGroup();
     QFileInfo fileinfo(path);
     ui->lineEditPath->setText(path);
     ui->lineEditName->setText(fileinfo.fileName());
+
 }
