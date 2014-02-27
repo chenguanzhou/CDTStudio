@@ -7,6 +7,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    CDTStudio
+    CDTStudio \
+    Plugins
 
 

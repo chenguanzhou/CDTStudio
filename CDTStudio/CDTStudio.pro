@@ -44,7 +44,8 @@ HEADERS  += mainwindow.h \
     dialognewproject.h \
     dialognewimage.h\
     dialognewsegmentation.h \
-    cdtbaseobject.h
+    cdtbaseobject.h \
+    ../Interfaces/cdtsegmentationInterface.h
 
 FORMS    += mainwindow.ui \
     dialognewproject.ui \
