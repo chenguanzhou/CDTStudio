@@ -35,18 +35,23 @@ bool CDTProjectTabWidget::createNewProject()
     return false;
 }
 
-bool CDTProjectTabWidget::openProject()
+bool CDTProjectTabWidget::openProject(QString &filepath )
 {
-    QString dir = readLastProjectDir();
-    QString filepath = QFileDialog::getOpenFileName(this,tr("Open an project file"),dir,"*.cdtpro");
+    if(filepath.isEmpty())
+    {
+        QString dir = readLastProjectDir();
+        filepath = QFileDialog::getOpenFileName(this,tr("Open an project file"),dir,"*.cdtpro");
+    }
+
     if(!filepath.isEmpty())
     {
         writeLastProjectDir(QFileInfo(filepath).absolutePath());
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
         if (projectWidget->readProject(filepath) == false)
         {
-            QMessageBox::critical(this,tr("Error File"),tr(" File Format Error!"));
+            QMessageBox::critical(this,tr("Error File"),tr(" File Format Error or invalid filepath!"));
             delete projectWidget;
+            deleteRecentFilePath(filepath);
             return false;
         }
         else
@@ -60,24 +65,6 @@ bool CDTProjectTabWidget::openProject()
     }
     return false;
 
-}
-
-bool CDTProjectTabWidget::openProject(QString &path)
-{
-    CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
-    if (projectWidget->readProject(path) == false)
-    {
-        QMessageBox::critical(this,tr("Error File"),tr(" File Format Error!"));
-        delete projectWidget;
-        return false;
-    }
-    else
-    {
-        QFileInfo fileinfo(projectWidget->file);
-        addTab(projectWidget,fileinfo.fileName());
-        this->setCurrentWidget(projectWidget);
-        return true;
-    }
 }
 
 
@@ -205,21 +192,58 @@ void CDTProjectTabWidget::writeRecentFilePath(QString &path)
     paths.erase(paths.begin()+size,paths.end());
     setting.endArray();
 
-    if(qFind(paths,path) == paths.end())
+    QStringList::const_iterator iter = qFind(paths,path);
+    setting.beginWriteArray("recentFilePaths");
+    if(iter == paths.end())
     {
-        setting.beginWriteArray("recentFilePaths");
         paths.insert(paths.begin(),path);
         for(int i=0;i<paths.size();++i)
         {
             setting.setArrayIndex(i);
             setting.setValue("filePath",paths[i]);
         }
-        setting.endArray();
-    }
-//    else
-//    {
-//        setting.beginWriteArray("recentFilePaths");
 
-//    }
+    }
+    else
+    {
+        int a = iter - paths.begin();
+        paths.move(a,0);
+        for(int i=0;i<paths.size();++i)
+        {
+            setting.setArrayIndex(i);
+            setting.setValue("filePath",paths[i]);
+        }
+
+    }
+    setting.endArray();
     emit menuRecentChanged();
 }
+
+void CDTProjectTabWidget::deleteRecentFilePath(QString &path)
+{
+    QSettings setting("WHU","CDTStudio");
+    int size = setting.beginReadArray("recentFilePaths");
+    for(int i=0;i < size;++i)
+    {
+        setting.setArrayIndex(i);
+        if(setting.value("filePath").toString() == path)
+        {
+            setting.endArray();
+            setting.beginWriteArray("recentFilePaths");
+            setting.setArrayIndex(i);
+            setting.remove("filePath");
+            emit menuRecentChanged();
+        }
+    }
+    setting.endArray();
+}
+
+
+
+
+
+
+
+
+
+

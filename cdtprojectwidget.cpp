@@ -54,16 +54,25 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
 bool CDTProjectWidget::readProject(QString &filepath)
 {
 //    QString filepath = QFileDialog::getOpenFileName(this,tr("Open an project file"),QString(),"*.cdtpro");
-    setProjectFile(filepath);
-    QDataStream in(&(file));
-    quint32 magicNumber;
-    in>>  magicNumber;
-    if (magicNumber != (quint32)0xABCDEF)
+    QFileInfo info(filepath);
+    if(info.exists())
+    {
+        setProjectFile(filepath);
+        QDataStream in(&(file));
+        quint32 magicNumber;
+        in>>  magicNumber;
+        if (magicNumber != (quint32)0xABCDEF)
+            return false;
+        in>>*project;
+        emit projectChanged(project);
+        isChanged = false;
+        return true;
+    }
+    else
+    {
+        qDebug()<<info.exists();
         return false;
-    in>>*project;
-    emit projectChanged(project);
-    isChanged = false;
-    return true;
+    }
 }
 
 bool CDTProjectWidget::writeProject()
@@ -176,6 +185,7 @@ void CDTProjectWidget::setProjectFile(const QString &filepath)
 {
     file.setFileName(filepath);
     file.open(QIODevice::ReadWrite);
+
     emit projectChanged(project);
 }
 

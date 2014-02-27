@@ -16,8 +16,7 @@ signals:
     void menuRecentChanged();
 public slots:
     bool createNewProject();
-    bool openProject();
-    bool openProject(QString &path);
+    bool openProject(QString &filepath = QString());
     bool saveProject();
     bool saveAllProject();
     bool saveAsProject();
@@ -28,6 +27,7 @@ private:
     QString readLastProjectDir();
     void writeLastProjectDir(QString &path);
     void writeRecentFilePath(QString &path);
+    void deleteRecentFilePath(QString &path);
 };
 
 #endif // CDTPROJECTTABWIDGET_H
