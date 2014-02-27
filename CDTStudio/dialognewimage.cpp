@@ -35,10 +35,11 @@ void DialogNewImage::on_pushButton_clicked()
     QString path = QFileDialog::getOpenFileName(this,tr("Open image"),imagedir,"Images (*.png *.xpm *.jpg *.img)");
     if(path.isEmpty())
         return;
-    setting.setValue("lastImageDir",path);
-    setting.endGroup();
     QFileInfo fileinfo(path);
     ui->lineEditPath->setText(path);
     ui->lineEditName->setText(fileinfo.fileName());
+
+    setting.setValue("lastImageDir",fileinfo.absolutePath());
+    setting.endGroup();
 
 }

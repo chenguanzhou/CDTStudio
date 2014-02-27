@@ -70,7 +70,6 @@ bool CDTProjectWidget::readProject(QString &filepath)
     }
     else
     {
-        qDebug()<<info.exists();
         return false;
     }
 }
