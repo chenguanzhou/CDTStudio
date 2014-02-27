@@ -4,54 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+TEMPLATE = subdirs
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+SUBDIRS += \
+    CDTStudio
 
-TARGET = CDTStudio
-TEMPLATE = app
-
-LIBS += -lChangeDetectionToolkit
-
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    cdtproject.cpp \
-    cdtimagelayer.cpp \
-    cdtsegmentationlayer.cpp \
-    cdtclassification.cpp \
-    cdtattributes.cpp \
-    cdtsample.cpp \
-    cdtprojecttabwidget.cpp \
-    cdtprojectwidget.cpp \
-    cdtprojecttreemodel.cpp \
-    cdtprojecttreeitem.cpp \
-    dialognewproject.cpp \
-    dialognewsegmentation.cpp\
-    dialognewimage.cpp \
-    cdtbaseobject.cpp
-
-HEADERS  += mainwindow.h \
-    cdtproject.h \
-    cdtimagelayer.h \
-    cdtsegmentationlayer.h \
-    cdtclassification.h \
-    cdtattributes.h \
-    cdtsample.h \
-    cdtprojecttabwidget.h \
-    cdtprojectwidget.h \
-    cdtprojecttreemodel.h \
-    cdtprojecttreeitem.h \
-    dialognewproject.h \
-	dialognewimage.h\
-    dialognewsegmentation.h \
-    cdtbaseobject.h
-
-FORMS    += mainwindow.ui \
-    dialognewproject.ui \
-    dialognewsegmentation.ui\
-        dialognewimage.ui
-TRANSLATIONS  += trans/zh_CN.ts
-
-RESOURCES += \
-    resource.qrc
 
