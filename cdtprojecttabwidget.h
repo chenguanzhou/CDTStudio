@@ -13,10 +13,11 @@ public:
     explicit CDTProjectTabWidget(QWidget *parent = 0);
 
 signals:
-
+    void menuRecentChanged();
 public slots:
     bool createNewProject();
     bool openProject();
+    bool openProject(QString &path);
     bool saveProject();
     bool saveAllProject();
     bool saveAsProject();

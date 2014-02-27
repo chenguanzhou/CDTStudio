@@ -4,6 +4,8 @@
 #include "cdtprojectwidget.h"
 #include <QMenu>
 #include <QVector>
+#include <QAction>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -12,9 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     setCentralWidget(projectTabWidget);
+    updataMenuRecent();
     connect(projectTabWidget,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
-
-
+    connect(projectTabWidget,SIGNAL(menuRecentChanged()),this,SLOT(updataMenuRecent()));
 //    connect(qApp,SIGNAL(close()),projectTabWidget,SLOT(closeAll()));
     //connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(oncreatContextMenu(QPoint)));
 //    connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onCurrentTabChanged(int)));
@@ -73,6 +75,34 @@ void MainWindow::on_actionSave_All_triggered()
 void MainWindow::on_action_Save_As_triggered()
 {
     projectTabWidget->saveAsProject();
+}
+
+
+void MainWindow::updataMenuRecent()
+{
+    QSettings setting("WHU","CDTStudio");
+    int size = setting.beginReadArray("recentFilePaths");
+    ui->menu_Recent->clear();
+    for(int i=0;i < size;++i)
+    {
+        setting.setArrayIndex(i);
+        QString path = setting.value("filePath").toString();
+        if(path.isEmpty())
+        {
+            return ;
+        }
+        QAction* recentFile = new QAction(path,this);
+        ui->menu_Recent->addAction(recentFile);
+        ui->menu_Recent->addSeparator();
+        connect(recentFile,SIGNAL(triggered()),this,SLOT(on_action_RecentFile_triggered()));
+    }
+    setting.endArray();
+}
+
+void MainWindow::on_action_RecentFile_triggered()
+{
+    QAction* action = (QAction*)sender();
+    projectTabWidget->openProject(action->text());
 }
 
 void MainWindow::closeEvent(QCloseEvent *)

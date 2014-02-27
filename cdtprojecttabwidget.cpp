@@ -28,6 +28,7 @@ bool CDTProjectTabWidget::createNewProject()
         projectWidget->setProjectFile(dlg->projectPath());
         addTab(projectWidget,dlg->projectName());
         saveProject();
+        emit menuRecentChanged();
         return true;
     }
     delete dlg;
@@ -53,12 +54,32 @@ bool CDTProjectTabWidget::openProject()
             QFileInfo fileinfo(projectWidget->file);
             addTab(projectWidget,fileinfo.fileName());
             this->setCurrentWidget(projectWidget);
+            writeRecentFilePath(filepath);
             return true;
         }
     }
     return false;
 
 }
+
+bool CDTProjectTabWidget::openProject(QString &path)
+{
+    CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
+    if (projectWidget->readProject(path) == false)
+    {
+        QMessageBox::critical(this,tr("Error File"),tr(" File Format Error!"));
+        delete projectWidget;
+        return false;
+    }
+    else
+    {
+        QFileInfo fileinfo(projectWidget->file);
+        addTab(projectWidget,fileinfo.fileName());
+        this->setCurrentWidget(projectWidget);
+        return true;
+    }
+}
+
 
 bool CDTProjectTabWidget::saveProject()
 {    
@@ -105,6 +126,7 @@ bool CDTProjectTabWidget::saveAsProject()
         if(!fileName.isEmpty())
         {
             writeLastProjectDir(QFileInfo(fileName).absolutePath());
+            writeRecentFilePath(fileName);
             ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
             return true;
         }
@@ -170,5 +192,34 @@ void CDTProjectTabWidget::writeLastProjectDir(QString &path)
 
 void CDTProjectTabWidget::writeRecentFilePath(QString &path)
 {
+    QSettings setting("WHU","CDTStudio");
+    setting.beginReadArray("recentFilePaths");
+    QStringList paths;
+    int size = setting.value("fileCount","4").toInt();
+    for (int i = 0; i < size; ++i)
+    {
+        setting.setArrayIndex(i);
+        QString p = setting.value("filePath").toString();
+        paths.push_back(p);
+    }
+    paths.erase(paths.begin()+size,paths.end());
+    setting.endArray();
 
+    if(qFind(paths,path) == paths.end())
+    {
+        setting.beginWriteArray("recentFilePaths");
+        paths.insert(paths.begin(),path);
+        for(int i=0;i<paths.size();++i)
+        {
+            setting.setArrayIndex(i);
+            setting.setValue("filePath",paths[i]);
+        }
+        setting.endArray();
+    }
+//    else
+//    {
+//        setting.beginWriteArray("recentFilePaths");
+
+//    }
+    emit menuRecentChanged();
 }

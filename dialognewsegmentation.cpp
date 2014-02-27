@@ -165,7 +165,8 @@ void DialogNewSegmentation::on_lineEditMarkfile_textChanged(const QString &arg1)
 {
     if(QFileInfo(arg1).completeSuffix()==QString("tif"))
     {
-        ui->checkBoxMarkfilePath->setChecked(QFileInfo(arg1).isWritable());
+//        ui->checkBoxMarkfilePath->setChecked(QFileInfo(arg1).isWritable());
+        ui->checkBoxMarkfilePath->setChecked(true);
     }
     else
         ui->checkBoxMarkfilePath->setChecked(false);
@@ -175,7 +176,8 @@ void DialogNewSegmentation::on_lineEditShapefile_textChanged(const QString &arg1
 {
     if(QFileInfo(arg1).completeSuffix()==QString("shp"))
     {
-        ui->checkBoxShapefilePath->setChecked(QFileInfo(arg1).isWritable());
+//        ui->checkBoxShapefilePath->setChecked(QFileInfo(arg1).isWritable());
+        ui->checkBoxShapefilePath->setChecked(true);
     }
     else
         ui->checkBoxShapefilePath->setChecked(false);

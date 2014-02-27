@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QSettings>
+#include <QStringList>
 DialogNewProject::DialogNewProject(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogNewProject)
@@ -37,28 +38,30 @@ void DialogNewProject::on_pushButton_clicked()
     ui->lineEditPath->setText(path);
     ui->lineEditName->setText(fileinfo.fileName());
     setting.setValue("lastDir",fileinfo.absolutePath());
+
     setting.endGroup();
 
     //set setting of recentFilePaths
     setting.beginReadArray("recentFilePaths");
-    std::vector<std::string> paths;
-    for (int i = 0; i < 5; ++i)
+    QStringList paths;
+    int size = setting.value("fileCount","4").toInt();
+    for (int i = 0; i < size; ++i)
     {
         setting.setArrayIndex(i);
         QString p = setting.value("filePath").toString();
-        paths.push_back(p.toStdString());
+        paths.push_back(p);
     }
-    paths.resize(5);
+    paths.erase(paths.begin()+size,paths.end());
     setting.endArray();
 
-    if(std::find(paths.begin(),paths.end(),path.toStdString()) == paths.end())
+    if(qFind(paths,path) == paths.end())
     {
         setting.beginWriteArray("recentFilePaths");
-        paths.insert(paths.begin(),path.toStdString());
+        paths.insert(paths.begin(),path);
         for(int i=0;i<paths.size();++i)
         {
             setting.setArrayIndex(i);
-            setting.setValue("filePath",QString::fromStdString(paths[i]));
+            setting.setValue("filePath",paths[i]);
         }
         setting.endArray();
     }

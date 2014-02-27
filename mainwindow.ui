@@ -126,31 +126,6 @@
     <string>&amp;Save As</string>
    </property>
   </action>
-  <action name="actionFilePath1">
-   <property name="text">
-    <string>filePath1</string>
-   </property>
-  </action>
-  <action name="actionFilePath2">
-   <property name="text">
-    <string>filePath2</string>
-   </property>
-  </action>
-  <action name="actionFilePath3">
-   <property name="text">
-    <string>filePath3</string>
-   </property>
-  </action>
-  <action name="actionFilePath4">
-   <property name="text">
-    <string>filePath4</string>
-   </property>
-  </action>
-  <action name="actionFilePath5">
-   <property name="text">
-    <string>filePath5</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>

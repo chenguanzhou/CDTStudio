@@ -33,6 +33,9 @@ private slots:
 
     void on_action_Save_As_triggered();
 
+    void updataMenuRecent();
+
+    void on_action_RecentFile_triggered();
 private:
     Ui::MainWindow *ui;
     CDTProjectTabWidget* projectTabWidget;
