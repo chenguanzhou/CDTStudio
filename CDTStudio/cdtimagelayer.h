@@ -30,16 +30,19 @@ signals:
     void pathChanged(QString);
     void nameChanged(QString);
     void imageLayerChanged();
-
+    void removeImageLayer(CDTImageLayer*);
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
     void onContextMenuRequest(QWidget *parent);
     void addSegmentation();
+    void remove();
+
 private:
     QString m_path;
     QString m_name;
     QVector<CDTSegmentationLayer *> segmentations;
     QAction* addSegmentationLayer;
+    QAction* removeImage;
 
 };
 

@@ -1,10 +1,12 @@
 #include "cdtimagelayer.h"
 #include <QMenu>
 #include "dialognewsegmentation.h"
+#include "cdtproject.h"
 
 CDTImageLayer::CDTImageLayer(QObject *parent)
     :CDTBaseObject(parent),
-      addSegmentationLayer(new QAction(tr("Add Segmentation"),this))
+      addSegmentationLayer(new QAction(tr("Add Segmentation"),this)),
+      removeImage(new QAction(tr("remove image"),this))
 {
     //    segmentations.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
     //    segmentations.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
@@ -26,6 +28,8 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
 //    addSegmentation(segment2);
 
     connect(addSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
+    connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
+    connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
 }
 
 void CDTImageLayer::setPath(const QString &path)
@@ -60,8 +64,15 @@ void CDTImageLayer::addSegmentation()
         segmentation->setMarkfilePath(dlg->markfilePath());
         segmentation->setMethodParams(dlg->method(),dlg->params());
         addSegmentation(segmentation);
+
     }
 }
+
+void CDTImageLayer::remove()
+{
+    emit removeImageLayer(this);
+}
+
 
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
@@ -84,6 +95,7 @@ void CDTImageLayer::onContextMenuRequest(QWidget *parent)
     QMenu *menu =new QMenu(parent);
 
     menu->addAction(addSegmentationLayer);
+    menu->addAction(removeImage);
     menu->exec(QCursor::pos());
 }
 

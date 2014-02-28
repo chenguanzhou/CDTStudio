@@ -28,6 +28,7 @@ signals:
 
 public slots:    
     void addImageLayer();
+    void removeImageLayer(CDTImageLayer *image);
     void onContextMenuRequest(QWidget *parent);
 
 private slots:

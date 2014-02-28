@@ -21,6 +21,18 @@ void CDTProject::addImageLayer()
     }
 }
 
+void CDTProject::removeImageLayer(CDTImageLayer* image)
+{
+    for(int i =0;i <images.size();++i)
+    {
+        if(image->name() == images[i]->name())
+        {
+            images.remove(i);
+            emit projectChanged(this);
+        }
+    }
+}
+
 void CDTProject::addImageLayer(CDTImageLayer *image)
 {
     images.push_back(image);
@@ -68,7 +80,7 @@ QDataStream &operator >>(QDataStream &in, CDTProject &project)
     in>>count;
     for (int i=0;i<count;++i)
     {
-        CDTImageLayer* image = new CDTImageLayer();
+        CDTImageLayer* image = new CDTImageLayer(&project);
         in>>*image;
         CDTProject::connect(image,SIGNAL(imageLayerChanged()),&project,SLOT(childrenChanged()));
         project.images.push_back(image);
