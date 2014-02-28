@@ -2,13 +2,15 @@
 
 
 MSTSegmenter::MSTSegmenter(QObject *parent) :
-    CDTSegmentationInterface(parent)
+    CDTSegmentationInterface(parent),
+    formParams(new FormParams)
 {
 }
 
 MSTSegmenter::~MSTSegmenter()
-{
+{    
     clear();
+    delete formParams;
 }
 
 QString MSTSegmenter::segmentationMethod() const
@@ -105,10 +107,10 @@ bool MSTSegmenter::initialize()
 
     //2.Init Markfile
     GDALDriver* poDriver = (GDALDriver*)GDALGetDriverByName("GTiff");
-    poDstDS = poDriver->Create(_outputImagePath.toUtf8().constData(),poSrcDS->GetRasterXSize(),poSrcDS->GetRasterYSize(),1,GDT_Int32,NULL);
+    poDstDS = poDriver->Create(_markfilePath.toUtf8().constData(),poSrcDS->GetRasterXSize(),poSrcDS->GetRasterYSize(),1,GDT_Int32,NULL);
     if (poDstDS == NULL)
     {
-        emit showWarningMessage(tr("Create Image ")+_outputImagePath+tr(" Failed!"));
+        emit showWarningMessage(tr("Create Markfile ")+_markfilePath+tr(" Failed!"));
         return false;
     }
 

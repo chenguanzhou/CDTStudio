@@ -12,3 +12,13 @@ FormParams::~FormParams()
 {
     delete ui;
 }
+
+int FormParams::mergeRule() const
+{
+    return ui->comboBox->currentIndex();
+}
+
+double FormParams::threshold() const
+{
+
+}

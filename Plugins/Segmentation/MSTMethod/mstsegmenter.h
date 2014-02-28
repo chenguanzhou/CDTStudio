@@ -4,6 +4,7 @@
 #include "../../../Interfaces/cdtsegmentationInterface.h"
 #include <QtPlugin>
 #include <gdal_priv.h>
+#include "FormParams.h"
 
 class MSTSegmenter : public CDTSegmentationInterface
 {
@@ -27,7 +28,7 @@ private:
     bool initialize();
 
 
-
+    FormParams *formParams;
     GDALDataset *poSrcDS;
     GDALDataset *poDstDS;
     std::vector<double> layerWeights;
