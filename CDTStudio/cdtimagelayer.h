@@ -36,6 +36,7 @@ public slots:
     void onContextMenuRequest(QWidget *parent);
     void addSegmentation();
     void remove();
+    void removeSegmentation(CDTSegmentationLayer*);
 
 private:
     QString m_path;

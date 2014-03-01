@@ -35,7 +35,7 @@ bool CDTProjectTabWidget::createNewProject()
     return false;
 }
 
-bool CDTProjectTabWidget::openProject(QString &filepath )
+bool CDTProjectTabWidget::openProject(QString &filepath)
 {
     if(filepath.isEmpty())
     {
@@ -47,9 +47,12 @@ bool CDTProjectTabWidget::openProject(QString &filepath )
     {
         writeLastProjectDir(QFileInfo(filepath).absolutePath());
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
+
         if (projectWidget->readProject(filepath) == false)
         {
+
             QMessageBox::critical(this,tr("Error File"),tr(" File Format Error or invalid filepath!"));
+
             delete projectWidget;
             deleteRecentFilePath(filepath);
             return false;
@@ -129,7 +132,11 @@ void CDTProjectTabWidget::addProjectTab(const QString &path)
 bool CDTProjectTabWidget::closeTab(const int &index)
 {
     CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
-    tabItem->closeProject(this,index);
+    if(tabItem->closeProject(this,index))
+    {
+        delete (tabItem);
+        tabItem = nullptr;
+    }
 
     return true;
 }
@@ -224,10 +231,12 @@ void CDTProjectTabWidget::deleteRecentFilePath(QString &path)
             setting.beginWriteArray("recentFilePaths");
             setting.setArrayIndex(i);
             setting.remove("filePath");
-            emit menuRecentChanged();
+
         }
     }
     setting.endArray();
+    emit menuRecentChanged();
+
 }
 
 

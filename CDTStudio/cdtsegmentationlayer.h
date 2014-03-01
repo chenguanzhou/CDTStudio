@@ -44,12 +44,13 @@ signals:
     void markfilePathChanged();
     void methodParamsChanged();
     void segmentationChanged();
-
+    void removeSegmentation(CDTSegmentationLayer*);
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
     void onContextMenuRequest(QWidget *parent);
     void addClassification();
-
+    void remove();
+    void removeClassification(CDTClassification *);
 private:
     QString m_name;
     QString m_shapefilePath;
@@ -60,6 +61,7 @@ private:
     CDTAttributes attributes;
     QMap<QString,CDTSample> samples;
     QAction *addClassifications;
+    QAction *actionRemoveSegmentation;
 
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);

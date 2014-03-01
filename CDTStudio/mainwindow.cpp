@@ -79,21 +79,22 @@ void MainWindow::on_action_Save_As_triggered()
 
 void MainWindow::updataMenuRecent()
 {
+    qDebug()<<"hh";
     QSettings setting("WHU","CDTStudio");
     int size = setting.beginReadArray("recentFilePaths");
     ui->menu_Recent->clear();
     for(int i=0;i < size;++i)
     {
         setting.setArrayIndex(i);
-        QString path = setting.value("filePath").toString();
-        if(path.isEmpty())
+        QString path = (setting.value("filePath")).toString();
+        if(!path.isEmpty())
         {
-            return ;
+            qDebug()<<path;
+            QAction* recentFile = new QAction(path,this);
+            ui->menu_Recent->addAction(recentFile);
+            ui->menu_Recent->addSeparator();
+            connect(recentFile,SIGNAL(triggered()),this,SLOT(on_action_RecentFile_triggered()));
         }
-        QAction* recentFile = new QAction(path,this);
-        ui->menu_Recent->addAction(recentFile);
-        ui->menu_Recent->addSeparator();
-        connect(recentFile,SIGNAL(triggered()),this,SLOT(on_action_RecentFile_triggered()));
     }
     setting.endArray();
 }

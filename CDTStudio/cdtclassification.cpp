@@ -1,24 +1,28 @@
 #include "cdtclassification.h"
+#include "cdtsegmentationlayer.h"
+#include <QMenu>
 
 CDTClassification::CDTClassification(QObject* parent)
-    :CDTBaseObject(parent)
+    :CDTBaseObject(parent),
+      actionRemoveClassification(new QAction(tr("Remove Classification"),this))
 {
-
+    connect(actionRemoveClassification,SIGNAL(triggered()),this,SLOT(remove()));
+    connect(this,SIGNAL(removeClassification(CDTClassification*)),(CDTSegmentationLayer*)(this->parent()),SLOT(removeClassification(CDTClassification*)));
 }
 
 void CDTClassification::updateTreeModel(CDTProjectTreeItem *parent)
 {
-    CDTProjectTreeItem *classification =new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,m_name,NULL);
-    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("Shapefile path"),NULL);
-    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_shapefilePath,NULL);
-    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,tr("Method"),NULL);
-    CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_method,NULL);
+    CDTProjectTreeItem *classification =new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,m_name,this);
+    CDTProjectTreeItem *param =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("Shapefile path"),this);
+    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_shapefilePath,this);
+    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,tr("Method"),this);
+    CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_method,this);
 
     for(int i=0;i<m_params.size();++i)
     {
         QList<QString> keys =m_params.keys();
-        CDTProjectTreeItem *methodparam =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,keys[i],NULL);
-        CDTProjectTreeItem *methodvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_params[keys[i]].toString(),NULL);
+        CDTProjectTreeItem *methodparam =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,keys[i],this);
+        CDTProjectTreeItem *methodvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_params[keys[i]].toString(),this);
         methodroot->setChild(i,0,methodparam);
         methodroot->setChild(i,1,methodvalue);
     }
@@ -33,7 +37,15 @@ void CDTClassification::updateTreeModel(CDTProjectTreeItem *parent)
 
 void CDTClassification::onContextMenuRequest(QWidget *parent)
 {
+    QMenu *menu =new QMenu(parent);
 
+    menu->addAction(actionRemoveClassification);
+    menu->exec(QCursor::pos());
+}
+
+void CDTClassification::remove()
+{
+    emit removeClassification(this);
 }
 
 QString CDTClassification::name() const

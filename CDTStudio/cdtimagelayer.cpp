@@ -6,7 +6,7 @@
 CDTImageLayer::CDTImageLayer(QObject *parent)
     :CDTBaseObject(parent),
       addSegmentationLayer(new QAction(tr("Add Segmentation"),this)),
-      removeImage(new QAction(tr("remove image"),this))
+      removeImage(new QAction(tr("Remove Image"),this))
 {
     //    segmentations.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
     //    segmentations.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
@@ -50,7 +50,7 @@ void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
 {
     segmentations.push_back(segmentation);
     emit imageLayerChanged();
-    connect(segmentation,SIGNAL(segmentationChanged()),this,SIGNAL(imageLayerChanged()));
+//    connect(segmentation,SIGNAL(segmentationChanged()),this,SIGNAL(imageLayerChanged()));
 }
 
 void CDTImageLayer::addSegmentation()
@@ -58,7 +58,7 @@ void CDTImageLayer::addSegmentation()
     DialogNewSegmentation* dlg = new DialogNewSegmentation(m_path);
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
-        CDTSegmentationLayer *segmentation = new CDTSegmentationLayer();
+        CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(this);
         segmentation->setName(dlg->name());
         segmentation->setShapefilePath(dlg->shapefilePath());
         segmentation->setMarkfilePath(dlg->markfilePath());
@@ -71,6 +71,18 @@ void CDTImageLayer::addSegmentation()
 void CDTImageLayer::remove()
 {
     emit removeImageLayer(this);
+}
+
+void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
+{
+    for(int i =0;i <segmentations.size();++i)
+    {
+        if(sgmt->name() == segmentations[i]->name())
+        {
+            segmentations.remove(i);
+            emit imageLayerChanged();
+        }
+    }
 }
 
 

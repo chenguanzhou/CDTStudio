@@ -6,6 +6,8 @@
 #include <QVariant>
 #include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
+#include <QAction>
+
 
 class CDTClassification:public CDTBaseObject
 {
@@ -31,16 +33,18 @@ signals:
     void nameChanged();
     void shapefilePathChanged();
     void methodParamsChanged();
-
+    void removeClassification(CDTClassification*);
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
     void onContextMenuRequest(QWidget *parent);
+    void remove();
 
 private:
     QString m_name;
     QString m_shapefilePath;
     QString m_method;
     QMap<QString,QVariant> m_params;
+    QAction* actionRemoveClassification;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
