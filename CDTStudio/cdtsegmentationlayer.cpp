@@ -9,7 +9,8 @@
 CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
     :CDTBaseObject(parent),
       addClassifications(new QAction(tr("Add Classification"),this)),
-      actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this))
+      actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this)),
+      actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this))
 {
     connect(addClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
 
@@ -20,8 +21,9 @@ CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
 
     connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),(CDTImageLayer*)(this->parent()),SLOT(removeSegmentation(CDTSegmentationLayer*)));
-
     connect(this,SIGNAL(segmentationChanged()),(CDTImageLayer*)(this->parent()),SIGNAL(imageLayerChanged()));
+
+    connect(actionRemoveAllClassifications,SIGNAL(triggered()),this,SLOT(removeAllClassifications()));
 }
 
 void CDTSegmentationLayer::addClassification(CDTClassification *classification)
@@ -72,6 +74,7 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     QMenu *menu =new QMenu;
     menu->addAction(addClassifications);
     menu->addAction(actionRemoveSegmentation);
+    menu->addAction(actionRemoveAllClassifications);
     menu->exec(QCursor::pos());
 }
 
@@ -106,6 +109,12 @@ void CDTSegmentationLayer::removeClassification(CDTClassification* clf)
 
         }
     }
+}
+
+void CDTSegmentationLayer::removeAllClassifications()
+{
+    classifications.clear();
+    emit segmentationChanged();
 }
 
 QString CDTSegmentationLayer::name() const

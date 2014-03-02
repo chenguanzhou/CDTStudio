@@ -6,7 +6,8 @@
 CDTImageLayer::CDTImageLayer(QObject *parent)
     :CDTBaseObject(parent),
       addSegmentationLayer(new QAction(tr("Add Segmentation"),this)),
-      removeImage(new QAction(tr("Remove Image"),this))
+      removeImage(new QAction(tr("Remove Image"),this)),
+      removeAllSegmentations(new QAction(tr("Remove All Segmentations"),this))
 {
     //    segmentations.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
     //    segmentations.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
@@ -30,6 +31,7 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
     connect(addSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
     connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
+    connect(removeAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
 }
 
 void CDTImageLayer::setPath(const QString &path)
@@ -85,6 +87,12 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
     }
 }
 
+void CDTImageLayer::removeAllSegmentationLayers()
+{
+    segmentations.clear();
+    emit imageLayerChanged();
+}
+
 
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
@@ -108,6 +116,7 @@ void CDTImageLayer::onContextMenuRequest(QWidget *parent)
 
     menu->addAction(addSegmentationLayer);
     menu->addAction(removeImage);
+    menu->addAction(removeAllSegmentations);
     menu->exec(QCursor::pos());
 }
 

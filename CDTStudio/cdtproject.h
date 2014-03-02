@@ -29,7 +29,9 @@ signals:
 public slots:    
     void addImageLayer();
     void removeImageLayer(CDTImageLayer *image);
+    void removeAllImageLayers();
     void onContextMenuRequest(QWidget *parent);
+
 
 private slots:
     void childrenChanged();
@@ -40,6 +42,7 @@ private:
     QVector<CDTImageLayer *> images;
 
     QAction* actionAddImage;
+    QAction* removeAllImages;
 
 //    void updateTreeModel(CDTProjectTreeModel* model);
 };

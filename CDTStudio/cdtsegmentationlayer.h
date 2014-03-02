@@ -51,6 +51,7 @@ public slots:
     void addClassification();
     void remove();
     void removeClassification(CDTClassification *);
+    void removeAllClassifications();
 private:
     QString m_name;
     QString m_shapefilePath;
@@ -62,6 +63,7 @@ private:
     QMap<QString,CDTSample> samples;
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;
+    QAction *actionRemoveAllClassifications;
 
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);

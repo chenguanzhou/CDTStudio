@@ -79,7 +79,6 @@ void MainWindow::on_action_Save_As_triggered()
 
 void MainWindow::updataMenuRecent()
 {
-    qDebug()<<"hh";
     QSettings setting("WHU","CDTStudio");
     int size = setting.beginReadArray("recentFilePaths");
     ui->menu_Recent->clear();
@@ -89,7 +88,6 @@ void MainWindow::updataMenuRecent()
         QString path = (setting.value("filePath")).toString();
         if(!path.isEmpty())
         {
-            qDebug()<<path;
             QAction* recentFile = new QAction(path,this);
             ui->menu_Recent->addAction(recentFile);
             ui->menu_Recent->addSeparator();

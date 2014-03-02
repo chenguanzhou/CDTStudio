@@ -4,9 +4,11 @@
 
 CDTProject::CDTProject(QObject *parent):
     CDTBaseObject(parent),
-    actionAddImage(new QAction(tr("Add Image"),this))
+    actionAddImage(new QAction(tr("Add Image"),this)),
+    removeAllImages(new QAction(tr("Remove All images"),this))
 {
     connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
+    connect(removeAllImages,SIGNAL(triggered()),this,SLOT(removeAllImageLayers()));
 }
 
 void CDTProject::addImageLayer()
@@ -33,6 +35,12 @@ void CDTProject::removeImageLayer(CDTImageLayer* image)
     }
 }
 
+void CDTProject::removeAllImageLayers()
+{
+    images.clear();
+    emit projectChanged(this);
+}
+
 void CDTProject::addImageLayer(CDTImageLayer *image)
 {
     images.push_back(image);
@@ -54,6 +62,7 @@ void CDTProject::onContextMenuRequest(QWidget* parent)
 {
     QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);
+    menu->addAction(removeAllImages);
     menu->exec(QCursor::pos());
 }
 
