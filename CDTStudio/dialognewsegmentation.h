@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QGridLayout>
 #include <QMap>
+#include "../Interfaces/cdtsegmentationInterface.h"
 
 namespace Ui {
 class DialogNewSegmentation;
@@ -24,25 +25,22 @@ public:
     QMap<QString,QVariant> params() const;
 
 private slots:
-    void on_comboBox_currentIndexChanged(const QString &arg1);
-    void on_pushButtonStart_clicked();
-    void on_pushButtonBrowseMarkfilePath_clicked();
-    void on_pushButtonBrowseshapefilePath_clicked();
-    void onLineEditChanged(int);
-    void onSegmentationFinished();
-    void onWarningMessage(QString msg);
+    void on_comboBox_currentIndexChanged(int index);
+    void on_pushButtonMarkfile_clicked();
+    void on_pushButtonShapefile_clicked();
 
-    void on_lineEditName_textChanged(const QString &arg1);
     void on_lineEditMarkfile_textChanged(const QString &arg1);
+
     void on_lineEditShapefile_textChanged(const QString &arg1);
 
 private:
     Ui::DialogNewSegmentation *ui;
     QMap<QString,QVariant> segmentationParams;
-    QGridLayout* gridLatoutParams;
+    QGridLayout* gridLatoutPlugin;
     QString inputImagePath;
+    QList<CDTSegmentationInterface*> plugins;
 
-    void initSegmentationMethod();
+    void init();
 };
 
 #endif // DIALOGNEWSEGMENTATION_H

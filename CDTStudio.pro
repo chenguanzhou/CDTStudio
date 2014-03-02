@@ -9,5 +9,3 @@ TEMPLATE = subdirs
 SUBDIRS += \
     CDTStudio \
     Plugins
-
-

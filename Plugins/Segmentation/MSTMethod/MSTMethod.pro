@@ -12,12 +12,22 @@ CONFIG += plugin
 
 DESTDIR = ../../../CDTStudio/plugins
 
-SOURCES += mstsegmenter.cpp \
-    formparams.cpp
+SOURCES += \
+    mstmethodinterface.cpp \
+    formmst.cpp\
+    polygonizer.cpp\
+    mstsegmenter.cpp\
+    graphkruskal.cpp
 
-HEADERS += mstsegmenter.h\
+HEADERS +=\
             ../../../Interfaces/cdtsegmentationInterface.h \
-    formparams.h
+    mstmethodinterface.h \
+    formmst.h\
+    polygonizer.h\
+    mstsegmenter.h\
+    graphkruskal.h\
+    cdtbasethread.h
+
 OTHER_FILES += MSTMethod.json
 
 unix {
@@ -26,6 +36,8 @@ unix {
 }
 
 FORMS += \
-    formparams.ui
+    formmst.ui
 
-LIBS += -lgdal_i
+LIBS += -lgdal_i -lstxxl
+
+#DEFINES += BOOST_THREAD_USE_LIB
