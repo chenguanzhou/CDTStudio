@@ -1,29 +1,28 @@
 #include "dialognewsegmentation.h"
 #include "ui_dialognewsegmentation.h"
 #include <QDebug>
-#include <MSTSegmenter.h>
 #include <QFileDialog>
 #include <QMessageBox>
+
+
+QList<CDTSegmentationInterface *> DialogNewSegmentation::plugins;
 
 DialogNewSegmentation::DialogNewSegmentation(const QString &inputImage, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogNewSegmentation),
-    gridLatoutParams(new QGridLayout()),
+    gridLatoutPlugin(new QGridLayout()),
     inputImagePath(inputImage)
 {
     ui->setupUi(this);
-    initSegmentationMethod();
-    ui->gridLayoutGroup->addLayout(gridLatoutParams,1,0);
-    ui->labelProgressMessage->hide();
-    ui->progressBar->hide();
-    ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
-    connect(ui->checkBoxShapefilePath,SIGNAL(stateChanged(int)),this,SLOT(onLineEditChanged(int)));
-    connect(ui->checkBoxMarkfilePath,SIGNAL(stateChanged(int)),this,SLOT(onLineEditChanged(int)));
-    connect(ui->checkBoxSegmentName,SIGNAL(stateChanged(int)),this,SLOT(onLineEditChanged(int)));
+    ui->frame->setLayout(gridLatoutPlugin);
+    gridLatoutPlugin->setMargin(0);
+    loadPlugins();
+    loadHistoryPaths();
 }
 
 DialogNewSegmentation::~DialogNewSegmentation()
 {
+    saveHistoryPaths();
     delete ui;
 }
 
@@ -34,12 +33,12 @@ QString DialogNewSegmentation::name() const
 
 QString DialogNewSegmentation::markfilePath() const
 {
-    return ui->lineEditMarkfile->text();
+    return ui->comboBoxMarkfile->currentText();
 }
 
 QString DialogNewSegmentation::shapefilePath() const
 {
-    return ui->lineEditShapefile->text();
+    return ui->comboBoxShapefile->currentText();
 }
 
 QString DialogNewSegmentation::method() const
@@ -49,136 +48,126 @@ QString DialogNewSegmentation::method() const
 
 QMap<QString, QVariant> DialogNewSegmentation::params() const
 {
-    QMap<QString, QVariant> params;
-    for (int i=0;i<gridLatoutParams->rowCount();++i)
-    {
-        QLabel *label = (QLabel *)(gridLatoutParams->itemAtPosition(i,0)->widget());
-        QLineEdit* edit = (QLineEdit *)(gridLatoutParams->itemAtPosition(i,1)->widget());
-        params[label->text()] = edit->text();
-    }
-    return params;
+    return QMap<QString, QVariant>();
 }
 
-void DialogNewSegmentation::on_comboBox_currentIndexChanged(const QString &arg1)
+
+
+void DialogNewSegmentation::saveHistoryPaths()
 {
-    while(gridLatoutParams->count() > 0)
-    {
-        QWidget* widget = gridLatoutParams->itemAt(0)->widget();
-        gridLatoutParams->removeWidget(widget);
-        delete widget;
+    QStringList markfilePathList;
+    for (int i=0;i<ui->comboBoxMarkfile->count();++i)
+        markfilePathList<<ui->comboBoxMarkfile->itemText(i);
+
+    QStringList shapefilePathList;
+    for (int i=0;i<ui->comboBoxShapefile->count();++i)
+        shapefilePathList<<ui->comboBoxShapefile->itemText(i);
+
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("Project");
+    setting.setValue("MarkfilePathLists",markfilePathList);
+    setting.setValue("ShapefilePathLists",shapefilePathList);
+    setting.endGroup();
+}
+
+void DialogNewSegmentation::loadHistoryPaths()
+{
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("Project");
+    QStringList markfilePathList = setting.value("MarkfilePathLists").toStringList();
+    QStringList shapefilePathList = setting.value("ShapefilePathLists").toStringList();
+    setting.endGroup();
+
+    foreach (QString path, markfilePathList) {
+        ui->comboBoxMarkfile->addItem(path);
     }
 
-    QStringList paramNames = segmentationParams[arg1].toStringList();
-    for (int i=0;i<paramNames.size();++i)
-    {
-        QString paramName = paramNames[i];
-        QLabel* label = new QLabel(paramName,this);
-        QLineEdit* edit = new QLineEdit(this);
-        edit->setObjectName("lineEditMST"+paramName);
-        gridLatoutParams->addWidget(label,i,0);
-        gridLatoutParams->addWidget(edit,i,1);
+    foreach (QString path, shapefilePathList) {
+        ui->comboBoxShapefile->addItem(path);
     }
+}
+
+void DialogNewSegmentation::on_comboBox_currentIndexChanged(int index)
+{    
+    if (gridLatoutPlugin->itemAtPosition(0,0) != NULL)
+    {
+        QWidget* lastWidget = gridLatoutPlugin->itemAtPosition(0,0)->widget();
+        if (lastWidget!=NULL)
+        {
+            gridLatoutPlugin->removeWidget(lastWidget);
+            delete lastWidget;
+        }
+    }
+    gridLatoutPlugin->addWidget(plugins[index]->paramsForm(),0,0);
     this->adjustSize();
 }
 
-void DialogNewSegmentation::initSegmentationMethod()
-{
-    segmentationParams.clear();
-    segmentationParams[tr("mst")]  = QStringList()<<tr("Threshold")<<tr("Minimal Area");
-    //    segmentationParams[tr("slic")] = QStringList()<<tr("Region size")<<tr("Regularizer");
-    ui->comboBox->addItem(tr("mst"));
-    //    ui->comboBox->addItem(tr("slic"));
-    ui->comboBox->setCurrentIndex(0);
-}
-
-void DialogNewSegmentation::on_pushButtonStart_clicked()
-{
-    QLineEdit* lineEditThreshold = this->findChild<QLineEdit*>("lineEditMST"+tr("Threshold"));
-    QLineEdit* lineEditMinArea = this->findChild<QLineEdit*>("lineEditMST"+tr("Minimal Area"));
-    if (lineEditThreshold == NULL || lineEditMinArea == NULL)
-        return;
-    CDT::MSTSegmenter* mstSegmenter = new CDT::MSTSegmenter(
-                inputImagePath,
-                ui->lineEditMarkfile->text(),
-                ui->lineEditShapefile->text(),
-                0,
-                lineEditThreshold->text().toDouble(),
-                lineEditMinArea->text().toInt(),
-                false);
-    ui->labelProgressMessage->show();
-    ui->progressBar->show();
-    this->setEnabled(false);
-    connect(mstSegmenter, SIGNAL(finished()), this, SLOT(onSegmentationFinished()));
-    connect(mstSegmenter, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
-    connect(mstSegmenter, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
-    connect(mstSegmenter, SIGNAL(currentProgressChanged(QString)),ui->labelProgressMessage,SLOT(setText(QString)));
-    mstSegmenter->start();
-    connect(mstSegmenter, SIGNAL(showWarningMessage(QString)),this,SLOT(onWarningMessage(QString)));
-}
-
-
-void DialogNewSegmentation::on_pushButtonBrowseMarkfilePath_clicked()
+void DialogNewSegmentation::on_pushButtonMarkfile_clicked()
 {
     QString markfilePath = QFileDialog::getSaveFileName(this,tr("Markfile Path"),QFileInfo(inputImagePath).absolutePath(),"*.tif");
     if(markfilePath.isEmpty())
         return;
-    ui->lineEditMarkfile->setText(markfilePath);
+
+    for (int i=0;i<ui->comboBoxMarkfile->count();++i)
+    {
+        QString path = ui->comboBoxMarkfile->itemText(i);
+        if (path == markfilePath)
+        {
+            ui->comboBoxMarkfile->removeItem(i);
+            break;
+        }
+    }
+
+    ui->comboBoxMarkfile->insertItem(0,markfilePath);
+    ui->comboBoxMarkfile->setCurrentIndex(0);
 }
 
-void DialogNewSegmentation::on_pushButtonBrowseshapefilePath_clicked()
+void DialogNewSegmentation::on_pushButtonShapefile_clicked()
 {
     QString shapefilePath = QFileDialog::getSaveFileName(this,tr("ShapefilePath Path"),QFileInfo(inputImagePath).absolutePath(),"*.shp");
     if(shapefilePath.isEmpty())
         return;
-    ui->lineEditShapefile->setText(shapefilePath);
-}
 
-void DialogNewSegmentation::onLineEditChanged(int)
-{
-
-    ui->pushButtonStart->setEnabled(
-                ui->checkBoxMarkfilePath->isChecked()&&
-                ui->checkBoxShapefilePath->isChecked()&&
-                ui->checkBoxSegmentName->isChecked()
-                );
-}
-
-void DialogNewSegmentation::onSegmentationFinished()
-{
-    QMessageBox::information(this,tr("completed!"),tr("New segmentation ")+ui->lineEditName->text()+tr(" generated!"));
-    QDialogButtonBox::StandardButtons buttons= ui->buttonBox->standardButtons();
-    ui->buttonBox->setStandardButtons(buttons|QDialogButtonBox::Ok);
-    this->setEnabled(true);
-}
-
-void DialogNewSegmentation::onWarningMessage(QString msg)
-{
-
-}
-
-void DialogNewSegmentation::on_lineEditName_textChanged(const QString &arg1)
-{
-    ui->checkBoxSegmentName->setChecked(!arg1.isEmpty());
-}
-
-void DialogNewSegmentation::on_lineEditMarkfile_textChanged(const QString &arg1)
-{
-    if(QFileInfo(arg1).completeSuffix()==QString("tif"))
+    for (int i=0;i<ui->comboBoxShapefile->count();++i)
     {
-//        ui->checkBoxMarkfilePath->setChecked(QFileInfo(arg1).isWritable());
-        ui->checkBoxMarkfilePath->setChecked(true);
+        QString path = ui->comboBoxShapefile->itemText(i);
+        if (path == shapefilePath)
+        {
+            ui->comboBoxShapefile->removeItem(i);
+            break;
+        }
     }
-    else
-        ui->checkBoxMarkfilePath->setChecked(false);
+
+    ui->comboBoxShapefile->insertItem(0,shapefilePath);
+    ui->comboBoxShapefile->setCurrentIndex(0);
 }
 
-void DialogNewSegmentation::on_lineEditShapefile_textChanged(const QString &arg1)
+void DialogNewSegmentation::loadPlugins()
 {
-    if(QFileInfo(arg1).completeSuffix()==QString("shp"))
-    {
-//        ui->checkBoxShapefilePath->setChecked(QFileInfo(arg1).isWritable());
-        ui->checkBoxShapefilePath->setChecked(true);
-    }
-    else
-        ui->checkBoxShapefilePath->setChecked(false);
+    if (plugins.size()==0)
+        plugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();
+    foreach (CDTSegmentationInterface* plugin, plugins) {
+        ui->comboBox->addItem(plugin->segmentationMethod());
+        plugin->setInputImagePath(inputImagePath);
+        connect(plugin,SIGNAL(finished()),this,SLOT(onFinished()));
+    }    
+}
+
+void DialogNewSegmentation::on_comboBoxMarkfile_currentIndexChanged(const QString &arg1)
+{
+    int currentIndex = ui->comboBox->currentIndex();
+    if (currentIndex<plugins.size())
+        plugins[currentIndex]->setMarkfilePath(arg1);
+}
+
+void DialogNewSegmentation::on_comboBoxShapefile_currentIndexChanged(const QString &arg1)
+{
+    int currentIndex = ui->comboBox->currentIndex();
+    if (currentIndex<plugins.size())
+        plugins[currentIndex]->setShapefilePath(arg1);
+}
+
+void DialogNewSegmentation::onFinished()
+{
+    ui->buttonBox->setStandardButtons(ui->buttonBox->standardButtons()|QDialogButtonBox::Ok);
 }

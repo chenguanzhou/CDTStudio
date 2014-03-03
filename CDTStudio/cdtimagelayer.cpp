@@ -66,8 +66,8 @@ void CDTImageLayer::addSegmentation()
         segmentation->setMarkfilePath(dlg->markfilePath());
         segmentation->setMethodParams(dlg->method(),dlg->params());
         addSegmentation(segmentation);
-
     }
+    delete dlg;
 }
 
 void CDTImageLayer::remove()
@@ -84,7 +84,7 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
             segmentations.remove(i);
             emit imageLayerChanged();
         }
-    }
+    }    
 }
 
 void CDTImageLayer::removeAllSegmentationLayers()

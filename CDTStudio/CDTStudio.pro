@@ -11,8 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CDTStudio
 TEMPLATE = app
 
-LIBS += -lChangeDetectionToolkit
-
 SOURCES += main.cpp\
         mainwindow.cpp \
     cdtproject.cpp \
@@ -44,7 +42,9 @@ HEADERS  += mainwindow.h \
     dialognewproject.h \
     dialognewimage.h\
     dialognewsegmentation.h \
-    cdtbaseobject.h
+    cdtbaseobject.h \
+    ../Interfaces/cdtsegmentationInterface.h \
+    cdtpluginloader.h
 
 FORMS    += mainwindow.ui \
     dialognewproject.ui \

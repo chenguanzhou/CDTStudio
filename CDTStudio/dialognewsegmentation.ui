@@ -6,142 +6,132 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>395</width>
-    <height>204</height>
+    <width>292</width>
+    <height>169</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Create a new segmentation</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0" colspan="2">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="2">
-      <widget class="QPushButton" name="pushButtonBrowseshapefilePath">
-       <property name="text">
-        <string>Browse</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEditMarkfile"/>
-     </item>
-     <item row="1" column="2">
-      <widget class="QPushButton" name="pushButtonBrowseMarkfilePath">
-       <property name="text">
-        <string>Browse</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEditShapefile"/>
-     </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditName"/>
-     </item>
      <item row="1" column="0">
-      <widget class="QCheckBox" name="checkBoxMarkfilePath">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::RightToLeft</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(0, 0, 0);</string>
-       </property>
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Segment markfile path</string>
+        <string>Markfile Path</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QCheckBox" name="checkBoxShapefilePath">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::RightToLeft</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(0, 0, 0);</string>
-       </property>
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Segment shapefile path</string>
+        <string>Shapefile Path</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
      <item row="0" column="0">
-      <widget class="QCheckBox" name="checkBoxSegmentName">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::RightToLeft</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(0, 0, 0);</string>
-       </property>
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>Segment name</string>
+        <string>Segmentation Name</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Segmentation Method</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayoutGroup">
-      <item row="0" column="0" colspan="2">
-       <widget class="QComboBox" name="comboBox"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QPushButton" name="pushButtonStart">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="pushButtonShapefile">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>25</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="pushButtonMarkfile">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>25</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditName">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Start Segmentation</string>
+        <string>untitled</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="labelProgressMessage">
-       <property name="text">
-        <string/>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="comboBoxMarkfile">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="insertPolicy">
+        <enum>QComboBox::InsertAtTop</enum>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QProgressBar" name="progressBar">
-       <property name="value">
-        <number>24</number>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="comboBoxShapefile">
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="insertPolicy">
+        <enum>QComboBox::InsertAtTop</enum>
        </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item row="2" column="0" colspan="2">
+   <item>
+    <widget class="QComboBox" name="comboBox"/>
+   </item>
+   <item>
+    <widget class="QFrame" name="frame"/>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Cancel</set>
      </property>
     </widget>
    </item>

@@ -22,9 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     readRecentFiles();
     connect(projectTabWidget,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
     connect(projectTabWidget,SIGNAL(menuRecentChanged(QString)),this,SLOT(updataMenuRecent(QString)));
-//    connect(qApp,SIGNAL(close()),projectTabWidget,SLOT(closeAll()));
-    //connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(oncreatContextMenu(QPoint)));
-//    connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onCurrentTabChanged(int)));
+
 }
 
 
