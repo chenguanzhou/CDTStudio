@@ -12,11 +12,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     projectTabWidget(new CDTProjectTabWidget(this))
 {
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("Project");
+    recentFileCount = setting.value("recentFlieCount","4").toInt();
+    setting.endGroup();
+
     ui->setupUi(this);
     setCentralWidget(projectTabWidget);
-    updataMenuRecent();
+    readRecentFiles();
     connect(projectTabWidget,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
-    connect(projectTabWidget,SIGNAL(menuRecentChanged()),this,SLOT(updataMenuRecent()));
+    connect(projectTabWidget,SIGNAL(menuRecentChanged(QString)),this,SLOT(updataMenuRecent(QString)));
 //    connect(qApp,SIGNAL(close()),projectTabWidget,SLOT(closeAll()));
     //connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(oncreatContextMenu(QPoint)));
 //    connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onCurrentTabChanged(int)));
@@ -27,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    writeRecentFile();
 }
 
 void MainWindow::onCurrentTabChanged(int i)
@@ -77,24 +83,58 @@ void MainWindow::on_action_Save_As_triggered()
 }
 
 
-void MainWindow::updataMenuRecent()
+void MainWindow::readRecentFiles()
 {
     QSettings setting("WHU","CDTStudio");
-    int size = setting.beginReadArray("recentFilePaths");
-    ui->menu_Recent->clear();
-    for(int i=0;i < size;++i)
+    setting.beginGroup("Project");
+    QStringList paths = setting.value("recentFiles",QStringList("")).toStringList();
+    for(int i=0;i <paths.size();++i)
     {
-        setting.setArrayIndex(i);
-        QString path = (setting.value("filePath")).toString();
+        QString path = paths[i];
         if(!path.isEmpty())
         {
             QAction* recentFile = new QAction(path,this);
             ui->menu_Recent->addAction(recentFile);
-            ui->menu_Recent->addSeparator();
             connect(recentFile,SIGNAL(triggered()),this,SLOT(on_action_RecentFile_triggered()));
         }
     }
-    setting.endArray();
+    setting.endGroup();
+}
+
+void MainWindow::writeRecentFile()
+{
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("Project");
+    QStringList paths;
+    foreach (QAction* action, ui->menu_Recent->actions()) {
+        QString path = action->text();
+        paths.push_back(path);
+    }
+    setting.setValue("recentFiles",paths);
+    setting.endGroup();
+}
+
+void MainWindow::updataMenuRecent(QString path)
+{
+    QList<QAction*> actions = ui->menu_Recent->actions();
+    for (int i =0;i< actions.size();++i)
+    {
+        if(path == actions[i] ->text())
+        {
+            ui->menu_Recent->removeAction(actions[i]);
+            break;
+        }
+    }
+    QAction* recentFile = new QAction(path,this);
+    ui->menu_Recent->insertAction(actions[0],recentFile);
+    connect(recentFile,SIGNAL(triggered()),this,SLOT(on_action_RecentFile_triggered()));
+    if(actions.size()+1 >recentFileCount)
+    {
+        for(int i =recentFileCount;i < actions.size();++i)
+        {
+            ui->menu_Recent->removeAction(actions[i]);
+        }
+    }
 }
 
 void MainWindow::on_action_RecentFile_triggered()

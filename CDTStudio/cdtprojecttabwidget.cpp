@@ -6,6 +6,7 @@
 #include <QList>
 #include <QMessageBox>
 #include <QSettings>
+#include <QVariant>
 
 CDTProjectTabWidget::CDTProjectTabWidget(QWidget *parent) :
     QTabWidget(parent)
@@ -28,7 +29,8 @@ bool CDTProjectTabWidget::createNewProject()
         projectWidget->setProjectFile(dlg->projectPath());
         addTab(projectWidget,dlg->projectName());
         saveProject();
-        emit menuRecentChanged();
+        emit menuRecentChanged(dlg->projectPath());
+        delete dlg;
         return true;
     }
     delete dlg;
@@ -37,6 +39,7 @@ bool CDTProjectTabWidget::createNewProject()
 
 bool CDTProjectTabWidget::openProject(QString &filepath)
 {
+    //Divide this part into 2 functions
     if(filepath.isEmpty())
     {
         QString dir = readLastProjectDir();
@@ -54,7 +57,7 @@ bool CDTProjectTabWidget::openProject(QString &filepath)
             QMessageBox::critical(this,tr("Error File"),tr(" File Format Error or invalid filepath!"));
 
             delete projectWidget;
-            deleteRecentFilePath(filepath);
+            emit menuRecentChanged(filepath);
             return false;
         }
         else
@@ -62,7 +65,7 @@ bool CDTProjectTabWidget::openProject(QString &filepath)
             QFileInfo fileinfo(projectWidget->file);
             addTab(projectWidget,fileinfo.fileName());
             this->setCurrentWidget(projectWidget);
-            writeRecentFilePath(filepath);
+            emit menuRecentChanged(filepath);
             return true;
         }
     }
@@ -116,17 +119,12 @@ bool CDTProjectTabWidget::saveAsProject()
         if(!fileName.isEmpty())
         {
             writeLastProjectDir(QFileInfo(fileName).absolutePath());
-            writeRecentFilePath(fileName);
+            emit menuRecentChanged(fileName);
             ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
             return true;
         }
         return false;
     }
-}
-
-void CDTProjectTabWidget::addProjectTab(const QString &path)
-{
-    //    CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
 }
 
 bool CDTProjectTabWidget::closeTab(const int &index)
@@ -176,68 +174,24 @@ void CDTProjectTabWidget::writeLastProjectDir(QString &path)
     setting.endGroup();
 }
 
-void CDTProjectTabWidget::writeRecentFilePath(QString &path)
-{
-    QSettings setting("WHU","CDTStudio");
-    setting.beginReadArray("recentFilePaths");
-    QStringList paths;
-    int size = setting.value("fileCount","4").toInt();
-    for (int i = 0; i < size; ++i)
-    {
-        setting.setArrayIndex(i);
-        QString p = setting.value("filePath").toString();
-        paths.push_back(p);
-    }
-    paths.erase(paths.begin()+size,paths.end());
-    setting.endArray();
 
-    QStringList::const_iterator iter = qFind(paths,path);
-    setting.beginWriteArray("recentFilePaths");
-    if(iter == paths.end())
-    {
-        paths.insert(paths.begin(),path);
-        for(int i=0;i<paths.size();++i)
-        {
-            setting.setArrayIndex(i);
-            setting.setValue("filePath",paths[i]);
-        }
 
-    }
-    else
-    {
-        int a = iter - paths.begin();
-        paths.move(a,0);
-        for(int i=0;i<paths.size();++i)
-        {
-            setting.setArrayIndex(i);
-            setting.setValue("filePath",paths[i]);
-        }
+//void CDTProjectTabWidget::deleteRecentFilePath(QString &path)
+//{
+//    QSettings setting("WHU","CDTStudio");
+//    setting.beginGroup("Project");
+//    QStringList paths = setting.value("recentFiles").toStringList();
+//    QStringList::const_iterator iter = qFind(paths,path);
+//    if(iter != paths.end())
+//    {
+//        paths.removeAt(iter - paths.begin());
+//    }
+//    setting.setValue("recentFiles",paths);
+//    setting.endGroup();
 
-    }
-    setting.endArray();
-    emit menuRecentChanged();
-}
+////    emit menuRecentChanged();
 
-void CDTProjectTabWidget::deleteRecentFilePath(QString &path)
-{
-    QSettings setting("WHU","CDTStudio");
-    int size = setting.beginReadArray("recentFilePaths");
-    for(int i=0;i < size;++i)
-    {
-        setting.setArrayIndex(i);
-        if(setting.value("filePath").toString() == path)
-        {
-            setting.endArray();
-            setting.beginWriteArray("recentFilePaths");
-            setting.setArrayIndex(i);
-            setting.remove("filePath");
-
-        }
-    }
-    setting.endArray();
-    emit menuRecentChanged();
-
-}
+//}
 
 
 
