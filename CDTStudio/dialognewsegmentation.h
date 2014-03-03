@@ -5,6 +5,7 @@
 #include <QGridLayout>
 #include <QMap>
 #include "../Interfaces/cdtsegmentationInterface.h"
+#include "cdtpluginloader.h"
 
 namespace Ui {
 class DialogNewSegmentation;
@@ -28,19 +29,24 @@ private slots:
     void on_comboBox_currentIndexChanged(int index);
     void on_pushButtonMarkfile_clicked();
     void on_pushButtonShapefile_clicked();
-
-    void on_lineEditMarkfile_textChanged(const QString &arg1);
-
-    void on_lineEditShapefile_textChanged(const QString &arg1);
+    void on_comboBoxMarkfile_currentIndexChanged(const QString &arg1);
+    void on_comboBoxShapefile_currentIndexChanged(const QString &arg1);
+    void onFinished();
 
 private:
     Ui::DialogNewSegmentation *ui;
     QMap<QString,QVariant> segmentationParams;
     QGridLayout* gridLatoutPlugin;
     QString inputImagePath;
-    QList<CDTSegmentationInterface*> plugins;
+    static QList<CDTSegmentationInterface *> plugins;
 
-    void init();
+    void loadPlugins();
+    void saveHistoryPaths();
+    void loadHistoryPaths();
+
 };
+
+
+
 
 #endif // DIALOGNEWSEGMENTATION_H

@@ -17,9 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
     updataMenuRecent();
     connect(projectTabWidget,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
     connect(projectTabWidget,SIGNAL(menuRecentChanged()),this,SLOT(updataMenuRecent()));
-//    connect(qApp,SIGNAL(close()),projectTabWidget,SLOT(closeAll()));
+    //    connect(qApp,SIGNAL(close()),projectTabWidget,SLOT(closeAll()));
     //connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(oncreatContextMenu(QPoint)));
-//    connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onCurrentTabChanged(int)));
+    //    connect(ui->treeViewProject,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onCurrentTabChanged(int)));
 }
 
 

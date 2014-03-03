@@ -1,6 +1,7 @@
 #include "formmst.h"
 #include "ui_formmst.h"
 #include "mstsegmenter.h"
+#include <QtCore>
 
 FormMST::FormMST(QWidget *parent) :
     QWidget(parent),
@@ -21,6 +22,7 @@ void FormMST::setInterface(MSTMethodInterface *interface)
 
 void FormMST::on_pushButtonStart_clicked()
 {    
+    qDebug()<<interface->inputImagePath();
     MSTSegmenter* mstSegmenter = new MSTSegmenter(
                 interface->inputImagePath(),
                 interface->markfilePath(),
@@ -31,7 +33,7 @@ void FormMST::on_pushButtonStart_clicked()
                 ui->pushButtonShield->isChecked());
 
 
-//    this->setEnabled(false);
+//    this->setEnabled(false);    
     connect(mstSegmenter, SIGNAL(finished()), this, SIGNAL(finished()));
     connect(mstSegmenter, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
     connect(mstSegmenter, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));

@@ -43,6 +43,9 @@
    <addaction name="menu_File"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>Normal</string>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -57,6 +60,9 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidgetProject">
+   <property name="windowTitle">
+    <string>Project</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>

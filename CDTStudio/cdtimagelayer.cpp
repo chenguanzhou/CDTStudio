@@ -61,6 +61,7 @@ void CDTImageLayer::addSegmentation()
         segmentation->setMethodParams(dlg->method(),dlg->params());
         addSegmentation(segmentation);
     }
+    delete dlg;
 }
 
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)

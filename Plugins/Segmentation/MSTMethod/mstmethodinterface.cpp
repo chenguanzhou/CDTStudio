@@ -3,16 +3,14 @@
 
 
 MSTMethodInterface::MSTMethodInterface(QObject *parent)
-    :CDTSegmentationInterface(parent),
-      frmMST(new FormMST())
+    :CDTSegmentationInterface(parent)
 {
-    frmMST->setInterface(this);
-    connect(frmMST,SIGNAL(finished()),this,SIGNAL(finished()));
+//    frmMST->setInterface(this);
+//    connect(frmMST,SIGNAL(finished()),this,SIGNAL(finished()));
 }
 
 MSTMethodInterface::~MSTMethodInterface()
 {
-    delete frmMST;
 }
 
 QString MSTMethodInterface::segmentationMethod() const
@@ -22,6 +20,9 @@ QString MSTMethodInterface::segmentationMethod() const
 
 QWidget *MSTMethodInterface::paramsForm()
 {
+    FormMST *frmMST= new FormMST();
+    frmMST->setInterface(this);
+    connect(frmMST,SIGNAL(finished()),this,SIGNAL(finished()));
     return frmMST;
 }
 

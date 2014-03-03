@@ -14,7 +14,7 @@ public:
     QWidget *paramsForm() ;
 
 private:
-    FormMST* frmMST;
+
 
 };
 
