@@ -21,9 +21,6 @@
        <property name="text">
         <string>Markfile Path</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
       </widget>
      </item>
      <item row="2" column="0">
@@ -31,18 +28,12 @@
        <property name="text">
         <string>Shapefile Path</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
       </widget>
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Segmentation Name</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>

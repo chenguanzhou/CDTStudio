@@ -8,6 +8,9 @@ FormMST::FormMST(QWidget *parent) :
     ui(new Ui::FormMST)
 {
     ui->setupUi(this);    
+    ui->progressBar->hide();
+    ui->labelProgress->hide();
+    this->adjustSize();
 }
 
 FormMST::~FormMST()
@@ -22,7 +25,9 @@ void FormMST::setInterface(MSTMethodInterface *interface)
 
 void FormMST::on_pushButtonStart_clicked()
 {    
-    qDebug()<<interface->inputImagePath();
+    ui->progressBar->show();
+    ui->labelProgress->show();
+    this->adjustSize();
     MSTSegmenter* mstSegmenter = new MSTSegmenter(
                 interface->inputImagePath(),
                 interface->markfilePath(),
@@ -30,19 +35,14 @@ void FormMST::on_pushButtonStart_clicked()
                 ui->comboBoxMergeRule->currentIndex(),
                 ui->doubleSpinBoxThreshold->value(),
                 ui->spinBoxMinArea->value(),
-                ui->pushButtonShield->isChecked());
+                ui->checkBox->isChecked());
 
-
-//    this->setEnabled(false);    
     connect(mstSegmenter, SIGNAL(finished()), this, SIGNAL(finished()));
+    connect(mstSegmenter, SIGNAL(finished()), ui->labelProgress, SLOT(hide()));
+    connect(mstSegmenter, SIGNAL(finished()), ui->progressBar, SLOT(hide()));
     connect(mstSegmenter, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
     connect(mstSegmenter, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
-    connect(mstSegmenter, SIGNAL(currentProgressChanged(QString)),this,SLOT(setGroupboxText(QString)));
+    connect(mstSegmenter, SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
     mstSegmenter->start();
     //    connect(mstSegmenter, SIGNAL(showWarningMessage(QString)),this,SLOT(onWarningMessage(QString)));
-}
-
-void FormMST::setGroupboxText(QString text)
-{
-    ui->groupBox->setTitle(text);
 }

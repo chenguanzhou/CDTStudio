@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>244</width>
-    <height>123</height>
+    <width>265</width>
+    <height>127</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,25 +26,6 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <item row="6" column="0">
-    <widget class="QGroupBox" name="groupBox">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QProgressBar" name="progressBar"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Minimal Area</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="1">
     <widget class="QSpinBox" name="spinBoxMinArea">
      <property name="maximum">
@@ -55,10 +36,10 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Merge Rule</string>
+      <string>Minimal Area</string>
      </property>
     </widget>
    </item>
@@ -66,19 +47,6 @@
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Threshold</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QDoubleSpinBox" name="doubleSpinBoxThreshold">
-     <property name="minimum">
-      <double>1.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>1000.000000000000000</double>
-     </property>
-     <property name="value">
-      <double>25.000000000000000</double>
      </property>
     </widget>
    </item>
@@ -96,7 +64,34 @@
      </item>
     </widget>
    </item>
-   <item row="5" column="1" rowspan="2">
+   <item row="1" column="1">
+    <widget class="QDoubleSpinBox" name="doubleSpinBoxThreshold">
+     <property name="minimum">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>1000.000000000000000</double>
+     </property>
+     <property name="value">
+      <double>25.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Merge Rule</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QCheckBox" name="checkBox">
+     <property name="text">
+      <string>Shield No-data Value</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
     <widget class="QPushButton" name="pushButtonStart">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -109,13 +104,13 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QPushButton" name="pushButtonShield">
+   <item row="4" column="1">
+    <widget class="QProgressBar" name="progressBar"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="labelProgress">
      <property name="text">
-      <string>Shield No-data Value</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
+      <string>TextLabel</string>
      </property>
     </widget>
    </item>

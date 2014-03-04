@@ -20,7 +20,6 @@ signals:
     void finished();
 private slots:
     void on_pushButtonStart_clicked();    
-    void setGroupboxText(QString text);
 private:
     Ui::FormMST *ui;    
     MSTMethodInterface* interface;
