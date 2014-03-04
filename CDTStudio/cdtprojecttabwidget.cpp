@@ -23,6 +23,14 @@ bool CDTProjectTabWidget::createNewProject()
     DialogNewProject *dlg = new DialogNewProject(this);
     if (dlg->exec()==DialogNewProject::Accepted)
     {
+        if(!CompareFilePath(QFileInfo(dlg->projectPath()).absoluteFilePath()))
+        {
+            QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!")
+                                  .arg(QFileInfo(dlg->projectPath()).absoluteFilePath()));
+            emit menuRecentChanged(QFileInfo(dlg->projectPath()).absoluteFilePath());
+            return false;
+        }
+
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
         projectWidget->setProjectPath(dlg->projectPath());
         projectWidget->setProjectName(dlg->projectName());
@@ -44,11 +52,18 @@ bool CDTProjectTabWidget::openProject(QString &filepath)
         writeLastProjectDir(QFileInfo(filepath).absolutePath());
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
 
-        if (projectWidget->readProject(filepath) == false)
+        if (projectWidget->readProject(QFileInfo(filepath).absoluteFilePath()) == false)
         {
 
             QMessageBox::critical(this,tr("Error File"),tr(" File Format Error or invalid filepath!"));
 
+            delete projectWidget;
+            emit menuRecentChanged(filepath);
+            return false;
+        }
+        else if(!CompareFilePath(QFileInfo(filepath).absoluteFilePath()))
+        {
+            QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!").arg(QFileInfo(filepath).absoluteFilePath()));
             delete projectWidget;
             emit menuRecentChanged(filepath);
             return false;
@@ -78,9 +93,16 @@ bool CDTProjectTabWidget::openProject()
         {
             writeLastProjectDir(QFileInfo(filepath).absolutePath());
             CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
-            if (projectWidget->readProject(filepath) == false)
+            if (projectWidget->readProject(QFileInfo(filepath).absoluteFilePath()) == false)
             {
                 QMessageBox::critical(this,tr("Error File"),tr(" File Format Error!"));
+                delete projectWidget;
+                emit menuRecentChanged(filepath);
+                ++openFailCount;
+            }
+            else if(!CompareFilePath(QFileInfo(filepath).absoluteFilePath()))
+            {
+                QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!").arg(QFileInfo(filepath).absoluteFilePath()));
                 delete projectWidget;
                 emit menuRecentChanged(filepath);
                 ++openFailCount;
@@ -144,6 +166,12 @@ bool CDTProjectTabWidget::saveAsProject()
     {
         QString dir = readLastProjectDir();
         QString fileName = QFileDialog::getSaveFileName(this,tr("Save project file"),dir,"*.cdtpro");
+        if(!CompareFilePath(QFileInfo(fileName).absoluteFilePath()))
+        {
+            QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!").arg(QFileInfo(fileName).absoluteFilePath()));
+            emit menuRecentChanged(fileName);
+            return false;
+        }
         if(!fileName.isEmpty())
         {
             writeLastProjectDir(QFileInfo(fileName).absolutePath());
@@ -200,6 +228,18 @@ void CDTProjectTabWidget::writeLastProjectDir(QString &path)
     setting.beginGroup("Project");
     setting.setValue("lastDir",path);
     setting.endGroup();
+}
+
+bool CDTProjectTabWidget::CompareFilePath(QString &path)
+{
+    int count = this->count();
+    for(int i=0; i< count;++i)
+    {
+        CDTProjectWidget* tab =(CDTProjectWidget*) this->widget(i);
+        if(tab->filePath() == path)
+            return false;
+    }
+    return true;
 }
 
 

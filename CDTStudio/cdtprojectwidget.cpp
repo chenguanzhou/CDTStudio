@@ -147,6 +147,11 @@ int CDTProjectWidget::maybeSave()
     return -1;
 }
 
+QString CDTProjectWidget::filePath()
+{
+    return QFileInfo(file).absoluteFilePath();
+}
+
 bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index)
 {
     int a = this->maybeSave();
