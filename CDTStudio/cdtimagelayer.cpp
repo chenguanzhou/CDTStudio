@@ -115,6 +115,7 @@ void CDTImageLayer::onContextMenuRequest(QWidget *parent)
     QMenu *menu =new QMenu(parent);
 
     menu->addAction(addSegmentationLayer);
+    menu->addSeparator();
     menu->addAction(removeImage);
     menu->addAction(removeAllSegmentations);
     menu->exec(QCursor::pos());

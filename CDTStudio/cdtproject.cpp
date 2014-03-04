@@ -62,6 +62,7 @@ void CDTProject::onContextMenuRequest(QWidget* parent)
 {
     QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);
+    menu->addSeparator();
     menu->addAction(removeAllImages);
     menu->exec(QCursor::pos());
 }

@@ -73,6 +73,7 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
 {
     QMenu *menu =new QMenu;
     menu->addAction(addClassifications);
+    menu->addSeparator();
     menu->addAction(actionRemoveSegmentation);
     menu->addAction(actionRemoveAllClassifications);
     menu->exec(QCursor::pos());
@@ -89,7 +90,7 @@ void CDTSegmentationLayer::addClassification()
     classification->setMethodParams("new knn",param);
 
     addClassification(classification);
-
+    qDebug();
 }
 
 void CDTSegmentationLayer::remove()
