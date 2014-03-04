@@ -71,6 +71,9 @@ void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
 
 void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
 {
+    actionRemoveSegmentation->setIcon(QIcon(":/Icon/remove.png"));
+    actionRemoveAllClassifications->setIcon(QIcon(":/Icon/remove.png"));
+    addClassifications->setIcon(QIcon(":/Icon/add.png"));
     QMenu *menu =new QMenu;
     menu->addAction(addClassifications);
     menu->addSeparator();

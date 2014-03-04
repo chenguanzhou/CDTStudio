@@ -112,12 +112,17 @@ void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 
 void CDTImageLayer::onContextMenuRequest(QWidget *parent)
 {
+
+    removeImage->setIcon(QIcon(":/Icon/remove.png"));
+    removeAllSegmentations->setIcon(QIcon(":/Icon/remove.png"));
+    addSegmentationLayer->setIcon(QIcon(":/Icon/add.png"));
     QMenu *menu =new QMenu(parent);
 
     menu->addAction(addSegmentationLayer);
     menu->addSeparator();
     menu->addAction(removeImage);
     menu->addAction(removeAllSegmentations);
+
     menu->exec(QCursor::pos());
 }
 
