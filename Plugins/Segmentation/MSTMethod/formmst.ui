@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>227</width>
-    <height>171</height>
+    <width>244</width>
+    <height>123</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -105,7 +105,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>开始分割</string>
+      <string>Start Segmentation</string>
      </property>
     </widget>
    </item>

@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("Project");
+    setting.setValue("recentFlieCount","5");
     recentFileCount = setting.value("recentFlieCount","4").toInt();
     setting.endGroup();
 
@@ -126,7 +127,7 @@ void MainWindow::updataMenuRecent(QString path)
     QAction* recentFile = new QAction(path,this);
     ui->menu_Recent->insertAction(actions[0],recentFile);
     connect(recentFile,SIGNAL(triggered()),this,SLOT(on_action_RecentFile_triggered()));
-    if(actions.size()+1 >recentFileCount)
+    if(actions.size() >recentFileCount)
     {
         for(int i =recentFileCount;i < actions.size();++i)
         {

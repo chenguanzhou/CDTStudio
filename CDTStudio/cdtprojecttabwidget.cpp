@@ -39,13 +39,6 @@ bool CDTProjectTabWidget::createNewProject()
 
 bool CDTProjectTabWidget::openProject(QString &filepath)
 {
-    //Divide this part into 2 functions
-    if(filepath.isEmpty())
-    {
-        QString dir = readLastProjectDir();
-        filepath = QFileDialog::getOpenFileName(this,tr("Open an project file"),dir,"*.cdtpro");
-    }
-
     if(!filepath.isEmpty())
     {
         writeLastProjectDir(QFileInfo(filepath).absolutePath());
@@ -73,6 +66,39 @@ bool CDTProjectTabWidget::openProject(QString &filepath)
 
 }
 
+bool CDTProjectTabWidget::openProject()
+{
+    QString dir = readLastProjectDir();
+    QStringList filepaths = QFileDialog::getOpenFileNames(this,tr("Open an project file"),dir,"*.cdtpro");
+    int openFailCount = 0;
+    for(int i=0;i< filepaths.size();++i)
+    {
+        QString filepath = filepaths[i];
+        if(!filepath.isEmpty())
+        {
+            writeLastProjectDir(QFileInfo(filepath).absolutePath());
+            CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
+            if (projectWidget->readProject(filepath) == false)
+            {
+                QMessageBox::critical(this,tr("Error File"),tr(" File Format Error!"));
+                delete projectWidget;
+                ++openFailCount;
+            }
+            else
+            {
+                QFileInfo fileinfo(projectWidget->file);
+                addTab(projectWidget,fileinfo.fileName());
+                this->setCurrentWidget(projectWidget);
+            }
+        }
+
+    }
+    if(openFailCount == 0)
+        return true;
+    else
+        return false;
+
+}
 
 bool CDTProjectTabWidget::saveProject()
 {    
@@ -175,23 +201,6 @@ void CDTProjectTabWidget::writeLastProjectDir(QString &path)
 }
 
 
-
-//void CDTProjectTabWidget::deleteRecentFilePath(QString &path)
-//{
-//    QSettings setting("WHU","CDTStudio");
-//    setting.beginGroup("Project");
-//    QStringList paths = setting.value("recentFiles").toStringList();
-//    QStringList::const_iterator iter = qFind(paths,path);
-//    if(iter != paths.end())
-//    {
-//        paths.removeAt(iter - paths.begin());
-//    }
-//    setting.setValue("recentFiles",paths);
-//    setting.endGroup();
-
-////    emit menuRecentChanged();
-
-//}
 
 
 

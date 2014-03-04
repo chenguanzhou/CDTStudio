@@ -9,3 +9,7 @@ TEMPLATE = subdirs
 SUBDIRS += \
     CDTStudio \
     Plugins
+
+TRANSLATIONS  += trans/zh_CN.ts
+
+

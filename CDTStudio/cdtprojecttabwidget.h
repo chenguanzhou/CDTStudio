@@ -16,7 +16,8 @@ signals:
     void menuRecentChanged(QString path);
 public slots:
     bool createNewProject();
-    bool openProject(QString &filepath = QString());
+    bool openProject(QString &filepath);
+    bool openProject();
     bool saveProject();
     bool saveAllProject();
     bool saveAsProject();
