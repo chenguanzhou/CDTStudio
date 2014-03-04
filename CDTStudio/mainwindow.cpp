@@ -127,13 +127,15 @@ void MainWindow::updataMenuRecent(QString path)
     QAction* recentFile = new QAction(path,this);
     ui->menu_Recent->insertAction(actions[0],recentFile);
     connect(recentFile,SIGNAL(triggered()),this,SLOT(on_action_RecentFile_triggered()));
-    if(actions.size() >recentFileCount)
+    qDebug()<<(ui->menu_Recent->actions()).size() ;
+    if((ui->menu_Recent->actions()).size() >recentFileCount)
     {
-        for(int i =recentFileCount;i < actions.size();++i)
+        for(int i =recentFileCount;i < (ui->menu_Recent->actions()).size();++i)
         {
-            ui->menu_Recent->removeAction(actions[i]);
+            ui->menu_Recent->removeAction((ui->menu_Recent->actions())[i]);
         }
     }
+    qDebug()<<(ui->menu_Recent->actions()).size() ;
 }
 
 void MainWindow::on_action_RecentFile_triggered()

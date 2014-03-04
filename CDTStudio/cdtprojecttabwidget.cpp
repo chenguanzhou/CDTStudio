@@ -82,6 +82,7 @@ bool CDTProjectTabWidget::openProject()
             {
                 QMessageBox::critical(this,tr("Error File"),tr(" File Format Error!"));
                 delete projectWidget;
+                emit menuRecentChanged(filepath);
                 ++openFailCount;
             }
             else
@@ -89,6 +90,7 @@ bool CDTProjectTabWidget::openProject()
                 QFileInfo fileinfo(projectWidget->file);
                 addTab(projectWidget,fileinfo.fileName());
                 this->setCurrentWidget(projectWidget);
+                emit menuRecentChanged(filepath);
             }
         }
 
