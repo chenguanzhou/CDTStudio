@@ -150,7 +150,7 @@ void DialogNewSegmentation::loadPlugins()
         ui->comboBox->addItem(plugin->segmentationMethod());
         plugin->setInputImagePath(inputImagePath);
         connect(plugin,SIGNAL(finished()),this,SLOT(onFinished()));
-    }    
+    }
 }
 
 void DialogNewSegmentation::on_comboBoxMarkfile_currentIndexChanged(const QString &arg1)
