@@ -37,6 +37,7 @@ void CDTClassification::updateTreeModel(CDTProjectTreeItem *parent)
 
 void CDTClassification::onContextMenuRequest(QWidget *parent)
 {
+    actionRemoveClassification->setIcon(QIcon(":/Icon/remove.png"));
     QMenu *menu =new QMenu(parent);
 
     menu->addAction(actionRemoveClassification);

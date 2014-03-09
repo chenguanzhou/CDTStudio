@@ -21,6 +21,8 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
 {
     CDTProjectTreeItem *item =(CDTProjectTreeItem*)treeModel->itemFromIndex(index);
+    if(item ==NULL)
+        return;
     int type = item->getType();
 
 /*    if(type ==CDTProjectTreeItem::PROJECT_ROOT)
@@ -44,7 +46,7 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
         emit projectChanged(project);
     }*/
     CDTBaseObject* correspondingObject = item->getCorrespondingObject();
-    if (item && correspondingObject)
+    if (correspondingObject)
     {
         correspondingObject->onContextMenuRequest(this);
 //        emit projectChanged(project);
@@ -145,6 +147,11 @@ int CDTProjectWidget::maybeSave()
         return ret;
     }
     return -1;
+}
+
+QString CDTProjectWidget::filePath()
+{
+    return QFileInfo(file).absoluteFilePath();
 }
 
 bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index)

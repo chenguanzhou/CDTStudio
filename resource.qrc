@@ -6,5 +6,7 @@
         <file>Icon/save_all.png</file>
         <file>Icon/save_as.png</file>
         <file>trans/zh_CN.qm</file>
+        <file>Icon/remove.png</file>
+        <file>Icon/add.png</file>
     </qresource>
 </RCC>

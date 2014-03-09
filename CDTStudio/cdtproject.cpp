@@ -60,8 +60,11 @@ void CDTProject::setPath(const QString &p)
 
 void CDTProject::onContextMenuRequest(QWidget* parent)
 {
+    removeAllImages->setIcon(QIcon(":/Icon/remove.png"));
+    actionAddImage->setIcon(QIcon(":/Icon/add.png"));
     QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);
+    menu->addSeparator();
     menu->addAction(removeAllImages);
     menu->exec(QCursor::pos());
 }

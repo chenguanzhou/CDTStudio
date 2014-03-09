@@ -28,6 +28,7 @@ private:
     void writeLastProjectDir(QString &path);
     void writeRecentFilePath(QString &path);
     void deleteRecentFilePath(QString &path);
+    bool CompareFilePath(QString &path);
 };
 
 #endif // CDTPROJECTTABWIDGET_H

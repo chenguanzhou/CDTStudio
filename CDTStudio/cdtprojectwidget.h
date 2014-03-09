@@ -21,7 +21,8 @@ public:
     bool readProject(QString &filepath);
     bool writeProject();
     bool saveAsProject(QString &path);
-    int maybeSave();
+    int  maybeSave();
+    QString filePath();
     bool closeProject(CDTProjectTabWidget *parent,const int &index);
     ~CDTProjectWidget();
 
