@@ -11,10 +11,6 @@
 CDTProjectTabWidget::CDTProjectTabWidget(QWidget *parent) :
     QTabWidget(parent)
 {
-    setTabsClosable(true);
-    setTabShape(Triangular);
-    currentWidget();
-    setTabsClosable(true);
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
 }
 

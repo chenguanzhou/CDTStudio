@@ -7,8 +7,6 @@ namespace Ui {
 class MainWindow;
 }
 
-class CDTProjectTabWidget;
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -27,12 +25,11 @@ private slots:
     void on_actionSave_triggered();
     void on_actionSave_All_triggered();
     void on_action_Save_As_triggered();
-    void readRecentFiles();
-    void writeRecentFile();
+    void readSettings();
+    void writeSettings();
     void on_action_RecentFile_triggered();
 private:
     Ui::MainWindow *ui;
-    CDTProjectTabWidget* projectTabWidget;
     int recentFileCount;
 protected:
     void closeEvent(QCloseEvent *);
