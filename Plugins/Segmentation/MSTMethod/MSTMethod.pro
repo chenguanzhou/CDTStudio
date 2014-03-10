@@ -20,7 +20,7 @@ SOURCES += \
     graphkruskal.cpp
 
 HEADERS +=\
-            ../../../Interfaces/cdtsegmentationInterface.h \
+           ../../../Interfaces/cdtsegmentationInterface.h \
     mstmethodinterface.h \
     formmst.h\
     polygonizer.h\

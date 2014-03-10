@@ -118,8 +118,10 @@ void MainWindow::updataMenuRecent(QString path)
     QList<QAction*> actions = ui->menu_Recent->actions();
     for (int i =0;i< actions.size();++i)
     {
-        if(path == actions[i] ->text())
+        if(QFileInfo(path) == QFileInfo(actions[i] ->text()))
         {
+            if(i==0)
+                return;
             ui->menu_Recent->removeAction(actions[i]);
             break;
         }

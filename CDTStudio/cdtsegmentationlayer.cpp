@@ -168,7 +168,7 @@ void CDTSegmentationLayer::setMethodParams(const QString &methodName, const QMap
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
 {
     out<<segmentation.m_name<<segmentation.m_shapefilePath<<segmentation.m_method
-      <<segmentation.m_params<<segmentation.attributes<<segmentation.samples;
+      <<segmentation.m_params<<segmentation.attributes<<segmentation.samples<<segmentation.m_markfilePath;
 
     out<<segmentation.classifications.size();
     for (int i=0;i<segmentation.classifications.size();++i)
@@ -181,7 +181,7 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
 QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
 {
     in>>segmentation.m_name>>segmentation.m_shapefilePath>>segmentation.m_method
-     >>segmentation.m_params>>segmentation.attributes>>segmentation.samples;
+     >>segmentation.m_params>>segmentation.attributes>>segmentation.samples>>segmentation.m_markfilePath;
 
     int count;
     in>>count;
