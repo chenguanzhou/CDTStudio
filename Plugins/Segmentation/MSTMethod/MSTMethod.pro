@@ -20,13 +20,15 @@ SOURCES += \
     graphkruskal.cpp
 
 HEADERS +=\
-            ../../../Interfaces/cdtsegmentationInterface.h \
+    ../../../Interfaces/cdtsegmentationInterface.h \
     mstmethodinterface.h \
     formmst.h\
     polygonizer.h\
     mstsegmenter.h\
     graphkruskal.h\
     cdtbasethread.h
+
+INCLUDEPATH += ../../../Interfaces
 
 OTHER_FILES += MSTMethod.json
 

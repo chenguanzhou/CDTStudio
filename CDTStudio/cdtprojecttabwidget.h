@@ -14,6 +14,7 @@ public:
 
 signals:
     void menuRecentChanged(QString path);
+    void treeModelUpdated();
 public slots:
     bool createNewProject();
     bool openProject(QString &filepath);

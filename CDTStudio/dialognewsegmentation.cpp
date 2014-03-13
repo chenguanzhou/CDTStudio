@@ -48,7 +48,7 @@ QString DialogNewSegmentation::method() const
 
 QMap<QString, QVariant> DialogNewSegmentation::params() const
 {
-    return QMap<QString, QVariant>();
+    return segmentationParams;
 }
 
 
@@ -149,7 +149,7 @@ void DialogNewSegmentation::loadPlugins()
     foreach (CDTSegmentationInterface* plugin, plugins) {
         ui->comboBox->addItem(plugin->segmentationMethod());
         plugin->setInputImagePath(inputImagePath);
-        connect(plugin,SIGNAL(finished()),this,SLOT(onFinished()));
+        connect(plugin,SIGNAL(finished(QMap<QString,QVariant>)),this,SLOT(onFinished(QMap<QString,QVariant>)));
     }
 }
 
@@ -167,7 +167,8 @@ void DialogNewSegmentation::on_comboBoxShapefile_currentIndexChanged(const QStri
         plugins[currentIndex]->setShapefilePath(arg1);
 }
 
-void DialogNewSegmentation::onFinished()
+void DialogNewSegmentation::onFinished(QMap<QString,QVariant> params)
 {
     ui->buttonBox->setStandardButtons(ui->buttonBox->standardButtons()|QDialogButtonBox::Ok);
+    segmentationParams = params;
 }

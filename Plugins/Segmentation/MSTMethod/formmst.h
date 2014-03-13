@@ -17,9 +17,13 @@ public:
 
     void setInterface(MSTMethodInterface* interface);
 signals:
-    void finished();
+    void finished(QMap<QString, QVariant>);
+public slots:
+    void onFinished();
 private slots:
-    void on_pushButtonStart_clicked();    
+    void on_pushButtonStart_clicked();
+
+
 private:
     Ui::FormMST *ui;    
     MSTMethodInterface* interface;

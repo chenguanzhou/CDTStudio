@@ -12,7 +12,7 @@ public:
     explicit CDTProjectTreeModel(QObject *parent = 0);
 
 signals:
-
+    void updated();
 public slots:
     void update(CDTProject*project);
 };

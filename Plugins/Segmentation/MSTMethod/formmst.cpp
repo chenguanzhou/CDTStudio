@@ -37,7 +37,7 @@ void FormMST::on_pushButtonStart_clicked()
                 ui->spinBoxMinArea->value(),
                 ui->checkBox->isChecked());
 
-    connect(mstSegmenter, SIGNAL(finished()), this, SIGNAL(finished()));
+    connect(mstSegmenter, SIGNAL(finished()), this, SLOT(onFinished()));
     connect(mstSegmenter, SIGNAL(finished()), ui->labelProgress, SLOT(hide()));
     connect(mstSegmenter, SIGNAL(finished()), ui->progressBar, SLOT(hide()));
     connect(mstSegmenter, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
@@ -45,4 +45,14 @@ void FormMST::on_pushButtonStart_clicked()
     connect(mstSegmenter, SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
     mstSegmenter->start();
     //    connect(mstSegmenter, SIGNAL(showWarningMessage(QString)),this,SLOT(onWarningMessage(QString)));
+}
+
+void FormMST::onFinished()
+{
+    QMap<QString,QVariant> params;
+    params.insert(tr("Merge Rule"),ui->comboBoxMergeRule->currentText());
+    params.insert(tr("Threshold"),ui->doubleSpinBoxThreshold->value());
+    params.insert(tr("Minimal Area"),ui->spinBoxMinArea->value());
+    params.insert(tr("Shield No-data Value"),ui->checkBox->isChecked());
+    emit finished(params);
 }

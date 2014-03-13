@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,9 +27,11 @@ SOURCES += main.cpp\
     dialognewsegmentation.cpp\
     dialognewimage.cpp \
     cdtbaseobject.cpp \
-    cdtattributesdockwidget.cpp
+    cdtattributeswidget.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
+    ../Interfaces/cdtsegmentationInterface.h \
+    mainwindow.h \
     cdtproject.h \
     cdtimagelayer.h \
     cdtsegmentationlayer.h \
@@ -44,15 +46,16 @@ HEADERS  += mainwindow.h \
     dialognewimage.h\
     dialognewsegmentation.h \
     cdtbaseobject.h \
-    ../Interfaces/cdtsegmentationInterface.h \
     cdtpluginloader.h \
-    cdtattributesdockwidget.h
+    cdtattributeswidget.h
 
 FORMS    += mainwindow.ui \
     dialognewproject.ui \
     dialognewsegmentation.ui\
-        dialognewimage.ui
+        dialognewimage.ui \
+    cdtattributeswidget.ui
 
+INCLUDEPATH += ../Interfaces
 
 RESOURCES += \
     ../resource.qrc

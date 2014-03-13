@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>605</width>
-    <height>392</height>
+    <height>409</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -89,8 +89,8 @@
        <property name="contextMenuPolicy">
         <enum>Qt::CustomContextMenu</enum>
        </property>
-       <property name="rootIsDecorated">
-        <bool>false</bool>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
        </property>
        <property name="animated">
         <bool>true</bool>
@@ -100,7 +100,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="CDTAttributesDockWidget" name="dockWidgetAttributes">
+  <widget class="QDockWidget" name="dockWidgetAttributes">
    <property name="allowedAreas">
     <set>Qt::BottomDockWidgetArea|Qt::TopDockWidgetArea</set>
    </property>
@@ -113,17 +113,7 @@
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QHBoxLayout" name="horizontalLayoutAttributes">
      <item>
-      <widget class="QTabWidget" name="tabWidgetAttributes">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="tabPosition">
-        <enum>QTabWidget::South</enum>
-       </property>
-      </widget>
+      <widget class="CDTAttributesWidget" name="widgetAttributes" native="true"/>
      </item>
     </layout>
    </widget>
@@ -176,11 +166,6 @@
     <string>&amp;Save As</string>
    </property>
   </action>
-  <action name="actionGenerate_Attributes">
-   <property name="text">
-    <string>Generate Attributes</string>
-   </property>
-  </action>
   <zorder>dockWidgetAttributes</zorder>
   <zorder>dockWidgetProject</zorder>
  </widget>
@@ -193,9 +178,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>CDTAttributesDockWidget</class>
-   <extends>QDockWidget</extends>
-   <header>cdtattributesdockwidget.h</header>
+   <class>CDTAttributesWidget</class>
+   <extends>QWidget</extends>
+   <header>cdtattributeswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

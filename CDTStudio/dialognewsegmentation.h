@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QGridLayout>
 #include <QMap>
-#include "../Interfaces/cdtsegmentationInterface.h"
+#include "cdtsegmentationInterface.h"
 #include "cdtpluginloader.h"
 
 namespace Ui {
@@ -31,7 +31,7 @@ private slots:
     void on_pushButtonShapefile_clicked();
     void on_comboBoxMarkfile_currentIndexChanged(const QString &arg1);
     void on_comboBoxShapefile_currentIndexChanged(const QString &arg1);
-    void onFinished();
+    void onFinished(QMap<QString, QVariant> params);
 
 private:
     Ui::DialogNewSegmentation *ui;

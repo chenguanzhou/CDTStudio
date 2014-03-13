@@ -9,25 +9,6 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
       removeImage(new QAction(tr("Remove Image"),this)),
       removeAllSegmentations(new QAction(tr("Remove All Segmentations"),this))
 {
-    //    segmentations.push_back(CDTSegmentationLayer("segment1","c:/","MST"));
-    //    segmentations.push_back(CDTSegmentationLayer("segment2","c:/","MST"));
-//    QMap<QString,QVariant> params;
-//    params["threshold"] = 25;
-//    params["minArea"] = 100;
-
-//    CDTSegmentationLayer *segment1 = new CDTSegmentationLayer(this);
-//    segment1->setName("seg1");
-//    segment1->setShapefilePath("c:/seg1.shp");
-//    segment1->setMethodParams("mst",params);
-
-//    CDTSegmentationLayer *segment2 = new CDTSegmentationLayer(this);
-//    segment2->setName("seg2");
-//    segment2->setShapefilePath("c:/seg1.shp");
-//    segment2->setMethodParams("mst",params);
-
-//    addSegmentation(segment1);
-//    addSegmentation(segment2);
-
     connect(addSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
     connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
@@ -52,7 +33,6 @@ void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
 {
     segmentations.push_back(segmentation);
     emit imageLayerChanged();
-//    connect(segmentation,SIGNAL(segmentationChanged()),this,SIGNAL(imageLayerChanged()));
 }
 
 void CDTImageLayer::addSegmentation()

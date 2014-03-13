@@ -25,7 +25,7 @@ public:
     QString shapefilePath() const{return _shapefilePath;}
 
 signals:
-    void finished();
+    void finished(QMap<QString, QVariant>);
     //    void currentProgressChanged(QString);
     //    void progressBarValueChanged(int);
     //    void progressBarSizeChanged(int,int);

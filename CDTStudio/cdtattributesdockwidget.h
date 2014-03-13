@@ -2,7 +2,9 @@
 #define CDTATTRIBUTESDOCKWIDGET_H
 
 #include <QDockWidget>
+class QUrl;
 class QToolBar;
+class FormAttributes;
 
 class CDTAttributesDockWidget : public QDockWidget
 {
@@ -10,14 +12,16 @@ class CDTAttributesDockWidget : public QDockWidget
 public:
     explicit CDTAttributesDockWidget(QWidget *parent = 0);
 
-    QToolBar *toolBar ()const;
+
+    FormAttributes *formAttributes()const;
+    void setCurrentDB(QUrl dbPath);
+
 signals:
 
 public slots:
 
 private:
-    QToolBar *_toolBar;
-
+    FormAttributes* _frmAttributes;
 };
 
 #endif // CDTATTRIBUTESDOCKWIDGET_H

@@ -31,6 +31,8 @@ bool CDTProjectTabWidget::createNewProject()
         projectWidget->setProjectPath(dlg->projectPath());
         projectWidget->setProjectName(dlg->projectName());
         projectWidget->setProjectFile(dlg->projectPath());
+        connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
+        qDebug()<<"1";
         addTab(projectWidget,dlg->projectName());
         saveProject();
         emit menuRecentChanged(dlg->projectPath());
@@ -67,6 +69,7 @@ bool CDTProjectTabWidget::openProject(QString &filepath)
         else
         {
             QFileInfo fileinfo(projectWidget->file);
+            connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
             addTab(projectWidget,fileinfo.fileName());
             this->setCurrentWidget(projectWidget);
             emit menuRecentChanged(filepath);
@@ -106,6 +109,8 @@ bool CDTProjectTabWidget::openProject()
             else
             {
                 QFileInfo fileinfo(projectWidget->file);
+                connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
+                qDebug()<<"2";
                 addTab(projectWidget,fileinfo.fileName());
                 this->setCurrentWidget(projectWidget);
                 emit menuRecentChanged(filepath);

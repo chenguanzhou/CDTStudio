@@ -5,7 +5,7 @@
 #include <QMenu>
 #include <QVector>
 #include <QAction>
-
+#include "cdtattributeswidget.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,8 +22,11 @@ MainWindow::MainWindow(QWidget *parent) :
     readSettings();
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
     connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),this,SLOT(updataMenuRecent(QString)));
+    connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewProject,SLOT(expandAll()));
+    connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),this,SLOT(onTreeModelUpdated()));
 
-    ui->horizontalLayoutAttributes->setMenuBar(ui->dockWidgetAttributes->toolBar());
+    ui->horizontalLayoutAttributes->setMenuBar(ui->widgetAttributes->toolBar());
+    ui->dockWidgetAttributes->setEnabled(false);
 }
 
 
@@ -61,6 +64,26 @@ void MainWindow::on_treeViewProject_customContextMenuRequested(const QPoint &pos
     ui->treeViewProject->expandAll();
 }
 
+void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
+{
+    QStandardItemModel* model = (QStandardItemModel*)(ui->treeViewProject->model());
+    if (model==NULL)
+        return;
+    CDTProjectTreeItem *item =(CDTProjectTreeItem*)(model->itemFromIndex(index));
+    if (item==NULL)
+        return;
+    int type = item->getType();
+
+    ui->dockWidgetAttributes->setEnabled(false);
+    if (type == CDTProjectTreeItem::SEGMENTION)
+    {
+        CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(item->getCorrespondingObject());        
+        ui->widgetAttributes->setSegmentationLayer(segmentationLayer);
+        ui->dockWidgetAttributes->setEnabled(true);
+    }
+
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
     ui->tabWidgetProject->openProject();
@@ -94,7 +117,7 @@ void MainWindow::readSettings()
         {
             QAction* recentFile = new QAction(path,this);
             ui->menu_Recent->addAction(recentFile);
-            connect(recentFile,SIGNAL(triggered()),this,SLOT(on_action_RecentFile_triggered()));
+            connect(recentFile,SIGNAL(triggered()),this,SLOT(onRecentFile()));
         }
     }
     setting.endGroup();
@@ -126,7 +149,7 @@ void MainWindow::updataMenuRecent(QString path)
     }
     QAction* recentFile = new QAction(path,this);
     ui->menu_Recent->insertAction(actions[0],recentFile);
-    connect(recentFile,SIGNAL(triggered()),this,SLOT(on_action_RecentFile_triggered()));
+    connect(recentFile,SIGNAL(triggered()),this,SLOT(onRecentFile()));
     if((ui->menu_Recent->actions()).size() >recentFileCount)
     {
         for(int i =recentFileCount;i < (ui->menu_Recent->actions()).size();++i)
@@ -136,7 +159,12 @@ void MainWindow::updataMenuRecent(QString path)
     }
 }
 
-void MainWindow::on_action_RecentFile_triggered()
+void MainWindow::onTreeModelUpdated()
+{
+    qDebug()<<"lala";
+}
+
+void MainWindow::onRecentFile()
 {
     QAction* action = (QAction*)sender();
     ui->tabWidgetProject->openProject(action->text());
@@ -146,3 +174,7 @@ void MainWindow::closeEvent(QCloseEvent *)
 {
     ui->tabWidgetProject->closeAll();
 }
+
+
+
+

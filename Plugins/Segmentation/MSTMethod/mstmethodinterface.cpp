@@ -22,7 +22,7 @@ QWidget *MSTMethodInterface::paramsForm()
 {
     FormMST *frmMST= new FormMST();
     frmMST->setInterface(this);
-    connect(frmMST,SIGNAL(finished()),this,SIGNAL(finished()));
+    connect(frmMST,SIGNAL(finished(QMap<QString, QVariant>)),this,SIGNAL(finished(QMap<QString, QVariant>)));
     return frmMST;
 }
 

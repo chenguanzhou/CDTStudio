@@ -17,12 +17,11 @@ CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
     connect(this,SIGNAL(markfilePathChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(shapefilePathChanged()),this,SIGNAL(segmentationChanged()));
-    connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
-
-    connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
+    connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));    
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),(CDTImageLayer*)(this->parent()),SLOT(removeSegmentation(CDTSegmentationLayer*)));
     connect(this,SIGNAL(segmentationChanged()),(CDTImageLayer*)(this->parent()),SIGNAL(imageLayerChanged()));
 
+    connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),this,SLOT(removeAllClassifications()));
 }
 
@@ -141,6 +140,11 @@ QString CDTSegmentationLayer::method() const
     return m_method;
 }
 
+CDTDatabaseConnInfo CDTSegmentationLayer::databaseURL() const
+{
+    return m_dbUrl;
+}
+
 void CDTSegmentationLayer::setName(const QString &name)
 {
     m_name = name;
@@ -165,10 +169,17 @@ void CDTSegmentationLayer::setMethodParams(const QString &methodName, const QMap
     m_params = params;
 }
 
+void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
+{
+    m_dbUrl = url;
+//    emit methodParamsChanged();
+    emit segmentationChanged();
+}
+
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
 {
     out<<segmentation.m_name<<segmentation.m_shapefilePath<<segmentation.m_method
-      <<segmentation.m_params<<segmentation.attributes<<segmentation.samples;
+      <<segmentation.m_params<<segmentation.attributes<<segmentation.samples<<segmentation.m_dbUrl;
 
     out<<segmentation.classifications.size();
     for (int i=0;i<segmentation.classifications.size();++i)
@@ -181,7 +192,7 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
 QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
 {
     in>>segmentation.m_name>>segmentation.m_shapefilePath>>segmentation.m_method
-     >>segmentation.m_params>>segmentation.attributes>>segmentation.samples;
+     >>segmentation.m_params>>segmentation.attributes>>segmentation.samples>>segmentation.m_dbUrl;
 
     int count;
     in>>count;

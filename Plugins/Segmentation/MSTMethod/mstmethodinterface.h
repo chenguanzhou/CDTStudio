@@ -1,7 +1,8 @@
 #ifndef MSTMETHODINTERFACE_H
 #define MSTMETHODINTERFACE_H
 
-#include "../../../Interfaces/cdtsegmentationInterface.h"
+//#include "../../../Interfaces/cdtsegmentationInterface.h"
+#include "cdtsegmentationInterface.h"
 class FormMST;
 class MSTMethodInterface:public CDTSegmentationInterface
 {

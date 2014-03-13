@@ -10,9 +10,11 @@
 #include "cdtsample.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
-
+#include "cdtattributeswidget.h"
 
 class CDTClassification;
+struct CDTDatabaseConnInfo;
+
 class CDTSegmentationLayer:public CDTBaseObject
 {
     Q_OBJECT
@@ -20,6 +22,7 @@ class CDTSegmentationLayer:public CDTBaseObject
     Q_PROPERTY(QString shapefilePath READ shapefilePath WRITE setShapefilePath NOTIFY shapefilePathChanged)
     Q_PROPERTY(QString markfilePath READ markfilePath WRITE setMarkfilePath NOTIFY markfilePathChanged)
     Q_PROPERTY(QString method READ method)
+
 public:
     explicit CDTSegmentationLayer(QObject *parent = 0);
 
@@ -32,11 +35,7 @@ public:
     QString shapefilePath() const;
     QString markfilePath() const;
     QString method()const;
-
-    void setName(const QString& name);
-    void setShapefilePath(const QString &shpPath);
-    void setMarkfilePath(const QString &mkPath);
-    void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
+    CDTDatabaseConnInfo databaseURL() const;
 
 signals:
     void nameChanged();
@@ -52,19 +51,25 @@ public slots:
     void remove();
     void removeClassification(CDTClassification *);
     void removeAllClassifications();
+    void setName(const QString& name);
+    void setShapefilePath(const QString &shpPath);
+    void setMarkfilePath(const QString &mkPath);
+    void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
+    void setDatabaseURL(CDTDatabaseConnInfo url);
 private:
     QString m_name;
     QString m_shapefilePath;
     QString m_markfilePath;
+    CDTDatabaseConnInfo    m_dbUrl;
     QString m_method;    
     QMap<QString,QVariant> m_params;
     QVector<CDTClassification *> classifications;
     CDTAttributes attributes;
     QMap<QString,CDTSample> samples;
+
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;
     QAction *actionRemoveAllClassifications;
-
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
 QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);
