@@ -37,7 +37,6 @@ MSTSegmenter::MSTSegmenter(const QString &inputImagePath,
 {
     GDALAllRegister();
     CPLSetConfigOption("GDAL_FILENAME_IS_UTF8","YES");
-    qDebug()<<"a";
 }
 
 MSTSegmenter::~MSTSegmenter()

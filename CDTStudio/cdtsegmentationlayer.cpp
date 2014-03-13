@@ -178,8 +178,8 @@ void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
 
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
 {
-    out<<segmentation.m_name<<segmentation.m_shapefilePath<<segmentation.m_method
-      <<segmentation.m_params<<segmentation.attributes<<segmentation.samples<<segmentation.m_dbUrl;
+    out<<segmentation.m_name<<segmentation.m_shapefilePath<<segmentation.m_method<<segmentation.m_params
+      <<segmentation.attributes<<segmentation.samples<<segmentation.m_markfilePath<<segmentation.m_dbUrl;
 
     out<<segmentation.classifications.size();
     for (int i=0;i<segmentation.classifications.size();++i)
@@ -191,8 +191,8 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
 
 QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
 {
-    in>>segmentation.m_name>>segmentation.m_shapefilePath>>segmentation.m_method
-     >>segmentation.m_params>>segmentation.attributes>>segmentation.samples>>segmentation.m_dbUrl;
+    in>>segmentation.m_name>>segmentation.m_shapefilePath>>segmentation.m_method>>segmentation.m_params
+     >>segmentation.attributes>>segmentation.samples>>segmentation.m_markfilePath>>segmentation.m_dbUrl;
 
     int count;
     in>>count;

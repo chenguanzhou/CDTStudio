@@ -11,7 +11,7 @@ CDTProjectTreeModel::CDTProjectTreeModel(QObject *parent) :
 
 void CDTProjectTreeModel::update(CDTProject *project)
 {
-    this->clear();
+    this->removeRows(0,this->rowCount());
     CDTProjectTreeItem *item =
             new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,project->name,project);
     CDTProjectTreeItem *value =

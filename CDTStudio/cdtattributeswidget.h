@@ -46,7 +46,7 @@ public slots:
     void updateTable(CDTDatabaseConnInfo connInfo);
 
 private slots:
-    void on_actionGenerateAttributes_triggered();
+    void onActionGenerateAttributesTriggered();
     void on_pushButtonApply_clicked();    
     void on_pushButtonReset_clicked();
     void on_comboDriver_currentIndexChanged(const QString &arg1);

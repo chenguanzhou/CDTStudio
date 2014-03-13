@@ -13,18 +13,15 @@ CDTAttributesWidget::CDTAttributesWidget(QWidget *parent) :
     _toolBar(new QToolBar(tr("Attributes"),this)),
     _segmentationLayer(NULL)
 {
-
     ui->setupUi(this);
     ui->connGroupBox->setEnabled(false);
     QAction *actionGenerateAttributes = new QAction(tr("Edit Data Source"),_toolBar);
-    connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(on_actionGenerateAttributes_triggered()));
+    connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
     _toolBar->addAction(actionGenerateAttributes);
     _toolBar->setIconSize(QSize(32,32));
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    qDebug()<<QSqlDatabase::drivers();
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");    
     QStringList drivers = QSqlDatabase::drivers();
-
 
     // remove compat names
     drivers.removeAll("QMYSQL3");
@@ -101,7 +98,7 @@ void CDTAttributesWidget::updateTable(CDTDatabaseConnInfo connInfo)
     }
 }
 
-void CDTAttributesWidget::on_actionGenerateAttributes_triggered()
+void CDTAttributesWidget::onActionGenerateAttributesTriggered()
 {
     ui->connGroupBox->setEnabled(true);
 }
@@ -168,7 +165,7 @@ void CDTAttributesWidget::on_comboDriver_currentIndexChanged(const QString &arg1
 
 void CDTAttributesWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
 {
-    if (ui->tabWidget->widget(0))
+    while (ui->tabWidget->widget(0))
     {
         QWidget *widget = ui->tabWidget->widget(0);
         ui->tabWidget->removeTab(0);

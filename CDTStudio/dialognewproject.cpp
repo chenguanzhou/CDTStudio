@@ -37,7 +37,7 @@ void DialogNewProject::on_pushButton_clicked()
         return;
     QFileInfo fileinfo(path);
     ui->lineEditPath->setText(path);    
-    ui->lineEditName->setText(fileinfo.fileName());
+    ui->lineEditName->setText(fileinfo.baseName());
     setting.setValue("lastDir",fileinfo.absolutePath());
     setting.endGroup();
 }

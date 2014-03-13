@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     dialognewsegmentation.cpp\
     dialognewimage.cpp \
     cdtbaseobject.cpp \
-    cdtattributeswidget.cpp
+    cdtattributeswidget.cpp\
+    recentfilesupervisor.cpp
 
 HEADERS  += \
     ../Interfaces/cdtsegmentationInterface.h \
@@ -47,7 +48,8 @@ HEADERS  += \
     dialognewsegmentation.h \
     cdtbaseobject.h \
     cdtpluginloader.h \
-    cdtattributeswidget.h
+    cdtattributeswidget.h\
+    recentfilesupervisor.h
 
 FORMS    += mainwindow.ui \
     dialognewproject.ui \

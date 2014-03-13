@@ -48,7 +48,7 @@ void DialogNewImage::on_pushButton_clicked()
     for(int i=0;i< ui->comboBox->count();++i)
     {
         QString tempdir = ui->comboBox->itemText(i);
-        if(dir == tempdir)
+        if(QFileInfo (dir) ==QFileInfo (tempdir))
         {
             ui->comboBox->removeItem(i);
             break;
