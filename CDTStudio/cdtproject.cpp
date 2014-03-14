@@ -5,7 +5,8 @@
 CDTProject::CDTProject(QObject *parent):
     CDTBaseObject(parent),
     actionAddImage(new QAction(tr("Add Image"),this)),
-    removeAllImages(new QAction(tr("Remove All images"),this))
+    removeAllImages(new QAction(tr("Remove All images"),this)),
+    rename(new QAction(tr("rename"),this))
 {
     connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
     connect(removeAllImages,SIGNAL(triggered()),this,SLOT(removeAllImageLayers()));
@@ -62,10 +63,12 @@ void CDTProject::onContextMenuRequest(QWidget* parent)
 {
     removeAllImages->setIcon(QIcon(":/Icon/remove.png"));
     actionAddImage->setIcon(QIcon(":/Icon/add.png"));
+    rename->setIcon(QIcon(":/Icon/rename.png"));
     QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);
-    menu->addSeparator();
     menu->addAction(removeAllImages);
+    menu->addSeparator();
+    menu->addAction(rename);
     menu->exec(QCursor::pos());
 }
 

@@ -30,7 +30,7 @@
      <x>0</x>
      <y>0</y>
      <width>605</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -91,6 +91,9 @@
        </property>
        <property name="editTriggers">
         <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="showDropIndicator" stdset="0">
+        <bool>false</bool>
        </property>
        <property name="animated">
         <bool>true</bool>

@@ -43,6 +43,7 @@ private:
 
     QAction* actionAddImage;
     QAction* removeAllImages;
+    QAction* rename;
 
 //    void updateTreeModel(CDTProjectTreeModel* model);
 };

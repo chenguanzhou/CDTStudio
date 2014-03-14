@@ -25,13 +25,12 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
         return;
     int type = item->getType();
 
-/*    if(type ==CDTProjectTreeItem::PROJECT_ROOT)
-    {
-        CDTProject *correspondingObject =(CDTProject*) item->getCorrespondingObject();
-        correspondingObject->onContextMenu(this);
-        emit projectChanged(project);
-    }
-
+//    if(type ==CDTProjectTreeItem::PROJECT_ROOT)
+//    {
+//        item->setEditable(true);
+//        emit projectChanged(project);
+//    }
+/*
     else if(type ==CDTProjectTreeItem::IMAGE_ROOT||type ==CDTProjectTreeItem::SEGMENTION_ROOT)
     {
         CDTImageLayer *correspondingObject =(CDTImageLayer*) item->getCorrespondingObject();
@@ -51,6 +50,7 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
         correspondingObject->onContextMenuRequest(this);
 //        emit projectChanged(project);
     }
+
 }
 
 bool CDTProjectWidget::readProject(QString &filepath)
