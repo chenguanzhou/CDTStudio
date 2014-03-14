@@ -4,16 +4,16 @@
 #include "cdtimagelayer.h"
 #include <QList>
 #include <QMenu>
+#include <QInputDialog>
 
 
 CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
     :CDTBaseObject(parent),
       addClassifications(new QAction(tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this)),
-      actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this))
+      actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this)),
+      actionRename(new QAction(tr("Rename Segmentation Name"),this))
 {
-    connect(addClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
-
     connect(this,SIGNAL(markfilePathChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(shapefilePathChanged()),this,SIGNAL(segmentationChanged()));
@@ -21,8 +21,10 @@ CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),(CDTImageLayer*)(this->parent()),SLOT(removeSegmentation(CDTSegmentationLayer*)));
     connect(this,SIGNAL(segmentationChanged()),(CDTImageLayer*)(this->parent()),SIGNAL(imageLayerChanged()));
 
+    connect(addClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
     connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),this,SLOT(removeAllClassifications()));
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
 }
 
 void CDTSegmentationLayer::addClassification(CDTClassification *classification)
@@ -73,12 +75,27 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     actionRemoveSegmentation->setIcon(QIcon(":/Icon/remove.png"));
     actionRemoveAllClassifications->setIcon(QIcon(":/Icon/remove.png"));
     addClassifications->setIcon(QIcon(":/Icon/add.png"));
+    actionRename->setIcon(QIcon(":/Icon/rename.png"));
     QMenu *menu =new QMenu;
     menu->addAction(addClassifications);
-    menu->addSeparator();
     menu->addAction(actionRemoveSegmentation);
     menu->addAction(actionRemoveAllClassifications);
+    menu->addSeparator();
+    menu->addAction(actionRename);
     menu->exec(QCursor::pos());
+}
+
+void CDTSegmentationLayer::onActionRename()
+{
+    bool ok;
+    QString text = QInputDialog::getText(NULL, tr("Input Segmentation Name"),
+                                         tr("Segmentation name:"), QLineEdit::Normal,
+                                         m_name, &ok);
+    if (ok && !text.isEmpty())
+    {
+        setName(text);
+
+    }
 }
 
 void CDTSegmentationLayer::addClassification()

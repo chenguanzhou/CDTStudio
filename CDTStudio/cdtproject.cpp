@@ -1,15 +1,17 @@
 #include "cdtproject.h"
 #include "dialognewimage.h"
+#include <QInputDialog>
 #include <QMenu>
 
 CDTProject::CDTProject(QObject *parent):
     CDTBaseObject(parent),
     actionAddImage(new QAction(tr("Add Image"),this)),
     removeAllImages(new QAction(tr("Remove All images"),this)),
-    rename(new QAction(tr("rename"),this))
+    actionRename(new QAction(tr("Rename Project"),this))
 {
     connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
     connect(removeAllImages,SIGNAL(triggered()),this,SLOT(removeAllImageLayers()));
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
 }
 
 void CDTProject::addImageLayer()
@@ -63,13 +65,27 @@ void CDTProject::onContextMenuRequest(QWidget* parent)
 {
     removeAllImages->setIcon(QIcon(":/Icon/remove.png"));
     actionAddImage->setIcon(QIcon(":/Icon/add.png"));
-    rename->setIcon(QIcon(":/Icon/rename.png"));
+    actionRename->setIcon(QIcon(":/Icon/rename.png"));
     QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);
     menu->addAction(removeAllImages);
     menu->addSeparator();
-    menu->addAction(rename);
+    menu->addAction(actionRename);
     menu->exec(QCursor::pos());
+
+}
+
+void CDTProject::onActionRename()
+{
+    bool ok;
+    QString text = QInputDialog::getText(NULL, tr("Input Project Name"),
+                                         tr("Project name:"), QLineEdit::Normal,
+                                         name, &ok);
+    if (ok && !text.isEmpty())
+    {
+        setName(text);
+        emit projectChanged(this);
+    }
 }
 
 void CDTProject::childrenChanged()
