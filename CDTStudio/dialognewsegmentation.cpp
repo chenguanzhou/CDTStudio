@@ -4,8 +4,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-
-QList<CDTSegmentationInterface *> DialogNewSegmentation::plugins;
+extern QList<CDTSegmentationInterface *> segmentationPlugins;
 
 DialogNewSegmentation::DialogNewSegmentation(const QString &inputImage, QWidget *parent) :
     QDialog(parent),
@@ -98,7 +97,7 @@ void DialogNewSegmentation::on_comboBox_currentIndexChanged(int index)
             delete lastWidget;
         }
     }
-    gridLatoutPlugin->addWidget(plugins[index]->paramsForm(),0,0);
+    gridLatoutPlugin->addWidget(segmentationPlugins[index]->paramsForm(),0,0);
     this->adjustSize();
 }
 
@@ -144,9 +143,7 @@ void DialogNewSegmentation::on_pushButtonShapefile_clicked()
 
 void DialogNewSegmentation::loadPlugins()
 {
-    if (plugins.size()==0)
-        plugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();
-    foreach (CDTSegmentationInterface* plugin, plugins) {
+    foreach (CDTSegmentationInterface* plugin, segmentationPlugins) {
         ui->comboBox->addItem(plugin->segmentationMethod());
         plugin->setInputImagePath(inputImagePath);
         connect(plugin,SIGNAL(finished(QMap<QString,QVariant>)),this,SLOT(onFinished(QMap<QString,QVariant>)));
@@ -156,15 +153,15 @@ void DialogNewSegmentation::loadPlugins()
 void DialogNewSegmentation::on_comboBoxMarkfile_currentIndexChanged(const QString &arg1)
 {
     int currentIndex = ui->comboBox->currentIndex();
-    if (currentIndex<plugins.size())
-        plugins[currentIndex]->setMarkfilePath(arg1);
+    if (currentIndex<segmentationPlugins.size())
+        segmentationPlugins[currentIndex]->setMarkfilePath(arg1);
 }
 
 void DialogNewSegmentation::on_comboBoxShapefile_currentIndexChanged(const QString &arg1)
 {
     int currentIndex = ui->comboBox->currentIndex();
-    if (currentIndex<plugins.size())
-        plugins[currentIndex]->setShapefilePath(arg1);
+    if (currentIndex<segmentationPlugins.size())
+        segmentationPlugins[currentIndex]->setShapefilePath(arg1);
 }
 
 void DialogNewSegmentation::onFinished(QMap<QString,QVariant> params)

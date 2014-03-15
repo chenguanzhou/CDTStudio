@@ -26,11 +26,6 @@ public:
 
 signals:
     void finished(QMap<QString, QVariant>);
-    //    void currentProgressChanged(QString);
-    //    void progressBarValueChanged(int);
-    //    void progressBarSizeChanged(int,int);
-    //    void showWarningMessage(QString);
-
     void onMarkfilePathChanged(const QString& path);
     void onShapefilePathChanged(const QString& path);
 

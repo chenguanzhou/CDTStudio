@@ -43,9 +43,10 @@ signals:
 public slots:
     void setDatabaseURL(CDTDatabaseConnInfo url);
     void setSegmentationLayer(CDTSegmentationLayer *layer);
-    void updateTable(CDTDatabaseConnInfo connInfo);
+    void updateTable();
 
 private slots:
+    void onActionEditDataSourceTriggered();
     void onActionGenerateAttributesTriggered();
     void on_pushButtonApply_clicked();    
     void on_pushButtonReset_clicked();

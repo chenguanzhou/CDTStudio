@@ -12,10 +12,15 @@ CONFIG += plugin
 
 DESTDIR = ../../../CDTStudio/plugins
 
+INCLUDEPATH += ../../../Interfaces
+
 SOURCES += spectralinterface.cpp
 
-HEADERS += spectralinterface.h
+HEADERS += spectralinterface.h \
+    ../../../Interfaces/cdtattributesinterface.h
 OTHER_FILES += Spectral.json
+
+LIBS += -lgdal_i
 
 unix {
     target.path = /usr/lib

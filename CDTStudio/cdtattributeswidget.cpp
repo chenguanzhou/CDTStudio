@@ -4,6 +4,7 @@
 #include <QtSql>
 #include <QDebug>
 #include "cdtsegmentationlayer.h"
+#include "dialoggenerateattributes.h"
 #include <QMessageBox>
 #include <QTableView>
 
@@ -15,14 +16,18 @@ CDTAttributesWidget::CDTAttributesWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->connGroupBox->setEnabled(false);
-    QAction *actionGenerateAttributes = new QAction(tr("Edit Data Source"),_toolBar);
+    _toolBar->setIconSize(QSize(32,32));
+
+    QAction *actionEditDataSource = new QAction(tr("Edit Data Source"),_toolBar);
+    connect(actionEditDataSource,SIGNAL(triggered()),this,SLOT(onActionEditDataSourceTriggered()));
+    _toolBar->addAction(actionEditDataSource);
+
+    QAction *actionGenerateAttributes = new QAction(tr("Generate Attributes"),_toolBar);
     connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
     _toolBar->addAction(actionGenerateAttributes);
-    _toolBar->setIconSize(QSize(32,32));
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");    
     QStringList drivers = QSqlDatabase::drivers();
-
     // remove compat names
     drivers.removeAll("QMYSQL3");
     drivers.removeAll("QOCI8");
@@ -81,7 +86,7 @@ void CDTAttributesWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
     connect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(onSegmentationDestroyed()));
 }
 
-void CDTAttributesWidget::updateTable(CDTDatabaseConnInfo connInfo)
+void CDTAttributesWidget::updateTable()
 {
 
     QStringList tableNames = QSqlDatabase::database().tables();
@@ -98,9 +103,15 @@ void CDTAttributesWidget::updateTable(CDTDatabaseConnInfo connInfo)
     }
 }
 
-void CDTAttributesWidget::onActionGenerateAttributesTriggered()
+void CDTAttributesWidget::onActionEditDataSourceTriggered()
 {
     ui->connGroupBox->setEnabled(true);
+}
+
+void CDTAttributesWidget::onActionGenerateAttributesTriggered()
+{
+    DialogGenerateAttributes dlg(3);
+    dlg.exec();
 }
 
 void CDTAttributesWidget::on_pushButtonApply_clicked()
@@ -187,9 +198,8 @@ void CDTAttributesWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
     else
     {
         qDebug()<<"Open database "<<connInfo.dbType<<connInfo.dbName<<"suceed";
+        updateTable();
     }
-
-    updateTable(connInfo);
 }
 
 void CDTAttributesWidget::onSegmentationDestroyed()
