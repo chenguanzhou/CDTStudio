@@ -16,15 +16,74 @@ public:
     QString methodType;
 };
 
+template <class T>
+class AttributeParams
+{
+public:
+    AttributeParams(){}
+    AttributeParams(
+            const QVector<QPoint> &ptVecI,
+            const T &buf,
+            int dt,
+            int nx,
+            int ny,
+            const QVector<QPointF> &ptVecF,
+            const QVector<QPointF> &rotPtVec,
+            const QVector<QPointF> &ringPtVec,
+            double areaSize,
+            double borLength,
+            double lgSideOfMBR,
+            double stSideOfMBR,
+            double majSemiAxesOfAE,
+            double minSemiAxesOfAE,
+            const QPointF rotCenter):
+        pointsVecI(ptVecI),
+        buffer(buf),
+        dataType(dt),
+        nXSize(nx),
+        nYSize(ny),
+        pointsVecF(ptVecF),
+        rotatedPointsVec(rotPtVec),
+        ringPointsVec(ringPtVec),
+        area(areaSize),
+        borderLength(borLength),
+        longSideOfMBR(lgSideOfMBR),
+        shortSideOfMBR(stSideOfMBR),
+        majorSemiAxesOfAE(majSemiAxesOfAE),
+        minorSemiAxesOfAE(minSemiAxesOfAE),
+        rotated_center(rotCenter){}
+
+    //Image Coordinate
+    QVector<QPoint> pointsVecI;
+    T buffer;
+    int dataType;
+    int nXSize;
+    int nYSize;
+
+    //Spatial Coordinate
+    QVector<QPointF> pointsVecF;
+    QVector<QPointF> rotatedPointsVec;
+    QVector<QPointF> ringPointsVec;
+    double area;
+    double borderLength;
+    double longSideOfMBR;
+    double shortSideOfMBR;
+    double majorSemiAxesOfAE;
+    double minorSemiAxesOfAE;
+    QPointF rotated_center;
+};
+
+typedef AttributeParams<QVector<uchar*> > AttributeParamsMultiBand;
+typedef AttributeParams<uchar*> AttributeParamsSingleBand;
+
 class CDTAttributesInterface: public QObject
 {
     Q_OBJECT
 public:
     explicit CDTAttributesInterface(QObject* parent = 0):QObject(parent)
     {
-        qRegisterMetaType<QVector<QPoint> >("QVector<QPoint>");
-        qRegisterMetaType<QVector<uchar*> >("QVector<uchar*>");
-        qRegisterMetaType<uchar* >("uchar*");
+        qRegisterMetaType<AttributeParamsSingleBand>("AttributeParamsSingleBand");
+        qRegisterMetaType<AttributeParamsMultiBand>("AttributeParamsMultiBand");
     }
 
     virtual QString attributesType() const=0;

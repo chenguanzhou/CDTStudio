@@ -62,6 +62,7 @@ private:
 
     CDTDatabaseConnInfo dbConnInfoFromWidgets();
     void updateWidgetsByUrl(const CDTDatabaseConnInfo& dbConnInfo);
+    void clearTables();
 };
 
 #endif // FORMATTRIBUTES_H

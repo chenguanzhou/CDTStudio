@@ -24,7 +24,7 @@ class CDTSegmentationLayer:public CDTBaseObject
     Q_PROPERTY(QString method READ method)
 
 public:
-    explicit CDTSegmentationLayer(QObject *parent = 0);
+    explicit CDTSegmentationLayer(QString imagePath,QObject *parent = 0);
 
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
     friend QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);
@@ -36,6 +36,7 @@ public:
     QString markfilePath() const;
     QString method()const;
     CDTDatabaseConnInfo databaseURL() const;
+    QString imagePath()const;
 
 signals:
     void nameChanged();
@@ -58,6 +59,7 @@ public slots:
     void setDatabaseURL(CDTDatabaseConnInfo url);
 private:
     QString m_name;
+    QString m_imagePath;
     QString m_shapefilePath;
     QString m_markfilePath;
     CDTDatabaseConnInfo    m_dbUrl;

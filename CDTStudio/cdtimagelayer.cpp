@@ -40,7 +40,7 @@ void CDTImageLayer::addSegmentation()
     DialogNewSegmentation* dlg = new DialogNewSegmentation(m_path);
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
-        CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(this);
+        CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(m_path,this);
         segmentation->setName(dlg->name());
         segmentation->setShapefilePath(dlg->shapefilePath());
         segmentation->setMarkfilePath(dlg->markfilePath());
@@ -122,7 +122,7 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
     in>>count;
     for (int i=0;i<count;++i)
     {
-        CDTSegmentationLayer* segmentation = new CDTSegmentationLayer(&image);
+        CDTSegmentationLayer* segmentation = new CDTSegmentationLayer(image.m_path,&image);
         in>>(*segmentation);
         image.segmentations.push_back(segmentation);
     }

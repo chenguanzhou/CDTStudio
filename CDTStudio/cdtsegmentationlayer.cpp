@@ -6,8 +6,9 @@
 #include <QMenu>
 
 
-CDTSegmentationLayer::CDTSegmentationLayer(QObject *parent)
+CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
     :CDTBaseObject(parent),
+      m_imagePath(imagePath),
       addClassifications(new QAction(tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this)),
       actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this))
@@ -73,7 +74,7 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     actionRemoveSegmentation->setIcon(QIcon(":/Icon/remove.png"));
     actionRemoveAllClassifications->setIcon(QIcon(":/Icon/remove.png"));
     addClassifications->setIcon(QIcon(":/Icon/add.png"));
-    QMenu *menu =new QMenu;
+    QMenu *menu =new QMenu(parent);
     menu->addAction(addClassifications);
     menu->addSeparator();
     menu->addAction(actionRemoveSegmentation);
@@ -92,7 +93,6 @@ void CDTSegmentationLayer::addClassification()
     classification->setMethodParams("new knn",param);
 
     addClassification(classification);
-    qDebug();
 }
 
 void CDTSegmentationLayer::remove()
@@ -143,6 +143,11 @@ QString CDTSegmentationLayer::method() const
 CDTDatabaseConnInfo CDTSegmentationLayer::databaseURL() const
 {
     return m_dbUrl;
+}
+
+QString CDTSegmentationLayer::imagePath() const
+{
+    return m_imagePath;
 }
 
 void CDTSegmentationLayer::setName(const QString &name)

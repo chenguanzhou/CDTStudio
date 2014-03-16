@@ -21,14 +21,16 @@ SOURCES += \
 
 HEADERS +=\
     ../../../Interfaces/cdtsegmentationInterface.h \
+    ../../../CDTStudio/cdtbasethread.h \
     mstmethodinterface.h \
     formmst.h\
     polygonizer.h\
     mstsegmenter.h\
-    graphkruskal.h\
-    cdtbasethread.h
+    graphkruskal.h
 
-INCLUDEPATH += ../../../Interfaces
+
+INCLUDEPATH += ../../../Interfaces\
+    ../../../CDTStudio
 
 OTHER_FILES += MSTMethod.json
 

@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     cdtbaseobject.cpp \
     cdtattributeswidget.cpp\
     recentfilesupervisor.cpp \
-    dialoggenerateattributes.cpp
+    dialoggenerateattributes.cpp \
+    cdtattributegenerator.cpp
 
 HEADERS  += \
     ../Interfaces/cdtsegmentationInterface.h \
@@ -52,7 +53,9 @@ HEADERS  += \
     cdtattributeswidget.h\
     recentfilesupervisor.h \
     ../Interfaces/cdtattributesinterface.h \
-    dialoggenerateattributes.h
+    dialoggenerateattributes.h \
+    cdtattributegenerator.h \
+    cdtbasethread.h
 
 FORMS    += mainwindow.ui \
     dialognewproject.ui \
@@ -62,6 +65,16 @@ FORMS    += mainwindow.ui \
     dialoggenerateattributes.ui
 
 INCLUDEPATH += ../Interfaces
+
+LIBS += -lstxxl
+
+unix{
+LIBS += -lgdal -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc
+}
+!unix{
+LIBS += -lgdal_i
+}
+
 
 RESOURCES += \
     ../resource.qrc

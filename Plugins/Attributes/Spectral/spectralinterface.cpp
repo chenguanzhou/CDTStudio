@@ -7,7 +7,6 @@
 SpectralInterface::SpectralInterface(QObject *parent) :
     CDTAttributesInterface(parent)
 {
-
 }
 
 QString SpectralInterface::attributesType() const
@@ -41,44 +40,44 @@ QString SpectralInterface::tableName() const
     return QString("ObjectID_Spectral");
 }
 
-qreal SpectralInterface::brightness(QVector<QPoint> points, QVector<uchar *> buffer, int dataType, int nXSize, int nYSize) const
+qreal SpectralInterface::brightness(const AttributeParamsMultiBand &param) const
 {
-    qreal refValue = 0;
-    for (int i=0;i<points.size();++i)
+    qreal refValue = 0;    
+    for (int i=0;i<param.pointsVecI.size();++i)
     {
-        for (int k=0;k<buffer.size();++k)
+        for (int k=0;k<param.buffer.size();++k)
         {
-            refValue += SRCVAL(buffer[k],dataType,points[i].y() * nXSize + points[i].x());
+            refValue += SRCVAL(param.buffer[k],param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
         }
-    }
-    return  refValue / (buffer.size()*points.size());
+    }    
+    return  refValue / (param.buffer.size()*param.pointsVecI.size());
 }
 
-qreal SpectralInterface::layer_mean(QVector<QPoint> points, uchar *buffer, int dataType, int nXSize, int nYSize) const
+qreal SpectralInterface::layer_mean(const AttributeParamsSingleBand& param) const
 {
     qreal refValue =0;
-    for (int i=0;i<points.size();++i)
+    for (int i=0;i<param.pointsVecI.size();++i)
     {
-        refValue += SRCVAL(buffer,dataType,points[i].y() * nXSize + points[i].x());
+        refValue += SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
     }
-    return    refValue / points.size();
+    return    refValue / param.pointsVecI.size();
 }
 
-qreal SpectralInterface::layer_stddev(QVector<QPoint> points, uchar *buffer, int dataType, int nXSize, int nYSize) const
+qreal SpectralInterface::layer_stddev(const AttributeParamsSingleBand& param) const
 {
     qreal Mean = 0;
-    qreal refValue;
-    for (int i=0;i<points.size();++i)
+    qreal refValue = 0;
+    for (int i=0;i<param.pointsVecI.size();++i)
     {
-        Mean += SRCVAL(buffer,dataType,points[i].y() * nXSize + points[i].x());
+        Mean += SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
     }
-    Mean /= points.size();
-    for (int i=0;i<points.size();++i)
+    Mean /= param.pointsVecI.size();
+    for (int i=0;i<param.pointsVecI.size();++i)
     {
-        refValue +=(Mean-SRCVAL(buffer,dataType,points[i].y() * nXSize + points[i].x()))
-                * (Mean-SRCVAL(buffer,dataType,points[i].y()*nXSize + points[i].x()));
+        refValue +=(Mean-SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x()))
+                * (Mean-SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y()*param.nXSize + param.pointsVecI[i].x()));
     }
-    return sqrt(refValue / points.size());
+    return sqrt(refValue / param.pointsVecI.size());
 }
 
 #if QT_VERSION < 0x050000

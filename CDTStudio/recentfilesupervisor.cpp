@@ -23,7 +23,8 @@ void recentfilesupervisor::loadSetting()
     for(int i=0;i <window->recentFilePaths.size();++i)
     {
         QString path = window->recentFilePaths[i];
-        if(!path.isEmpty())
+        QFileInfo info(path);
+        if(!path.isEmpty()&&info.exists())
         {
             QAction* recentFile = new QAction(path,this);
             window->ui->menu_Recent->addAction(recentFile);

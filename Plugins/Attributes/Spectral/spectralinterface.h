@@ -19,23 +19,13 @@ public:
     QList<AttributeMethod> attributesMethods()const;
     QString tableName() const;
 
-    Q_INVOKABLE CDT_ATTRIBUTE_ALL_BAND qreal brightness(
-            QVector<QPoint> points,
-            QVector<uchar*> buffer,
-            int dataType,
-            int nXSize,int nYSize) const;
+    Q_INVOKABLE CDT_ATTRIBUTE_ALL_BAND qreal brightness(const AttributeParamsMultiBand &param) const;
 
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal layer_mean(
-            QVector<QPoint> points,
-            uchar* buffer,
-            int dataType,
-            int nXSize,int nYSize) const;
+            const AttributeParamsSingleBand& param) const;
 
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal layer_stddev(
-            QVector<QPoint> points,
-            uchar* buffer,
-            int dataType,
-            int nXSize,int nYSize) const;
+            const AttributeParamsSingleBand& param) const;
 
 private:
 

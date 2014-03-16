@@ -88,11 +88,10 @@ void CDTAttributesWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
 
 void CDTAttributesWidget::updateTable()
 {
-
     QStringList tableNames = QSqlDatabase::database().tables();
     foreach (QString tableName, tableNames) {
         QTableView* widget = new QTableView(ui->tabWidget);
-        QSqlRelationalTableModel* model = new QSqlRelationalTableModel(this);
+        QSqlRelationalTableModel* model = new QSqlRelationalTableModel(widget);
         model->setTable(tableName);
         model->select();
         widget->setModel(model);
@@ -110,8 +109,10 @@ void CDTAttributesWidget::onActionEditDataSourceTriggered()
 
 void CDTAttributesWidget::onActionGenerateAttributesTriggered()
 {
-    DialogGenerateAttributes dlg(3);
+    clearTables();
+    DialogGenerateAttributes dlg(segmentationLayer(),3);
     dlg.exec();
+    updateTable();
 }
 
 void CDTAttributesWidget::on_pushButtonApply_clicked()
@@ -152,6 +153,16 @@ void CDTAttributesWidget::updateWidgetsByUrl(const CDTDatabaseConnInfo &dbConnIn
     ui->portSpinBox->setValue(dbConnInfo.port);
 }
 
+void CDTAttributesWidget::clearTables()
+{
+    while (ui->tabWidget->widget(0))
+    {
+        QWidget *widget = ui->tabWidget->widget(0);
+        ui->tabWidget->removeTab(0);
+        delete widget;
+    }
+}
+
 void CDTAttributesWidget::on_comboDriver_currentIndexChanged(const QString &arg1)
 {
     if(arg1 == "QSQLITE")
@@ -176,12 +187,7 @@ void CDTAttributesWidget::on_comboDriver_currentIndexChanged(const QString &arg1
 
 void CDTAttributesWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
 {
-    while (ui->tabWidget->widget(0))
-    {
-        QWidget *widget = ui->tabWidget->widget(0);
-        ui->tabWidget->removeTab(0);
-        delete widget;
-    }
+    clearTables();
 
     if (connInfo.isNull())
         return;
@@ -207,20 +213,17 @@ void CDTAttributesWidget::onSegmentationDestroyed()
     ui->tabWidget->setEnabled(false);
 }
 
-
 QDataStream &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo)
 {
     out<<dbInfo.dbType<<dbInfo.dbName<<dbInfo.username<<dbInfo.password<<dbInfo.hostName<<dbInfo.port;
     return out;
 }
 
-
 QDataStream &operator>>(QDataStream &in, CDTDatabaseConnInfo &dbInfo)
 {
     in>>dbInfo.dbType>>dbInfo.dbName>>dbInfo.username>>dbInfo.password>>dbInfo.hostName>>dbInfo.port;
     return in;
 }
-
 
 bool CDTDatabaseConnInfo::operator==(const CDTDatabaseConnInfo &rhs) const
 {
