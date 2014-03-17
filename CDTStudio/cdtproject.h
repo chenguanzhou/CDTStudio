@@ -19,7 +19,6 @@ public:
     friend class CDTProjectTreeModel;
 
     void addImageLayer(CDTImageLayer *image);
-
     void setName(const QString& n);
     void setPath(const QString& p);
 
@@ -31,6 +30,7 @@ public slots:
     void removeImageLayer(CDTImageLayer *image);
     void removeAllImageLayers();
     void onContextMenuRequest(QWidget *parent);
+    void onActionRename();
 
 
 private slots:
@@ -43,6 +43,7 @@ private:
 
     QAction* actionAddImage;
     QAction* removeAllImages;
+    QAction* actionRename;
 
 //    void updateTreeModel(CDTProjectTreeModel* model);
 };

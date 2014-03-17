@@ -1,5 +1,6 @@
 #include "cdtimagelayer.h"
 #include <QMenu>
+#include <QInputDialog>
 #include "dialognewsegmentation.h"
 #include "cdtproject.h"
 
@@ -7,12 +8,14 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
     :CDTBaseObject(parent),
       addSegmentationLayer(new QAction(tr("Add Segmentation"),this)),
       removeImage(new QAction(tr("Remove Image"),this)),
-      removeAllSegmentations(new QAction(tr("Remove All Segmentations"),this))
+      removeAllSegmentations(new QAction(tr("Remove All Segmentations"),this)),
+      actionRename(new QAction(tr("Rename Image"),this))
 {
     connect(addSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
     connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
     connect(removeAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
 }
 
 void CDTImageLayer::setPath(const QString &path)
@@ -73,6 +76,19 @@ void CDTImageLayer::removeAllSegmentationLayers()
     emit imageLayerChanged();
 }
 
+void CDTImageLayer::onActionRename()
+{
+    bool ok;
+    QString text = QInputDialog::getText(NULL, tr("Input Image Name"),
+                                         tr("Image name:"), QLineEdit::Normal,
+                                         m_name, &ok);
+    if (ok && !text.isEmpty())
+    {
+        setName(text);
+
+    }
+}
+
 
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
@@ -96,12 +112,14 @@ void CDTImageLayer::onContextMenuRequest(QWidget *parent)
     removeImage->setIcon(QIcon(":/Icon/remove.png"));
     removeAllSegmentations->setIcon(QIcon(":/Icon/remove.png"));
     addSegmentationLayer->setIcon(QIcon(":/Icon/add.png"));
+    actionRename->setIcon(QIcon(":/Icon/rename.png"));
     QMenu *menu =new QMenu(parent);
 
     menu->addAction(addSegmentationLayer);
-    menu->addSeparator();
     menu->addAction(removeImage);
     menu->addAction(removeAllSegmentations);
+    menu->addSeparator();
+    menu->addAction(actionRename);
 
     menu->exec(QCursor::pos());
 }

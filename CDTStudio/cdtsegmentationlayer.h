@@ -48,6 +48,7 @@ signals:
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
     void onContextMenuRequest(QWidget *parent);
+    void onActionRename();
     void addClassification();
     void remove();
     void removeClassification(CDTClassification *);
@@ -72,6 +73,7 @@ private:
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;
     QAction *actionRemoveAllClassifications;
+    QAction *actionRename;
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
 QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);

@@ -38,6 +38,7 @@ public slots:
     void remove();
     void removeSegmentation(CDTSegmentationLayer*);
     void removeAllSegmentationLayers();
+    void onActionRename();
 
 private:
     QString m_path;
@@ -46,6 +47,7 @@ private:
     QAction* addSegmentationLayer;
     QAction* removeImage;
     QAction* removeAllSegmentations;
+    QAction* actionRename;
 
 };
 

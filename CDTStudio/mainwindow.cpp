@@ -73,7 +73,6 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     if (item==NULL)
         return;
     int type = item->getType();
-
     ui->dockWidgetAttributes->setEnabled(false);
     if (type == CDTProjectTreeItem::SEGMENTION)
     {
@@ -81,7 +80,6 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         ui->widgetAttributes->setSegmentationLayer(segmentationLayer);
         ui->dockWidgetAttributes->setEnabled(true);
     }
-
 }
 
 void MainWindow::on_actionOpen_triggered()

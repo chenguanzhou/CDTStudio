@@ -9,5 +9,6 @@
         <file>Icon/remove.png</file>
         <file>Icon/add.png</file>
         <file>Icon/recentfile.png</file>
+        <file>Icon/rename.png</file>
     </qresource>
 </RCC>
