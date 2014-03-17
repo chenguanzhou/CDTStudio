@@ -3,6 +3,7 @@
 
 #include "../../../Interfaces/cdtattributesinterface.h"
 
+
 class SpectralInterface : public CDTAttributesInterface
 {
     Q_OBJECT
@@ -26,6 +27,17 @@ public:
 
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal layer_stddev(
             const AttributeParamsSingleBand& param) const;
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _skewness(
+            const AttributeParamsSingleBand& param) const;
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _max_value(
+            const AttributeParamsSingleBand& param) const;
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _min_value(
+            const AttributeParamsSingleBand& param) const;
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _mean_of_inner_border(
+            const AttributeParamsSingleBand& param) const;
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _mean_of_outer_border(
+            const AttributeParamsSingleBand& param) const;
+
 
 private:
 
