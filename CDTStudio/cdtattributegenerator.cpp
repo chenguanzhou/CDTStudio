@@ -90,7 +90,11 @@ void CDTAttributeGenerator::run()
     if (initAttributeTable()==false)
         return;
 
-    computeAttributes();
+    QMap<QString,QVector<QVector<double> > > attributesValues;
+    QMap<QString,QStringList> attributesFieldNames;
+    if (computeAttributes(attributesValues,attributesFieldNames)==false)
+        return;
+    addAttributesToTables(attributesValues,attributesFieldNames);
 }
 
 bool CDTAttributeGenerator::readGeometry()
@@ -149,8 +153,12 @@ bool CDTAttributeGenerator::initAttributeTable()
         emit showWarningMessage(query.lastError().text());
         return false;
     }
-    query.exec("create table ObjectID_Info"
-               "(ObjectID int,ObjectCount int,ObjectPoints blob,x_min int,x_max int,y_min int,y_max int)");
+    if (QSqlDatabase::database().driverName()=="QMYSQL")
+        query.exec("create table ObjectID_Info"
+                   "(ObjectID int,ObjectCount int,ObjectPoints MEDIUMBLOB,x_min int,x_max int,y_min int,y_max int)");
+    else
+        query.exec("create table ObjectID_Info"
+                   "(ObjectID int,ObjectCount int,ObjectPoints blob,x_min int,x_max int,y_min int,y_max int)");
     if (query.isActive()==false)
     {
         emit showWarningMessage(query.lastError().text());
@@ -206,7 +214,11 @@ bool CDTAttributeGenerator::initAttributeTable()
 
 
     QSqlDatabase::database().transaction();
-    query.prepare("insert into ObjectID_Info values(?,?,?,?,?,?,?)");
+    if (query.prepare("insert into ObjectID_Info values(?,?,?,?,?,?,?)")==false)
+    {
+        emit showWarningMessage(query.lastError().text());
+        return false;
+    }
 
     int currentID = 0;
     QVector<QPoint> objectPoints;
@@ -234,13 +246,13 @@ bool CDTAttributeGenerator::initAttributeTable()
         {
             query.bindValue(0,currentID);
             query.bindValue(1,objectPoints.size());
-            query.bindValue(2,QByteArray((char*)&objectPoints[0],objectPoints.size()*sizeof(QPoint))  );
+            query.bindValue(2,QByteArray((char*)(&objectPoints[0]),objectPoints.size()*sizeof(QPoint))  );
             query.bindValue(3,xmin);
             query.bindValue(4,xmax);
             query.bindValue(5,ymin);
             query.bindValue(6,ymax);
-            query.exec();
-            query.next();
+            if (query.exec()==false)
+                qDebug()<<query.lastError().text();
 
             currentID = sorter->ObjectID;
             xmin = xmax = sorter->x;
@@ -267,13 +279,14 @@ bool CDTAttributeGenerator::initAttributeTable()
     _objectCount = currentID+1;
     QSqlDatabase::database().commit();
 
+
     return true;
 }
 
-bool CDTAttributeGenerator::computeAttributes()
+bool CDTAttributeGenerator::computeAttributes(
+        QMap<QString,QVector<QVector<double> > > &attributesValues,
+        QMap<QString,QStringList> &attributesFieldNames)
 {
-    QMap<QString,QVector<QVector<double> > > attributesValues;
-
     double adfGeoTransform[6];
     _poImageDS->GetGeoTransform(adfGeoTransform);
 
@@ -300,7 +313,8 @@ bool CDTAttributeGenerator::computeAttributes()
         int nYOff = query.value(5).toInt();
         int nXSize = query.value(4).toInt() - nXOff + 1;
         int nYSize = query.value(6).toInt() - nYOff + 1;
-        QPoint* points = (QPoint*)query.value(2).toByteArray().constData();
+        QByteArray byteArray = query.value(2).toByteArray();
+        QPoint* points = (QPoint*)(byteArray.data());
         QVector<QPoint> pointsVecI(pixelCount);
         QVector<QPointF> pointsVecF(pixelCount);
         QVector<QPointF> rotatedPointsVec(pixelCount);
@@ -388,7 +402,7 @@ bool CDTAttributeGenerator::computeAttributes()
         double minorSemiAxesOfAE = shortSideOfMBR * scale;
 
         QPointF rotated_center(0,0);
-        for(unsigned int i=0;i<rotatedPointsVec.size();++i)
+        for(int i=0;i<rotatedPointsVec.size();++i)
         {
             rotated_center+=rotatedPointsVec[i];
         }
@@ -413,18 +427,35 @@ bool CDTAttributeGenerator::computeAttributes()
             QStringList attributeNames = _attributes.value(plugin->attributesType());
             foreach (QString attributeName, attributeNames)
             {
-                if (attributeName.contains("angle"))//band&&angle
+                if (attributeName.contains("_angle"))//band&&angle
                 {
 
                 }
-                else if (attributeName.contains("band"))//single band
+                else if (attributeName.contains("_band"))//single band
                 {
+                    int pos = attributeName.indexOf("_band");
+                    QString funcName = attributeName.left(pos);
+                    int bandID = attributeName.mid(pos+5).toInt();
+                    qreal resultVal=0;
+                    AttributeParamsSingleBand params(
+                                pointsVecI,buffer[bandID-1],_dataType,nXSize,nYSize,pointsVecF,
+                                rotatedPointsVec,ringPointsVec,area,border_lenghth,
+                                longSideOfMBR,shortSideOfMBR,majorSemiAxesOfAE,
+                                minorSemiAxesOfAE,rotated_center);
+                    metaObject->invokeMethod(
+                                plugin,funcName.toUtf8().constData(),Qt::DirectConnection,
+                                Q_RETURN_ARG(qreal, resultVal ),
+                                Q_ARG(AttributeParamsSingleBand, params));
+
+                    attributesValue.append(resultVal);
+                    if (index==0)
+                        attributesFieldNames[tableName].append(attributeName);
 
                 }
                 else//all band
                 {
                     QString funcName = attributeName;
-                    qreal resultVal=0;                    
+                    qreal resultVal=0;
                     AttributeParamsMultiBand params(
                                 pointsVecI,buffer,_dataType,nXSize,nYSize,pointsVecF,
                                 rotatedPointsVec,ringPointsVec,area,border_lenghth,
@@ -436,9 +467,12 @@ bool CDTAttributeGenerator::computeAttributes()
                                 Q_ARG(AttributeParamsMultiBand, params));
 
                     attributesValue.append(resultVal);
+                    //                    if (!attributesFieldNames[tableName].contains(attributeName))
+                    if (index==0)
+                        attributesFieldNames[tableName].append(attributeName);
                 }
-                attributesValues[tableName].push_back(attributesValue);
             }
+            attributesValues[tableName].push_back(attributesValue);
         }
 
         for (int k=0;k<_bandCount;++k)
@@ -451,6 +485,68 @@ bool CDTAttributeGenerator::computeAttributes()
 
     emit progressBarValueChanged(barSize);
     QSqlDatabase::database().commit();
+
+    return true;
+}
+
+bool CDTAttributeGenerator::addAttributesToTables(QMap<QString, QVector<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames)
+{
+    QSqlQuery query;
+    foreach (QString tableName, attributesValues.keys()) {
+        QVector<QVector<double> > datas = attributesValues.value(tableName);
+        if (query.exec(QString("drop table if exists ") + tableName)==false)
+        {
+            emit showWarningMessage(query.lastError().text());
+            return false;
+        }
+
+        QString sqlCreate(QString("create table ")+tableName+"(ObjectID int");
+        QString sqlInsert(QString("insert into ")+tableName+ " values(?");
+        foreach (QString attributeFieldName, attributesFieldNames.value(tableName)) {
+            sqlCreate += QString(",") + attributeFieldName + " double";
+            sqlInsert += ",?";
+        }
+        sqlCreate += ")";
+        sqlInsert += ")";
+
+        qDebug()<<"sqlCreate:"<<sqlCreate;
+        qDebug()<<"sqlInsert:"<<sqlInsert;
+
+        if (query.exec(sqlCreate)==false)
+        {
+            emit showWarningMessage(query.lastError().text());
+            return false;
+        }
+
+        QSqlDatabase::database().transaction();
+        if (query.prepare(sqlInsert)==false)
+        {
+            emit showWarningMessage(query.lastError().text());
+            return false;
+        }
+
+        emit currentProgressChanged(tr("Write ")+tableName+tr(" Attributes into database"));
+        int barSize = datas.size();
+        emit progressBarSizeChanged(0,barSize);
+        int progressGap = barSize/100;
+        int index = 0;
+        foreach (QVector<double> data, datas) {
+            query.bindValue(0,index);
+            for (int k=0;k<data.size();++k)
+                query.bindValue(1+k,data[k]);
+            query.exec();
+            if (index%progressGap==0)
+                emit progressBarValueChanged(index);
+            ++index;
+        }
+
+        emit progressBarValueChanged(barSize);
+
+
+        QSqlDatabase::database().commit();
+    }
+
+
 
     return true;
 }

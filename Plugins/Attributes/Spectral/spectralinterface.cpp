@@ -41,7 +41,7 @@ QString SpectralInterface::tableName() const
 }
 
 qreal SpectralInterface::brightness(const AttributeParamsMultiBand &param) const
-{
+{    
     qreal refValue = 0;    
     for (int i=0;i<param.pointsVecI.size();++i)
     {

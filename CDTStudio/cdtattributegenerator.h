@@ -55,7 +55,8 @@ private:
 
     bool readGeometry();
     bool initAttributeTable();
-    bool computeAttributes();
+    bool computeAttributes(QMap<QString, QVector<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames);
+    bool addAttributesToTables(QMap<QString, QVector<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames);
 };
 
 class ObjectInfo
