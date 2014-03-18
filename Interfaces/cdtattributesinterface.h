@@ -87,8 +87,29 @@ public:
     }
 
     virtual QString attributesType() const=0;
-    virtual QList<AttributeMethod> attributesMethods()const=0;
     virtual QString tableName() const=0;
+
+    QList<AttributeMethod> attributesMethods()const
+    {
+        QList<AttributeMethod> methods;
+        const QMetaObject *metaObject = this->metaObject();
+        for (int i=0;i<metaObject->methodCount();++i)
+        {
+            QMetaMethod metaMethod = metaObject->method(i);
+            if (QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_ALL_BAND") ||
+                    QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_SINGLE_BAND")||
+                    QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_SINGLE_BAND_ANGLE")||
+                    QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_CUSTOM"))
+            {
+                QString name = (metaMethod.signature());
+                name = name.left(name.indexOf("("));
+                methods<<AttributeMethod(name,metaMethod.tag());
+            }
+
+        }
+        return methods;
+    }
+
 };
 
 Q_DECLARE_INTERFACE(CDTAttributesInterface,"cn.edu.WHU.CDTStudio.CDTAttributesInterface/1.0")

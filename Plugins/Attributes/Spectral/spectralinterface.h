@@ -16,8 +16,7 @@ class SpectralInterface : public CDTAttributesInterface
 public:
     SpectralInterface(QObject *parent = 0);
 
-    QString attributesType() const;
-    QList<AttributeMethod> attributesMethods()const;
+    QString attributesType() const;   
     QString tableName() const;
 
     Q_INVOKABLE CDT_ATTRIBUTE_ALL_BAND qreal brightness(const AttributeParamsMultiBand &param) const;
@@ -27,15 +26,15 @@ public:
 
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal layer_stddev(
             const AttributeParamsSingleBand& param) const;
-    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _skewness(
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal skewness(
             const AttributeParamsSingleBand& param) const;
-    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _max_value(
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal max_value(
             const AttributeParamsSingleBand& param) const;
-    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _min_value(
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal min_value(
             const AttributeParamsSingleBand& param) const;
-    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _mean_of_inner_border(
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal mean_of_inner_border(
             const AttributeParamsSingleBand& param) const;
-    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal _mean_of_outer_border(
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal mean_of_outer_border(
             const AttributeParamsSingleBand& param) const;
 
 

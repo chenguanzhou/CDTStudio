@@ -19,27 +19,6 @@ QString SpectralInterface::attributesType() const
     return tr("Spectral");
 }
 
-QList<AttributeMethod> SpectralInterface::attributesMethods() const
-{
-    QList<AttributeMethod> methods;
-    const QMetaObject *metaObject = this->metaObject();
-    for (int i=0;i<metaObject->methodCount();++i)
-    {
-        QMetaMethod metaMethod = metaObject->method(i);
-        if (QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_ALL_BAND") ||
-                QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_SINGLE_BAND")||
-                QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_SINGLE_BAND_ANGLE")||
-                QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_CUSTOM"))
-        {
-            QString name = (metaMethod.signature());
-            name = name.left(name.indexOf("("));
-            methods<<AttributeMethod(name,metaMethod.tag());
-        }
-
-    }
-    return methods;
-}
-
 QString SpectralInterface::tableName() const
 {
     return QString("ObjectID_Spectral");
@@ -85,7 +64,7 @@ qreal SpectralInterface::layer_stddev(const AttributeParamsSingleBand& param) co
     return sqrt(refValue / param.pointsVecI.size());
 }
 
-qreal SpectralInterface::_skewness(const AttributeParamsSingleBand &param) const
+qreal SpectralInterface::skewness(const AttributeParamsSingleBand &param) const
 {
     qreal mean =0,var=0;
     qreal refValue=0;
@@ -109,7 +88,7 @@ qreal SpectralInterface::_skewness(const AttributeParamsSingleBand &param) const
     return refValue;
 }
 
-qreal SpectralInterface::_max_value(const AttributeParamsSingleBand &param) const
+qreal SpectralInterface::max_value(const AttributeParamsSingleBand &param) const
 {
     qreal refValue =0;
     for(int i=0;i<param.pointsVecI.size();++i)
@@ -120,7 +99,7 @@ qreal SpectralInterface::_max_value(const AttributeParamsSingleBand &param) cons
     return refValue;
 }
 
-qreal SpectralInterface::_min_value(const AttributeParamsSingleBand &param) const
+qreal SpectralInterface::min_value(const AttributeParamsSingleBand &param) const
 {
     qreal refValue =SRCVAL(param.buffer,param.dataType,param.pointsVecI[1].y() * param.nXSize + param.pointsVecI[1].x());
     for(int i=0;i<param.pointsVecI.size();++i)
@@ -131,7 +110,7 @@ qreal SpectralInterface::_min_value(const AttributeParamsSingleBand &param) cons
     return refValue;
 }
 
-qreal SpectralInterface::_mean_of_inner_border(const AttributeParamsSingleBand &param) const
+qreal SpectralInterface::mean_of_inner_border(const AttributeParamsSingleBand &param) const
 {
     qreal refValue =0;
     QVector<QPoint> inner_border;
@@ -160,7 +139,7 @@ qreal SpectralInterface::_mean_of_inner_border(const AttributeParamsSingleBand &
     return refValue  ;
 }
 
-qreal SpectralInterface::_mean_of_outer_border(const AttributeParamsSingleBand &param) const
+qreal SpectralInterface::mean_of_outer_border(const AttributeParamsSingleBand &param) const
 {
     qreal refValue =0;
     int num=0;

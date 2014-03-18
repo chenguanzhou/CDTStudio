@@ -122,6 +122,7 @@ bool CDTAttributeGenerator::readGeometry()
     int progressGap = barSize/100;
     int index = 0;
 
+    qDebug()<<"hehe";
     OGRFeature *feature = layer->GetNextFeature();
     while (feature != NULL)
     {
@@ -137,8 +138,7 @@ bool CDTAttributeGenerator::readGeometry()
             emit progressBarValueChanged(index);
         feature = layer->GetNextFeature();
         ++index;
-    }
-
+    }    
     emit progressBarValueChanged(barSize);
     return true;
 }
