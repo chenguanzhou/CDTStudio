@@ -90,7 +90,7 @@ void CDTAttributeGenerator::run()
     if (initAttributeTable()==false)
         return;
 
-    QMap<QString,QVector<QVector<double> > > attributesValues;
+    QMap<QString,QList<QVector<double> > > attributesValues;
     QMap<QString,QStringList> attributesFieldNames;
     if (computeAttributes(attributesValues,attributesFieldNames)==false)
         return;
@@ -121,8 +121,6 @@ bool CDTAttributeGenerator::readGeometry()
     emit progressBarSizeChanged(0,barSize);
     int progressGap = barSize/100;
     int index = 0;
-
-    qDebug()<<"hehe";
     OGRFeature *feature = layer->GetNextFeature();
     while (feature != NULL)
     {
@@ -284,9 +282,11 @@ bool CDTAttributeGenerator::initAttributeTable()
 }
 
 bool CDTAttributeGenerator::computeAttributes(
-        QMap<QString,QVector<QVector<double> > > &attributesValues,
+        QMap<QString,QList<QVector<double> > > &attributesValues,
         QMap<QString,QStringList> &attributesFieldNames)
 {
+    attributesValues.clear();
+
     double adfGeoTransform[6];
     _poImageDS->GetGeoTransform(adfGeoTransform);
 
@@ -304,6 +304,11 @@ bool CDTAttributeGenerator::computeAttributes(
     emit progressBarSizeChanged(0,barSize);
     int progressGap = barSize/100;
     int index = 0;
+
+
+    QMap<QString,int> timer;
+    clock_t time_start =clock();
+
 
     while (query.next())
     {
@@ -427,6 +432,7 @@ bool CDTAttributeGenerator::computeAttributes(
             QStringList attributeNames = _attributes.value(plugin->attributesType());
             foreach (QString attributeName, attributeNames)
             {
+                clock_t t1 = clock();
                 if (attributeName.contains("_angle"))//band&&angle
                 {
 
@@ -471,6 +477,8 @@ bool CDTAttributeGenerator::computeAttributes(
                     if (index==0)
                         attributesFieldNames[tableName].append(attributeName);
                 }
+
+                timer[attributeName] += (clock()-t1);
             }
             attributesValues[tableName].push_back(attributesValue);
         }
@@ -483,17 +491,20 @@ bool CDTAttributeGenerator::computeAttributes(
         ++index;
     }
 
+    qDebug()<<timer;
+    qDebug()<<"cost: "<< (clock()-time_start)/(double)CLOCKS_PER_SEC<<"s";
+
     emit progressBarValueChanged(barSize);
     QSqlDatabase::database().commit();
 
     return true;
 }
 
-bool CDTAttributeGenerator::addAttributesToTables(QMap<QString, QVector<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames)
+bool CDTAttributeGenerator::addAttributesToTables(QMap<QString,QList<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames)
 {
     QSqlQuery query;
     foreach (QString tableName, attributesValues.keys()) {
-        QVector<QVector<double> > datas = attributesValues.value(tableName);
+        QList<QVector<double> > datas = attributesValues.value(tableName);
         if (query.exec(QString("drop table if exists ") + tableName)==false)
         {
             emit showWarningMessage(query.lastError().text());
@@ -509,8 +520,8 @@ bool CDTAttributeGenerator::addAttributesToTables(QMap<QString, QVector<QVector<
         sqlCreate += ")";
         sqlInsert += ")";
 
-        qDebug()<<"sqlCreate:"<<sqlCreate;
-        qDebug()<<"sqlInsert:"<<sqlInsert;
+//        qDebug()<<"sqlCreate:"<<sqlCreate;
+//        qDebug()<<"sqlInsert:"<<sqlInsert;
 
         if (query.exec(sqlCreate)==false)
         {

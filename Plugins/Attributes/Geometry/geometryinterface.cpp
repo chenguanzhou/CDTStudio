@@ -6,6 +6,11 @@ GeometryInterface::GeometryInterface(QObject *parent) :
 {
 }
 
+GeometryInterface::~GeometryInterface()
+{
+
+}
+
 QString GeometryInterface::attributesType() const
 {
     return tr("Geometry");

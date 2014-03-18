@@ -86,6 +86,7 @@ public:
         qRegisterMetaType<AttributeParamsMultiBand>("AttributeParamsMultiBand");
     }
 
+    virtual ~CDTAttributesInterface(){}
     virtual QString attributesType() const=0;
     virtual QString tableName() const=0;
 

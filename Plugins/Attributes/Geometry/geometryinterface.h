@@ -15,6 +15,7 @@ class GeometryInterface : public CDTAttributesInterface
 
 public:
     GeometryInterface(QObject *parent = 0);
+    ~GeometryInterface();
 
     QString attributesType() const;
     QString tableName() const;

@@ -2,6 +2,7 @@
 #define SPECTRALINTERFACE_H
 
 #include "../../../Interfaces/cdtattributesinterface.h"
+#include <ctime>
 
 
 class SpectralInterface : public CDTAttributesInterface
@@ -15,6 +16,7 @@ class SpectralInterface : public CDTAttributesInterface
 
 public:
     SpectralInterface(QObject *parent = 0);
+    ~SpectralInterface();
 
     QString attributesType() const;   
     QString tableName() const;
@@ -23,7 +25,6 @@ public:
 
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal layer_mean(
             const AttributeParamsSingleBand& param) const;
-
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal layer_stddev(
             const AttributeParamsSingleBand& param) const;
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal skewness(
@@ -34,14 +35,6 @@ public:
             const AttributeParamsSingleBand& param) const;
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal mean_of_inner_border(
             const AttributeParamsSingleBand& param) const;
-    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal mean_of_outer_border(
-            const AttributeParamsSingleBand& param) const;
-
-
-private:
-
-
-
 };
 
 #endif // SPECTRALINTERFACE_H

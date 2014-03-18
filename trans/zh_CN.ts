@@ -2,16 +2,163 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="zh_CN">
 <context>
-    <name>CDTAttributesDockWidget</name>
+    <name>CDTAttributeGenerator</name>
     <message>
-        <location filename="../CDTStudio/cdtattributesdockwidget.cpp" line="10"/>
-        <source>Attributes</source>
-        <translation type="unfinished"></translation>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="24"/>
+        <source>Open Image </source>
+        <translation type="unfinished">打开图像</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtattributesdockwidget.cpp" line="12"/>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="24"/>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="32"/>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="40"/>
+        <source> Failed!</source>
+        <translation type="unfinished">失败！</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="32"/>
+        <source>Open Flag Image </source>
+        <translation type="unfinished">打开标记图像</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="40"/>
+        <source>Open Vector File </source>
+        <translation type="unfinished">打开矢量数据</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="47"/>
+        <source>Open Database Failed!</source>
+        <translation type="unfinished">打开数据库失败！</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="105"/>
+        <source>Open Shapefile Layer failed!</source>
+        <translation type="unfinished">打开图形文件层失败！</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="112"/>
+        <source>Read Shapefile Defn Failed!</source>
+        <translation type="unfinished">读图形文件定义失败!</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="119"/>
+        <source>Load Geommetry Information</source>
+        <translation type="unfinished">加载几何信息</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="166"/>
+        <source>Initializing Object Information</source>
+        <translation type="unfinished">初始化对象信息</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="207"/>
+        <source>Sort object information by ID</source>
+        <translation type="unfinished">对象通过ID排序</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="228"/>
+        <source>Merge Object Information</source>
+        <translation type="unfinished">合并对象信息</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="302"/>
+        <source>Generating Attributes</source>
+        <translation type="unfinished">计算属性</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="539"/>
+        <source>Write </source>
+        <translation type="unfinished">将</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributegenerator.cpp" line="539"/>
+        <source> Attributes into database</source>
+        <translation type="unfinished">属性写到数据库中</translation>
+    </message>
+</context>
+<context>
+    <name>CDTAttributesWidget</name>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished">方式</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="28"/>
+        <source>Connection settings</source>
+        <translation type="unfinished">相关设置</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="42"/>
+        <source>D&amp;river</source>
+        <translation type="unfinished">&amp;驱动</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="55"/>
+        <source>Database Name:</source>
+        <translation type="unfinished">数据库：</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="68"/>
+        <source>&amp;Username:</source>
+        <translation type="unfinished">&amp;用户名：</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="81"/>
+        <source>&amp;Password:</source>
+        <translation type="unfinished">&amp;口令：</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="98"/>
+        <source>&amp;Hostname:</source>
+        <translation type="unfinished">&amp;主机名称：</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="111"/>
+        <source>P&amp;ort:</source>
+        <translation type="unfinished">&amp;端口：</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="121"/>
+        <source>Default</source>
+        <translation type="unfinished">Default</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="154"/>
+        <source>Apply</source>
+        <translation type="unfinished">接受</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.ui" line="161"/>
+        <source>Reset</source>
+        <translation type="unfinished">重置</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.cpp" line="14"/>
+        <source>Attributes</source>
+        <translation type="unfinished">属性</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.cpp" line="21"/>
+        <source>Edit Data Source</source>
+        <translation type="unfinished">编辑源数据</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.cpp" line="25"/>
         <source>Generate Attributes</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">计算属性</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.cpp" line="202"/>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtattributeswidget.cpp" line="202"/>
+        <source>Open database failed!
+ information:</source>
+        <translation type="unfinished">打开数据库失败
+信息：</translation>
     </message>
 </context>
 <context>
@@ -35,22 +182,37 @@
 <context>
     <name>CDTImageLayer</name>
     <message>
-        <location filename="../CDTStudio/cdtimagelayer.cpp" line="8"/>
+        <location filename="../CDTStudio/cdtimagelayer.cpp" line="9"/>
         <source>Add Segmentation</source>
         <translation type="unfinished">添加分割</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtimagelayer.cpp" line="9"/>
+        <location filename="../CDTStudio/cdtimagelayer.cpp" line="10"/>
         <source>Remove Image</source>
         <translation type="unfinished">移除图像</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtimagelayer.cpp" line="10"/>
+        <location filename="../CDTStudio/cdtimagelayer.cpp" line="11"/>
         <source>Remove All Segmentations</source>
         <translation type="unfinished">移除全部分割</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtimagelayer.cpp" line="101"/>
+        <location filename="../CDTStudio/cdtimagelayer.cpp" line="12"/>
+        <source>Rename Image</source>
+        <translation type="unfinished">图像重命名</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtimagelayer.cpp" line="82"/>
+        <source>Input Image Name</source>
+        <translation type="unfinished">输入图像名</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtimagelayer.cpp" line="83"/>
+        <source>Image name:</source>
+        <translation type="unfinished">图像名：</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtimagelayer.cpp" line="97"/>
         <source>segmentations</source>
         <translation type="unfinished">分割</translation>
     </message>
@@ -58,53 +220,68 @@
 <context>
     <name>CDTProject</name>
     <message>
-        <location filename="../CDTStudio/cdtproject.cpp" line="7"/>
+        <location filename="../CDTStudio/cdtproject.cpp" line="8"/>
         <source>Add Image</source>
         <translation type="unfinished">添加图像</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtproject.cpp" line="8"/>
+        <location filename="../CDTStudio/cdtproject.cpp" line="9"/>
         <source>Remove All images</source>
         <translation type="unfinished">移除全部图像</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtproject.cpp" line="10"/>
+        <source>Rename Project</source>
+        <translation type="unfinished">工程重命名</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtproject.cpp" line="81"/>
+        <source>Input Project Name</source>
+        <translation type="unfinished">输入工程名</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtproject.cpp" line="82"/>
+        <source>Project name:</source>
+        <translation type="unfinished">工程名：</translation>
     </message>
 </context>
 <context>
     <name>CDTProjectTabWidget</name>
     <message>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="83"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="85"/>
         <source>Open an project file</source>
         <translation type="unfinished">打开一个项目文件</translation>
     </message>
     <message>
         <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="24"/>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="54"/>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="62"/>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="94"/>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="101"/>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="167"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="55"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="63"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="96"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="103"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="170"/>
         <source>Error File</source>
         <translation type="unfinished">文件错误</translation>
     </message>
     <message>
         <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="24"/>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="62"/>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="101"/>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="167"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="63"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="103"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="170"/>
         <source>%1 have been opened!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">%1 已经打开！</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="54"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="55"/>
         <source> File Format Error or invalid filepath!</source>
         <translation type="unfinished">文件格式错误或无效路径！</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="94"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="96"/>
         <source> File Format Error!</source>
         <translation type="unfinished">文件格式错误！</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="164"/>
+        <location filename="../CDTStudio/cdtprojecttabwidget.cpp" line="167"/>
         <source>Save project file</source>
         <translation type="unfinished">保存工程文件</translation>
     </message>
@@ -147,39 +324,128 @@ Do you want to save your changes?</source>
 <context>
     <name>CDTSegmentationLayer</name>
     <message>
-        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="11"/>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="13"/>
         <source>Add Classification</source>
         <translation type="unfinished">添加分类</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="12"/>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="14"/>
         <source>Remove Segmentation</source>
         <translation type="unfinished">移除分割</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="13"/>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="15"/>
         <source>Remove All Classifications</source>
         <translation type="unfinished">移除全部分类</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="39"/>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="16"/>
+        <source>Rename Segmentation Name</source>
+        <translation type="unfinished">分割重命名</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="41"/>
         <source>Shapefile path</source>
         <translation type="unfinished">矢量数据文件路径</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="41"/>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="43"/>
         <source>Markfile path</source>
         <translation type="unfinished">掩膜文件路径</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="43"/>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="45"/>
         <source>Method</source>
         <translation type="unfinished">分割方式</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="45"/>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="47"/>
         <source>Classifications</source>
         <translation type="unfinished">分类</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="92"/>
+        <source>Input Segmentation Name</source>
+        <translation type="unfinished">输入分割名</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/cdtsegmentationlayer.cpp" line="93"/>
+        <source>Segmentation name:</source>
+        <translation type="unfinished">分割名：</translation>
+    </message>
+</context>
+<context>
+    <name>DialogGenerateAttributes</name>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="14"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="24"/>
+        <source>All Attributes</source>
+        <translation type="unfinished">所有属性</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="87"/>
+        <source>&lt;&lt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="109"/>
+        <source>&lt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="131"/>
+        <source>&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="150"/>
+        <source>&gt;&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="174"/>
+        <source>Selected Attributes</source>
+        <translation type="unfinished">选择的属性</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="196"/>
+        <source>Page 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="210"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.ui" line="233"/>
+        <source>Generate</source>
+        <translation type="unfinished">计算</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.cpp" line="49"/>
+        <source>band</source>
+        <translation type="unfinished">波段</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.cpp" line="152"/>
+        <source>Error</source>
+        <translation type="unfinished">错误</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.cpp" line="152"/>
+        <source>Construct attribute generator failed!
+</source>
+        <translation type="unfinished">计算属性失败！</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/dialoggenerateattributes.cpp" line="194"/>
+        <source>warning</source>
+        <translation type="unfinished">警告</translation>
     </message>
 </context>
 <context>
@@ -253,7 +519,7 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../CDTStudio/dialognewsegmentation.ui" line="29"/>
-        <location filename="../CDTStudio/dialognewsegmentation.cpp" line="107"/>
+        <location filename="../CDTStudio/dialognewsegmentation.cpp" line="106"/>
         <source>Markfile Path</source>
         <translation type="unfinished">标记文件路径</translation>
     </message>
@@ -327,7 +593,7 @@ Do you want to save your changes?</source>
         <translation type="obsolete">slic</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/dialognewsegmentation.cpp" line="127"/>
+        <location filename="../CDTStudio/dialognewsegmentation.cpp" line="126"/>
         <source>ShapefilePath Path</source>
         <translation type="unfinished">矢量文件路径</translation>
     </message>
@@ -341,16 +607,19 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="../Plugins/Segmentation/MSTMethod/formmst.ui" line="42"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/formmst.cpp" line="55"/>
         <source>Minimal Area</source>
         <translation type="unfinished">最小面积</translation>
     </message>
     <message>
         <location filename="../Plugins/Segmentation/MSTMethod/formmst.ui" line="83"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/formmst.cpp" line="53"/>
         <source>Merge Rule</source>
         <translation type="unfinished">合并方式</translation>
     </message>
     <message>
         <location filename="../Plugins/Segmentation/MSTMethod/formmst.ui" line="49"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/formmst.cpp" line="54"/>
         <source>Threshold</source>
         <translation type="unfinished">阈值</translation>
     </message>
@@ -370,71 +639,75 @@ Do you want to save your changes?</source>
         <translation type="unfinished">开始分割</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/formmst.ui" line="113"/>
-        <source>TextLabel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../Plugins/Segmentation/MSTMethod/formmst.ui" line="90"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/formmst.cpp" line="56"/>
         <source>Shield No-data Value</source>
         <translation type="unfinished">屏蔽无效数据</translation>
     </message>
 </context>
 <context>
+    <name>GeometryInterface</name>
+    <message>
+        <location filename="../Plugins/Attributes/Geometry/geometryinterface.cpp" line="16"/>
+        <source>Geometry</source>
+        <translation type="unfinished">几何属性</translation>
+    </message>
+</context>
+<context>
     <name>MSTSegmenter</name>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="66"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="65"/>
         <source>Create edges of graph</source>
         <translation type="unfinished">创建图形边缘</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="70"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="69"/>
         <source>Sort the edges</source>
         <translation type="unfinished">对边权进行排序</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="75"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="74"/>
         <source>Merging</source>
         <translation type="unfinished">合并</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="77"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="76"/>
         <source>Eliminate small object</source>
         <translation type="unfinished">去除较小的对象</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="83"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="82"/>
         <source>Generating index</source>
         <translation type="unfinished">生成索引</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="89"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="88"/>
         <source>Generating result</source>
         <translation type="unfinished">生成结果</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="113"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="112"/>
         <source>Segmentation parameter &quot;threshold&quot; must greater than 0</source>
         <translation type="unfinished">分割参数“阈值”必须大于0</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="119"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="118"/>
         <source>Segmentation parameter &quot;minObjectSize&quot; must greater than 0</source>
         <translation type="unfinished">分割参数“对象最小面积”必须大于0</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="129"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="128"/>
         <source>Open Image </source>
         <translation type="unfinished">打开图像</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="129"/>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="148"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="128"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="147"/>
         <source> Failed!</source>
         <translation type="unfinished">失败！</translation>
     </message>
     <message>
-        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="148"/>
+        <location filename="../Plugins/Segmentation/MSTMethod/mstsegmenter.cpp" line="147"/>
         <source>Create Image </source>
         <translation type="unfinished">新建图像</translation>
     </message>
@@ -459,7 +732,7 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../CDTStudio/mainwindow.ui" line="57"/>
         <source>Normal</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">通用</translation>
     </message>
     <message>
         <location filename="../CDTStudio/mainwindow.ui" line="80"/>
@@ -467,44 +740,39 @@ Do you want to save your changes?</source>
         <translation type="unfinished">工程</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/mainwindow.ui" line="108"/>
+        <location filename="../CDTStudio/mainwindow.ui" line="111"/>
         <source>Attributes Manager</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">属性管理器</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/mainwindow.ui" line="137"/>
+        <location filename="../CDTStudio/mainwindow.ui" line="130"/>
         <source>&amp;New</source>
         <translation type="unfinished">&amp;新建</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/mainwindow.ui" line="140"/>
+        <location filename="../CDTStudio/mainwindow.ui" line="133"/>
         <source>Ctrl+N</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CDTStudio/mainwindow.ui" line="149"/>
+        <location filename="../CDTStudio/mainwindow.ui" line="142"/>
         <source>&amp;Open</source>
         <translation type="unfinished">&amp;打开</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/mainwindow.ui" line="158"/>
+        <location filename="../CDTStudio/mainwindow.ui" line="151"/>
         <source>&amp;Save</source>
         <translation type="unfinished">&amp;保存</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/mainwindow.ui" line="167"/>
+        <location filename="../CDTStudio/mainwindow.ui" line="160"/>
         <source>&amp;Save All</source>
         <translation type="unfinished">保存&amp;全部</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/mainwindow.ui" line="176"/>
+        <location filename="../CDTStudio/mainwindow.ui" line="169"/>
         <source>&amp;Save As</source>
         <translation type="unfinished">&amp;另存为</translation>
-    </message>
-    <message>
-        <location filename="../CDTStudio/mainwindow.ui" line="181"/>
-        <source>Generate Attributes</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -554,6 +822,14 @@ Do you want to save your changes?</source>
         <location filename="../Plugins/Segmentation/MSTMethod/polygonizer.cpp" line="92"/>
         <source>Polygonization secceed!</source>
         <translation type="unfinished">矢量化成功！</translation>
+    </message>
+</context>
+<context>
+    <name>SpectralInterface</name>
+    <message>
+        <location filename="../Plugins/Attributes/Spectral/spectralinterface.cpp" line="26"/>
+        <source>Spectral</source>
+        <translation type="unfinished">光谱属性</translation>
     </message>
 </context>
 </TS>
