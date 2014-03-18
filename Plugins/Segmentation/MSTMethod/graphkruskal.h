@@ -6,6 +6,7 @@
 #include <cmath>
 #include <gdal_priv.h>
 #include <QTemporaryFile>
+#include <QMap>
 
 class GraphElement {
 public:
@@ -31,7 +32,7 @@ public:
     unsigned size(unsigned x) { return elts[x].size; }
 
 
-    void GetMapNodeidObjectid(GDALRasterBand*& poMaskBand, std::map<unsigned, unsigned> &mapRootidObjectid);
+    void GetMapNodeidObjectid(GDALRasterBand*& poMaskBand, QMap<unsigned, unsigned> &mapRootidObjectid);
 
 public:
     int num;

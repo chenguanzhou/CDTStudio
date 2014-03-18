@@ -23,7 +23,7 @@ MSTSegmenter::MSTSegmenter(const QString &inputImagePath,
                            double threshold,
                            int minObjectSize,
                            bool shield,
-                           std::vector<double> layerWeights,
+                           QVector<double> layerWeights,
                            QObject *parent)
     : _inputImagePath(inputImagePath),
       _outputImagePath(outputImagePath),
@@ -37,6 +37,7 @@ MSTSegmenter::MSTSegmenter(const QString &inputImagePath,
 {
     GDALAllRegister();
     CPLSetConfigOption("GDAL_FILENAME_IS_UTF8","YES");
+
 }
 
 MSTSegmenter::~MSTSegmenter()
@@ -49,6 +50,9 @@ MSTSegmenter::~MSTSegmenter()
 
 void MSTSegmenter::run()
 {    
+
+    clock_t tSatart = clock();
+
     if (_CheckAndInit() == false)
     {
         emit aborted();
@@ -58,36 +62,56 @@ void MSTSegmenter::run()
     GDALDataset* poSrcDS = (GDALDataset*)srcDS;
     GDALDataset* poDstDS = (GDALDataset*)dstDS;
 
+    clock_t timer = clock();
     unsigned memory_to_use = 500 * 1024 * 1024;
     EdgeVector *vecEdge = new EdgeVector(edge_comparator(),memory_to_use);
 
-    //    std::vector<edge> vecEdge;
+    qDebug()<<"Init EdgeVector cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
+    timer = clock();
+
     emit currentProgressChanged(tr("Create edges of graph"));
     _CreateEdgeWeights(vecEdge);
 
-    //    stxxl::sort(vecEdge.begin(),vecEdge.end(),edge_comparator(),memory_to_use);
+    qDebug()<<"Create Edge Weights cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
+    timer = clock();
     emit currentProgressChanged(tr("Sort the edges"));
 
     vecEdge->sort();
 
+    qDebug()<<"Sort Edge Weights cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
+    timer = clock();
+
     GraphKruskal* graph = NULL;
     emit currentProgressChanged(tr("Merging"));
     _ObjectMerge(graph,vecEdge,poSrcDS->GetRasterXSize()*poSrcDS->GetRasterYSize(),_threshold);
+
+    qDebug()<<"Merge Object cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
+    timer = clock();
+
     emit currentProgressChanged(tr("Eliminate small object"));
     _EliminateSmallArea(graph,vecEdge,_minObjectSize);
+
+    qDebug()<<"Eliminate Small Area cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
+    timer = clock();
 
     vecEdge->clear();
     delete vecEdge;
 
     emit currentProgressChanged(tr("Generating index"));
-    std::map<unsigned,unsigned> mapRootidObjectid;
+//    std::map<unsigned,unsigned> mapRootidObjectid;
+    QMap<unsigned,unsigned> mapRootidObjectid;
 
     GDALRasterBand* poMaskBand = poDstDS->GetRasterBand(1)->GetMaskBand();
     graph->GetMapNodeidObjectid(poMaskBand, mapRootidObjectid);
 
+    qDebug()<<"Get Map Nodeid Objectid cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
+    timer = clock();
+
     emit currentProgressChanged(tr("Generating result"));
     _GenerateFlagImage(graph,mapRootidObjectid);
     delete graph;
+
+    qDebug()<<"Generate Flag Image cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
 
     GDALClose(poSrcDS);
     GDALClose(poDstDS);
@@ -99,7 +123,8 @@ void MSTSegmenter::run()
     connect(polygonizer,SIGNAL(showWarningMessage(QString)),this,SIGNAL(showWarningMessage(QString)));
     polygonizer->run();
 
-    emit completed();
+    qDebug()<<"mst segmentation cost: "<<(clock()-tSatart)/(double)CLOCKS_PER_SEC<<"s";
+    emit completed();    
 }
 
 
@@ -179,7 +204,7 @@ bool MSTSegmenter::_CheckAndInit()
     return true;
 }
 
-void MSTSegmenter::_ComputeEdgeWeight(unsigned nodeID1,unsigned nodeID2,const std::vector<double>& data1,const std::vector<double>& data2,const std::vector<double>& layerWeight, void *p)
+void MSTSegmenter::onComputeEdgeWeight(unsigned nodeID1, unsigned nodeID2, const QVector<double> &data1, const QVector<double> &data2, const QVector<double> &layerWeight, void *p)
 {    
     EdgeVector* vecEdge = (EdgeVector*)p;
     double  difs=0;
@@ -203,8 +228,8 @@ bool MSTSegmenter::_CreateEdgeWeights(void *p)
     GDALDataType gdalDataType = poSrcDS->GetRasterBand(1)->GetRasterDataType();
     unsigned pixelSize = GDALGetDataTypeSize(gdalDataType)/8;
 
-    std::vector<double> buffer1(nBandCount);
-    std::vector<double> buffer2(nBandCount);
+    QVector<double> buffer1(nBandCount);
+    QVector<double> buffer2(nBandCount);
 
     std::vector<unsigned char*> lineBufferUp(nBandCount);
     std::vector<unsigned char*> lineBufferDown(nBandCount);
@@ -224,10 +249,10 @@ bool MSTSegmenter::_CreateEdgeWeights(void *p)
     }
     poMask->RasterIO(GF_Read, 0,0,width,1,maskUp,width,1,GDT_Byte,0,0);
 
-    //boost::progress_display pd(height-1,std::cout,"creating edge\n","","");
 
     emit progressBarSizeChanged(0,height-1);
     const int progressGap = (height-1)/100;
+
 
     for (unsigned y=0;y<height-1;++y)
     {
@@ -250,7 +275,9 @@ bool MSTSegmenter::_CreateEdgeWeights(void *p)
                         buffer1[k] = SRCVAL(lineBufferUp[k],gdalDataType,x);
                         buffer2[k] = SRCVAL(lineBufferUp[k],gdalDataType,x+1);
                     }
-                    _ComputeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
+//                    emit computeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
+//                    ++edgeSize;
+                    onComputeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
                 }
             }
 
@@ -263,10 +290,13 @@ bool MSTSegmenter::_CreateEdgeWeights(void *p)
                         buffer1[k] = SRCVAL(lineBufferUp[k],gdalDataType,x);
                         buffer2[k] = SRCVAL(lineBufferDown[k],gdalDataType,x);
                     }
-                    _ComputeEdgeWeight(nodeID1,nodeIDNextLIne,buffer1,buffer2,_layerWeights,vecEdge);
+//                    emit computeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
+//                    ++edgeSize;
+                    onComputeEdgeWeight(nodeID1,nodeIDNextLIne,buffer1,buffer2,_layerWeights,vecEdge);
                 }
             }
         }
+
         std::vector<unsigned char*> tempBuffer = lineBufferDown;
         lineBufferDown = lineBufferUp;
         lineBufferUp = tempBuffer;
@@ -280,6 +310,8 @@ bool MSTSegmenter::_CreateEdgeWeights(void *p)
             emit progressBarValueChanged(y);
 
     }
+
+
     emit progressBarValueChanged(height-1);
 
     for (unsigned k=0;k<nBandCount;++k)
@@ -367,7 +399,7 @@ bool MSTSegmenter::_EliminateSmallArea(GraphKruskal * &graph,
     return true;
 }
 
-bool MSTSegmenter::_GenerateFlagImage(GraphKruskal *&graph,const std::map<unsigned, unsigned> &mapRootidObjectid)
+bool MSTSegmenter::_GenerateFlagImage(GraphKruskal *&graph,const QMap<unsigned, unsigned> &mapRootidObjectid)
 {    
     GDALDataset* poSrcDS = (GDALDataset*)srcDS;
     GDALDataset* poDstDS = (GDALDataset*)dstDS;
@@ -392,7 +424,7 @@ bool MSTSegmenter::_GenerateFlagImage(GraphKruskal *&graph,const std::map<unsign
             if (mask[j]!=0)
             {
                 int root = graph->find(index);
-                objectID = mapRootidObjectid.at(root);
+                objectID = mapRootidObjectid.value(root);
             }
             poFlagBand->RasterIO(GF_Write,j,i,1,1,(int *)&objectID,1,1,GDT_Int32,0,0);
         }

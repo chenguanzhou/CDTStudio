@@ -123,7 +123,7 @@ bool GraphKruskal::joinPredicate_sw(unsigned reg1, unsigned reg2, float th, floa
     return bMerge;
 }
 
-void GraphKruskal::GetMapNodeidObjectid(GDALRasterBand *&poMaskBand, std::map<unsigned, unsigned> &mapRootidObjectid)
+void GraphKruskal::GetMapNodeidObjectid(GDALRasterBand *&poMaskBand, QMap<unsigned, unsigned> &mapRootidObjectid)
 {
     mapRootidObjectid.clear();
     int width = poMaskBand->GetXSize();

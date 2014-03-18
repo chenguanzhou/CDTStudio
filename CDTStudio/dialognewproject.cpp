@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QSettings>
 #include <QStringList>
+#include <QMessageBox>
+
 DialogNewProject::DialogNewProject(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogNewProject)
@@ -27,7 +29,7 @@ QString DialogNewProject::projectPath() const
 }
 
 void DialogNewProject::on_pushButton_clicked()
-{
+{    
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("Project");
     QString filepath = setting.value("lastDir",".").toString();

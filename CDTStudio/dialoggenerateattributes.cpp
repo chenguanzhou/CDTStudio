@@ -46,7 +46,7 @@ void DialogGenerateAttributes::loadPlugin()
                 for (int i=0;i<_bandCount;++i)
                 {
                     QTreeWidgetItem *itemBand = new QTreeWidgetItem(itemChild);
-                    itemBand->setText(0,tr("band")+QString::number(i+1));
+                    itemBand->setText(0,QString("band")+QString::number(i+1));
                 }
             }
         }

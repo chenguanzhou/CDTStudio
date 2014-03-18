@@ -19,6 +19,11 @@ bool CDTProjectTabWidget::createNewProject()
     DialogNewProject *dlg = new DialogNewProject(this);
     if (dlg->exec()==DialogNewProject::Accepted)
     {
+        if (dlg->projectPath().isEmpty() || dlg->projectName().isEmpty())
+        {
+            QMessageBox::information(this,tr("Error"),tr("Project path or name is empty!"));
+            return false;
+        }
         if(!CompareFilePath(QFileInfo(dlg->projectPath()).absoluteFilePath()))
         {
             QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!")

@@ -5,6 +5,8 @@
 #include "CDTBaseThread.h"
 #include <map>
 #include <vector>
+#include <QMap>
+#include <QVector>
 
 class GraphKruskal;
 
@@ -71,7 +73,7 @@ public:
                  double threshold,
                  int minObjectSize,
                  bool shield,
-                 std::vector<double> layerWeights=std::vector<double>(),
+                 QVector<double> layerWeights=QVector<double>(),
                  QObject *parent = 0
                  );
 
@@ -96,7 +98,7 @@ private:
     double              _threshold;             //The Threshold of Segmentation
     int                 _minObjectSize;         //The minimal Object Size in Output Image
     bool                shield_0_255;
-    std::vector<double> _layerWeights;
+    QVector<double>     _layerWeights;
 
 //    GDALDataset* poSrcDS;
 //    GDALDataset* poDstDS;
@@ -104,13 +106,18 @@ private:
     void *srcDS;
     void *dstDS;
 
-
     bool _CheckAndInit();
-    void _ComputeEdgeWeight(unsigned nodeID1, unsigned nodeID2, const std::vector<double> &data1, const std::vector<double> &data2, const std::vector<double> &layerWeight, void *p);
     bool _CreateEdgeWeights(void *p);
     bool _ObjectMerge(GraphKruskal *&graph, void *p, unsigned num_vertices, double threshold);
     bool _EliminateSmallArea(GraphKruskal *&graph, void *p, double _minObjectSize);
-    bool _GenerateFlagImage(GraphKruskal *&graph,const std::map<unsigned, unsigned> &mapNodeidObjectid);
+    bool _GenerateFlagImage(GraphKruskal *&graph,const QMap<unsigned, unsigned> &mapNodeidObjectid);
+
+signals:
+   // void computeEdgeWeight(unsigned , unsigned , QVector<double> , QVector<double>, QVector<double>, void *);
+private slots:
+    void onComputeEdgeWeight(unsigned nodeID1, unsigned nodeID2,
+                             const QVector<double> &data1, const QVector<double> &data2,
+                             const QVector<double> &layerWeight, void *p);
 };
 
 

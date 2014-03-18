@@ -44,4 +44,5 @@ FORMS += \
 
 LIBS += -lgdal_i -lstxxl
 
+
 #DEFINES += BOOST_THREAD_USE_LIB
