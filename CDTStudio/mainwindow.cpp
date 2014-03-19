@@ -10,10 +10,9 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    recentFileToolButton(new QToolButton(ui->mainToolBar)),
+    recentFileToolButton(new QToolButton(this)),
     supervisor(new recentfilesupervisor(this))
 {    
-    qDebug()<<"hehe";
     ui->setupUi(this);
     recentFileToolButton->setIcon(QIcon(":/Icon/recentfile.png"));
     recentFileToolButton->setPopupMode(QToolButton::InstantPopup);

@@ -50,7 +50,7 @@ private:
     QFile file;
     CDTProjectTreeModel* treeModel;
 
-//    QgsMapCanvas* mapCanvas;
+    QgsMapCanvas* mapCanvas;
     QToolBar *initToolBar();
     QgsMapTool *panTool;
     QgsMapTool *zoomInTool;

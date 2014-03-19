@@ -1,17 +1,18 @@
 #include "cdtprojecttreeitem.h"
 
-CDTProjectTreeItem::CDTProjectTreeItem(Type tp, const QString &text, CDTBaseObject *crspdObject)
-    :type(tp),correspondingObject(crspdObject)
+CDTProjectTreeItem::CDTProjectTreeItem(CDTItemType tp, LayerType ly, const QString &text, CDTBaseObject *crspdObject)
+    :_itemType(tp),layerType(ly),correspondingObject(crspdObject)
 {
     setText(text);
     initAlignment();
     initFont();
     initColor();
+    initCheckState();
 }
 
 void CDTProjectTreeItem::initAlignment()
 {
-    switch (type) {
+    switch (_itemType) {
     case PARAM:
         this->setTextAlignment(Qt::AlignRight);
         break;
@@ -21,10 +22,10 @@ void CDTProjectTreeItem::initAlignment()
 void CDTProjectTreeItem::initFont()
 {
     QFont font= this->font();
-    switch (type) {
+    switch (_itemType) {
     case PROJECT_ROOT:
         font.setBold(true);
-        font.setPointSize(font.pointSize()+3);
+        font.setPointSize(font.pointSize()+3);        
         break;
     case IMAGE_ROOT:
         font.setBold(true);
@@ -53,7 +54,7 @@ void CDTProjectTreeItem::initFont()
 void CDTProjectTreeItem::initColor()
 {
     QBrush brush = this->foreground();
-    switch (type) {
+    switch (_itemType) {
     case PROJECT_ROOT:
         break;
     case IMAGE_ROOT:
@@ -67,4 +68,15 @@ void CDTProjectTreeItem::initColor()
         break;
     }
     this->setForeground(brush);
+}
+
+void CDTProjectTreeItem::initCheckState()
+{
+    if (layerType != EMPTY)
+    {
+        this->setCheckable(true);
+        this->setCheckState(Qt::Checked);
+    }
+    else
+        this->setCheckable(false);
 }

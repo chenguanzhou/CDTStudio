@@ -7,7 +7,7 @@
 class CDTProjectTreeItem : public QStandardItem
 {
 public:
-    enum Type{
+    enum CDTItemType{
         PROJECT_ROOT,
         IMAGE_ROOT,
         SEGMENTION_ROOT,
@@ -19,15 +19,24 @@ public:
         VALUE
     };
 
-    CDTProjectTreeItem(Type tp, const QString &text,CDTBaseObject *crspdObject );
-    Type getType()const {return type;}
+    enum LayerType{
+        EMPTY,
+        GROUP,
+        RASTER,
+        VECTOR
+    };
+
+    CDTProjectTreeItem(CDTItemType tp,LayerType ly, const QString &text,CDTBaseObject *crspdObject );
+    CDTItemType getType()const {return _itemType;}
     CDTBaseObject* getCorrespondingObject()const {return correspondingObject;}
 
 private:
     void initAlignment();
     void initFont();
     void initColor();
-    Type type;
+    void initCheckState();
+    CDTItemType _itemType;
+    LayerType layerType;
     CDTBaseObject* correspondingObject;
 };
 

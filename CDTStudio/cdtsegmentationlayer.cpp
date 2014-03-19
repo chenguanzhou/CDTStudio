@@ -37,20 +37,30 @@ void CDTSegmentationLayer::addClassification(CDTClassification *classification)
 
 void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
-    CDTProjectTreeItem *segment =new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,m_name,this);
-    CDTProjectTreeItem *paramShp =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("Shapefile path"),this);
-    CDTProjectTreeItem *valueShp =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_shapefilePath,this);
-    CDTProjectTreeItem *paramMk =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,tr("Markfile path"),this);
-    CDTProjectTreeItem *valueMk =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_markfilePath,this);
-    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,tr("Method"),this);
-    CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_method,this);
-    CDTProjectTreeItem *classificationsroot =new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,tr("Classifications"),this);
+    CDTProjectTreeItem *segment =new CDTProjectTreeItem(
+                CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::GROUP,m_name,this);
+    CDTProjectTreeItem *paramShp =new CDTProjectTreeItem(
+                CDTProjectTreeItem::PARAM,CDTProjectTreeItem::VECTOR,tr("Shapefile path"),this);
+    CDTProjectTreeItem *valueShp =new CDTProjectTreeItem(
+                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,m_shapefilePath,this);
+    CDTProjectTreeItem *paramMk =new CDTProjectTreeItem(
+                CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("Markfile path"),this);
+    CDTProjectTreeItem *valueMk =new CDTProjectTreeItem(
+                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,m_markfilePath,this);
+    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(
+                CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
+    CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(
+                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,m_method,this);
+    CDTProjectTreeItem *classificationsroot =new CDTProjectTreeItem(
+                CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::EMPTY,tr("Classifications"),this);
 
     for(int i=0;i<m_params.size();++i)
     {
         QList<QString> keys =m_params.keys();
-        CDTProjectTreeItem *methodparam =new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,keys[i],this);
-        CDTProjectTreeItem *methodvalue =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_params[keys[i]].toString(),this);
+        CDTProjectTreeItem *methodparam =new CDTProjectTreeItem(
+                    CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,keys[i],this);
+        CDTProjectTreeItem *methodvalue =new CDTProjectTreeItem(
+                    CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,m_params[keys[i]].toString(),this);
         methodroot->setChild(i,0,methodparam);
         methodroot->setChild(i,1,methodvalue);
     }

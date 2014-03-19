@@ -17,8 +17,6 @@ SpectralInterface::~SpectralInterface()
 {
 }
 
-
-
 QString SpectralInterface::attributesType() const
 {
     return tr("Spectral");

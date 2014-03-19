@@ -21,7 +21,6 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     connect(project,SIGNAL(projectChanged(CDTProject*)),this,SIGNAL(projectChanged(CDTProject*)));
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
-    mapCanvas = new QgsMapCanvas(this);
     mapCanvas->enableAntiAliasing(true);
     mapCanvas->setCanvasColor(QColor(255, 255, 255));
 //    mapCanvas->setLayerSet(layerSet);
@@ -31,6 +30,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QToolBar* toolBar = initToolBar();
     if (toolBar != NULL)
         vbox->setMenuBar(toolBar);
+
 }
 
 void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
@@ -161,7 +161,7 @@ void CDTProjectWidget::onFullExtent()
 QToolBar *CDTProjectWidget::initToolBar()
 {
     QToolBar* toolBar = new QToolBar(tr("Navigate"),this);
-    toolBar->setIconSize(QSize(32,32));
+    toolBar->setIconSize(QSize(24,24));
 
     actionZoomOut  = new QAction(QIcon(":/Icon/mActionZoomOut.svg"),tr("Zoom Out"),toolBar);
     actionZoomIn   = new QAction(QIcon(":/Icon/mActionZoomIn.svg"),tr("Zoom In"),toolBar);

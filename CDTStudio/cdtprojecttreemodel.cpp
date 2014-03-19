@@ -12,10 +12,10 @@ CDTProjectTreeModel::CDTProjectTreeModel(QObject *parent) :
 void CDTProjectTreeModel::update(CDTProject *project)
 {
     this->removeRows(0,this->rowCount());
-    CDTProjectTreeItem *item =
-            new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,project->name,project);
-    CDTProjectTreeItem *value =
-            new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,project->path,project);
+    CDTProjectTreeItem *item = new CDTProjectTreeItem(
+                CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,project->name,project);
+    CDTProjectTreeItem *value = new CDTProjectTreeItem(
+                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,project->path,project);
 
     this->invisibleRootItem()->setChild(0,0,item);
     this->invisibleRootItem()->setChild(0,1,value);

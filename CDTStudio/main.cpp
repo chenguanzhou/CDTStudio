@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
     a.installTranslator(&appTranslator);
 
     QgsApplication::initQgis();
+
     MainWindow w;
     w.showMaximized();
 

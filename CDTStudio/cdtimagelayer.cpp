@@ -92,9 +92,12 @@ void CDTImageLayer::onActionRename()
 
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
-    CDTProjectTreeItem *imageroot =new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,m_name,this);
-    CDTProjectTreeItem *value =new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,m_path,this);
-    CDTProjectTreeItem *segmentationsroot =new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,tr("segmentations"),this);
+    CDTProjectTreeItem *imageroot =new CDTProjectTreeItem(
+                CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,m_name,this);
+    CDTProjectTreeItem *value =new CDTProjectTreeItem(
+                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,m_path,this);
+    CDTProjectTreeItem *segmentationsroot =new CDTProjectTreeItem(
+                CDTProjectTreeItem::SEGMENTION_ROOT,CDTProjectTreeItem::GROUP,tr("segmentations"),this);
 
     parent->setChild(parent->rowCount(),0,imageroot);
     parent->setChild(parent->rowCount()-1,1,value);
