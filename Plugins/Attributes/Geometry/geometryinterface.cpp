@@ -241,12 +241,6 @@ qreal GeometryInterface::roundness(const AttributeParamsMultiBand &param) const
     return refValue;
 }
 
-qreal GeometryInterface::distance_to_scene_border(const AttributeParamsMultiBand &param) const
-{
-    qreal refValue=0;
-    return refValue;
-}
-
 qreal GeometryInterface::shape_index(const AttributeParamsMultiBand &param) const
 {
     qreal refValue=0;

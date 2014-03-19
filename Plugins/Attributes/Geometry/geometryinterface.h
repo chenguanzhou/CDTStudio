@@ -38,14 +38,6 @@ public:
     Q_INVOKABLE CDT_ATTRIBUTE_ALL_BAND qreal radius_of_smallest_enclosing_ellipse(const AttributeParamsMultiBand &param) const;
     Q_INVOKABLE CDT_ATTRIBUTE_ALL_BAND qreal shape_index(const AttributeParamsMultiBand &param) const;
     Q_INVOKABLE CDT_ATTRIBUTE_ALL_BAND qreal roundness(const AttributeParamsMultiBand &param) const;
-    Q_INVOKABLE CDT_ATTRIBUTE_ALL_BAND qreal distance_to_scene_border(const AttributeParamsMultiBand &param) const;
-
-
-
-
-
-
-
 
 };
 

@@ -10,7 +10,10 @@ TARGET = Geometry
 TEMPLATE = lib
 CONFIG += plugin
 
+
+
 DESTDIR = ../../../CDTStudio/plugins
+
 
 INCLUDEPATH += ../../../Interfaces
 

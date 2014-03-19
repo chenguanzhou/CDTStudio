@@ -8,8 +8,7 @@
 
 recentfilesupervisor::recentfilesupervisor(MainWindow *w,QObject *parent) :
     QObject(parent),window(w)
-
-{
+{    
 }
 
 void recentfilesupervisor::loadSetting()

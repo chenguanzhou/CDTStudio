@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql xml svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -66,12 +66,14 @@ FORMS    += mainwindow.ui \
 
 INCLUDEPATH += ../Interfaces
 
-LIBS += -lstxxl
+LIBS += -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis
 
 unix{
 LIBS += -lgdal -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc
 }
 !unix{
+DEFINES += CORE_EXPORT=__declspec(dllimport)
+DEFINES += GUI_EXPORT=__declspec(dllimport)
 LIBS += -lgdal_i
 }
 

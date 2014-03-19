@@ -8,7 +8,8 @@
 #include <QPoint>
 #include <QModelIndex>
 #include <QFile>
-
+#include <qgsmapcanvas.h>
+#include <qgsmaptool.h>
 
 class CDTProjectWidget : public QWidget
 {
@@ -37,11 +38,27 @@ public slots:
     bool saveProject(QString &path);
     bool saveFile(QString &filepath);
 
+    void onZoomOutTool(bool toggle);
+    void onZoomInTool(bool toggle);
+    void onPanTool(bool toggle);
+    void onFullExtent();
+private slots:
+    void untoggledToolBar();
 private:
     bool isChanged;
     CDTProject *project;
     QFile file;
     CDTProjectTreeModel* treeModel;
+
+//    QgsMapCanvas* mapCanvas;
+    QToolBar *initToolBar();
+    QgsMapTool *panTool;
+    QgsMapTool *zoomInTool;
+    QgsMapTool *zoomOutTool;
+    QAction *actionZoomOut;
+    QAction *actionZoomIn;
+    QAction *actionPan;
+    QAction *actionFullExtent;
 };
 
 #endif // CDTPROJECTWIDGET_H

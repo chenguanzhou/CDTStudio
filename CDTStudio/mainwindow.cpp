@@ -12,11 +12,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     recentFileToolButton(new QToolButton(ui->mainToolBar)),
     supervisor(new recentfilesupervisor(this))
-{
+{    
+    qDebug()<<"hehe";
     ui->setupUi(this);
     recentFileToolButton->setIcon(QIcon(":/Icon/recentfile.png"));
     recentFileToolButton->setPopupMode(QToolButton::InstantPopup);
     ui->mainToolBar->addWidget(recentFileToolButton);
+
 
     connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewProject,SLOT(expandAll()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));

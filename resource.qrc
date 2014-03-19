@@ -10,5 +10,9 @@
         <file>Icon/add.png</file>
         <file>Icon/recentfile.png</file>
         <file>Icon/rename.png</file>
+        <file>Icon/mActionPan.svg</file>
+        <file>Icon/mActionZoomFullExtent.svg</file>
+        <file>Icon/mActionZoomIn.svg</file>
+        <file>Icon/mActionZoomOut.svg</file>
     </qresource>
 </RCC>

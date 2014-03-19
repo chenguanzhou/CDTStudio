@@ -2,20 +2,35 @@
 #include "cdtprojecttabwidget.h"
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QVBoxLayout>
 #include "cdtbaseobject.h"
+#include <QToolBar>
+#include "qgsapplication.h"
+#include "qgsmaptoolzoom.h"
+#include "qgsmaptoolpan.h"
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
     project(new CDTProject(this)),
     treeModel(new CDTProjectTreeModel(this)),
-    isChanged(false)
+    isChanged(false),
+    mapCanvas(new QgsMapCanvas(this))
 {
     connect(this,SIGNAL(projectChanged(CDTProject*)),treeModel,SLOT(update(CDTProject*)));
     connect(this,SIGNAL(projectChanged(CDTProject*)),this,SLOT(setIsChanged()));
     connect(project,SIGNAL(projectChanged(CDTProject*)),this,SIGNAL(projectChanged(CDTProject*)));
 
-//    project->addImageLayer("image.1","c:/image1.tif");
-//    project->addImageLayer("image.2","c:/image2.tif");
+    QVBoxLayout *vbox = new QVBoxLayout(this);
+    mapCanvas = new QgsMapCanvas(this);
+    mapCanvas->enableAntiAliasing(true);
+    mapCanvas->setCanvasColor(QColor(255, 255, 255));
+//    mapCanvas->setLayerSet(layerSet);
+    vbox->addWidget(mapCanvas);
+    this->setLayout(vbox);
+
+    QToolBar* toolBar = initToolBar();
+    if (toolBar != NULL)
+        vbox->setMenuBar(toolBar);
 }
 
 void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
@@ -25,37 +40,17 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
         return;
     int type = item->getType();
 
-//    if(type ==CDTProjectTreeItem::PROJECT_ROOT)
-//    {
-//        item->setEditable(true);
-//        emit projectChanged(project);
-//    }
-/*
-    else if(type ==CDTProjectTreeItem::IMAGE_ROOT||type ==CDTProjectTreeItem::SEGMENTION_ROOT)
-    {
-        CDTImageLayer *correspondingObject =(CDTImageLayer*) item->getCorrespondingObject();
-        correspondingObject->onContextMenu(this);
-        emit projectChanged(project);
-    }
 
-    else if(type ==CDTProjectTreeItem::SEGMENTION||type ==CDTProjectTreeItem::CLASSIFICATION_ROOT)
-    {
-        CDTSegmentationLayer *correspondingObject =(CDTSegmentationLayer*) item->getCorrespondingObject();
-        correspondingObject->onContextMenu(this);
-        emit projectChanged(project);
-    }*/
     CDTBaseObject* correspondingObject = item->getCorrespondingObject();
     if (correspondingObject)
     {
         correspondingObject->onContextMenuRequest(this);
-//        emit projectChanged(project);
     }
 
 }
 
 bool CDTProjectWidget::readProject(QString &filepath)
 {
-//    QString filepath = QFileDialog::getOpenFileName(this,tr("Open an project file"),QString(),"*.cdtpro");
     QFileInfo info(filepath);
     if(info.exists())
     {
@@ -130,14 +125,89 @@ bool CDTProjectWidget::saveFile(QString &filepath)
     return true;
 }
 
+void CDTProjectWidget::onZoomOutTool(bool toggle)
+{
+    if (toggle)
+    {
+        untoggledToolBar();
+        mapCanvas->setMapTool(zoomOutTool);
+    }
+}
+
+void CDTProjectWidget::onZoomInTool(bool toggle)
+{
+    if (toggle)
+    {
+        untoggledToolBar();
+        mapCanvas->setMapTool(zoomInTool);
+    }
+}
+
+void CDTProjectWidget::onPanTool(bool toggle)
+{
+    if (toggle)
+    {
+        untoggledToolBar();
+        mapCanvas->setMapTool(panTool);
+    }
+}
+
+void CDTProjectWidget::onFullExtent()
+{
+    mapCanvas->zoomToFullExtent();
+}
+
+
+QToolBar *CDTProjectWidget::initToolBar()
+{
+    QToolBar* toolBar = new QToolBar(tr("Navigate"),this);
+    toolBar->setIconSize(QSize(32,32));
+
+    actionZoomOut  = new QAction(QIcon(":/Icon/mActionZoomOut.svg"),tr("Zoom Out"),toolBar);
+    actionZoomIn   = new QAction(QIcon(":/Icon/mActionZoomIn.svg"),tr("Zoom In"),toolBar);
+    actionPan      = new QAction(QIcon(":/Icon/mActionPan.svg"),tr("Pan"),toolBar);
+    actionFullExtent = new QAction(QIcon(":/Icon/mActionZoomFullExtent.svg"),tr("Full Extent"),toolBar);
+
+    actionZoomOut->setCheckable(true);
+    actionZoomIn->setCheckable(true);
+    actionPan->setCheckable(true);
+
+    toolBar->addAction(actionZoomOut);
+    toolBar->addAction(actionZoomIn );
+    toolBar->addAction(actionPan);
+    toolBar->addAction(actionFullExtent);
+
+    connect(actionZoomOut,SIGNAL(triggered(bool)),this,SLOT(onZoomOutTool(bool)));
+    connect(actionZoomIn ,SIGNAL(triggered(bool)),this,SLOT(onZoomInTool(bool)));
+    connect(actionPan,SIGNAL(triggered(bool)),this,SLOT(onPanTool(bool)));
+    connect(actionFullExtent,SIGNAL(triggered()),this,SLOT(onFullExtent()));
+
+    zoomOutTool = new QgsMapToolZoom(mapCanvas,TRUE);
+    zoomInTool = new QgsMapToolZoom(mapCanvas,FALSE);
+    panTool = new QgsMapToolPan(mapCanvas);
+
+    zoomOutTool->setAction(actionZoomOut);
+    zoomInTool->setAction(actionZoomIn);
+    panTool->setAction(actionPan);
+
+    return toolBar;
+}
+
+void CDTProjectWidget::untoggledToolBar()
+{
+    actionZoomOut->setChecked(false);
+    actionZoomIn->setChecked(false);
+    actionPan->setChecked(false);
+}
+
 int CDTProjectWidget::maybeSave()
 {
     if(isChanged)
     {
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(this, tr("Application"),
-                     tr("The document has been modified.\n"
-                        "Do you want to save your changes?"),
+                                   tr("The document has been modified.\n"
+                                      "Do you want to save your changes?"),
                                    QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
         if (ret == QMessageBox::Save)
         {
