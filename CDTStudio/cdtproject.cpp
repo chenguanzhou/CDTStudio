@@ -51,14 +51,24 @@ void CDTProject::addImageLayer(CDTImageLayer *image)
     emit projectChanged(this);
 }
 
+QString CDTProject::path() const
+{
+    return projectPath;
+}
+
+QString CDTProject::name() const
+{
+    return projectName;
+}
+
 void CDTProject::setName(const QString &n)
 {
-    name = n;
+    projectName = n;
 }
 
 void CDTProject::setPath(const QString &p)
 {
-    path = p;
+    projectPath = p;
 }
 
 void CDTProject::onContextMenuRequest(QWidget* parent)
@@ -80,7 +90,7 @@ void CDTProject::onActionRename()
     bool ok;
     QString text = QInputDialog::getText(NULL, tr("Input Project Name"),
                                          tr("Project name:"), QLineEdit::Normal,
-                                         name, &ok);
+                                         projectName, &ok);
     if (ok && !text.isEmpty())
     {
         setName(text);
@@ -100,7 +110,7 @@ QDataStream &operator <<(QDataStream &out,const CDTProject &project)
     foreach (CDTImageLayer* image, project.images) {
         out<<*image;
     }
-    out<<project.isFileExsit<<project.name<<project.path;
+    out<<project.isFileExsit<<project.projectName<<project.projectPath;
     return out;
 }
 
@@ -116,6 +126,6 @@ QDataStream &operator >>(QDataStream &in, CDTProject &project)
         CDTProject::connect(image,SIGNAL(imageLayerChanged()),&project,SLOT(childrenChanged()));
         project.images.push_back(image);
     }
-    in>>project.isFileExsit>>project.name>>project.path;
+    in>>project.isFileExsit>>project.projectName>>project.projectPath;
     return in;
 }

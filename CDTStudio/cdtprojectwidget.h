@@ -33,10 +33,8 @@ public slots:
     void onContextMenu(QPoint pt,QModelIndex index);
     void setProjectName(const QString& name);
     void setProjectPath(const QString& path);
-    void setProjectFile(const QString& filepath);
     void setIsChanged();
     bool saveProject(QString &path);
-    bool saveFile(QString &filepath);
 
     void onZoomOutTool(bool toggle);
     void onZoomInTool(bool toggle);

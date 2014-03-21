@@ -21,7 +21,7 @@ public:
 
 signals:
     void loadSetting();
-    void updataSetting();
+    void updateSetting();
 public slots:
     void onCurrentTabChanged(int i);
 
