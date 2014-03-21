@@ -6,8 +6,6 @@
 #include <QVector>
 #include <QVariant>
 #include <QAction>
-#include "cdtattributes.h"
-#include "cdtsample.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
 #include "cdtattributeswidget.h"
@@ -67,13 +65,16 @@ private:
     QString m_method;    
     QMap<QString,QVariant> m_params;
     QVector<CDTClassification *> classifications;
-    CDTAttributes attributes;
-    QMap<QString,CDTSample> samples;
 
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;
     QAction *actionRemoveAllClassifications;
     QAction *actionRename;
+
+    CDTProjectTreeItem* shapefileItem;
+    CDTProjectTreeItem* markfileItem;
+    CDTProjectTreeItem* paramRootItem;
+    CDTProjectTreeItem* paramRootValueItem;
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
 QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);

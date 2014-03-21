@@ -17,8 +17,6 @@ SOURCES += main.cpp\
     cdtimagelayer.cpp \
     cdtsegmentationlayer.cpp \
     cdtclassification.cpp \
-    cdtattributes.cpp \
-    cdtsample.cpp \
     cdtprojecttabwidget.cpp \
     cdtprojectwidget.cpp \
     cdtprojecttreemodel.cpp \
@@ -39,8 +37,6 @@ HEADERS  += \
     cdtimagelayer.h \
     cdtsegmentationlayer.h \
     cdtclassification.h \
-    cdtattributes.h \
-    cdtsample.h \
     cdtprojecttabwidget.h \
     cdtprojectwidget.h \
     cdtprojecttreemodel.h \

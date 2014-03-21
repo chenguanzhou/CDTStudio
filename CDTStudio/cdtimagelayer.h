@@ -49,6 +49,8 @@ private:
     QAction* removeAllSegmentations;
     QAction* actionRename;
 
+    CDTProjectTreeItem* segmentationsroot;
+
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image);

@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
     connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),supervisor,SLOT(updataMenuRecent(QString)));
     connect(this,SIGNAL(loadSetting()),supervisor,SLOT(loadSetting()));
-    connect(this,SIGNAL(updataSetting()),supervisor,SLOT(updataSetting()));
+    connect(this,SIGNAL(updateSetting()),supervisor,SLOT(updateSetting()));
 
     ui->horizontalLayoutAttributes->setMenuBar(ui->widgetAttributes->toolBar());
     ui->dockWidgetAttributes->setEnabled(false);
@@ -34,14 +34,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    emit updataSetting();
+    emit updateSetting();
     delete ui;
 }
 
 void MainWindow::onCurrentTabChanged(int i)
 {
-    if(i==-1)
-        return ;
+    if(i==-1)   return ;
     CDTProjectWidget* projectWidget = (CDTProjectWidget*)(ui->tabWidgetProject->currentWidget());
     ui->treeViewProject->setModel(projectWidget->treeModel);
     ui->treeViewProject->expandAll();
@@ -68,11 +67,10 @@ void MainWindow::on_treeViewProject_customContextMenuRequested(const QPoint &pos
 void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
 {
     QStandardItemModel* model = (QStandardItemModel*)(ui->treeViewProject->model());
-    if (model==NULL)
-        return;
+    if (model==NULL)     return;
     CDTProjectTreeItem *item =(CDTProjectTreeItem*)(model->itemFromIndex(index));
-    if (item==NULL)
-        return;
+    if (item==NULL)    return;
+
     int type = item->getType();
     ui->dockWidgetAttributes->setEnabled(false);
     if (type == CDTProjectTreeItem::SEGMENTION)

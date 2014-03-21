@@ -1,4 +1,3 @@
-#include "cdtsample.h"
 #include "cdtclassification.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtimagelayer.h"
@@ -15,10 +14,28 @@ CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
       actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this)),
       actionRename(new QAction(tr("Rename Segmentation Name"),this))
 {
+    keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
+    valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+
+    shapefileItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+    keyItem->appendRow(
+                QList<QStandardItem*>()
+                <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("Shapefile path"),this)
+                <<shapefileItem);
+
+    markfileItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+    keyItem->appendRow(
+                QList<QStandardItem*>()
+                <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("Markfile path"),this)
+                <<markfileItem);
+    paramRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
+    paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+    keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
+
     connect(this,SIGNAL(markfilePathChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(shapefilePathChanged()),this,SIGNAL(segmentationChanged()));
-    connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));    
+    connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),(CDTImageLayer*)(this->parent()),SLOT(removeSegmentation(CDTSegmentationLayer*)));
     connect(this,SIGNAL(segmentationChanged()),(CDTImageLayer*)(this->parent()),SIGNAL(imageLayerChanged()));
 
@@ -99,14 +116,12 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
 void CDTSegmentationLayer::onActionRename()
 {
     bool ok;
-    QString text = QInputDialog::getText(NULL, tr("Input Segmentation Name"),
-                                         tr("Segmentation name:"), QLineEdit::Normal,
-                                         m_name, &ok);
+    QString text = QInputDialog::getText(
+                NULL, tr("Input Segmentation Name"),
+                tr("Segmentation name:"), QLineEdit::Normal,
+                m_name, &ok);
     if (ok && !text.isEmpty())
-    {
         setName(text);
-
-    }
 }
 
 void CDTSegmentationLayer::addClassification()
@@ -180,38 +195,51 @@ QString CDTSegmentationLayer::imagePath() const
 void CDTSegmentationLayer::setName(const QString &name)
 {
     m_name = name;
-    emit nameChanged();    
+    keyItem->setText(m_name);
+    emit nameChanged();
 }
 
 void CDTSegmentationLayer::setShapefilePath(const QString &shpPath)
 {
     m_shapefilePath = shpPath;
+    shapefileItem->setText(m_shapefilePath);
     emit shapefilePathChanged();
 }
 
 void CDTSegmentationLayer::setMarkfilePath(const QString &mkPath)
 {
     m_markfilePath = mkPath;
+    markfileItem->setText(m_markfilePath);
     emit markfilePathChanged();
 }
 
 void CDTSegmentationLayer::setMethodParams(const QString &methodName, const QMap<QString, QVariant> &params)
 {
     m_method = methodName;
+    paramRootItem->removeRows(0,paramRootItem->rowCount());
+    paramRootValueItem->setText(m_method);
     m_params = params;
+    QStringList keys = m_params.keys();
+    foreach (QString key, keys) {
+        QVariant value = m_params.value(key);
+        paramRootItem->appendRow(
+                    QList<QStandardItem*>()
+                    <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,key,this)
+                    <<new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,value.toString(),this)
+                    );
+    }
 }
 
 void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
 {
     m_dbUrl = url;
-//    emit methodParamsChanged();
     emit segmentationChanged();
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
-{
-    out<<segmentation.m_name<<segmentation.m_shapefilePath<<segmentation.m_method<<segmentation.m_params
-      <<segmentation.attributes<<segmentation.samples<<segmentation.m_markfilePath<<segmentation.m_dbUrl;
+{    
+    out<<segmentation.m_name<<segmentation.m_shapefilePath<<segmentation.m_markfilePath
+      <<segmentation.m_method<<segmentation.m_params<<segmentation.m_dbUrl;
 
     out<<segmentation.classifications.size();
     for (int i=0;i<segmentation.classifications.size();++i)
@@ -223,8 +251,24 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
 
 QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
 {
-    in>>segmentation.m_name>>segmentation.m_shapefilePath>>segmentation.m_method>>segmentation.m_params
-     >>segmentation.attributes>>segmentation.samples>>segmentation.m_markfilePath>>segmentation.m_dbUrl;
+    QString temp;
+    in>>temp;
+    qDebug()<<temp;
+    segmentation.setName(temp);
+    in>>temp;
+    qDebug()<<temp;
+    segmentation.setShapefilePath(temp);
+    in>>temp;
+    qDebug()<<temp;
+    segmentation.setMarkfilePath(temp);
+    in>>temp;
+    qDebug()<<temp;
+    QMap<QString,QVariant> paramsTemp;
+    in>>paramsTemp;
+    segmentation.setMethodParams(temp,paramsTemp);
+    in>>segmentation.m_dbUrl;
+
+
 
     int count;
     in>>count;

@@ -19,8 +19,8 @@ public:
     friend class CDTProjectTreeModel;
 
     void addImageLayer(CDTImageLayer *image);
-    void setName(const QString& n);
-    void setPath(const QString& p);
+    QString path()const;
+    QString name()const;
 
 signals:
     void projectChanged(CDTProject*);
@@ -31,13 +31,14 @@ public slots:
     void removeAllImageLayers();
     void onContextMenuRequest(QWidget *parent);
     void onActionRename();
-
+    void setName(const QString& n);
+    void setPath(const QString& p);
 
 private slots:
     void childrenChanged();
 private:
-    QString name;
-    QString path;
+    QString projectName;
+    QString projectPath;
     bool    isFileExsit;
     QVector<CDTImageLayer *> images;
 

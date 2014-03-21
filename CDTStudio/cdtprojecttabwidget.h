@@ -16,20 +16,21 @@ signals:
     void menuRecentChanged(QString path);
     void treeModelUpdated();
 public slots:
-    bool createNewProject();
-    bool openProject(QString &filepath);
-    bool openProject();
+    void createNewProject();
+    void openProject(QString &filepath);
+    void openProject();
     bool saveProject();
     bool saveAllProject();
     bool saveAsProject();
     bool closeTab(const int &index);
-    bool closeAll();
+    void closeAll();
 private:
     QString readLastProjectDir();
     void writeLastProjectDir(QString &path);
     void writeRecentFilePath(QString &path);
     void deleteRecentFilePath(QString &path);
-    bool CompareFilePath(QString &path);
+    bool compareFilePath(QString &path);
+
 };
 
 #endif // CDTPROJECTTABWIDGET_H

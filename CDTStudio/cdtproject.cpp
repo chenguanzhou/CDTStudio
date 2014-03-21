@@ -4,11 +4,13 @@
 #include <QMenu>
 
 CDTProject::CDTProject(QObject *parent):
-    CDTBaseObject(parent),
+    CDTBaseObject(parent),    
     actionAddImage(new QAction(tr("Add Image"),this)),
     removeAllImages(new QAction(tr("Remove All images"),this)),
     actionRename(new QAction(tr("Rename Project"),this))
 {
+    keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);
+    valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
     connect(removeAllImages,SIGNAL(triggered()),this,SLOT(removeAllImageLayers()));
     connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
@@ -22,6 +24,7 @@ void CDTProject::addImageLayer()
         CDTImageLayer *image = new CDTImageLayer(this);
         image->setName(dlg.imageName());
         image->setPath(dlg.imagePath());
+        keyItem->appendRow(image->standardItems());
         addImageLayer(image);
     }
 }
@@ -51,14 +54,26 @@ void CDTProject::addImageLayer(CDTImageLayer *image)
     emit projectChanged(this);
 }
 
+QString CDTProject::path() const
+{
+    return projectPath;
+}
+
+QString CDTProject::name() const
+{
+    return projectName;
+}
+
 void CDTProject::setName(const QString &n)
 {
-    name = n;
+    projectName = n;
+    keyItem->setText(projectName);
 }
 
 void CDTProject::setPath(const QString &p)
 {
-    path = p;
+    projectPath = p;
+    valueItem->setText(projectPath);
 }
 
 void CDTProject::onContextMenuRequest(QWidget* parent)
@@ -72,7 +87,6 @@ void CDTProject::onContextMenuRequest(QWidget* parent)
     menu->addSeparator();
     menu->addAction(actionRename);
     menu->exec(QCursor::pos());
-
 }
 
 void CDTProject::onActionRename()
@@ -80,7 +94,7 @@ void CDTProject::onActionRename()
     bool ok;
     QString text = QInputDialog::getText(NULL, tr("Input Project Name"),
                                          tr("Project name:"), QLineEdit::Normal,
-                                         name, &ok);
+                                         projectName, &ok);
     if (ok && !text.isEmpty())
     {
         setName(text);
@@ -100,7 +114,7 @@ QDataStream &operator <<(QDataStream &out,const CDTProject &project)
     foreach (CDTImageLayer* image, project.images) {
         out<<*image;
     }
-    out<<project.isFileExsit<<project.name<<project.path;
+    out<<project.projectName<<project.projectPath;
     return out;
 }
 
@@ -113,9 +127,15 @@ QDataStream &operator >>(QDataStream &in, CDTProject &project)
     {
         CDTImageLayer* image = new CDTImageLayer(&project);
         in>>*image;
+        project.keyItem->appendRow(image->standardItems());
         CDTProject::connect(image,SIGNAL(imageLayerChanged()),&project,SLOT(childrenChanged()));
         project.images.push_back(image);
     }
-    in>>project.isFileExsit>>project.name>>project.path;
+
+    QString temp;
+    in>>temp;
+    project.setName(temp);
+    in>>temp;
+    project.setPath(temp);
     return in;
 }

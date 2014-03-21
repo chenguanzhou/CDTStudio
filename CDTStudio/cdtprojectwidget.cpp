@@ -16,14 +16,16 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     isChanged(false),
     mapCanvas(new QgsMapCanvas(this))
 {
-    connect(this,SIGNAL(projectChanged(CDTProject*)),treeModel,SLOT(update(CDTProject*)));
+//    connect(this,SIGNAL(projectChanged(CDTProject*)),treeModel,SLOT(update(CDTProject*)));
+
+    treeModel->appendRow(project->standardItems());
     connect(this,SIGNAL(projectChanged(CDTProject*)),this,SLOT(setIsChanged()));
     connect(project,SIGNAL(projectChanged(CDTProject*)),this,SIGNAL(projectChanged(CDTProject*)));
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
     mapCanvas->setCanvasColor(QColor(255, 255, 255));
-//    mapCanvas->setLayerSet(layerSet);
+    //    mapCanvas->setLayerSet(layerSet);
     vbox->addWidget(mapCanvas);
     this->setLayout(vbox);
 
@@ -52,23 +54,19 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
 bool CDTProjectWidget::readProject(QString &filepath)
 {
     QFileInfo info(filepath);
-    if(info.exists())
-    {
-        setProjectFile(filepath);
-        QDataStream in(&(file));
-        quint32 magicNumber;
-        in>>  magicNumber;
-        if (magicNumber != (quint32)0xABCDEF)
-            return false;
-        in>>*project;
-        emit projectChanged(project);
-        isChanged = false;
-        return true;
-    }
-    else
-    {
+    if(!info.exists())
         return false;
-    }
+
+    setProjectPath(filepath);
+    QDataStream in(&(file));
+    quint32 magicNumber;
+    in>>  magicNumber;
+    if (magicNumber != (quint32)0xABCDEF)
+        return false;
+    in>>*project;
+    emit projectChanged(project);
+    isChanged = false;
+    return true;
 }
 
 bool CDTProjectWidget::writeProject()
@@ -83,14 +81,21 @@ bool CDTProjectWidget::writeProject()
 }
 
 bool CDTProjectWidget::saveAsProject(QString &path)
-{
-
+{    
     if (path.isEmpty())
         return false;
-    else
-    {
-        return saveFile(path);
-    }
+
+    if (file.isOpen()) file.close();
+
+    file.setFileName(path);
+    if (!file.open(QFile::ReadWrite))
+        return false;
+
+    project->setPath(path);
+    emit projectChanged(project);
+    writeProject();
+    return true;
+
 }
 
 bool CDTProjectWidget::saveProject(QString &path)
@@ -103,26 +108,6 @@ bool CDTProjectWidget::saveProject(QString &path)
     {
         return writeProject();
     }
-}
-
-bool CDTProjectWidget::saveFile(QString &filepath)
-{
-    QFile savefile(filepath);
-
-    if (!savefile.open(QFile::ReadWrite)) {
-        QMessageBox::warning(this, tr("Application"),
-                             tr("Cannot write file %1:\n%2.")
-                             .arg(filepath)
-                             .arg(savefile.errorString()));
-        return false;
-    }
-    savefile.seek(0);
-    QDataStream out(&savefile);
-    out << (quint32)0xABCDEF;
-    out<<*project;
-    savefile.flush();
-    isChanged = false;
-    return true;
 }
 
 void CDTProjectWidget::onZoomOutTool(bool toggle)
@@ -253,16 +238,19 @@ void CDTProjectWidget::setProjectName(const QString &name)
 
 void CDTProjectWidget::setProjectPath(const QString &path)
 {
-    project->setPath(path);
-    emit projectChanged(project);
-}
+    if(project->path() == path)
+        return;
+    if (file.isOpen())
+        file.close();
 
-void CDTProjectWidget::setProjectFile(const QString &filepath)
-{
-    file.setFileName(filepath);
-    file.open(QIODevice::ReadWrite);
-
-    emit projectChanged(project);
+    file.setFileName(path);
+    if (file.open(QFile::ReadWrite))
+    {
+        project->setPath(path);
+        emit projectChanged(project);
+    }
+    else
+        QMessageBox::critical(this,tr("Error"),tr("Open File ")+path+tr(" failed!"));
 }
 
 void CDTProjectWidget::setIsChanged()

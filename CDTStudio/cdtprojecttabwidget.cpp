@@ -14,7 +14,7 @@ CDTProjectTabWidget::CDTProjectTabWidget(QWidget *parent) :
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
 }
 
-bool CDTProjectTabWidget::createNewProject()
+void CDTProjectTabWidget::createNewProject()
 {
     DialogNewProject *dlg = new DialogNewProject(this);
     if (dlg->exec()==DialogNewProject::Accepted)
@@ -22,32 +22,22 @@ bool CDTProjectTabWidget::createNewProject()
         if (dlg->projectPath().isEmpty() || dlg->projectName().isEmpty())
         {
             QMessageBox::information(this,tr("Error"),tr("Project path or name is empty!"));
-            return false;
+            return ;
         }
-        if(!CompareFilePath(QFileInfo(dlg->projectPath()).absoluteFilePath()))
-        {
-            QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!")
-                                  .arg(QFileInfo(dlg->projectPath()).absoluteFilePath()));
-            emit menuRecentChanged(QFileInfo(dlg->projectPath()).absoluteFilePath());
-            return false;
-        }
+        if(!compareFilePath(QFileInfo(dlg->projectPath()).absoluteFilePath()))
+            return;
 
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
         projectWidget->setProjectPath(dlg->projectPath());
         projectWidget->setProjectName(dlg->projectName());
-        projectWidget->setProjectFile(dlg->projectPath());
-        connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));        
+        connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
         addTab(projectWidget,dlg->projectName());
         saveProject();
         emit menuRecentChanged(dlg->projectPath());
-        delete dlg;
-        return true;
     }
-    delete dlg;
-    return false;
 }
 
-bool CDTProjectTabWidget::openProject(QString &filepath)
+void CDTProjectTabWidget::openProject(QString &filepath)
 {
     if(!filepath.isEmpty())
     {
@@ -56,134 +46,69 @@ bool CDTProjectTabWidget::openProject(QString &filepath)
 
         if (projectWidget->readProject(QFileInfo(filepath).absoluteFilePath()) == false)
         {
-
             QMessageBox::critical(this,tr("Error File"),tr(" File Format Error or invalid filepath!"));
+            delete projectWidget;
+        }
+        if(!compareFilePath(QFileInfo(filepath).absoluteFilePath()))
+            return;
 
-            delete projectWidget;
-            emit menuRecentChanged(filepath);
-            return false;
-        }
-        else if(!CompareFilePath(QFileInfo(filepath).absoluteFilePath()))
-        {
-            QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!").arg(QFileInfo(filepath).absoluteFilePath()));
-            delete projectWidget;
-            emit menuRecentChanged(filepath);
-            return false;
-        }
-        else
-        {
-            QFileInfo fileinfo(projectWidget->file);
-            connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
-            addTab(projectWidget,fileinfo.fileName());
-            this->setCurrentWidget(projectWidget);
-            emit menuRecentChanged(filepath);
-            return true;
-        }
+        QFileInfo fileinfo(projectWidget->file);
+        connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
+        addTab(projectWidget,projectWidget->project->name());
+        this->setCurrentWidget(projectWidget);
+        emit menuRecentChanged(filepath);
     }
-    return false;
-
 }
 
-bool CDTProjectTabWidget::openProject()
+void CDTProjectTabWidget::openProject()
 {
     QString dir = readLastProjectDir();
     QStringList filepaths = QFileDialog::getOpenFileNames(this,tr("Open an project file"),dir,"*.cdtpro");
-    int openFailCount = 0;
     for(int i=0;i< filepaths.size();++i)
     {
         QString filepath = filepaths[i];
-        if(!filepath.isEmpty())
-        {
-            writeLastProjectDir(QFileInfo(filepath).absolutePath());
-            CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
-            if (projectWidget->readProject(QFileInfo(filepath).absoluteFilePath()) == false)
-            {
-                QMessageBox::critical(this,tr("Error File"),tr(" File Format Error!"));
-                delete projectWidget;
-                emit menuRecentChanged(filepath);
-                ++openFailCount;
-            }
-            else if(!CompareFilePath(QFileInfo(filepath).absoluteFilePath()))
-            {
-                QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!").arg(QFileInfo(filepath).absoluteFilePath()));
-                delete projectWidget;
-                emit menuRecentChanged(filepath);
-                ++openFailCount;
-            }
-            else
-            {
-                QFileInfo fileinfo(projectWidget->file);
-                connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
-                addTab(projectWidget,fileinfo.fileName());
-                this->setCurrentWidget(projectWidget);
-                emit menuRecentChanged(filepath);
-            }
-        }
-
+        openProject(filepath);
     }
-    if(openFailCount == 0)
-        return true;
-    else
-        return false;
-
 }
 
 bool CDTProjectTabWidget::saveProject()
 {    
     if(this->count()<=0)
-    {
         return false;
-    }
-    else
-    {
-        ((CDTProjectWidget*)(this->currentWidget()))->writeProject();
-        return true;
-    }
 
+    ((CDTProjectWidget*)(this->currentWidget()))->writeProject();
+    return true;
 }
 
 bool CDTProjectTabWidget::saveAllProject()
 {
-    int count = this->count();
-    if(count<=0)
-    {
+    if(this->count()<=0)
         return false;
-    }
-    else
+
+    for(int i=0;i<this->count();++i)
     {
-        for(int i=0;i<count;++i)
-        {
-            CDTProjectWidget *projectWidget =(CDTProjectWidget*)this->widget(i);
-            projectWidget->writeProject();
-        }
-        return true;
+        CDTProjectWidget *projectWidget =(CDTProjectWidget*)this->widget(i);
+        projectWidget->writeProject();
     }
+    return true;
+
 }
 
 bool CDTProjectTabWidget::saveAsProject()
 {
     if(this->count()<=0)
-    {
         return false;
-    }
-    else
-    {
-        QString dir = readLastProjectDir();
-        QString fileName = QFileDialog::getSaveFileName(this,tr("Save project file"),dir,"*.cdtpro");
-        if(!CompareFilePath(QFileInfo(fileName).absoluteFilePath()))
-        {
-            QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!").arg(QFileInfo(fileName).absoluteFilePath()));
-            emit menuRecentChanged(fileName);
-            return false;
-        }
-        if(!fileName.isEmpty())
-        {
-            writeLastProjectDir(QFileInfo(fileName).absolutePath());
-            emit menuRecentChanged(fileName);
-            ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
-            return true;
-        }
+
+    QString dir = readLastProjectDir();
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Save project file"),dir,"*.cdtpro");
+    if(compareFilePath(QFileInfo(fileName).absoluteFilePath())==false)
         return false;
+
+    if(!fileName.isEmpty())
+    {
+        writeLastProjectDir(QFileInfo(fileName).absolutePath());
+        emit menuRecentChanged(fileName);
+        ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
     }
 }
 
@@ -199,22 +124,12 @@ bool CDTProjectTabWidget::closeTab(const int &index)
     return true;
 }
 
-bool CDTProjectTabWidget::closeAll()
+void CDTProjectTabWidget::closeAll()
 {
-
-    int count = this->count();
-    if(count<=0)
-    {
-        return false;
-    }
-    else
-    {
-        for(int i=0;i<count;++i)
-        {
-            this->closeTab(0);
-        }
-        return true;
-    }
+    if(this->count()<=0)
+        return ;
+    for(int i=0;i<this->count();++i)
+        this->closeTab(0);
 }
 
 QString CDTProjectTabWidget::readLastProjectDir()
@@ -234,14 +149,18 @@ void CDTProjectTabWidget::writeLastProjectDir(QString &path)
     setting.endGroup();
 }
 
-bool CDTProjectTabWidget::CompareFilePath(QString &path)
+bool CDTProjectTabWidget::compareFilePath(QString &path)
 {
     int count = this->count();
     for(int i=0; i< count;++i)
     {
         CDTProjectWidget* tab =(CDTProjectWidget*) this->widget(i);
         if(tab->filePath() == path)
+        {
+            QMessageBox::critical(this,tr("Error File"),tr("%1 have been opened!")
+                                  .arg(QFileInfo(path).absoluteFilePath()));
             return false;
+        }
     }
     return true;
 }

@@ -11,6 +11,11 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
       removeAllSegmentations(new QAction(tr("Remove All Segmentations"),this)),
       actionRename(new QAction(tr("Rename Image"),this))
 {
+    keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,QString(),this);
+    valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+    segmentationsroot = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,CDTProjectTreeItem::GROUP,tr("segmentations"),this);
+    keyItem->appendRow(segmentationsroot);
+
     connect(addSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
     connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
@@ -21,6 +26,7 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
 void CDTImageLayer::setPath(const QString &path)
 {
     m_path = path;
+    valueItem->setText(m_path);
     emit pathChanged(m_path);
     emit imageLayerChanged();
 }
@@ -28,6 +34,7 @@ void CDTImageLayer::setPath(const QString &path)
 void CDTImageLayer::setName(const QString &name)
 {
     m_name = name;
+    keyItem->setText(m_name);
     emit nameChanged(m_name);
     emit imageLayerChanged();
 }
@@ -48,6 +55,7 @@ void CDTImageLayer::addSegmentation()
         segmentation->setShapefilePath(dlg->shapefilePath());
         segmentation->setMarkfilePath(dlg->markfilePath());
         segmentation->setMethodParams(dlg->method(),dlg->params());
+        segmentationsroot->appendRow(segmentation->standardItems());
         addSegmentation(segmentation);
     }
     delete dlg;
@@ -138,13 +146,19 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
 
 QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
 {
-    in>>image.m_path>>image.m_name;
+    QString temp;
+    in>>temp;
+    image.setPath(temp);
+    in>>temp;
+    image.setName(temp);
+
     int count;
     in>>count;
     for (int i=0;i<count;++i)
     {
         CDTSegmentationLayer* segmentation = new CDTSegmentationLayer(image.m_path,&image);
         in>>(*segmentation);
+        image.segmentationsroot->appendRow(segmentation->standardItems());
         image.segmentations.push_back(segmentation);
     }
     return in;
