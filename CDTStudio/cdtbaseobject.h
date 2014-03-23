@@ -14,6 +14,7 @@ public:
 
     virtual void onContextMenuRequest(QWidget *parent) = 0;
     QList<QStandardItem *> standardItems()const;
+    QgsMapLayer *canvasLayer()const;
 signals:
     void appendLayer(QList<QgsMapLayer*> layer);
     void removeLayer(QList<QgsMapLayer*> layer);

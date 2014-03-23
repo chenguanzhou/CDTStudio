@@ -37,7 +37,7 @@ private:
     Ui::DialogNewSegmentation *ui;
     QMap<QString,QVariant> segmentationParams;
     QGridLayout* gridLatoutPlugin;
-    QString inputImagePath;    
+    QString inputImagePath;
 
     void loadPlugins();
     void saveHistoryPaths();

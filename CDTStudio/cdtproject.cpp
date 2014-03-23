@@ -34,9 +34,11 @@ void CDTProject::removeImageLayer(CDTImageLayer* image)
     int index = images.indexOf(image);
     if (index>=0)
     {
+        image->removeAllSegmentationLayers();
         QStandardItem* keyItem = image->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());
-        images.remove(index);        
+        images.remove(index);
+        emit removeLayer(QList<QgsMapLayer*>()<<image->canvasLayer());
         delete image;        
         emit projectChanged(this);
     }
@@ -45,8 +47,10 @@ void CDTProject::removeImageLayer(CDTImageLayer* image)
 void CDTProject::removeAllImageLayers()
 {
     foreach (CDTImageLayer* image, images) {
+        image->removeAllSegmentationLayers();
         QStandardItem* keyItem = image->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());
+        emit removeLayer(QList<QgsMapLayer*>()<<image->canvasLayer());
         delete image;
     }
     images.clear();

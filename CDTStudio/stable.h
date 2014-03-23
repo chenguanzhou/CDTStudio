@@ -6,8 +6,6 @@
 #include <QtXml>
 #include <QtSql>
 
-#include <stxxl.h>
-
 #include <gdal_priv.h>
 #include <ogr_api.h>
 #include <ogrsf_frmts.h>

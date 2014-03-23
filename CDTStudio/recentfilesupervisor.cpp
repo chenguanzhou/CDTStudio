@@ -35,7 +35,6 @@ void RecentFileSupervisor::loadSetting()
 
 void RecentFileSupervisor::updateSetting()
 {
-    qDebug()<<"hehe";
     window->recentFilePaths.clear();
     foreach (QAction* action, window->ui->menu_Recent->actions()) {
         QString path = action->text();

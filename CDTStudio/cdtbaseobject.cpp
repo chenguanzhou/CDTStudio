@@ -15,3 +15,8 @@ QList<QStandardItem *> CDTBaseObject::standardItems() const
 {
     return QList<QStandardItem *>()<<(QStandardItem *)keyItem<<(QStandardItem *)valueItem;
 }
+
+QgsMapLayer *CDTBaseObject::canvasLayer() const
+{
+    return mapCanvasLayer;
+}

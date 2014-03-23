@@ -51,6 +51,7 @@ public slots:
     void remove();
     void removeClassification(CDTClassification *);
     void removeAllClassifications();
+    void onVectorLayerProperty();
     void setName(const QString& name);
     void setShapefilePath(const QString &shpPath);
     void setMarkfilePath(const QString &mkPath);
@@ -70,6 +71,7 @@ private:
     QAction *actionRemoveSegmentation;
     QAction *actionRemoveAllClassifications;
     QAction *actionRename;
+    QAction *actionSetLayerProperty;
 
     CDTProjectTreeItem* shapefileItem;
     CDTProjectTreeItem* markfileItem;

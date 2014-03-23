@@ -4,8 +4,12 @@
 #include <QList>
 #include <QMenu>
 #include <QInputDialog>
+#include <QtXml>
 #include <qgsvectorlayer.h>
 #include <qgsmaplayerregistry.h>
+#include <qgssinglesymbolrendererv2.h>
+#include <qgssymbolv2.h>
+#include <qgssymbollayerv2.h>
 
 CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
     :CDTBaseObject(parent),
@@ -13,7 +17,8 @@ CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
       addClassifications(new QAction(tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this)),
       actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this)),
-      actionRename(new QAction(tr("Rename Segmentation Name"),this))
+      actionRename(new QAction(tr("Rename Segmentation Name"),this)),
+      actionSetLayerProperty(new QAction(tr("Set vector layer property"),this))
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
@@ -44,6 +49,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
     connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),this,SLOT(removeAllClassifications()));
     connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
+    connect(actionSetLayerProperty,SIGNAL(triggered()),this,SLOT(onVectorLayerProperty()));
 }
 
 void CDTSegmentationLayer::addClassification(CDTClassification *classification)
@@ -163,6 +169,11 @@ void CDTSegmentationLayer::removeAllClassifications()
     emit segmentationChanged();
 }
 
+void CDTSegmentationLayer::onVectorLayerProperty()
+{
+
+}
+
 QString CDTSegmentationLayer::name() const
 {
     return m_name;
@@ -213,7 +224,9 @@ void CDTSegmentationLayer::setShapefilePath(const QString &shpPath)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+shpPath+tr(" failed!"));
         delete mapCanvasLayer;
+        return;
     }
+
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,TRUE);
     emit appendLayer(QList<QgsMapLayer*>()<<mapCanvasLayer);
     emit shapefilePathChanged();

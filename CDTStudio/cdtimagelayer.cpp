@@ -30,7 +30,6 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
 
 void CDTImageLayer::setPath(const QString &path)
 {
-    qDebug()<<"old:"<<m_path<<"\tnew:"<<path;
     if (m_path == path)
         return;
 
@@ -43,6 +42,7 @@ void CDTImageLayer::setPath(const QString &path)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("Open image ")+path+tr(" failed!"));
         delete mapCanvasLayer;
+        return;
     }
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,TRUE);
     keyItem->setMapLayer(mapCanvasLayer);
@@ -95,6 +95,7 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
         QStandardItem* keyItem = sgmt->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());
         segmentations.remove(index);
+        emit removeLayer(QList<QgsMapLayer*>()<<sgmt->canvasLayer());
         delete sgmt;
         emit imageLayerChanged();
     }
@@ -105,6 +106,7 @@ void CDTImageLayer::removeAllSegmentationLayers()
     foreach (CDTSegmentationLayer* sgmt, segmentations) {
         QStandardItem* keyItem = sgmt->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());
+        emit removeLayer(QList<QgsMapLayer*>()<<sgmt->canvasLayer());
         delete sgmt;
     }
     segmentations.clear();
@@ -123,7 +125,6 @@ void CDTImageLayer::onActionRename()
 
     }
 }
-
 
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {

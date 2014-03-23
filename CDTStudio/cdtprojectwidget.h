@@ -43,8 +43,10 @@ public slots:
     void onFullExtent();
     void appendLayer(QList<QgsMapLayer*> layer);
     void removeLayer(QList<QgsMapLayer*> layer);
+    void refreshMapCanvas(bool zoomToFullExtent=true);
 
     void onItemChanged(QStandardItem*item);
+
 private slots:
     void untoggledToolBar();
 private:
@@ -62,6 +64,10 @@ private:
     QAction *actionZoomIn;
     QAction *actionPan;
     QAction *actionFullExtent;
+
+    QList<QgsMapLayer*>     activeLayers;
+    QMap<QgsMapLayer*,bool> layersVisible;
+
 };
 
 #endif // CDTPROJECTWIDGET_H

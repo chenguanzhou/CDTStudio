@@ -14,5 +14,6 @@
         <file>Icon/mActionZoomFullExtent.svg</file>
         <file>Icon/mActionZoomIn.svg</file>
         <file>Icon/mActionZoomOut.svg</file>
+        <file>QGisStyle/segmentation.qml</file>
     </qresource>
 </RCC>
