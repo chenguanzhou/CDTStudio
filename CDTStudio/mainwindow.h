@@ -14,7 +14,7 @@ class QModelIndex;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    friend class recentfilesupervisor;
+    friend class RecentFileSupervisor;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -37,7 +37,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    recentfilesupervisor *supervisor;
+    RecentFileSupervisor *supervisor;
     int recentFileCount;
     QToolButton* recentFileToolButton;
     QStringList recentFilePaths;

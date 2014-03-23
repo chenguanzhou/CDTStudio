@@ -3,6 +3,7 @@
 
 #include <QStandardItem>
 #include "cdtbaseobject.h"
+#include "qgsmapcanvas.h"
 
 class CDTProjectTreeItem : public QStandardItem
 {
@@ -30,6 +31,10 @@ public:
     CDTItemType getType()const {return _itemType;}
     CDTBaseObject* getCorrespondingObject()const {return correspondingObject;}
 
+    QgsMapLayer *mapLayer()const;
+    void setMapLayer(QgsMapLayer* layer);
+
+
 private:
     void initAlignment();
     void initFont();
@@ -38,6 +43,7 @@ private:
     CDTItemType _itemType;
     LayerType layerType;
     CDTBaseObject* correspondingObject;
+    QgsMapLayer* qgsMapLayer;
 };
 
 #endif // CDTPROJECTTREEITEM_H

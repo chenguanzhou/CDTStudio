@@ -26,7 +26,7 @@ CDTAttributesWidget::CDTAttributesWidget(QWidget *parent) :
     connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
     _toolBar->addAction(actionGenerateAttributes);
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");    
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     QStringList drivers = QSqlDatabase::drivers();
     // remove compat names
     drivers.removeAll("QMYSQL3");
@@ -72,16 +72,12 @@ void CDTAttributesWidget::setDatabaseURL(CDTDatabaseConnInfo url)
 
 void CDTAttributesWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
 {
-    if (_segmentationLayer == layer)
+    if (_segmentationLayer == layer)        
         return;
 
-    if (_segmentationLayer)
-        disconnect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),_segmentationLayer,SLOT(setDatabaseURL(CDTDatabaseConnInfo)));
     _segmentationLayer = layer;
-
     setDatabaseURL(_segmentationLayer->databaseURL());
     updateWidgetsByUrl(_segmentationLayer->databaseURL());
-
     connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),_segmentationLayer,SLOT(setDatabaseURL(CDTDatabaseConnInfo)));
     connect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(onSegmentationDestroyed()));
 }
@@ -211,6 +207,8 @@ void CDTAttributesWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
 void CDTAttributesWidget::onSegmentationDestroyed()
 {
     ui->tabWidget->setEnabled(false);
+    _dbConnInfo = CDTDatabaseConnInfo();
+    updateWidgetsByUrl(_dbConnInfo);
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo)

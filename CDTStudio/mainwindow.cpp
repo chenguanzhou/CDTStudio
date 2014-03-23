@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     recentFileToolButton(new QToolButton(this)),
-    supervisor(new recentfilesupervisor(this))
+    supervisor(new RecentFileSupervisor(this))
 {    
     ui->setupUi(this);
     recentFileToolButton->setIcon(QIcon(":/Icon/recentfile.png"));
@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewProject,SLOT(expandAll()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
-    connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),supervisor,SLOT(updataMenuRecent(QString)));
+    connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),supervisor,SLOT(updateMenuRecent(QString)));
     connect(this,SIGNAL(loadSetting()),supervisor,SLOT(loadSetting()));
     connect(this,SIGNAL(updateSetting()),supervisor,SLOT(updateSetting()));
 

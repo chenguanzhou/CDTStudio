@@ -11,6 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CDTStudio
 TEMPLATE = app
 
+CONFIG+=precompile_header
+PRECOMPILED_HEADER = stable.h
+
 SOURCES += main.cpp\
         mainwindow.cpp \
     cdtproject.cpp \

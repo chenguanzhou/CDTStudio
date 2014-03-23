@@ -4,7 +4,7 @@
 #include <QMenu>
 
 CDTProject::CDTProject(QObject *parent):
-    CDTBaseObject(parent),    
+    CDTBaseObject(parent),
     actionAddImage(new QAction(tr("Add Image"),this)),
     removeAllImages(new QAction(tr("Remove All images"),this)),
     actionRename(new QAction(tr("Rename Project"),this))
@@ -23,7 +23,7 @@ void CDTProject::addImageLayer()
     {
         CDTImageLayer *image = new CDTImageLayer(this);
         image->setName(dlg.imageName());
-        image->setPath(dlg.imagePath());
+        image->setPath(dlg.imagePath());        
         keyItem->appendRow(image->standardItems());
         addImageLayer(image);
     }
@@ -31,18 +31,24 @@ void CDTProject::addImageLayer()
 
 void CDTProject::removeImageLayer(CDTImageLayer* image)
 {
-    for(int i =0;i <images.size();++i)
+    int index = images.indexOf(image);
+    if (index>=0)
     {
-        if(image->name() == images[i]->name())
-        {
-            images.remove(i);
-            emit projectChanged(this);
-        }
+        QStandardItem* keyItem = image->standardItems()[0];
+        keyItem->parent()->removeRow(keyItem->index().row());
+        images.remove(index);        
+        delete image;        
+        emit projectChanged(this);
     }
 }
 
 void CDTProject::removeAllImageLayers()
 {
+    foreach (CDTImageLayer* image, images) {
+        QStandardItem* keyItem = image->standardItems()[0];
+        keyItem->parent()->removeRow(keyItem->index().row());
+        delete image;
+    }
     images.clear();
     emit projectChanged(this);
 }

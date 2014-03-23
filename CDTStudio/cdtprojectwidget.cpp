@@ -11,13 +11,14 @@
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
-    project(new CDTProject(this)),
+    project(new CDTProject()),
     treeModel(new CDTProjectTreeModel(this)),
     isChanged(false),
     mapCanvas(new QgsMapCanvas(this))
 {
 //    connect(this,SIGNAL(projectChanged(CDTProject*)),treeModel,SLOT(update(CDTProject*)));
 
+    connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));
     treeModel->appendRow(project->standardItems());
     connect(this,SIGNAL(projectChanged(CDTProject*)),this,SLOT(setIsChanged()));
     connect(project,SIGNAL(projectChanged(CDTProject*)),this,SIGNAL(projectChanged(CDTProject*)));
@@ -25,7 +26,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
     mapCanvas->setCanvasColor(QColor(255, 255, 255));
-    //    mapCanvas->setLayerSet(layerSet);
+
     vbox->addWidget(mapCanvas);
     this->setLayout(vbox);
 
@@ -33,6 +34,15 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     if (toolBar != NULL)
         vbox->setMenuBar(toolBar);
 
+    connect(project,SIGNAL(appendLayer(QList<QgsMapLayer*>)),this,SLOT(appendLayer(QList<QgsMapLayer*>)));
+    connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
+
+}
+
+CDTProjectWidget::~CDTProjectWidget()
+{
+    delete project;
+    file.close();
 }
 
 void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
@@ -66,6 +76,7 @@ bool CDTProjectWidget::readProject(QString &filepath)
     in>>*project;
     emit projectChanged(project);
     isChanged = false;
+
     return true;
 }
 
@@ -142,6 +153,39 @@ void CDTProjectWidget::onFullExtent()
     mapCanvas->zoomToFullExtent();
 }
 
+void CDTProjectWidget::appendLayer(QList<QgsMapLayer *> layer)
+{
+    QList<QgsMapLayer *> layers = mapCanvas->layers();
+    layers.append(layer);
+
+    QList<QgsMapCanvasLayer> mapLayers;
+    foreach (QgsMapLayer *lyr, layers) {
+        mapLayers<<QgsMapCanvasLayer(lyr);
+    }
+
+    mapCanvas->setLayerSet(mapLayers);
+    mapCanvas->zoomToFullExtent();
+}
+
+void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
+{
+    QList<QgsMapLayer *> layers = mapCanvas->layers();
+    foreach (QgsMapLayer *lyr, layer) {
+        int index = layers.indexOf(lyr);
+        if (index!=-1)
+            layers.removeAt(index);
+    }
+    QList<QgsMapCanvasLayer> mapLayers;
+    foreach (QgsMapLayer *lyr, layers) {
+        mapLayers<<QgsMapCanvasLayer(lyr);
+    }
+    mapCanvas->setLayerSet(mapLayers);
+}
+
+void CDTProjectWidget::onItemChanged(QStandardItem *item)
+{
+    CDTProjectTreeItem* treeItem = (CDTProjectTreeItem*)item;
+}
 
 QToolBar *CDTProjectWidget::initToolBar()
 {
@@ -221,12 +265,6 @@ bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index
         parent->removeTab(index);
         return true;
     }
-}
-
-
-CDTProjectWidget::~CDTProjectWidget()
-{
-    file.close();
 }
 
 void CDTProjectWidget::setProjectName(const QString &name)

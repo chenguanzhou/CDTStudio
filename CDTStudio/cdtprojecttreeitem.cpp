@@ -1,7 +1,7 @@
 #include "cdtprojecttreeitem.h"
 
 CDTProjectTreeItem::CDTProjectTreeItem(CDTItemType tp, LayerType ly, const QString &text, CDTBaseObject *crspdObject)
-    :_itemType(tp),layerType(ly),correspondingObject(crspdObject)
+    :_itemType(tp),layerType(ly),correspondingObject(crspdObject),qgsMapLayer(NULL)
 {
     setText(text);
     initAlignment();
@@ -10,10 +10,21 @@ CDTProjectTreeItem::CDTProjectTreeItem(CDTItemType tp, LayerType ly, const QStri
     initCheckState();
 }
 
+QgsMapLayer *CDTProjectTreeItem::mapLayer() const
+{
+    return qgsMapLayer;
+}
+
+void CDTProjectTreeItem::setMapLayer(QgsMapLayer *layer)
+{
+    qgsMapLayer = layer;
+}
+
 void CDTProjectTreeItem::initAlignment()
 {
     switch (_itemType) {
     case PARAM:
+    case METHOD_PARAMS:
         this->setTextAlignment(Qt::AlignRight);
         break;
     }

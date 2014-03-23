@@ -6,12 +6,12 @@
 #include <QAction>
 #include <QSettings>
 
-recentfilesupervisor::recentfilesupervisor(MainWindow *w,QObject *parent) :
+RecentFileSupervisor::RecentFileSupervisor(MainWindow *w,QObject *parent) :
     QObject(parent),window(w)
 {    
 }
 
-void recentfilesupervisor::loadSetting()
+void RecentFileSupervisor::loadSetting()
 {
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("Project");
@@ -33,8 +33,9 @@ void recentfilesupervisor::loadSetting()
     }
 }
 
-void recentfilesupervisor::updataSetting()
+void RecentFileSupervisor::updateSetting()
 {
+    qDebug()<<"hehe";
     window->recentFilePaths.clear();
     foreach (QAction* action, window->ui->menu_Recent->actions()) {
         QString path = action->text();
@@ -47,7 +48,7 @@ void recentfilesupervisor::updataSetting()
     setting.endGroup();
 }
 
-void recentfilesupervisor::updataMenuRecent(QString path)
+void RecentFileSupervisor::updateMenuRecent(QString path)
 {
     QList<QAction*> actions = window->ui->menu_Recent->actions();
     for (int i =0;i< actions.size();++i)

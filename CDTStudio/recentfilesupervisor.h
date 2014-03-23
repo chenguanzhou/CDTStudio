@@ -8,20 +8,20 @@ namespace Ui {
 class MainWindow;
 }
 
-class recentfilesupervisor : public QObject
+class RecentFileSupervisor : public QObject
 {
     Q_OBJECT
     friend class MainWindow;
 public:
-    explicit recentfilesupervisor(MainWindow *w,QObject *parent = 0);
+    explicit RecentFileSupervisor(MainWindow *w,QObject *parent = 0);
 
 signals:
     void loadSettingFinished();
     void updataSettingFinished();
 public slots:
     void loadSetting();
-    void updataSetting();
-    void updataMenuRecent(QString path);
+    void updateSetting();
+    void updateMenuRecent(QString path);
 private:
       MainWindow *window;
 

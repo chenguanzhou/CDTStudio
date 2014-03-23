@@ -4,7 +4,8 @@
 #include <QList>
 #include <QMenu>
 #include <QInputDialog>
-
+#include <qgsvectorlayer.h>
+#include <qgsmaplayerregistry.h>
 
 CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
     :CDTBaseObject(parent),
@@ -201,8 +202,20 @@ void CDTSegmentationLayer::setName(const QString &name)
 
 void CDTSegmentationLayer::setShapefilePath(const QString &shpPath)
 {
+    if (m_shapefilePath == shpPath)
+        return;
     m_shapefilePath = shpPath;
     shapefileItem->setText(m_shapefilePath);
+    if (mapCanvasLayer)
+        delete mapCanvasLayer;
+    mapCanvasLayer = new QgsVectorLayer(QFileInfo(shpPath).absolutePath(),QFileInfo(shpPath).completeBaseName(),"ogr");
+    if (!mapCanvasLayer->isValid())
+    {
+        QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+shpPath+tr(" failed!"));
+        delete mapCanvasLayer;
+    }
+    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,TRUE);
+    emit appendLayer(QList<QgsMapLayer*>()<<mapCanvasLayer);
     emit shapefilePathChanged();
 }
 
@@ -253,16 +266,16 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
 {
     QString temp;
     in>>temp;
-    qDebug()<<temp;
+
     segmentation.setName(temp);
     in>>temp;
-    qDebug()<<temp;
+
     segmentation.setShapefilePath(temp);
     in>>temp;
-    qDebug()<<temp;
+
     segmentation.setMarkfilePath(temp);
     in>>temp;
-    qDebug()<<temp;
+
     QMap<QString,QVariant> paramsTemp;
     in>>paramsTemp;
     segmentation.setMethodParams(temp,paramsTemp);

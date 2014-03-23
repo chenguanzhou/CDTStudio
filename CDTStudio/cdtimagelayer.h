@@ -8,6 +8,7 @@
 #include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
 
+
 class CDTImageLayer:public CDTBaseObject
 {
     Q_OBJECT

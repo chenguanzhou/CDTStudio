@@ -19,6 +19,7 @@ public:
     friend class CDTProjectWidget;
     friend class MainWindow;
     explicit CDTProjectWidget(QWidget *parent = 0);
+    ~CDTProjectWidget();
 
     bool readProject(QString &filepath);
     bool writeProject();
@@ -26,7 +27,6 @@ public:
     int  maybeSave();
     QString filePath();
     bool closeProject(CDTProjectTabWidget *parent,const int &index);
-    ~CDTProjectWidget();
 
 signals:
     void projectChanged(CDTProject*);
@@ -41,6 +41,10 @@ public slots:
     void onZoomInTool(bool toggle);
     void onPanTool(bool toggle);
     void onFullExtent();
+    void appendLayer(QList<QgsMapLayer*> layer);
+    void removeLayer(QList<QgsMapLayer*> layer);
+
+    void onItemChanged(QStandardItem*item);
 private slots:
     void untoggledToolBar();
 private:

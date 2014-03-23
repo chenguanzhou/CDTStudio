@@ -3,6 +3,11 @@
 #include <QInputDialog>
 #include "dialognewsegmentation.h"
 #include "cdtproject.h"
+#include <qgsrasterlayer.h>
+#include <qgsmapcanvas.h>
+#include <qgsrasterlayer.h>
+#include <qgsmaplayerregistry.h>
+#include <QMessageBox>
 
 CDTImageLayer::CDTImageLayer(QObject *parent)
     :CDTBaseObject(parent),
@@ -20,14 +25,29 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
     connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
     connect(removeAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
-    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));    
 }
 
 void CDTImageLayer::setPath(const QString &path)
 {
+    qDebug()<<"old:"<<m_path<<"\tnew:"<<path;
+    if (m_path == path)
+        return;
+
     m_path = path;
     valueItem->setText(m_path);
+    if (mapCanvasLayer)
+        delete mapCanvasLayer;
+    mapCanvasLayer = new QgsRasterLayer(path,QFileInfo(path).completeBaseName());
+    if (!mapCanvasLayer->isValid())
+    {
+        QMessageBox::critical(NULL,tr("Error"),tr("Open image ")+path+tr(" failed!"));
+        delete mapCanvasLayer;
+    }
+    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,TRUE);
+    keyItem->setMapLayer(mapCanvasLayer);
     emit pathChanged(m_path);
+    emit appendLayer(QList<QgsMapLayer*>()<<mapCanvasLayer);
     emit imageLayerChanged();
 }
 
@@ -63,23 +83,30 @@ void CDTImageLayer::addSegmentation()
 
 void CDTImageLayer::remove()
 {
-    emit removeImageLayer(this);
+    emit removeLayer(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    emit removeImageLayer(this);    
 }
 
 void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
 {
-    for(int i =0;i <segmentations.size();++i)
+    int index = segmentations.indexOf(sgmt);
+    if (index>=0)
     {
-        if(sgmt->name() == segmentations[i]->name())
-        {
-            segmentations.remove(i);
-            emit imageLayerChanged();
-        }
-    }    
+        QStandardItem* keyItem = sgmt->standardItems()[0];
+        keyItem->parent()->removeRow(keyItem->index().row());
+        segmentations.remove(index);
+        delete sgmt;
+        emit imageLayerChanged();
+    }
 }
 
 void CDTImageLayer::removeAllSegmentationLayers()
 {
+    foreach (CDTSegmentationLayer* sgmt, segmentations) {
+        QStandardItem* keyItem = sgmt->standardItems()[0];
+        keyItem->parent()->removeRow(keyItem->index().row());
+        delete sgmt;
+    }
     segmentations.clear();
     emit imageLayerChanged();
 }
