@@ -9,6 +9,9 @@
 #include <qgsmaptoolzoom.h>
 #include <qgsmaptoolpan.h>
 #include <qgsmaplayer.h>
+#include <qgsmaplayerregistry.h>
+#include <qgsvectorlayer.h>
+#include <qgsvectordataprovider.h>
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
@@ -35,9 +38,8 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     if (toolBar != NULL)
         vbox->setMenuBar(toolBar);
 
-    connect(project,SIGNAL(appendLayer(QList<QgsMapLayer*>)),this,SLOT(appendLayer(QList<QgsMapLayer*>)));
-    connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
-
+    connect(project,SIGNAL(appendLayers(QList<QgsMapLayer*>)),this,SLOT(appendLayers(QList<QgsMapLayer*>)));
+    connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));    
 }
 
 CDTProjectWidget::~CDTProjectWidget()
@@ -59,7 +61,6 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
     {
         correspondingObject->onContextMenuRequest(this);
     }
-
 }
 
 bool CDTProjectWidget::readProject(QString &filepath)
@@ -78,6 +79,7 @@ bool CDTProjectWidget::readProject(QString &filepath)
     emit projectChanged(project);
     isChanged = false;
 
+    refreshMapCanvas();
     return true;
 }
 
@@ -154,13 +156,13 @@ void CDTProjectWidget::onFullExtent()
     mapCanvas->zoomToFullExtent();
 }
 
-void CDTProjectWidget::appendLayer(QList<QgsMapLayer *> layer)
+void CDTProjectWidget::appendLayers(QList<QgsMapLayer *> layers)
 {    
-    activeLayers.append(layer);
+    activeLayers.append(layers);
     foreach (QgsMapLayer *lyr, activeLayers) {
         layersVisible.insert(lyr,true);
     }
-    refreshMapCanvas();
+    refreshMapCanvas(false);
 }
 
 void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
@@ -168,9 +170,12 @@ void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
     foreach (QgsMapLayer *lyr, layer) {
         int index = activeLayers.indexOf(lyr);
         if (index!=-1)
+        {
             activeLayers.removeAt(index);
+            QgsMapLayerRegistry::instance()->removeMapLayer(lyr->id());
+        }
     }
-    refreshMapCanvas();
+    refreshMapCanvas(false);
 }
 
 void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
@@ -178,11 +183,16 @@ void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
     QList<QgsMapCanvasLayer> mapLayers;
     foreach (QgsMapLayer *lyr, activeLayers) {
         if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::VectorLayer)
+        {
             mapLayers<<QgsMapCanvasLayer(lyr);
+            QgsVectorLayer* layer = (QgsVectorLayer*)lyr;
+        }
     }
     foreach (QgsMapLayer *lyr, activeLayers) {
         if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::RasterLayer)
+        {
             mapLayers<<QgsMapCanvasLayer(lyr);
+        }
     }
     mapCanvas->setLayerSet(mapLayers);
     if (zoomToFullExtent)
@@ -195,7 +205,7 @@ void CDTProjectWidget::onItemChanged(QStandardItem *item)
     if (treeItem->mapLayer())
     {
         layersVisible[treeItem->mapLayer()] = treeItem->checkState()==Qt::Checked;
-        refreshMapCanvas();
+        refreshMapCanvas(false);
     }
 }
 

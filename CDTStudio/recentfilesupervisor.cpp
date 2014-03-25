@@ -63,7 +63,6 @@ void RecentFileSupervisor::updateMenuRecent(QString path)
     QAction* recentFile = new QAction(path,this);
     window->ui->menu_Recent->insertAction(actions[0],recentFile);
     connect(recentFile,SIGNAL(triggered()),window,SLOT(onRecentFileTriggered()));
-    qDebug()<<window->recentFileCount<<" "<<window->ui->menu_Recent->actions().size();
     if((window->ui->menu_Recent->actions()).size() >window->recentFileCount)
     {
         for(int i =window->recentFileCount;i < (window->ui->menu_Recent->actions()).size();++i)

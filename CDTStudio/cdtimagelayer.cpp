@@ -47,7 +47,7 @@ void CDTImageLayer::setPath(const QString &path)
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,TRUE);
     keyItem->setMapLayer(mapCanvasLayer);
     emit pathChanged(m_path);
-    emit appendLayer(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
     emit imageLayerChanged();
 }
 

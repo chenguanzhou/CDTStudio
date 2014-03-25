@@ -8,8 +8,8 @@
 #include <qgsvectorlayer.h>
 #include <qgsmaplayerregistry.h>
 #include <qgssinglesymbolrendererv2.h>
-#include <qgssymbolv2.h>
-#include <qgssymbollayerv2.h>
+#include <qgsrendererv2widget.h>
+#include <qgsfillsymbollayerv2.h>
 
 CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
     :CDTBaseObject(parent),
@@ -219,7 +219,7 @@ void CDTSegmentationLayer::setShapefilePath(const QString &shpPath)
     shapefileItem->setText(m_shapefilePath);
     if (mapCanvasLayer)
         delete mapCanvasLayer;
-    mapCanvasLayer = new QgsVectorLayer(QFileInfo(shpPath).absolutePath(),QFileInfo(shpPath).completeBaseName(),"ogr");
+    mapCanvasLayer = new QgsVectorLayer(/*QFileInfo(shpPath).absolutePath()*/shpPath,QFileInfo(shpPath).completeBaseName(),"ogr");
     if (!mapCanvasLayer->isValid())
     {
         QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+shpPath+tr(" failed!"));
@@ -227,8 +227,18 @@ void CDTSegmentationLayer::setShapefilePath(const QString &shpPath)
         return;
     }
 
-    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,TRUE);
-    emit appendLayer(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
+    QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+    symbolLayer->setColor(QColor(0,0,0,0));
+    symbolLayer->setBorderColor(QColor(qrand()%255,qrand()%255,qrand()%255));
+    QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
+    QgsSingleSymbolRendererV2* singleSymbolRenderer = new QgsSingleSymbolRendererV2(fillSymbol);
+    p->setRendererV2(singleSymbolRenderer);
+    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
+    keyItem->setMapLayer(mapCanvasLayer);
+
+
+    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
     emit shapefilePathChanged();
 }
 

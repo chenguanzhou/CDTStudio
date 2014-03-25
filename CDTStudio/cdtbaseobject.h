@@ -11,12 +11,13 @@ class CDTBaseObject : public QObject
     Q_OBJECT
 public:
     explicit CDTBaseObject(QObject *parent = 0);
+    virtual ~CDTBaseObject();
 
     virtual void onContextMenuRequest(QWidget *parent) = 0;
     QList<QStandardItem *> standardItems()const;
     QgsMapLayer *canvasLayer()const;
 signals:
-    void appendLayer(QList<QgsMapLayer*> layer);
+    void appendLayers(QList<QgsMapLayer*> layer);
     void removeLayer(QList<QgsMapLayer*> layer);
 public slots:
 

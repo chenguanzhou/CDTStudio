@@ -41,10 +41,9 @@ public slots:
     void onZoomInTool(bool toggle);
     void onPanTool(bool toggle);
     void onFullExtent();
-    void appendLayer(QList<QgsMapLayer*> layer);
+    void appendLayers(QList<QgsMapLayer*> layers);
     void removeLayer(QList<QgsMapLayer*> layer);
     void refreshMapCanvas(bool zoomToFullExtent=true);
-
     void onItemChanged(QStandardItem*item);
 
 private slots:
