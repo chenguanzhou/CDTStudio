@@ -33,6 +33,7 @@ private slots:
     void on_treeWidgetAll_itemSelectionChanged();
     void onToolBoxSelectionChanged();
     void onShowWarningMessage(QString msg);
+    void onFinished();
 
 private:
     Ui::DialogGenerateAttributes *ui;

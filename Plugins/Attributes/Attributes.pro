@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     Spectral \
-    Geometry
+    Geometry \
+    Texture

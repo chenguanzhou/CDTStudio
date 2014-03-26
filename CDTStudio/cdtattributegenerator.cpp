@@ -136,7 +136,7 @@ bool CDTAttributeGenerator::readGeometry()
             emit progressBarValueChanged(index);
         feature = layer->GetNextFeature();
         ++index;
-    }    
+    }
     emit progressBarValueChanged(barSize);
     return true;
 }
@@ -425,7 +425,7 @@ bool CDTAttributeGenerator::computeAttributes(
 
         foreach (CDTAttributesInterface* plugin, _plugins) {
             QString tableName = plugin->tableName();
-            QVector<double> attributesValue;
+            QVector<qreal> attributesValue;
 
             const QMetaObject *metaObject = plugin->metaObject();
 
@@ -435,6 +435,34 @@ bool CDTAttributeGenerator::computeAttributes(
                 clock_t t1 = clock();
                 if (attributeName.contains("_angle"))//band&&angle
                 {
+                    int posBand = attributeName.indexOf("_band");
+                    int posAngle = attributeName.indexOf("_angle");
+                    QString funName = attributeName.left(posBand);
+                    int bandID = attributeName.mid(posBand+5,posAngle-posBand-5).toInt();
+                    int angle = attributeName.mid(posAngle+6).toInt();
+//                    for(int i=0;i <4;++i)
+//                    {
+                        QVector<qreal> resultVal;
+                        TextureParam textureparam;
+                        textureparam.angle =angle;
+                        textureparam.buf =buffer[bandID-1];
+                        AttributeParamsSingleAngleBand params(
+                                    pointsVecI,textureparam,_dataType,nXSize,nYSize,pointsVecF,
+                                rotatedPointsVec,ringPointsVec,area,border_lenghth,
+                                longSideOfMBR,shortSideOfMBR,majorSemiAxesOfAE,
+                                minorSemiAxesOfAE,rotated_center);
+                        metaObject->invokeMethod(
+                                    plugin,funName.toUtf8().constData(),Qt::DirectConnection,
+                                    Q_RETURN_ARG(QVector<qreal>,resultVal),
+                                    Q_ARG(AttributeParamsSingleAngleBand,params));
+
+                        for(int i=0;i <resultVal.size();++i)
+                        {
+                            attributesValue.push_back(resultVal[i]);
+                        }
+//                    }
+                    if (index==0)
+                        attributesFieldNames[tableName].append(plugin->attributesName(attributeName,funName));
 
                 }
                 else if (attributeName.contains("_band"))//single band
@@ -445,9 +473,9 @@ bool CDTAttributeGenerator::computeAttributes(
                     qreal resultVal=0;
                     AttributeParamsSingleBand params(
                                 pointsVecI,buffer[bandID-1],_dataType,nXSize,nYSize,pointsVecF,
-                                rotatedPointsVec,ringPointsVec,area,border_lenghth,
-                                longSideOfMBR,shortSideOfMBR,majorSemiAxesOfAE,
-                                minorSemiAxesOfAE,rotated_center);
+                            rotatedPointsVec,ringPointsVec,area,border_lenghth,
+                            longSideOfMBR,shortSideOfMBR,majorSemiAxesOfAE,
+                            minorSemiAxesOfAE,rotated_center);
                     metaObject->invokeMethod(
                                 plugin,funcName.toUtf8().constData(),Qt::DirectConnection,
                                 Q_RETURN_ARG(qreal, resultVal ),
@@ -503,8 +531,9 @@ bool CDTAttributeGenerator::computeAttributes(
 bool CDTAttributeGenerator::addAttributesToTables(QMap<QString,QList<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames)
 {
     QSqlQuery query;
-    foreach (QString tableName, attributesValues.keys()) {
+    foreach (QString tableName, attributesValues.keys()) {        
         QList<QVector<double> > datas = attributesValues.value(tableName);
+        qDebug()<<tableName<<":"<<datas[0].size();
         if (query.exec(QString("drop table if exists ") + tableName)==false)
         {
             emit showWarningMessage(query.lastError().text());
@@ -520,8 +549,8 @@ bool CDTAttributeGenerator::addAttributesToTables(QMap<QString,QList<QVector<dou
         sqlCreate += ")";
         sqlInsert += ")";
 
-//        qDebug()<<"sqlCreate:"<<sqlCreate;
-//        qDebug()<<"sqlInsert:"<<sqlInsert;
+//                qDebug()<<"sqlCreate:"<<sqlCreate;
+        //        qDebug()<<"sqlInsert:"<<sqlInsert;
 
         if (query.exec(sqlCreate)==false)
         {

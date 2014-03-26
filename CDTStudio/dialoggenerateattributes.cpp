@@ -47,6 +47,14 @@ void DialogGenerateAttributes::loadPlugin()
                 {
                     QTreeWidgetItem *itemBand = new QTreeWidgetItem(itemChild);
                     itemBand->setText(0,QString("band")+QString::number(i+1));
+                    if(method.methodType == QString("CDT_ATTRIBUTE_SINGLE_BAND_ANGLE"))
+                    {
+                        for(int j=0;j< 4;++j)
+                        {
+                            QTreeWidgetItem *itemAngle = new QTreeWidgetItem(itemBand);
+                            itemAngle->setText(0,QString("angle")+QString::number(j*45));
+                        }
+                    }
                 }
             }
         }
@@ -152,13 +160,14 @@ void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
         QMessageBox::critical(this,tr("Error"),tr("Construct attribute generator failed!\n")+attributeGenerator->errorInfo());
         return;
     }
-//    connect(attributeGenerator, SIGNAL(finished()), this, SLOT(onFinished()));
+    //    connect(attributeGenerator, SIGNAL(finished()), this, SLOT(onFinished()));
     connect(attributeGenerator, SIGNAL(showWarningMessage(QString)),this,SLOT(onShowWarningMessage(QString)));
     connect(attributeGenerator, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
     connect(attributeGenerator, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
     connect(attributeGenerator, SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
     attributeGenerator->start();
-
+    this->setEnabled(false);
+    connect(attributeGenerator,SIGNAL(finished()),this,SLOT(onFinished()));
 }
 
 void DialogGenerateAttributes::on_treeWidgetAll_itemSelectionChanged()
@@ -192,4 +201,9 @@ void DialogGenerateAttributes::onToolBoxSelectionChanged()
 void DialogGenerateAttributes::onShowWarningMessage(QString msg)
 {
     QMessageBox::warning(this,tr("warning"),msg);
+}
+
+void DialogGenerateAttributes::onFinished()
+{
+    this->setEnabled(true);
 }

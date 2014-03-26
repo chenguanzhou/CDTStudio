@@ -16,6 +16,13 @@ public:
     QString methodType;
 };
 
+class TextureParam
+{
+public:
+    uchar* buf;
+    int angle;
+};
+
 template <class T>
 class AttributeParams
 {
@@ -75,6 +82,7 @@ public:
 
 typedef AttributeParams<QVector<uchar*> > AttributeParamsMultiBand;
 typedef AttributeParams<uchar*> AttributeParamsSingleBand;
+typedef AttributeParams<TextureParam> AttributeParamsSingleAngleBand;
 
 class CDTAttributesInterface: public QObject
 {
@@ -89,6 +97,10 @@ public:
     virtual ~CDTAttributesInterface(){}
     virtual QString attributesType() const=0;
     virtual QString tableName() const=0;
+    virtual QStringList attributesName(QString name,QString funcName)
+    {
+        return QStringList()<<name;
+    }
 
     QList<AttributeMethod> attributesMethods()const
     {
@@ -112,6 +124,8 @@ public:
     }
 
 };
+
+
 
 Q_DECLARE_INTERFACE(CDTAttributesInterface,"cn.edu.WHU.CDTStudio.CDTAttributesInterface/1.0")
 #endif // CDTATTRIBUTESINTERFACE_H
