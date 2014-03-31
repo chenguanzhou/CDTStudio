@@ -43,16 +43,15 @@ void CDTProjectTabWidget::openProject(QString &filepath)
     {
         writeLastProjectDir(QFileInfo(filepath).absolutePath());
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
-
         if (projectWidget->readProject(QFileInfo(filepath).absoluteFilePath()) == false)
         {
             QMessageBox::critical(this,tr("Error File"),tr(" File Format Error or invalid filepath!"));
             delete projectWidget;
+            return;
         }
+
         if(!compareFilePath(QFileInfo(filepath).absoluteFilePath()))
             return;
-
-        QFileInfo fileinfo(projectWidget->file);
         connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
         addTab(projectWidget,projectWidget->project->name());
         this->setCurrentWidget(projectWidget);
@@ -148,6 +147,7 @@ void CDTProjectTabWidget::writeLastProjectDir(QString &path)
     setting.setValue("lastDir",path);
     setting.endGroup();
 }
+
 
 bool CDTProjectTabWidget::compareFilePath(QString &path)
 {

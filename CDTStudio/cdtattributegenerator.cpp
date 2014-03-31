@@ -34,6 +34,7 @@ CDTAttributeGenerator::CDTAttributeGenerator(
         return;
     }
 
+
     _poGeometryDS =  OGRSFDriverRegistrar::Open( shpPath.toUtf8().constData());
     if (_poGeometryDS == NULL)
     {
@@ -84,6 +85,7 @@ CDTAttributeGenerator::~CDTAttributeGenerator()
 
 void CDTAttributeGenerator::run()
 {
+    qDebug()<<"hehe";
     if (readGeometry()==false)
         return;
 
@@ -92,9 +94,11 @@ void CDTAttributeGenerator::run()
 
     QMap<QString,QList<QVector<double> > > attributesValues;
     QMap<QString,QStringList> attributesFieldNames;
+    qDebug()<<"hehe";
     if (computeAttributes(attributesValues,attributesFieldNames)==false)
         return;
     addAttributesToTables(attributesValues,attributesFieldNames);
+    qDebug()<<"hehe";
 }
 
 bool CDTAttributeGenerator::readGeometry()

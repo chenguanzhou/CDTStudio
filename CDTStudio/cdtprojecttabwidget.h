@@ -28,7 +28,6 @@ private:
     QString readLastProjectDir();
     void writeLastProjectDir(QString &path);
     void writeRecentFilePath(QString &path);
-    void deleteRecentFilePath(QString &path);
     bool compareFilePath(QString &path);
 
 };

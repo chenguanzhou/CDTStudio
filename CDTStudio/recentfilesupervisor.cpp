@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QAction>
 #include <QSettings>
+#include<QFileInfo>
 
 RecentFileSupervisor::RecentFileSupervisor(MainWindow *w,QObject *parent) :
     QObject(parent),window(w)
@@ -38,7 +39,11 @@ void RecentFileSupervisor::updateSetting()
     window->recentFilePaths.clear();
     foreach (QAction* action, window->ui->menu_Recent->actions()) {
         QString path = action->text();
-        window->recentFilePaths.push_back(path);
+        QFileInfo info(path);
+        if(!path.isEmpty()&&info.exists())
+        {
+            window->recentFilePaths.push_back(path);
+        }
     }
 
     QSettings setting("WHU","CDTStudio");

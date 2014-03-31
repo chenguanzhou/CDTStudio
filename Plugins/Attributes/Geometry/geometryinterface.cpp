@@ -39,7 +39,7 @@ qreal GeometryInterface::elongation(const AttributeParamsMultiBand &param) const
     else {
         refValue = param.shortSideOfMBR / param.longSideOfMBR;
     }
-    return true;
+    return refValue;
 }
 
 qreal GeometryInterface::asymmetry(const AttributeParamsMultiBand &param) const
@@ -89,7 +89,7 @@ qreal GeometryInterface::x_center(const AttributeParamsMultiBand &param) const
         refValue +=param.pointsVecF[i].x();
     }
     refValue /=param.pointsVecF.size();
-    return true;
+    return refValue;
 }
 
 qreal GeometryInterface::x_max(const AttributeParamsMultiBand &param) const
