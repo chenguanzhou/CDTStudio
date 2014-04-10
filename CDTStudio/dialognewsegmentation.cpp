@@ -17,6 +17,10 @@ DialogNewSegmentation::DialogNewSegmentation(const QString &inputImage, QWidget 
     gridLatoutPlugin->setMargin(0);
     loadPlugins();
     loadHistoryPaths();
+    ui->labelProgress->hide();
+    ui->progressBar->hide();
+    ui->frameTotal->adjustSize();
+    this->adjustSize();
 }
 
 DialogNewSegmentation::~DialogNewSegmentation()
@@ -164,8 +168,32 @@ void DialogNewSegmentation::on_comboBoxShapefile_currentIndexChanged(const QStri
         segmentationPlugins[currentIndex]->setShapefilePath(arg1);
 }
 
-void DialogNewSegmentation::onFinished(QMap<QString,QVariant> params)
+void DialogNewSegmentation::onFinished()
 {
     ui->buttonBox->setStandardButtons(ui->buttonBox->standardButtons()|QDialogButtonBox::Ok);
-    segmentationParams = params;
+    ui->labelProgress->hide();
+    ui->progressBar->hide();
+    ui->frameTotal->adjustSize();
+    this->adjustSize();
+    segmentationParams = segmentationPlugins[ui->comboBox->currentIndex()]
+            ->params(gridLatoutPlugin->itemAtPosition(0,0)->widget());
+    ui->frameTotal->setEnabled(true);
+    ui->pushButtonStart->setEnabled(true);
+}
+
+void DialogNewSegmentation::on_pushButtonStart_clicked()
+{
+    ui->progressBar->show();
+    ui->labelProgress->show();
+    this->adjustSize();
+
+    QThread *thread = segmentationPlugins[ui->comboBox->currentIndex()]
+            ->thread(gridLatoutPlugin->itemAtPosition(0,0)->widget());
+    connect(thread, SIGNAL(finished()), this, SLOT(onFinished()));
+    connect(thread, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
+    connect(thread, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
+    connect(thread, SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
+    thread->start();
+    ui->frameTotal->setEnabled(false);
+    ui->pushButtonStart->setEnabled(false);
 }

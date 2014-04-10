@@ -14,7 +14,8 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
       addSegmentationLayer(new QAction(tr("Add Segmentation"),this)),
       removeImage(new QAction(tr("Remove Image"),this)),
       removeAllSegmentations(new QAction(tr("Remove All Segmentations"),this)),
-      actionRename(new QAction(tr("Rename Image"),this))
+      actionRename(new QAction(tr("Rename Image"),this)),
+      actionCategoryInformation(new QAction(tr("Category Information"),this))
 {
     keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,QString(),this);
     valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
@@ -25,7 +26,8 @@ CDTImageLayer::CDTImageLayer(QObject *parent)
     connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
     connect(removeAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
-    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));    
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
+    connect(actionCategoryInformation,SIGNAL(triggered()),this,SLOT(onActionCategoryInformation()));
 }
 
 void CDTImageLayer::setPath(const QString &path)
@@ -126,6 +128,16 @@ void CDTImageLayer::onActionRename()
     }
 }
 
+void CDTImageLayer::onActionCategoryInformation()
+{
+    DialogCategoryInformation dlgCategory(categoryInformationList);
+    if (dlgCategory.exec()==QDialog::Accepted)
+    {
+        categoryInformationList = dlgCategory.categoryInformationList;
+        emit imageLayerChanged();
+    }
+}
+
 void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {
     CDTProjectTreeItem *imageroot =new CDTProjectTreeItem(
@@ -159,6 +171,8 @@ void CDTImageLayer::onContextMenuRequest(QWidget *parent)
     menu->addAction(removeAllSegmentations);
     menu->addSeparator();
     menu->addAction(actionRename);
+    menu->addSeparator();
+    menu->addAction(actionCategoryInformation);
 
     menu->exec(QCursor::pos());
 }
@@ -168,6 +182,7 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
     out<<image.m_path<<image.m_name<<image.segmentations.size();
     for (int i=0;i<image.segmentations.size();++i)
         out<<*(image.segmentations[i]);
+    out<<image.categoryInformationList;
     return out ;
 }
 
@@ -189,5 +204,6 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
         image.segmentationsroot->appendRow(segmentation->standardItems());
         image.segmentations.push_back(segmentation);
     }
+    in>>image.categoryInformationList;
     return in;
 }

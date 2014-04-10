@@ -7,7 +7,7 @@
 #include "cdtclassification.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
-
+#include "dialogcategoryinformation.h"
 
 class CDTImageLayer:public CDTBaseObject
 {
@@ -19,6 +19,7 @@ public:
 
     friend QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image);
     friend QDataStream &operator>>(QDataStream &in, CDTImageLayer &image);
+    friend class CDTTrainingSamplesForm;
 
     void setPath(const QString& path);
     void setName(const QString& name);
@@ -40,15 +41,19 @@ public slots:
     void removeSegmentation(CDTSegmentationLayer*);
     void removeAllSegmentationLayers();
     void onActionRename();
+    void onActionCategoryInformation();
 
 private:
     QString m_path;
     QString m_name;
     QVector<CDTSegmentationLayer *> segmentations;
+    CDTCategoryInformationList categoryInformationList;
+
     QAction* addSegmentationLayer;
     QAction* removeImage;
     QAction* removeAllSegmentations;
     QAction* actionRename;
+    QAction* actionCategoryInformation;
 
     CDTProjectTreeItem* segmentationsroot;
 

@@ -31,7 +31,10 @@ SOURCES += main.cpp\
     cdtattributeswidget.cpp\
     recentfilesupervisor.cpp \
     dialoggenerateattributes.cpp \
-    cdtattributegenerator.cpp
+    cdtattributegenerator.cpp \
+    dialogcategoryinformation.cpp \
+    cdtmaptoolselecttrainingsamples.cpp \
+    cdttrainingsamplesform.cpp
 
 HEADERS  += \
     ../Interfaces/cdtsegmentationInterface.h \
@@ -54,14 +57,19 @@ HEADERS  += \
     ../Interfaces/cdtattributesinterface.h \
     dialoggenerateattributes.h \
     cdtattributegenerator.h \
-    cdtbasethread.h
+    cdtbasethread.h \
+    dialogcategoryinformation.h \
+    cdtmaptoolselecttrainingsamples.h \
+    cdttrainingsamplesform.h
 
 FORMS    += mainwindow.ui \
     dialognewproject.ui \
     dialognewsegmentation.ui\
         dialognewimage.ui \
     cdtattributeswidget.ui \
-    dialoggenerateattributes.ui
+    dialoggenerateattributes.ui \
+    dialogcategoryinformation.ui \
+    cdttrainingsamplesform.ui
 
 INCLUDEPATH += ../Interfaces
 

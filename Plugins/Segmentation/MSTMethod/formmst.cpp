@@ -8,9 +8,6 @@ FormMST::FormMST(QWidget *parent) :
     ui(new Ui::FormMST)
 {
     ui->setupUi(this);    
-    ui->progressBar->hide();
-    ui->labelProgress->hide();
-    this->adjustSize();
 }
 
 FormMST::~FormMST()
@@ -18,16 +15,13 @@ FormMST::~FormMST()
     delete ui;
 }
 
-void FormMST::setInterface(MSTMethodInterface *interface)
+void FormMST::setInterface(CDTSegmentationInterface *interface)
 {
     this->interface=interface;
 }
 
-void FormMST::on_pushButtonStart_clicked()
-{    
-    ui->progressBar->show();
-    ui->labelProgress->show();
-    this->adjustSize();
+QThread *FormMST::thread()
+{
     MSTSegmenter* mstSegmenter = new MSTSegmenter(
                 interface->inputImagePath(),
                 interface->markfilePath(),
@@ -36,23 +30,15 @@ void FormMST::on_pushButtonStart_clicked()
                 ui->doubleSpinBoxThreshold->value(),
                 ui->spinBoxMinArea->value(),
                 ui->checkBox->isChecked());
-
-    connect(mstSegmenter, SIGNAL(finished()), this, SLOT(onFinished()));
-    connect(mstSegmenter, SIGNAL(finished()), ui->labelProgress, SLOT(hide()));
-    connect(mstSegmenter, SIGNAL(finished()), ui->progressBar, SLOT(hide()));
-    connect(mstSegmenter, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
-    connect(mstSegmenter, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
-    connect(mstSegmenter, SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
-    mstSegmenter->start();
-    //    connect(mstSegmenter, SIGNAL(showWarningMessage(QString)),this,SLOT(onWarningMessage(QString)));
+    return mstSegmenter;
 }
 
-void FormMST::onFinished()
+QMap<QString, QVariant> FormMST::params() const
 {
     QMap<QString,QVariant> params;
     params.insert(tr("Merge Rule"),ui->comboBoxMergeRule->currentText());
     params.insert(tr("Threshold"),ui->doubleSpinBoxThreshold->value());
     params.insert(tr("Minimal Area"),ui->spinBoxMinArea->value());
     params.insert(tr("Shield No-data Value"),ui->checkBox->isChecked());
-    emit finished(params);
+    return params;
 }

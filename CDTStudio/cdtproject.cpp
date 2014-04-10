@@ -3,17 +3,22 @@
 #include <QInputDialog>
 #include <QMenu>
 
+
 CDTProject::CDTProject(QObject *parent):
     CDTBaseObject(parent),
     actionAddImage(new QAction(tr("Add Image"),this)),
     removeAllImages(new QAction(tr("Remove All images"),this)),
     actionRename(new QAction(tr("Rename Project"),this))
 {
+    removeAllImages->setIcon(QIcon(":/Icon/remove.png"));
+    actionAddImage->setIcon(QIcon(":/Icon/add.png"));
+    actionRename->setIcon(QIcon(":/Icon/rename.png"));
+
     keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);
     valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
     connect(removeAllImages,SIGNAL(triggered()),this,SLOT(removeAllImageLayers()));
-    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));    
 }
 
 void CDTProject::addImageLayer()
@@ -87,15 +92,13 @@ void CDTProject::setPath(const QString &p)
 }
 
 void CDTProject::onContextMenuRequest(QWidget* parent)
-{
-    removeAllImages->setIcon(QIcon(":/Icon/remove.png"));
-    actionAddImage->setIcon(QIcon(":/Icon/add.png"));
-    actionRename->setIcon(QIcon(":/Icon/rename.png"));
+{    
     QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);
     menu->addAction(removeAllImages);
     menu->addSeparator();
     menu->addAction(actionRename);
+
     menu->exec(QCursor::pos());
 }
 

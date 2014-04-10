@@ -6,6 +6,8 @@
 #include <QVector>
 #include <QAction>
 #include "cdtattributeswidget.h"
+#include <QMessageBox>
+#include <qgsmaplayer.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     supervisor(new RecentFileSupervisor(this))
 {    
     ui->setupUi(this);
+    recentFileToolButton->setText(tr("&Recent"));
+    recentFileToolButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     recentFileToolButton->setIcon(QIcon(":/Icon/recentfile.png"));
     recentFileToolButton->setPopupMode(QToolButton::InstantPopup);
     ui->mainToolBar->addWidget(recentFileToolButton);
@@ -29,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->dockWidgetAttributes->setEnabled(false);
 
     emit loadSetting();
+
 }
 
 
@@ -76,9 +81,28 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     if (type == CDTProjectTreeItem::SEGMENTION)
     {
         CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(item->getCorrespondingObject());
-        ui->widgetAttributes->setSegmentationLayer(segmentationLayer);
-        ui->dockWidgetAttributes->setEnabled(true);
+        if (segmentationLayer != NULL)
+        {
+            ui->widgetAttributes->setSegmentationLayer(segmentationLayer);
+            ui->dockWidgetAttributes->setEnabled(true);
+
+            if (segmentationLayer->canvasLayer()!=NULL)
+            {
+                CDTProjectWidget* widget = (CDTProjectWidget*)ui->tabWidgetProject->currentWidget();
+                widget->mapCanvas->setCurrentLayer(segmentationLayer->canvasLayer());
+            }
+        }
     }
+    else if (type == CDTProjectTreeItem::IMAGE_ROOT)
+    {
+        //set current layer?
+        CDTImageLayer* imageLayer = (CDTImageLayer*)(item->getCorrespondingObject());
+        if (imageLayer != NULL)
+        {
+            ui->trainingSampleForm->setImageLayer(imageLayer);
+        }
+    }
+
 }
 
 void MainWindow::on_actionOpen_triggered()

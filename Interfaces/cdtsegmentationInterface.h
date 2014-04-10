@@ -15,6 +15,8 @@ public:
 
     virtual QString segmentationMethod()const =0;
     virtual QWidget* paramsForm() =0;
+    virtual QMap<QString,QVariant> params(QWidget* form)=0;
+    virtual QThread* thread(QWidget* form) =0;
 
     void setInputImagePath(const QString &path){_inputImagePath=path;}
     void setMarkfilePath  (const QString &path){_markfilePath=path;}

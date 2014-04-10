@@ -15,18 +15,12 @@ public:
     explicit FormMST(QWidget *parent = 0);
     ~FormMST();
 
-    void setInterface(MSTMethodInterface* interface);
-signals:
-    void finished(QMap<QString, QVariant>);
-public slots:
-    void onFinished();
-private slots:
-    void on_pushButtonStart_clicked();
-
-
+    void setInterface(CDTSegmentationInterface* interface);
+    QThread *thread();
+    QMap<QString,QVariant> params() const;
 private:
     Ui::FormMST *ui;    
-    MSTMethodInterface* interface;
+    CDTSegmentationInterface* interface;
 };
 
 #endif // FORMMST_H

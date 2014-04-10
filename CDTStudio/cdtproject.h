@@ -9,6 +9,7 @@
 #include <QAction>
 #include "cdtbaseobject.h"
 
+
 class CDTProject: public CDTBaseObject
 {
     Q_OBJECT
@@ -17,6 +18,7 @@ public:
     friend QDataStream &operator <<(QDataStream &out,const CDTProject &project);
     friend QDataStream &operator >>(QDataStream &in, CDTProject &project);
     friend class CDTProjectTreeModel;
+    friend class CDTSegmentationLayer;
 
     void addImageLayer(CDTImageLayer *image);
     QString path()const;
@@ -30,7 +32,7 @@ public slots:
     void removeImageLayer(CDTImageLayer *image);
     void removeAllImageLayers();
     void onContextMenuRequest(QWidget *parent);
-    void onActionRename();
+    void onActionRename();    
     void setName(const QString& n);
     void setPath(const QString& p);
 
@@ -40,11 +42,12 @@ private:
     QString projectName;
     QString projectPath;
     bool    isFileExsit;
-    QVector<CDTImageLayer *> images;
+    QVector<CDTImageLayer *> images;    
 
     QAction* actionAddImage;
     QAction* removeAllImages;
     QAction* actionRename;
+
 
 //    void updateTreeModel(CDTProjectTreeModel* model);
 };

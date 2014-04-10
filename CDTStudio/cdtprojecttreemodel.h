@@ -13,8 +13,8 @@ public:
 
 signals:
     void updated();
-public slots:
-    void update(CDTProject*project);
+//public slots:
+//    void update(CDTProject*project);
 };
 
 #endif // CDTPROJECTTREEMODEL_H

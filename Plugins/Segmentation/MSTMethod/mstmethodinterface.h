@@ -17,7 +17,8 @@ public:
     ~MSTMethodInterface();
     QString segmentationMethod()const;
     QWidget *paramsForm() ;
-
+    QMap<QString,QVariant> params(QWidget* form);
+    QThread* thread(QWidget* form);
 private:
 
 

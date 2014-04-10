@@ -31,7 +31,8 @@ private slots:
     void on_pushButtonShapefile_clicked();
     void on_comboBoxMarkfile_currentIndexChanged(const QString &arg1);
     void on_comboBoxShapefile_currentIndexChanged(const QString &arg1);
-    void onFinished(QMap<QString, QVariant> params);
+    void onFinished();
+    void on_pushButtonStart_clicked();
 
 private:
     Ui::DialogNewSegmentation *ui;

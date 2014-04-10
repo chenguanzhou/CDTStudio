@@ -26,7 +26,6 @@ CDTAttributesWidget::CDTAttributesWidget(QWidget *parent) :
     connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
     _toolBar->addAction(actionGenerateAttributes);
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     QStringList drivers = QSqlDatabase::drivers();
     // remove compat names
     drivers.removeAll("QMYSQL3");

@@ -4,7 +4,7 @@
 
 uint qHash(const QPoint &point)
 {
-    return (qint16)point.x() | point.y()<<16;
+    return ((qint16)point.x()) | point.y()<<16;
 }
 
 

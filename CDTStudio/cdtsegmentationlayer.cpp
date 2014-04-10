@@ -18,7 +18,8 @@ CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
       actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this)),
       actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this)),
       actionRename(new QAction(tr("Rename Segmentation Name"),this)),
-      actionSetLayerProperty(new QAction(tr("Set vector layer property"),this))
+      actionTrainingSamples(new QAction(tr("Set Training Samples"),this)),
+      trainingSamplesForm(NULL)
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
@@ -49,7 +50,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
     connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),this,SLOT(removeAllClassifications()));
     connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
-    connect(actionSetLayerProperty,SIGNAL(triggered()),this,SLOT(onVectorLayerProperty()));
+    connect(actionTrainingSamples,SIGNAL(triggered()),this,SLOT(onTrainingSamples()));
 }
 
 void CDTSegmentationLayer::addClassification(CDTClassification *classification)
@@ -117,6 +118,7 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     menu->addAction(actionRemoveAllClassifications);
     menu->addSeparator();
     menu->addAction(actionRename);
+    menu->addAction(actionTrainingSamples);
     menu->exec(QCursor::pos());
 }
 
@@ -169,7 +171,7 @@ void CDTSegmentationLayer::removeAllClassifications()
     emit segmentationChanged();
 }
 
-void CDTSegmentationLayer::onVectorLayerProperty()
+void CDTSegmentationLayer::onTrainingSamples()
 {
 
 }

@@ -39,7 +39,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
         vbox->setMenuBar(toolBar);
 
     connect(project,SIGNAL(appendLayers(QList<QgsMapLayer*>)),this,SLOT(appendLayers(QList<QgsMapLayer*>)));
-    connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));    
+    connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
 }
 
 CDTProjectWidget::~CDTProjectWidget()
@@ -185,7 +185,6 @@ void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
         if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::VectorLayer)
         {
             mapLayers<<QgsMapCanvasLayer(lyr);
-            QgsVectorLayer* layer = (QgsVectorLayer*)lyr;
         }
     }
     foreach (QgsMapLayer *lyr, activeLayers) {
@@ -212,12 +211,13 @@ void CDTProjectWidget::onItemChanged(QStandardItem *item)
 QToolBar *CDTProjectWidget::initToolBar()
 {
     QToolBar* toolBar = new QToolBar(tr("Navigate"),this);
-    toolBar->setIconSize(QSize(24,24));
+    toolBar->setIconSize(QSize(16,16));
 
-    actionZoomOut  = new QAction(QIcon(":/Icon/mActionZoomOut.svg"),tr("Zoom Out"),toolBar);
-    actionZoomIn   = new QAction(QIcon(":/Icon/mActionZoomIn.svg"),tr("Zoom In"),toolBar);
-    actionPan      = new QAction(QIcon(":/Icon/mActionPan.svg"),tr("Pan"),toolBar);
-    actionFullExtent = new QAction(QIcon(":/Icon/mActionZoomFullExtent.svg"),tr("Full Extent"),toolBar);
+    actionZoomOut  = new QAction(QIcon(":/Icon/mActionZoomOut.svg"),tr("Zoom Out"),this);
+    actionZoomIn   = new QAction(QIcon(":/Icon/mActionZoomIn.svg"),tr("Zoom In"),this);
+    actionPan      = new QAction(QIcon(":/Icon/mActionPan.svg"),tr("Pan"),this);
+    actionFullExtent = new QAction(QIcon(":/Icon/mActionZoomFullExtent.svg"),tr("Full Extent"),this);
+    QAction* hehe = new QAction(tr("Hehe"),this);
 
     actionZoomOut->setCheckable(true);
     actionZoomIn->setCheckable(true);
@@ -227,11 +227,13 @@ QToolBar *CDTProjectWidget::initToolBar()
     toolBar->addAction(actionZoomIn );
     toolBar->addAction(actionPan);
     toolBar->addAction(actionFullExtent);
+    toolBar->addAction(hehe);
 
     connect(actionZoomOut,SIGNAL(triggered(bool)),this,SLOT(onZoomOutTool(bool)));
     connect(actionZoomIn ,SIGNAL(triggered(bool)),this,SLOT(onZoomInTool(bool)));
     connect(actionPan,SIGNAL(triggered(bool)),this,SLOT(onPanTool(bool)));
     connect(actionFullExtent,SIGNAL(triggered()),this,SLOT(onFullExtent()));
+    connect(hehe,SIGNAL(triggered()),this,SLOT(onHehe()));
 
     zoomOutTool = new QgsMapToolZoom(mapCanvas,TRUE);
     zoomInTool = new QgsMapToolZoom(mapCanvas,FALSE);
@@ -249,6 +251,11 @@ void CDTProjectWidget::untoggledToolBar()
     actionZoomOut->setChecked(false);
     actionZoomIn->setChecked(false);
     actionPan->setChecked(false);
+}
+
+void CDTProjectWidget::onHehe()
+{
+
 }
 
 int CDTProjectWidget::maybeSave()

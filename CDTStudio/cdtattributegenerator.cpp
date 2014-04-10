@@ -85,7 +85,6 @@ CDTAttributeGenerator::~CDTAttributeGenerator()
 
 void CDTAttributeGenerator::run()
 {
-    qDebug()<<"hehe";
     if (readGeometry()==false)
         return;
 
@@ -94,11 +93,9 @@ void CDTAttributeGenerator::run()
 
     QMap<QString,QList<QVector<double> > > attributesValues;
     QMap<QString,QStringList> attributesFieldNames;
-    qDebug()<<"hehe";
     if (computeAttributes(attributesValues,attributesFieldNames)==false)
         return;
     addAttributesToTables(attributesValues,attributesFieldNames);
-    qDebug()<<"hehe";
 }
 
 bool CDTAttributeGenerator::readGeometry()
@@ -537,7 +534,6 @@ bool CDTAttributeGenerator::addAttributesToTables(QMap<QString,QList<QVector<dou
     QSqlQuery query;
     foreach (QString tableName, attributesValues.keys()) {        
         QList<QVector<double> > datas = attributesValues.value(tableName);
-        qDebug()<<tableName<<":"<<datas[0].size();
         if (query.exec(QString("drop table if exists ") + tableName)==false)
         {
             emit showWarningMessage(query.lastError().text());
@@ -552,9 +548,6 @@ bool CDTAttributeGenerator::addAttributesToTables(QMap<QString,QList<QVector<dou
         }
         sqlCreate += ")";
         sqlInsert += ")";
-
-//                qDebug()<<"sqlCreate:"<<sqlCreate;
-        //        qDebug()<<"sqlInsert:"<<sqlInsert;
 
         if (query.exec(sqlCreate)==false)
         {

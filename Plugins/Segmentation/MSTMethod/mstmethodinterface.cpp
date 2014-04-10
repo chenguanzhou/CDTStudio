@@ -5,8 +5,8 @@
 MSTMethodInterface::MSTMethodInterface(QObject *parent)
     :CDTSegmentationInterface(parent)
 {
-//    frmMST->setInterface(this);
-//    connect(frmMST,SIGNAL(finished()),this,SIGNAL(finished()));
+    //    frmMST->setInterface(this);
+    //    connect(frmMST,SIGNAL(finished()),this,SIGNAL(finished()));
 }
 
 MSTMethodInterface::~MSTMethodInterface()
@@ -22,8 +22,21 @@ QWidget *MSTMethodInterface::paramsForm()
 {
     FormMST *frmMST= new FormMST();
     frmMST->setInterface(this);
-    connect(frmMST,SIGNAL(finished(QMap<QString, QVariant>)),this,SIGNAL(finished(QMap<QString, QVariant>)));
+    //    connect(frmMST,SIGNAL(finished(QMap<QString, QVariant>)),this,SIGNAL(finished(QMap<QString, QVariant>)));
     return frmMST;
+}
+
+QMap<QString, QVariant> MSTMethodInterface::params(QWidget *form)
+{
+    return ((FormMST*)form)->params();
+}
+
+QThread *MSTMethodInterface::thread(QWidget *form)
+{
+    if (form==NULL) return NULL;
+
+    FormMST *frmMST=(FormMST *)form;
+    return frmMST->thread();
 }
 
 #if QT_VERSION < 0x050000

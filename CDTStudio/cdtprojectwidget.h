@@ -48,6 +48,7 @@ public slots:
 
 private slots:
     void untoggledToolBar();
+    void onHehe();
 private:
     bool isChanged;
     CDTProject *project;

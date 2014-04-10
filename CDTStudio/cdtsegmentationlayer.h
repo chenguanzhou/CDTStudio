@@ -9,9 +9,12 @@
 #include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
 #include "cdtattributeswidget.h"
+#include "cdttrainingsamplesform.h"
 
 class CDTClassification;
 struct CDTDatabaseConnInfo;
+typedef QMap<int,QString> TrainingSample;
+typedef QList<TrainingSample > CDTTrainingSampleList;
 
 class CDTSegmentationLayer:public CDTBaseObject
 {
@@ -51,7 +54,7 @@ public slots:
     void remove();
     void removeClassification(CDTClassification *);
     void removeAllClassifications();
-    void onVectorLayerProperty();
+    void onTrainingSamples();
     void setName(const QString& name);
     void setShapefilePath(const QString &shpPath);
     void setMarkfilePath(const QString &mkPath);
@@ -66,12 +69,15 @@ private:
     QString m_method;    
     QMap<QString,QVariant> m_params;
     QVector<CDTClassification *> classifications;
+    CDTTrainingSampleList trainingSampleList;
+
+    CDTTrainingSamplesForm* trainingSamplesForm;
 
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;
     QAction *actionRemoveAllClassifications;
     QAction *actionRename;
-    QAction *actionSetLayerProperty;
+    QAction *actionTrainingSamples;
 
     CDTProjectTreeItem* shapefileItem;
     CDTProjectTreeItem* markfileItem;
