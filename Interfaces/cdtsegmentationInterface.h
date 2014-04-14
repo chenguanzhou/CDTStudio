@@ -26,8 +26,7 @@ public:
     QString markfilePath()  const{return _markfilePath;}
     QString shapefilePath() const{return _shapefilePath;}
 
-signals:
-    void finished(QMap<QString, QVariant>);
+signals:    
     void onMarkfilePathChanged(const QString& path);
     void onShapefilePathChanged(const QString& path);
 

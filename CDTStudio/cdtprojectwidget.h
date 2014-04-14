@@ -18,6 +18,7 @@ public:
     friend class CDTProjectTabWidget;
     friend class CDTProjectWidget;
     friend class MainWindow;
+
     explicit CDTProjectWidget(QWidget *parent = 0);
     ~CDTProjectWidget();
 
@@ -29,11 +30,11 @@ public:
     bool closeProject(CDTProjectTabWidget *parent,const int &index);
 
 signals:
-    void projectChanged(CDTProject*);
+    void projectChanged();
 public slots:
     void onContextMenu(QPoint pt,QModelIndex index);
-    void setProjectName(const QString& name);
-    void setProjectPath(const QString& path);
+//    void setProjectName(const QString& name);
+//    void setProjectPath(const QString& path);
     void setIsChanged();
     bool saveProject(QString &path);
 
@@ -68,6 +69,8 @@ private:
     QList<QgsMapLayer*>     activeLayers;
     QMap<QgsMapLayer*,bool> layersVisible;
 
+    bool openProjectFile(QString filepath = QString());
+    void createProject(QUuid id);
 };
 
 #endif // CDTPROJECTWIDGET_H

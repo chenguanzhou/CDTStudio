@@ -150,7 +150,7 @@ void DialogNewSegmentation::loadPlugins()
     foreach (CDTSegmentationInterface* plugin, segmentationPlugins) {
         ui->comboBox->addItem(plugin->segmentationMethod());
         plugin->setInputImagePath(inputImagePath);
-        connect(plugin,SIGNAL(finished(QMap<QString,QVariant>)),this,SLOT(onFinished(QMap<QString,QVariant>)));
+//        connect(plugin,SIGNAL(finished(QMap<QString,QVariant>)),this,SLOT(onFinished(QMap<QString,QVariant>)));
     }
 }
 

@@ -10,6 +10,10 @@ class MainWindow;
 }
 
 class QModelIndex;
+class QTreeView;
+class CDTTrainingSamplesForm;
+class CDTAttributesWidget;
+class DialogConsole;
 
 class MainWindow : public QMainWindow
 {
@@ -17,7 +21,12 @@ class MainWindow : public QMainWindow
     friend class RecentFileSupervisor;
 public:
     explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    ~MainWindow();       
+
+    static MainWindow   *getMainWindow();
+    static QTreeView    *getProjectTreeView();
+    static CDTTrainingSamplesForm   *getCategoryForm();
+    static CDTAttributesWidget *getAttributesWidget();
 
 signals:
     void loadSetting();
@@ -35,14 +44,18 @@ private slots:
     void on_action_Save_As_triggered();
     void onRecentFileTriggered();
 
+protected:
+    void closeEvent(QCloseEvent *);
+
 private:
     Ui::MainWindow *ui;
     RecentFileSupervisor *supervisor;
     int recentFileCount;
     QToolButton* recentFileToolButton;
     QStringList recentFilePaths;
-protected:
-    void closeEvent(QCloseEvent *);
+    DialogConsole* dialogConsole;
+
+    static MainWindow* mainWindow;
 };
 
 #endif // MAINWINDOW_H

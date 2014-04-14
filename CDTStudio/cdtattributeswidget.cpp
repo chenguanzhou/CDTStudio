@@ -1,6 +1,7 @@
 #include "cdtattributeswidget.h"
 #include "ui_cdtattributeswidget.h"
 #include <QToolBar>
+#include <QMenuBar>
 #include <QtSql>
 #include <QDebug>
 #include "cdtsegmentationlayer.h"
@@ -11,20 +12,19 @@
 CDTAttributesWidget::CDTAttributesWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::CDTAttributesWidget),
-    _toolBar(new QToolBar(tr("Attributes"),this)),
+    _menuBar(new QMenuBar(/*tr("Attributes"),*/this)),
     _segmentationLayer(NULL)
 {
     ui->setupUi(this);
     ui->connGroupBox->setEnabled(false);
-    _toolBar->setIconSize(QSize(32,32));
 
-    QAction *actionEditDataSource = new QAction(tr("Edit Data Source"),_toolBar);
+    QAction *actionEditDataSource = new QAction(tr("Edit Data Source"),_menuBar);
     connect(actionEditDataSource,SIGNAL(triggered()),this,SLOT(onActionEditDataSourceTriggered()));
-    _toolBar->addAction(actionEditDataSource);
+    _menuBar->addAction(actionEditDataSource);
 
-    QAction *actionGenerateAttributes = new QAction(tr("Generate Attributes"),_toolBar);
+    QAction *actionGenerateAttributes = new QAction(tr("Generate Attributes"),_menuBar);
     connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
-    _toolBar->addAction(actionGenerateAttributes);
+    _menuBar->addAction(actionGenerateAttributes);
 
     QStringList drivers = QSqlDatabase::drivers();
     // remove compat names
@@ -47,9 +47,9 @@ CDTAttributesWidget::~CDTAttributesWidget()
     delete ui;
 }
 
-QToolBar *CDTAttributesWidget::toolBar() const
+QMenuBar *CDTAttributesWidget::menuBar() const
 {
-    return _toolBar;
+    return _menuBar;
 }
 
 CDTDatabaseConnInfo CDTAttributesWidget::databaseURL() const
@@ -83,10 +83,10 @@ void CDTAttributesWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
 
 void CDTAttributesWidget::updateTable()
 {
-    QStringList tableNames = QSqlDatabase::database().tables();
+    QStringList tableNames = QSqlDatabase::database("attribute").tables();
     foreach (QString tableName, tableNames) {
         QTableView* widget = new QTableView(ui->tabWidget);
-        QSqlRelationalTableModel* model = new QSqlRelationalTableModel(widget);
+        QSqlRelationalTableModel* model = new QSqlRelationalTableModel(widget,QSqlDatabase::database("attribute"));
         model->setTable(tableName);
         model->select();
         widget->setModel(model);
@@ -186,14 +186,14 @@ void CDTAttributesWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
 
     if (connInfo.isNull())
         return;
-    QSqlDatabase db = QSqlDatabase::addDatabase(connInfo.dbType);
+    QSqlDatabase db = QSqlDatabase::addDatabase(connInfo.dbType,"attribute");
     db.setDatabaseName(connInfo.dbName);
     db.setHostName(connInfo.hostName);
     db.setPort(connInfo.port);
     if (!db.open(connInfo.username, connInfo.password)) {
         QSqlError err = db.lastError();
         db = QSqlDatabase();
-        QSqlDatabase::removeDatabase(connInfo.dbName);
+        QSqlDatabase::removeDatabase("attribute");
         QMessageBox::critical(this,tr("Error"),tr("Open database failed!\n information:")+err.text());
     }
     else

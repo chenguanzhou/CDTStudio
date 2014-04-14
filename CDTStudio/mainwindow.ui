@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>635</width>
-    <height>495</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,7 +41,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>635</width>
+     <width>800</width>
      <height>23</height>
     </rect>
    </property>
@@ -162,7 +162,7 @@
   </widget>
   <widget class="QDockWidget" name="dockWidgetTrainingSample">
    <property name="windowTitle">
-    <string>Training Samples</string>
+    <string>Category Manager</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -233,6 +233,14 @@
    </property>
    <property name="text">
     <string>&amp;Save As</string>
+   </property>
+  </action>
+  <action name="actionConsole">
+   <property name="text">
+    <string>Console</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
    </property>
   </action>
   <zorder>dockWidgetAttributes</zorder>

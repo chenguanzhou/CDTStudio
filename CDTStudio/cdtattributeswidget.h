@@ -9,6 +9,7 @@ class CDTAttributesWidget;
 }
 
 class QToolBar;
+class QMenuBar;
 class CDTSegmentationLayer;
 struct CDTDatabaseConnInfo
 {
@@ -33,7 +34,7 @@ public:
     explicit CDTAttributesWidget(QWidget *parent = 0);
     ~CDTAttributesWidget();
 
-    QToolBar *toolBar ()const;
+    QMenuBar *menuBar()const;
     CDTDatabaseConnInfo databaseURL() const;
     CDTSegmentationLayer *segmentationLayer()const;
 
@@ -56,7 +57,7 @@ private slots:
 
 private:
     Ui::CDTAttributesWidget *ui;
-    QToolBar *_toolBar;
+    QMenuBar *_menuBar;
     CDTDatabaseConnInfo _dbConnInfo;
     CDTSegmentationLayer* _segmentationLayer;
 

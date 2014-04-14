@@ -6,22 +6,37 @@
 #include <QVector>
 #include <QAction>
 #include "cdtattributeswidget.h"
+#include "cdttrainingsamplesform.h"
+#include "cdtattributeswidget.h"
 #include <QMessageBox>
 #include <qgsmaplayer.h>
+#include "dialogconsole.h"
+
+MainWindow* MainWindow::mainWindow = NULL;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    recentFileToolButton(new QToolButton(this)),
-    supervisor(new RecentFileSupervisor(this))
-{    
-    ui->setupUi(this);
+    recentFileToolButton(NULL),
+    supervisor(NULL),
+    dialogConsole(NULL)
+{        
+    ui->setupUi(this);    
+    supervisor = new RecentFileSupervisor(this);
+    dialogConsole = new  DialogConsole(this);
+    recentFileToolButton = new QToolButton(this);
+
+    mainWindow = this;
+
+
     recentFileToolButton->setText(tr("&Recent"));
     recentFileToolButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     recentFileToolButton->setIcon(QIcon(":/Icon/recentfile.png"));
     recentFileToolButton->setPopupMode(QToolButton::InstantPopup);
     ui->mainToolBar->addWidget(recentFileToolButton);
 
+    this->addAction(ui->actionConsole);
+    connect(ui->actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(show()));
 
     connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewProject,SLOT(expandAll()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
@@ -29,11 +44,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this,SIGNAL(loadSetting()),supervisor,SLOT(loadSetting()));
     connect(this,SIGNAL(updateSetting()),supervisor,SLOT(updateSetting()));
 
-    ui->horizontalLayoutAttributes->setMenuBar(ui->widgetAttributes->toolBar());
+    ui->horizontalLayoutAttributes->setMenuBar(ui->widgetAttributes->menuBar());
     ui->dockWidgetAttributes->setEnabled(false);
 
     emit loadSetting();
-
 }
 
 
@@ -41,6 +55,26 @@ MainWindow::~MainWindow()
 {
     emit updateSetting();
     delete ui;
+}
+
+MainWindow *MainWindow::getMainWindow()
+{
+    return mainWindow;
+}
+
+QTreeView *MainWindow::getProjectTreeView()
+{
+    return mainWindow->ui->treeViewProject;
+}
+
+CDTTrainingSamplesForm *MainWindow::getCategoryForm()
+{
+    return mainWindow->ui->trainingSampleForm;
+}
+
+CDTAttributesWidget *MainWindow::getAttributesWidget()
+{
+    return mainWindow->ui->widgetAttributes;
 }
 
 void MainWindow::onCurrentTabChanged(int i)
@@ -99,10 +133,9 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         CDTImageLayer* imageLayer = (CDTImageLayer*)(item->getCorrespondingObject());
         if (imageLayer != NULL)
         {
-            ui->trainingSampleForm->setImageLayer(imageLayer);
+            ui->trainingSampleForm->setImageID(imageLayer->id());
         }
     }
-
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -135,7 +168,3 @@ void MainWindow::closeEvent(QCloseEvent *)
 {
     ui->tabWidgetProject->closeAll();
 }
-
-
-
-

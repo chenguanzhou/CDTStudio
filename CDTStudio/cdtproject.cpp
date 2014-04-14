@@ -4,8 +4,8 @@
 #include <QMenu>
 
 
-CDTProject::CDTProject(QObject *parent):
-    CDTBaseObject(parent),
+CDTProject::CDTProject(QUuid uuid, QObject *parent):
+    CDTBaseObject(uuid,parent),
     actionAddImage(new QAction(tr("Add Image"),this)),
     removeAllImages(new QAction(tr("Remove All images"),this)),
     actionRename(new QAction(tr("Rename Project"),this))
@@ -18,7 +18,19 @@ CDTProject::CDTProject(QObject *parent):
     valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
     connect(removeAllImages,SIGNAL(triggered()),this,SLOT(removeAllImageLayers()));
-    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));    
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
+}
+
+CDTProject::~CDTProject()
+{
+    if (id().isNull())
+        return;
+
+    QSqlQuery query(QSqlDatabase::database("category"));
+    bool ret;
+    ret = query.exec("delete from project where id = '"+uuid.toString()+"'");
+    if (!ret)
+        qDebug()<<"prepare:"<<query.lastError().text();
 }
 
 void CDTProject::addImageLayer()
@@ -26,9 +38,8 @@ void CDTProject::addImageLayer()
     DialogNewImage dlg;
     if(dlg.exec() == DialogNewImage::Accepted)
     {
-        CDTImageLayer *image = new CDTImageLayer(this);
-        image->setName(dlg.imageName());
-        image->setPath(dlg.imagePath());        
+        CDTImageLayer *image = new CDTImageLayer(QUuid::createUuid(),this);
+        image->setNameAndPath(dlg.imageName(),dlg.imagePath());
         keyItem->appendRow(image->standardItems());
         addImageLayer(image);
     }
@@ -44,51 +55,60 @@ void CDTProject::removeImageLayer(CDTImageLayer* image)
         keyItem->parent()->removeRow(keyItem->index().row());
         images.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<image->canvasLayer());
-        delete image;        
-        emit projectChanged(this);
+        delete image;
+        emit projectChanged();
     }
 }
 
 void CDTProject::removeAllImageLayers()
-{
+{    
     foreach (CDTImageLayer* image, images) {
-        image->removeAllSegmentationLayers();
-        QStandardItem* keyItem = image->standardItems()[0];
-        keyItem->parent()->removeRow(keyItem->index().row());
-        emit removeLayer(QList<QgsMapLayer*>()<<image->canvasLayer());
-        delete image;
+        removeImageLayer(image);
     }
-    images.clear();
-    emit projectChanged(this);
 }
 
 void CDTProject::addImageLayer(CDTImageLayer *image)
 {
     images.push_back(image);
-    connect(image,SIGNAL(imageLayerChanged()),this,SLOT(childrenChanged()));
-    emit projectChanged(this);
+    emit projectChanged();
 }
 
-QString CDTProject::path() const
+void CDTProject::insertToTable(QString name)
 {
-    return projectPath;
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("insert into project values(?,?)");
+    qDebug()<<id();
+    qDebug()<<id();
+    query.bindValue(0,id().toString());
+    query.bindValue(1,name);
+    query.exec();
+    setName(name);
 }
 
 QString CDTProject::name() const
 {
-    return projectName;
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("select name from project where id = ?");
+    query.bindValue(0,id().toString());
+    query.exec();
+    query.next();
+    return query.value(0).toString();
+
+//    return projectName;
 }
 
-void CDTProject::setName(const QString &n)
+void CDTProject::setName(const QString &name)
 {
-    projectName = n;
-    keyItem->setText(projectName);
-}
+//    projectName = n;
 
-void CDTProject::setPath(const QString &p)
-{
-    projectPath = p;
-    valueItem->setText(projectPath);
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("UPDATE project set name = ? where id =?");
+    query.bindValue(0,name);
+    query.bindValue(1,this->id().toString());
+    query.exec();
+
+    keyItem->setText(name);
+    emit projectChanged();
 }
 
 void CDTProject::onContextMenuRequest(QWidget* parent)
@@ -107,48 +127,40 @@ void CDTProject::onActionRename()
     bool ok;
     QString text = QInputDialog::getText(NULL, tr("Input Project Name"),
                                          tr("Project name:"), QLineEdit::Normal,
-                                         projectName, &ok);
+                                         name(), &ok);
     if (ok && !text.isEmpty())
     {
         setName(text);
-        emit projectChanged(this);
     }
 }
 
-void CDTProject::childrenChanged()
-{
-    emit projectChanged(this);
-}
-
-
 QDataStream &operator <<(QDataStream &out,const CDTProject &project)
 {
+    out<<project.id()<<project.name();
     out<<project.images.size();
     foreach (CDTImageLayer* image, project.images) {
         out<<*image;
     }
-    out<<project.projectName<<project.projectPath;
+
     return out;
 }
 
-
 QDataStream &operator >>(QDataStream &in, CDTProject &project)
 {
+    QString name;
+    in>>project.uuid>>name;
+    project.setName(name);
+
+    project.insertToTable(name);
+
     int count;
     in>>count;
     for (int i=0;i<count;++i)
     {
-        CDTImageLayer* image = new CDTImageLayer(&project);
+        CDTImageLayer* image = new CDTImageLayer(QUuid(),&project);
         in>>*image;
         project.keyItem->appendRow(image->standardItems());
-        CDTProject::connect(image,SIGNAL(imageLayerChanged()),&project,SLOT(childrenChanged()));
         project.images.push_back(image);
-    }
-
-    QString temp;
-    in>>temp;
-    project.setName(temp);
-    in>>temp;
-    project.setPath(temp);
+    }    
     return in;
 }

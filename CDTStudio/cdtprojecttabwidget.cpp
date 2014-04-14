@@ -28,9 +28,11 @@ void CDTProjectTabWidget::createNewProject()
             return;
 
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
-        projectWidget->setProjectPath(dlg->projectPath());
-        projectWidget->setProjectName(dlg->projectName());
-        connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
+        projectWidget->createProject(QUuid::createUuid());
+        projectWidget->project->insertToTable(dlg->projectName());
+
+
+        if (projectWidget->openProjectFile(dlg->projectPath())==false)return;
         addTab(projectWidget,dlg->projectName());
         saveProject();
         emit menuRecentChanged(dlg->projectPath());

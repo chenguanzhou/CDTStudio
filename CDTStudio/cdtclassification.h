@@ -16,7 +16,7 @@ class CDTClassification:public CDTBaseObject
     Q_PROPERTY(QString shapefilePath READ shapefilePath WRITE setShapefilePath NOTIFY shapefilePathChanged)
     Q_PROPERTY(QString method READ method)
 public:
-    explicit CDTClassification(QObject* parent=0);
+    explicit CDTClassification(QUuid uuid,QObject* parent=0);
 
     friend QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
     friend QDataStream &operator>>(QDataStream &in, CDTClassification &classification);

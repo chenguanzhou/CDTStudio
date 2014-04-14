@@ -7,30 +7,32 @@
 #include "cdtclassification.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
-#include "dialogcategoryinformation.h"
+#include "cdttrainingsamplesform.h"
 
 class CDTImageLayer:public CDTBaseObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
 public:
-    explicit CDTImageLayer(QObject *parent = 0);
+    explicit CDTImageLayer(QUuid uuid, QObject *parent = 0);
+    ~CDTImageLayer();
 
     friend QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image);
     friend QDataStream &operator>>(QDataStream &in, CDTImageLayer &image);
     friend class CDTTrainingSamplesForm;
+    friend class CDTSegmentationLayer;
 
-    void setPath(const QString& path);
     void setName(const QString& name);
-    inline QString path()const{return m_path;}
-    inline QString name()const{return m_name;}    
+    void setNameAndPath(const QString& name,const QString& path);
+    void setCategoryInfo(const CDTCategoryInformationList& info);
+    QString path()const;
+    QString name()const;
 
     void addSegmentation(CDTSegmentationLayer* segmentation);
 
+    static QList<CDTImageLayer *> getLayers();
+    static CDTImageLayer *getLayer(const QUuid& id);
+
 signals:
-    void pathChanged(QString);
-    void nameChanged(QString);
     void imageLayerChanged();
     void removeImageLayer(CDTImageLayer*);
 public slots:
@@ -43,11 +45,10 @@ public slots:
     void onActionRename();
     void onActionCategoryInformation();
 
-private:
-    QString m_path;
-    QString m_name;
+private:        
+//    QString m_path;
+//    QString m_name;
     QVector<CDTSegmentationLayer *> segmentations;
-    CDTCategoryInformationList categoryInformationList;
 
     QAction* addSegmentationLayer;
     QAction* removeImage;
@@ -56,8 +57,12 @@ private:
     QAction* actionCategoryInformation;
 
     CDTProjectTreeItem* segmentationsroot;
+    CDTTrainingSamplesForm* trainingForm;
 
+    static QList<CDTImageLayer *> layers;
 };
+
+
 
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image);
 QDataStream &operator>>(QDataStream &in, CDTImageLayer &image);

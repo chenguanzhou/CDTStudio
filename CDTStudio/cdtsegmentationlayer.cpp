@@ -1,25 +1,30 @@
 #include "cdtclassification.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtimagelayer.h"
+#include "cdtproject.h"
 #include <QList>
 #include <QMenu>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QtXml>
 #include <qgsvectorlayer.h>
 #include <qgsmaplayerregistry.h>
 #include <qgssinglesymbolrendererv2.h>
 #include <qgsrendererv2widget.h>
 #include <qgsfillsymbollayerv2.h>
+#include "cdtmaptoolselecttrainingsamples.h"
 
-CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
-    :CDTBaseObject(parent),
+QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
+
+CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject *parent)
+    : CDTBaseObject(uuid,parent),
       m_imagePath(imagePath),
       addClassifications(new QAction(tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this)),
       actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this)),
       actionRename(new QAction(tr("Rename Segmentation Name"),this)),
       actionTrainingSamples(new QAction(tr("Set Training Samples"),this)),
-      trainingSamplesForm(NULL)
+      maptoolTraining(NULL)
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
@@ -39,9 +44,11 @@ CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
     paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
-    connect(this,SIGNAL(markfilePathChanged()),this,SIGNAL(segmentationChanged()));
+    maptoolTraining = new CDTMapToolSelectTrainingSamples(mapCanvas);
+
+    layers.push_back(this);
+
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
-    connect(this,SIGNAL(shapefilePathChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),(CDTImageLayer*)(this->parent()),SLOT(removeSegmentation(CDTSegmentationLayer*)));
     connect(this,SIGNAL(segmentationChanged()),(CDTImageLayer*)(this->parent()),SIGNAL(imageLayerChanged()));
@@ -53,25 +60,38 @@ CDTSegmentationLayer::CDTSegmentationLayer(QString imagePath,QObject *parent)
     connect(actionTrainingSamples,SIGNAL(triggered()),this,SLOT(onTrainingSamples()));
 }
 
-void CDTSegmentationLayer::addClassification(CDTClassification *classification)
+CDTSegmentationLayer::~CDTSegmentationLayer()
 {
-    classifications.push_back(classification);
-    emit methodParamsChanged();
-    connect(classification,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
+    layers.removeAll(this);
+    if (id().isNull())
+        return;
+
+    QSqlQuery query(QSqlDatabase::database("category"));
+    bool ret;
+    ret = query.exec("delete from segmentationlayer where id = '"+uuid.toString()+"'");
+    if (!ret)
+        qDebug()<<"prepare:"<<query.lastError().text();
 }
 
+//void CDTSegmentationLayer::addClassification(CDTClassification *classification)
+//{
+//    classifications.push_back(classification);
+//    emit methodParamsChanged();
+//    connect(classification,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
+//}
+
 void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
-{
+{    
     CDTProjectTreeItem *segment =new CDTProjectTreeItem(
-                CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::GROUP,m_name,this);
+                CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::GROUP,this->name(),this);
     CDTProjectTreeItem *paramShp =new CDTProjectTreeItem(
                 CDTProjectTreeItem::PARAM,CDTProjectTreeItem::VECTOR,tr("Shapefile path"),this);
     CDTProjectTreeItem *valueShp =new CDTProjectTreeItem(
-                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,m_shapefilePath,this);
+                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,this->shapefilePath(),this);
     CDTProjectTreeItem *paramMk =new CDTProjectTreeItem(
                 CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("Markfile path"),this);
     CDTProjectTreeItem *valueMk =new CDTProjectTreeItem(
-                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,m_markfilePath,this);
+                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,this->markfilePath(),this);
     CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(
                 CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
     CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(
@@ -128,67 +148,81 @@ void CDTSegmentationLayer::onActionRename()
     QString text = QInputDialog::getText(
                 NULL, tr("Input Segmentation Name"),
                 tr("Segmentation name:"), QLineEdit::Normal,
-                m_name, &ok);
+                this->name(), &ok);
     if (ok && !text.isEmpty())
         setName(text);
 }
 
-void CDTSegmentationLayer::addClassification()
-{
-    QMap<QString,QVariant> param;
-    param["k"] ="new k";
+//void CDTSegmentationLayer::addClassification()
+//{
+//    QMap<QString,QVariant> param;
+//    param["k"] ="new k";
 
-    CDTClassification *classification =new CDTClassification(this);
-    classification->setName("new classification");
-    classification->setShapefilePath("new shapefilepath");
-    classification->setMethodParams("new knn",param);
+//    CDTClassification *classification =new CDTClassification(this);
+//    classification->setName("new classification");
+//    classification->setShapefilePath("new shapefilepath");
+//    classification->setMethodParams("new knn",param);
 
-    addClassification(classification);
-}
+//    addClassification(classification);
+//}
 
 void CDTSegmentationLayer::remove()
 {
     emit removeSegmentation(this);
 }
 
-void CDTSegmentationLayer::removeClassification(CDTClassification* clf)
-{
-    for(int i =0;i <classifications.size();++i)
-    {
-        if(clf->name() == classifications[i]->name())
-        {
-            classifications.remove(i);
-            emit segmentationChanged();
-            connect(clf,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
+//void CDTSegmentationLayer::removeClassification(CDTClassification* clf)
+//{
+//    for(int i =0;i <classifications.size();++i)
+//    {
+//        if(clf->name() == classifications[i]->name())
+//        {
+//            classifications.remove(i);
+//            emit segmentationChanged();
+//            connect(clf,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
 
-        }
-    }
-}
+//        }
+//    }
+//}
 
-void CDTSegmentationLayer::removeAllClassifications()
-{
-    classifications.clear();
-    emit segmentationChanged();
-}
+//void CDTSegmentationLayer::removeAllClassifications()
+//{
+//    classifications.clear();
+//    emit segmentationChanged();
+//}
 
 void CDTSegmentationLayer::onTrainingSamples()
 {
-
+    maptoolTraining->setSegmentationLayer(this);
+    mapCanvas->setMapTool(maptoolTraining);
 }
 
 QString CDTSegmentationLayer::name() const
 {
-    return m_name;
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select name from segmentationlayer where id ='" + this->id().toString() +"'");
+    query.next();
+    return query.value(0).toString();
 }
 
 QString CDTSegmentationLayer::shapefilePath() const
 {
-    return m_shapefilePath;
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select shapefilePath from segmentationlayer where id ='" + this->id().toString() +"'");
+    query.next();
+    return query.value(0).toString();
 }
 
 QString CDTSegmentationLayer::markfilePath() const
 {
-    return m_markfilePath;
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select shapefilePath from markfilePath where id ='" + this->id().toString() +"'");
+    query.next();
+    return query.value(0).toString();
+//    return m_markfilePath;
 }
 
 QString CDTSegmentationLayer::method() const
@@ -206,28 +240,54 @@ QString CDTSegmentationLayer::imagePath() const
     return m_imagePath;
 }
 
+CDTTrainingSamplesForm *CDTSegmentationLayer::trainingForm() const
+{
+    return ((CDTImageLayer*) parent())->trainingForm;
+}
+
+QList<CDTSegmentationLayer *> CDTSegmentationLayer::getLayers()
+{
+    return layers;
+}
+
+CDTSegmentationLayer *CDTSegmentationLayer::getLayer(QUuid id)
+{
+    foreach (CDTSegmentationLayer *layer, layers) {
+        if (id == layer->uuid)
+            return layer;
+    }
+    return NULL;
+}
+
 void CDTSegmentationLayer::setName(const QString &name)
 {
-    m_name = name;
-    keyItem->setText(m_name);
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("UPDATE segmentationlayer set name = ? where id =?");
+    query.bindValue(0,name);
+    query.bindValue(1,this->id().toString());
+    query.exec();
+
+    keyItem->setText(name);
     emit nameChanged();
 }
 
-void CDTSegmentationLayer::setShapefilePath(const QString &shpPath)
+void CDTSegmentationLayer::setLayerInfo(const QString &name, const QString &shpPath, const QString &mkPath)
 {
-    if (m_shapefilePath == shpPath)
-        return;
-    m_shapefilePath = shpPath;
-    shapefileItem->setText(m_shapefilePath);
-    if (mapCanvasLayer)
-        delete mapCanvasLayer;
-    mapCanvasLayer = new QgsVectorLayer(/*QFileInfo(shpPath).absolutePath()*/shpPath,QFileInfo(shpPath).completeBaseName(),"ogr");
-    if (!mapCanvasLayer->isValid())
+    QgsVectorLayer *newLayer = new QgsVectorLayer(/*QFileInfo(shpPath).absolutePath()*/shpPath,QFileInfo(shpPath).completeBaseName(),"ogr");
+    if (!newLayer->isValid())
     {
         QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+shpPath+tr(" failed!"));
-        delete mapCanvasLayer;
+        delete newLayer;
         return;
     }
+
+    if (mapCanvasLayer)
+        delete mapCanvasLayer;
+    mapCanvasLayer = newLayer;
+
+    keyItem->setText(name);
+    shapefileItem->setText(shpPath);
+    markfileItem->setText(mkPath);
 
     QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
     QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
@@ -239,16 +299,18 @@ void CDTSegmentationLayer::setShapefilePath(const QString &shpPath)
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
     keyItem->setMapLayer(mapCanvasLayer);
 
+    QSqlQuery query(QSqlDatabase::database("category"));
+    bool ret ;
+    ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?)"); 
+    query.bindValue(0,uuid.toString());
+    query.bindValue(1,name);
+    query.bindValue(2,shpPath);
+    query.bindValue(3,mkPath);
+    query.bindValue(4,((CDTImageLayer*)parent())->id().toString());
+    query.exec();
 
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
-    emit shapefilePathChanged();
-}
-
-void CDTSegmentationLayer::setMarkfilePath(const QString &mkPath)
-{
-    m_markfilePath = mkPath;
-    markfileItem->setText(m_markfilePath);
-    emit markfilePathChanged();
+    emit segmentationChanged();
 }
 
 void CDTSegmentationLayer::setMethodParams(const QString &methodName, const QMap<QString, QVariant> &params)
@@ -276,7 +338,21 @@ void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
 
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
 {    
-    out<<segmentation.m_name<<segmentation.m_shapefilePath<<segmentation.m_markfilePath
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select * from segmentationlayer where id ='" + segmentation.id().toString() +"'");
+    query.next();
+
+//    qDebug()<<query.value(0).toString()  //id
+//      <<query.value(1).toString()   //name
+//     <<query.value(2).toString()    //shapfile
+//    <<query.value(3).toString();     //markfile
+
+    out <<segmentation.uuid         //id
+        <<query.value(1).toString() //name
+        <<query.value(2).toString() //shapfile
+        <<query.value(3).toString() //markfile
+//    out<<segmentation.uuid<<segmentation.m_name<<segmentation.m_shapefilePath<<segmentation.m_markfilePath
       <<segmentation.m_method<<segmentation.m_params<<segmentation.m_dbUrl;
 
     out<<segmentation.classifications.size();
@@ -289,16 +365,13 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
 
 QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
 {
+    in>>segmentation.uuid;
+
+    QString name,shp,mark;
+    in>>name>>shp>>mark;
+    segmentation.setLayerInfo(name,shp,mark);
+
     QString temp;
-    in>>temp;
-
-    segmentation.setName(temp);
-    in>>temp;
-
-    segmentation.setShapefilePath(temp);
-    in>>temp;
-
-    segmentation.setMarkfilePath(temp);
     in>>temp;
 
     QMap<QString,QVariant> paramsTemp;
@@ -306,13 +379,11 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
     segmentation.setMethodParams(temp,paramsTemp);
     in>>segmentation.m_dbUrl;
 
-
-
     int count;
     in>>count;
     for (int i=0;i<count;++i)
     {
-        CDTClassification* classification = new CDTClassification(&segmentation);
+        CDTClassification* classification = new CDTClassification(QUuid(),&segmentation);
         in>>*classification;
         segmentation.classifications.push_back(classification);
     }

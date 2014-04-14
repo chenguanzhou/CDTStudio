@@ -2,8 +2,8 @@
 #include "cdtsegmentationlayer.h"
 #include <QMenu>
 
-CDTClassification::CDTClassification(QObject* parent)
-    :CDTBaseObject(parent),
+CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
+    :CDTBaseObject(uuid,parent),
       actionRemoveClassification(new QAction(tr("Remove Classification"),this))
 {
     connect(actionRemoveClassification,SIGNAL(triggered()),this,SLOT(remove()));

@@ -152,7 +152,7 @@ void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
                 segmentationLayer->imagePath(),
                 segmentationLayer->markfilePath(),
                 segmentationLayer->shapefilePath(),
-                QSqlDatabase::database(),
+                QSqlDatabase::database("attribute"),
                 attributes,
                 this);
     if(!attributeGenerator->isValid())

@@ -49,11 +49,11 @@ CDTAttributeGenerator::CDTAttributeGenerator(
         _isValid = false;
         return ;
     }
-    _db = db;
+//    _db = db;
 
-    if (_db.driverName()=="QSQLITE")
+    if (db.driverName()=="QSQLITE")
     {
-        QSqlQuery query("PRAGMA synchronous = OFF; ");
+        QSqlQuery query("PRAGMA synchronous = OFF; ",db);
         if (!query.isActive())
         {
             _errorInfo = query.lastError().text();
@@ -144,7 +144,8 @@ bool CDTAttributeGenerator::readGeometry()
 
 bool CDTAttributeGenerator::initAttributeTable()
 {
-    QSqlQuery query;
+    QSqlDatabase db = QSqlDatabase::database("attribute");
+    QSqlQuery query(db);
 
     query.exec("drop table if exists ObjectID_Info");
     if (query.isActive()==false)
@@ -152,7 +153,7 @@ bool CDTAttributeGenerator::initAttributeTable()
         emit showWarningMessage(query.lastError().text());
         return false;
     }
-    if (QSqlDatabase::database().driverName()=="QMYSQL")
+    if (db.driverName()=="QMYSQL")
         query.exec("create table ObjectID_Info"
                    "(ObjectID int,ObjectCount int,ObjectPoints MEDIUMBLOB,x_min int,x_max int,y_min int,y_max int)");
     else
@@ -212,7 +213,7 @@ bool CDTAttributeGenerator::initAttributeTable()
     emit progressBarValueChanged(barSize);
 
 
-    QSqlDatabase::database().transaction();
+    db.transaction();
     if (query.prepare("insert into ObjectID_Info values(?,?,?,?,?,?,?)")==false)
     {
         emit showWarningMessage(query.lastError().text());
@@ -276,7 +277,7 @@ bool CDTAttributeGenerator::initAttributeTable()
 
     emit progressBarValueChanged(barSize);
     _objectCount = currentID+1;
-    QSqlDatabase::database().commit();
+    db.commit();
 
 
     return true;
@@ -291,8 +292,9 @@ bool CDTAttributeGenerator::computeAttributes(
     double adfGeoTransform[6];
     _poImageDS->GetGeoTransform(adfGeoTransform);
 
-    QSqlDatabase::database().transaction();
-    QSqlQuery query;
+    QSqlDatabase db = QSqlDatabase::database("attribute");
+    db.transaction();
+    QSqlQuery query(db);
     if (query.exec("select * from ObjectID_Info")==false)
     {
         emit showWarningMessage(query.lastError().text());
@@ -524,14 +526,15 @@ bool CDTAttributeGenerator::computeAttributes(
     qDebug()<<"cost: "<< (clock()-time_start)/(double)CLOCKS_PER_SEC<<"s";
 
     emit progressBarValueChanged(barSize);
-    QSqlDatabase::database().commit();
+    db.commit();
 
     return true;
 }
 
 bool CDTAttributeGenerator::addAttributesToTables(QMap<QString,QList<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames)
 {
-    QSqlQuery query;
+    QSqlDatabase db = QSqlDatabase::database("attribute");
+    QSqlQuery query(db);
     foreach (QString tableName, attributesValues.keys()) {        
         QList<QVector<double> > datas = attributesValues.value(tableName);
         if (query.exec(QString("drop table if exists ") + tableName)==false)
@@ -555,7 +558,7 @@ bool CDTAttributeGenerator::addAttributesToTables(QMap<QString,QList<QVector<dou
             return false;
         }
 
-        QSqlDatabase::database().transaction();
+        db.transaction();
         if (query.prepare(sqlInsert)==false)
         {
             emit showWarningMessage(query.lastError().text());
@@ -580,7 +583,7 @@ bool CDTAttributeGenerator::addAttributesToTables(QMap<QString,QList<QVector<dou
         emit progressBarValueChanged(barSize);
 
 
-        QSqlDatabase::database().commit();
+        db.commit();
     }
 
 

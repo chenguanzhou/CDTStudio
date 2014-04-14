@@ -11,26 +11,26 @@
 #include "cdtattributeswidget.h"
 #include "cdttrainingsamplesform.h"
 
+
 class CDTClassification;
 struct CDTDatabaseConnInfo;
+class CDTMapToolSelectTrainingSamples;
 typedef QMap<int,QString> TrainingSample;
 typedef QList<TrainingSample > CDTTrainingSampleList;
 
 class CDTSegmentationLayer:public CDTBaseObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(QString shapefilePath READ shapefilePath WRITE setShapefilePath NOTIFY shapefilePathChanged)
-    Q_PROPERTY(QString markfilePath READ markfilePath WRITE setMarkfilePath NOTIFY markfilePathChanged)
     Q_PROPERTY(QString method READ method)
 
 public:
-    explicit CDTSegmentationLayer(QString imagePath,QObject *parent = 0);
+    explicit CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject *parent = 0);
+    ~CDTSegmentationLayer();
 
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
     friend QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);
 
-    void addClassification(CDTClassification* classification);
+//    void addClassification(CDTClassification* classification);
 
     QString name()const;
     QString shapefilePath() const;
@@ -39,39 +39,41 @@ public:
     CDTDatabaseConnInfo databaseURL() const;
     QString imagePath()const;
 
+    CDTTrainingSamplesForm *trainingForm()const;
+
+    static QList<CDTSegmentationLayer *> getLayers();
+    static CDTSegmentationLayer * getLayer(QUuid uuid);
+
 signals:
-    void nameChanged();
-    void shapefilePathChanged();
-    void markfilePathChanged();
     void methodParamsChanged();
+    void nameChanged();
     void segmentationChanged();
     void removeSegmentation(CDTSegmentationLayer*);
 public slots:
     void updateTreeModel(CDTProjectTreeItem* parent);
     void onContextMenuRequest(QWidget *parent);
     void onActionRename();
-    void addClassification();
     void remove();
-    void removeClassification(CDTClassification *);
-    void removeAllClassifications();
+//    void addClassification();    
+//    void removeClassification(CDTClassification *);
+//    void removeAllClassifications();
     void onTrainingSamples();
     void setName(const QString& name);
-    void setShapefilePath(const QString &shpPath);
-    void setMarkfilePath(const QString &mkPath);
+    void setLayerInfo(const QString& name,const QString &shpPath,const QString &mkPath);
     void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
     void setDatabaseURL(CDTDatabaseConnInfo url);
 private:
-    QString m_name;
+//    QString m_name;
     QString m_imagePath;
-    QString m_shapefilePath;
-    QString m_markfilePath;
+//    QString m_shapefilePath;
+//    QString m_markfilePath;
     CDTDatabaseConnInfo    m_dbUrl;
-    QString m_method;    
+    QString m_method;
     QMap<QString,QVariant> m_params;
     QVector<CDTClassification *> classifications;
     CDTTrainingSampleList trainingSampleList;
 
-    CDTTrainingSamplesForm* trainingSamplesForm;
+    CDTMapToolSelectTrainingSamples* maptoolTraining;
 
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;
@@ -83,6 +85,8 @@ private:
     CDTProjectTreeItem* markfileItem;
     CDTProjectTreeItem* paramRootItem;
     CDTProjectTreeItem* paramRootValueItem;
+
+    static QList<CDTSegmentationLayer *> layers;
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
 QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);

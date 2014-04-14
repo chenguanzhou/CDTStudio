@@ -15,17 +15,18 @@
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
-    project(new CDTProject()),
+    project(NULL),
     treeModel(new CDTProjectTreeModel(this)),
     isChanged(false),
     mapCanvas(new QgsMapCanvas(this))
 {
     //    connect(this,SIGNAL(projectChanged(CDTProject*)),treeModel,SLOT(update(CDTProject*)));
 
-    connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));
-    treeModel->appendRow(project->standardItems());
-    connect(this,SIGNAL(projectChanged(CDTProject*)),this,SLOT(setIsChanged()));
-    connect(project,SIGNAL(projectChanged(CDTProject*)),this,SIGNAL(projectChanged(CDTProject*)));
+
+    connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));    
+    connect(this,SIGNAL(projectChanged()),this,SLOT(setIsChanged()));
+
+
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
@@ -38,13 +39,12 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     if (toolBar != NULL)
         vbox->setMenuBar(toolBar);
 
-    connect(project,SIGNAL(appendLayers(QList<QgsMapLayer*>)),this,SLOT(appendLayers(QList<QgsMapLayer*>)));
-    connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
+
 }
 
 CDTProjectWidget::~CDTProjectWidget()
 {
-    delete project;
+    if(project) delete project;
     file.close();
 }
 
@@ -67,16 +67,26 @@ bool CDTProjectWidget::readProject(QString &filepath)
 {
     QFileInfo info(filepath);
     if(!info.exists())
+    {
+        qWarning()<<filepath<<" is not exist!";
+        return false;
+    }
+
+//    project->setLayerInfo(QString(),filepath);
+    if (openProjectFile(filepath)==false)
         return false;
 
-    setProjectPath(filepath);
     QDataStream in(&(file));
     quint32 magicNumber;
     in>>  magicNumber;
     if (magicNumber != (quint32)0xABCDEF)
+    {
+        qWarning()<<"Magic number is not match.It is :"<<magicNumber;
         return false;
+    }
+    createProject(QUuid());
     in>>*project;
-    emit projectChanged(project);
+    emit projectChanged();
     isChanged = false;
 
     refreshMapCanvas();
@@ -105,8 +115,7 @@ bool CDTProjectWidget::saveAsProject(QString &path)
     if (!file.open(QFile::ReadWrite))
         return false;
 
-    project->setPath(path);
-    emit projectChanged(project);
+    emit projectChanged();
     writeProject();
     return true;
 
@@ -246,6 +255,34 @@ QToolBar *CDTProjectWidget::initToolBar()
     return toolBar;
 }
 
+bool CDTProjectWidget::openProjectFile(QString filepath)
+{
+    if (file.isOpen())
+        file.close();
+
+    file.setFileName(filepath);
+    if (!file.open(QFile::ReadWrite))
+    {
+        QMessageBox::critical(this,tr("Error"),tr("Open File ")+filepath+tr(" failed!"));
+        return false;
+    }
+    return true;
+}
+
+void CDTProjectWidget::createProject(QUuid id)
+{
+    project = new CDTProject(id);
+    project->setMapCanvas( mapCanvas);
+
+
+    connect(project,SIGNAL(projectChanged()),this,SIGNAL(projectChanged()));
+    connect(project,SIGNAL(appendLayers(QList<QgsMapLayer*>)),this,SLOT(appendLayers(QList<QgsMapLayer*>)));
+    connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
+
+    treeModel->appendRow(project->standardItems());
+//    project->setName(name);
+}
+
 void CDTProjectWidget::untoggledToolBar()
 {
     actionZoomOut->setChecked(false);
@@ -284,8 +321,8 @@ QString CDTProjectWidget::filePath()
 
 bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index)
 {
-    int a = this->maybeSave();
-    if(a == QMessageBox::Cancel  )
+    int ret = this->maybeSave();
+    if(ret == QMessageBox::Cancel  )
     {
         return false;
     }
@@ -296,34 +333,32 @@ bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index
     }
 }
 
-void CDTProjectWidget::setProjectName(const QString &name)
-{
-    project->setName(name);
-    emit projectChanged(project);
+//void CDTProjectWidget::setProjectName(const QString &name)
+//{
+//    project->setName(name);
+//    emit projectChanged();
+//}
 
-}
+//void CDTProjectWidget::setProjectPath(const QString &path)
+//{
+//    if(project->path() == path)
+//        return;
+//    if (file.isOpen())
+//        file.close();
 
-void CDTProjectWidget::setProjectPath(const QString &path)
-{
-    if(project->path() == path)
-        return;
-    if (file.isOpen())
-        file.close();
-
-    file.setFileName(path);
-    if (file.open(QFile::ReadWrite))
-    {
-        project->setPath(path);
-        emit projectChanged(project);
-    }
-    else
-        QMessageBox::critical(this,tr("Error"),tr("Open File ")+path+tr(" failed!"));
-}
+//    file.setFileName(path);
+//    if (file.open(QFile::ReadWrite))
+//    {
+//        project->setLayerInfo(path);
+//        emit projectChanged();
+//    }
+//    else
+//        QMessageBox::critical(this,tr("Error"),tr("Open File ")+path+tr(" failed!"));
+//}
 
 void CDTProjectWidget::setIsChanged()
 {
-    if(!isChanged)
-        isChanged = true;
+    isChanged = true;
 }
 
 

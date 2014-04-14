@@ -7,8 +7,8 @@
 #include <QSettings>
 #include<QFileInfo>
 
-RecentFileSupervisor::RecentFileSupervisor(MainWindow *w,QObject *parent) :
-    QObject(parent),window(w)
+RecentFileSupervisor::RecentFileSupervisor(MainWindow *w) :
+    QObject(w),window(w)
 {    
 }
 

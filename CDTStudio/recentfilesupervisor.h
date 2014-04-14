@@ -13,7 +13,7 @@ class RecentFileSupervisor : public QObject
     Q_OBJECT
     friend class MainWindow;
 public:
-    explicit RecentFileSupervisor(MainWindow *w,QObject *parent = 0);
+    explicit RecentFileSupervisor(MainWindow *w);
 
 signals:
     void loadSettingFinished();
