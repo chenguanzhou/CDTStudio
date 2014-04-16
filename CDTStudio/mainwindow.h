@@ -14,6 +14,8 @@ class QTreeView;
 class CDTTrainingSamplesForm;
 class CDTAttributesWidget;
 class DialogConsole;
+class CDTProjectWidget;
+class QgsMapCanvas;
 
 class MainWindow : public QMainWindow
 {
@@ -25,8 +27,10 @@ public:
 
     static MainWindow   *getMainWindow();
     static QTreeView    *getProjectTreeView();
-    static CDTTrainingSamplesForm   *getCategoryForm();
+    static CDTTrainingSamplesForm   *getTrainingSampleForm();
     static CDTAttributesWidget *getAttributesWidget();
+    static CDTProjectWidget *getCurrentProjectWidget();
+    static QgsMapCanvas *getCurrentMapCanvas();
 
 signals:
     void loadSetting();

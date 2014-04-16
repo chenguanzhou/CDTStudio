@@ -20,5 +20,6 @@
         <file>Icon/edit.png</file>
         <file>Icon/revert.png</file>
         <file>Icon/refresh.png</file>
+        <file>Icon/sample.png</file>
     </qresource>
 </RCC>

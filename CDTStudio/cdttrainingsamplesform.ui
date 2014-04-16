@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>212</width>
-    <height>318</height>
+    <width>276</width>
+    <height>506</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,7 +90,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <property name="spacing">
-         <number>3</number>
+         <number>6</number>
         </property>
         <item>
          <widget class="QLabel" name="label">
@@ -110,6 +110,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="toolButtonRefresh">
+          <property name="toolTip">
+           <string>Refresh</string>
+          </property>
           <property name="text">
            <string>Refresh</string>
           </property>
@@ -119,8 +122,70 @@
           </property>
          </widget>
         </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="toolButtonEditSample">
+          <property name="toolTip">
+           <string>Edit Samples</string>
+          </property>
+          <property name="text">
+           <string>Edit Samples</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/Icon/sample.png</normaloff>:/Icon/sample.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="toolButtonSampleRename">
+          <property name="toolTip">
+           <string>Rename</string>
+          </property>
+          <property name="text">
+           <string>Rename</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/Icon/rename.png</normaloff>:/Icon/rename.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QToolButton" name="toolButtonNewSample">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Insert New Sample</string>
+          </property>
           <property name="text">
            <string>Insert New Sample</string>
           </property>
@@ -128,12 +193,60 @@
            <iconset resource="../resource.qrc">
             <normaloff>:/Icon/add.png</normaloff>:/Icon/add.png</iconset>
           </property>
+          <property name="iconSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
          </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="toolButtonRemoveSelected">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Remove Selected Sample</string>
+          </property>
+          <property name="text">
+           <string>Remove Selected Sample</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../resource.qrc">
+            <normaloff>:/Icon/minus.png</normaloff>:/Icon/minus.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
       <item>
-       <widget class="QTableView" name="tableView2"/>
+       <widget class="QListView" name="listView"/>
       </item>
      </layout>
     </widget>

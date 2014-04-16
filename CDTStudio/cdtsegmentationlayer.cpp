@@ -23,8 +23,8 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
       actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this)),
       actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this)),
       actionRename(new QAction(tr("Rename Segmentation Name"),this)),
-      actionTrainingSamples(new QAction(tr("Set Training Samples"),this)),
-      maptoolTraining(NULL)
+      actionTrainingSamples(new QAction(tr("Set Training Samples"),this))/*,
+      maptoolTraining(NULL)*/
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
@@ -44,7 +44,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
     paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
-    maptoolTraining = new CDTMapToolSelectTrainingSamples(mapCanvas);
+//    maptoolTraining = new CDTMapToolSelectTrainingSamples(mapCanvas);
 
     layers.push_back(this);
 
@@ -193,8 +193,8 @@ void CDTSegmentationLayer::remove()
 
 void CDTSegmentationLayer::onTrainingSamples()
 {
-    maptoolTraining->setSegmentationLayer(this);
-    mapCanvas->setMapTool(maptoolTraining);
+//    maptoolTraining->setSegmentationLayer(this);
+//    mapCanvas->setMapTool(maptoolTraining);
 }
 
 QString CDTSegmentationLayer::name() const
@@ -338,22 +338,23 @@ void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
 
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
 {    
-    QSqlDatabase db = QSqlDatabase::database("category");
-    QSqlQuery query(db);
+    QSqlQuery query(QSqlDatabase::database("category"));
     query.exec("select * from segmentationlayer where id ='" + segmentation.id().toString() +"'");
     query.next();
-
-//    qDebug()<<query.value(0).toString()  //id
-//      <<query.value(1).toString()   //name
-//     <<query.value(2).toString()    //shapfile
-//    <<query.value(3).toString();     //markfile
 
     out <<segmentation.uuid         //id
         <<query.value(1).toString() //name
         <<query.value(2).toString() //shapfile
         <<query.value(3).toString() //markfile
-//    out<<segmentation.uuid<<segmentation.m_name<<segmentation.m_shapefilePath<<segmentation.m_markfilePath
-      <<segmentation.m_method<<segmentation.m_params<<segmentation.m_dbUrl;
+        <<segmentation.m_method<<segmentation.m_params<<segmentation.m_dbUrl;
+
+    QMap<QString,QString> sample;
+    query.exec("select id,name from sample_segmenation where segmenationid ='" + segmentation.id().toString() +"'");
+    while(query.next())
+    {
+        sample.insert(query.value(0).toString(),query.value(1).toString());
+    }
+    out<<sample;
 
     out<<segmentation.classifications.size();
     for (int i=0;i<segmentation.classifications.size();++i)
@@ -378,6 +379,18 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
     in>>paramsTemp;
     segmentation.setMethodParams(temp,paramsTemp);
     in>>segmentation.m_dbUrl;
+
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("insert into sample_segmenation values(?,?,?)");
+    QMap<QString,QString> sample;
+    in>>sample;
+    foreach (QString id, sample.keys()) {
+        QString name = sample.value(id);
+        query.bindValue(0,id);
+        query.bindValue(1,name);
+        query.bindValue(2,segmentation.uuid.toString());
+        query.exec();
+    }
 
     int count;
     in>>count;

@@ -63,17 +63,14 @@ public slots:
     void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
     void setDatabaseURL(CDTDatabaseConnInfo url);
 private:
-//    QString m_name;
     QString m_imagePath;
-//    QString m_shapefilePath;
-//    QString m_markfilePath;
     CDTDatabaseConnInfo    m_dbUrl;
     QString m_method;
     QMap<QString,QVariant> m_params;
     QVector<CDTClassification *> classifications;
     CDTTrainingSampleList trainingSampleList;
 
-    CDTMapToolSelectTrainingSamples* maptoolTraining;
+//    CDTMapToolSelectTrainingSamples* maptoolTraining;
 
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;

@@ -1,27 +1,17 @@
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "qgsrubberband.h"
-#include <QtCore>
+#include "stable.h"
 #include "qgsvectorlayer.h"
 #include "cdttrainingsamplesform.h"
 #include "cdtimagelayer.h"
+#include "mainwindow.h"
 
 CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *canvas) :
     QgsMapTool(canvas),
-    mapCanvas(canvas),
-    segmentationLayer(NULL),
-    trainingSampleForm(NULL)
+    mapCanvas(canvas)/*,
+      segmentationLayer(NULL),
+      trainingSampleForm(NULL)*/
 {
-}
-
-void CDTMapToolSelectTrainingSamples::setSegmentationLayer(CDTSegmentationLayer *layer)
-{
-    if (layer == NULL) return;
-
-    samples.clear();
-    segmentationLayer = layer;
-    trainingSampleForm = layer->trainingForm();
-
-    updateRubber();
 }
 
 void CDTMapToolSelectTrainingSamples::canvasMoveEvent(QMouseEvent *e)
@@ -100,7 +90,7 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QMouseEvent *e)
             if ( distance <= closestFeatureDist )
             {
                 closestFeatureDist = distance;
-                closestFeatureId = f.id();
+                closestFeatureId = f.attribute("GridCode").toInt();
             }
         }
 
@@ -110,49 +100,126 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QMouseEvent *e)
     }
 }
 
-void CDTMapToolSelectTrainingSamples::updateRubber()
+void CDTMapToolSelectTrainingSamples::setSampleID(QUuid id)
+{
+    if (id.isNull()) return;
+
+    sampleID = id;
+    samples.clear();
+
+    updateRubber();
+}
+
+void CDTMapToolSelectTrainingSamples::clearRubberBand()
 {
     foreach (QgsRubberBand* band, rubberBands) {
         delete band;
     }
     rubberBands.clear();
+}
+
+void CDTMapToolSelectTrainingSamples::updateRubber()
+{
+    clearRubberBand();
 
     QgsVectorLayer* vlayer = NULL;
     if ( !mapCanvas->currentLayer()
          || ( vlayer = qobject_cast<QgsVectorLayer *>( mapCanvas->currentLayer() ) ) == NULL )
+    {
+        qWarning()<<"Current Layer is not a vector layer!";
         return;
+    }
 
-    QStringList keys = samples.keys();
-    foreach (QString key, keys) {
-        QList<qint64> ids = samples.values(key);
+
+    QSqlQuery query(QSqlDatabase::database("category"));
+
+    query.prepare("select samples.objectid,category.color from samples natural join category where samples.categoryid = category.id and samples.sampleID = ?");
+    query.bindValue(0,sampleID.toString());
+    query.exec();
+    while (query.next()) {
+        qint64 objectID = query.value(0).toInt();
+        QColor color = query.value(1).value<QColor>();
+
+        qDebug()<<"objectID:"<<objectID<<"\tcolor:"<<color;
+
         QgsRubberBand *rubberBand = new QgsRubberBand(mapCanvas,QGis::Polygon);
-        vlayer->removeSelection();
-        vlayer->setSelectedFeatures(ids.toSet());
-        QgsFeatureList features = vlayer->selectedFeatures();
-        vlayer->removeSelection();
 
-        QColor color /*= trainingSampleForm->getColor(key)*/;
         rubberBand->setColor(color);
         rubberBand->setBrushStyle(Qt::Dense3Pattern);
 
-        foreach (QgsFeature feature, features) {
-            rubberBand->addGeometry(feature.geometry(),vlayer);
+        QgsFeature f;
+        QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest().setFilterExpression("GridCode="+QString::number(objectID)));
+        while(features.nextFeature(f))
+        {
+            rubberBand->addGeometry(f.geometry(),vlayer);
         }
 
         rubberBands<<rubberBand;
     }
 
+    //    QStringList keys = samples.keys();
+    //    foreach (QString key, keys) {
+    //        QList<qint64> ids = samples.values(key);
+    //        QgsRubberBand *rubberBand = new QgsRubberBand(mapCanvas,QGis::Polygon);
+    //        vlayer->removeSelection();
+    //        vlayer->setSelectedFeatures(ids.toSet());
+    //        QgsFeatureList features = vlayer->selectedFeatures();
+    //        vlayer->removeSelection();
+
+    //        QColor color /*= trainingSampleForm->getColor(key)*/;
+    //        rubberBand->setColor(color);
+    //        rubberBand->setBrushStyle(Qt::Dense3Pattern);
+
+    //        foreach (QgsFeature feature, features) {
+    //            rubberBand->addGeometry(feature.geometry(),vlayer);
+    //        }
+
+    //        rubberBands<<rubberBand;
+    //    }
+
 }
 
 void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
 {    
-//    QString currentCategoryName = trainingSampleForm->currentName();
-//    if (currentCategoryName.isNull())
-//        return;
+    if (sampleID.isNull())
+    {
+        qWarning()<<tr("No sample selected!");
+        return;
+    }
 
-//    if (samples.contains(currentCategoryName,id))
-//        samples.remove(currentCategoryName,id);
-//    else
-//        samples.insert(currentCategoryName,id);
-//    updateRubber();
+    QUuid categoryID = MainWindow::getTrainingSampleForm()->currentCategoryID();
+    if (categoryID.isNull())
+    {
+        qWarning()<<tr("No category selected!");
+        return;
+    }
+
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("select * from samples where objectid = ? and categoryID = ? and sampleID = ?");
+    query.bindValue(0,id);
+    query.bindValue(1,categoryID.toString());
+    query.bindValue(2,sampleID.toString());
+    query.exec();
+    if (query.next())
+    {//Exsist in table
+        query.prepare("delete from samples where objectid = ? and categoryID = ? and sampleID = ?");
+        query.bindValue(0,id);
+        query.bindValue(1,categoryID.toString());
+        query.bindValue(2,sampleID.toString());
+        query.exec();
+    }
+    else
+    {//Not exist
+        query.prepare("insert into samples values(?,?,?)");
+        query.bindValue(0,id);
+        query.bindValue(1,categoryID.toString());
+        query.bindValue(2,sampleID.toString());
+        query.exec();
+    }
+
+    //    if (samples.contains(currentCategoryName,id))
+    //        samples.remove(currentCategoryName,id);
+    //    else
+    //        samples.insert(currentCategoryName,id);
+    updateRubber();
 }

@@ -20,13 +20,8 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     isChanged(false),
     mapCanvas(new QgsMapCanvas(this))
 {
-    //    connect(this,SIGNAL(projectChanged(CDTProject*)),treeModel,SLOT(update(CDTProject*)));
-
-
     connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));    
     connect(this,SIGNAL(projectChanged()),this,SLOT(setIsChanged()));
-
-
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
@@ -38,8 +33,6 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QToolBar* toolBar = initToolBar();
     if (toolBar != NULL)
         vbox->setMenuBar(toolBar);
-
-
 }
 
 CDTProjectWidget::~CDTProjectWidget()
@@ -333,28 +326,10 @@ bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index
     }
 }
 
-//void CDTProjectWidget::setProjectName(const QString &name)
-//{
-//    project->setName(name);
-//    emit projectChanged();
-//}
-
-//void CDTProjectWidget::setProjectPath(const QString &path)
-//{
-//    if(project->path() == path)
-//        return;
-//    if (file.isOpen())
-//        file.close();
-
-//    file.setFileName(path);
-//    if (file.open(QFile::ReadWrite))
-//    {
-//        project->setLayerInfo(path);
-//        emit projectChanged();
-//    }
-//    else
-//        QMessageBox::critical(this,tr("Error"),tr("Open File ")+path+tr(" failed!"));
-//}
+QToolBar *CDTProjectWidget::menuBar()
+{
+    return (QToolBar *)(this->layout()->menuBar());
+}
 
 void CDTProjectWidget::setIsChanged()
 {

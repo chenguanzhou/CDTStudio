@@ -2,18 +2,18 @@
 #define CDTTRAININGSAMPLESFORM_H
 
 #include <QWidget>
-#include <QItemDelegate>
-#include <QPainter>
-#include <QColor>
-#include <QColorDialog>
 
 namespace Ui {
 class CDTTrainingSamplesForm;
 }
 class CDTImageLayer;
 class QSqlRelationalTableModel;
+class QSqlQueryModel;
+class QgsMapTool;
 struct QUuid;
 class QSqlRecord;
+class CDTMapToolSelectTrainingSamples;
+class QColor;
 
 class CategoryInformation
 {
@@ -87,13 +87,19 @@ public:
     explicit CDTTrainingSamplesForm( QWidget *parent = 0);
     ~CDTTrainingSamplesForm();
 
-//    QColor getColor(QString name);
-//    void setImageLayer(CDTImageLayer *layer);
     void setImageID(QUuid uuid);
     bool isValid();
+
+    QUuid currentCategoryID();
+
+signals:
+    void segmentationChanged();
+    void imageChanged();
+
 public slots:
     void updateTable();
     void updateComboBox();
+    void updateListView();
 private slots:
     void on_actionInsert_triggered();
     void on_actionRemove_triggered();
@@ -103,12 +109,25 @@ private slots:
     void onPrimeInsert(int row,QSqlRecord& record);
     void on_actionEdit_triggered(bool checked);
 
+    void on_comboBox_currentIndexChanged(int index);
+    void on_toolButtonRefresh_clicked();
+    void on_toolButtonEditSample_toggled(bool checked);
+    void on_toolButtonSampleRename_clicked();
+    void on_toolButtonNewSample_clicked();
+    void on_toolButtonRemoveSelected_clicked();
+
+    void on_listView_clicked(const QModelIndex &index);
+
 private:
     Ui::CDTTrainingSamplesForm *ui;    
-    QSqlRelationalTableModel *model;
+    QSqlRelationalTableModel *categoryModel;
+    QSqlQueryModel *sampleModel;
     QAbstractItemDelegate* delegateColor;
     QAbstractItemDelegate* delegateImageID;
     QUuid   imageLayerID;
+
+    QgsMapTool *lastMapTool;
+    CDTMapToolSelectTrainingSamples* currentMapTool;
 };
 
 #endif // CDTTRAININGSAMPLESFORM_H

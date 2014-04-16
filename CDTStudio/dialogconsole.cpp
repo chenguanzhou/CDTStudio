@@ -15,6 +15,7 @@ DialogConsole::DialogConsole(QWidget *parent) :
     ui->setupUi(this);
     listModel = new QStringListModel(ui->listView);
     ui->listView->setModel(listModel);
+    setWindowFlags(Qt::Window);
 }
 
 DialogConsole::~DialogConsole()

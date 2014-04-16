@@ -1,22 +1,35 @@
 #include "cdttrainingsamplesform.h"
 #include "ui_cdttrainingsamplesform.h"
+#include "stable.h"
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "cdtimagelayer.h"
-#include <QtCore>
-#include <QtSql>
-#include <QToolBar>
-#include <QMessageBox>
+#include "mainwindow.h"
+#include "cdtprojectwidget.h"
+
+QDataStream &operator <<(QDataStream &out,const CategoryInformation &categoryInformation)
+{
+    out<<categoryInformation.id<<categoryInformation.categoryName<<categoryInformation.color;
+    return out;
+}
+
+QDataStream &operator >>(QDataStream &in, CategoryInformation &categoryInformation)
+{
+    in>>categoryInformation.id>>categoryInformation.categoryName>>categoryInformation.color;
+    return in;
+}
 
 CDTTrainingSamplesForm::CDTTrainingSamplesForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::CDTTrainingSamplesForm),
-    model(new QSqlRelationalTableModel(this,QSqlDatabase::database("category"))),
+    categoryModel(new QSqlRelationalTableModel(this,QSqlDatabase::database("category"))),
+    sampleModel(new QSqlQueryModel(this)),
     delegateColor(new CDTCategoryDelegate(this)),
-    delegateImageID(new QSqlRelationalDelegate(this))
-
+    delegateImageID(new QSqlRelationalDelegate(this)),
+    lastMapTool(NULL),
+    currentMapTool(NULL)
 {
     ui->setupUi(this);
-    ui->tableView->setModel(model);
+
     QToolBar* toolBar = new QToolBar(this);
     toolBar->setIconSize(QSize(16,16));
     toolBar->addActions(QList<QAction*>()
@@ -26,14 +39,15 @@ CDTTrainingSamplesForm::CDTTrainingSamplesForm(QWidget *parent) :
                         <<ui->actionInsert<<ui->actionRemove<<ui->actionRemove_All);
     ui->verticalLayout->insertWidget(0,toolBar);
 
-    ui->tableView->setEditTriggers(QTableView::NoEditTriggers);
-    model->setHeaderData(1, Qt::Horizontal, QObject::tr("Class Name"));
-    model->setHeaderData(2, Qt::Horizontal, QObject::tr("Color"));
-
     connect(ui->toolButtonRefresh,SIGNAL(clicked()),SLOT(updateComboBox()));
-    connect(model,SIGNAL(primeInsert(int,QSqlRecord&)),SLOT(onPrimeInsert(int,QSqlRecord&)));
-    connect(model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),ui->tableView,SLOT(resizeColumnsToContents()));
-    connect(model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),ui->tableView,SLOT(resizeRowsToContents()));
+
+    ui->tableView->setModel(categoryModel);
+    ui->tableView->setEditTriggers(QTableView::NoEditTriggers);
+    categoryModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Class Name"));
+    categoryModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Color"));
+    connect(categoryModel,SIGNAL(primeInsert(int,QSqlRecord&)),SLOT(onPrimeInsert(int,QSqlRecord&)));
+
+    ui->listView->setModel(sampleModel);
 }
 
 CDTTrainingSamplesForm::~CDTTrainingSamplesForm()
@@ -43,15 +57,15 @@ CDTTrainingSamplesForm::~CDTTrainingSamplesForm()
 
 void CDTTrainingSamplesForm::updateTable()
 {
-    model->setTable("category");
-    model->setFilter("imageID='"+imageLayerID.toString()+"'");
-    model->select();
+    categoryModel->setTable("category");
+    categoryModel->setFilter("imageID='"+imageLayerID.toString()+"'");
+    categoryModel->select();
 
-    ui->tableView->resizeColumnsToContents();
-    ui->tableView->resizeRowsToContents();
     ui->tableView->setItemDelegateForColumn(2,delegateColor);
     ui->tableView->hideColumn(0);
     ui->tableView->hideColumn(3);
+    ui->tableView->resizeColumnsToContents();
+    ui->tableView->resizeRowsToContents();
 }
 
 void CDTTrainingSamplesForm::updateComboBox()
@@ -60,33 +74,49 @@ void CDTTrainingSamplesForm::updateComboBox()
     if (ui->comboBox->model()) delete ui->comboBox->model();
     ui->comboBox->setModel(model);
 
-    model->setQuery("select name from segmentationlayer where imageID = '"+imageLayerID.toString()+"'",
+    model->setQuery("select name,id from segmentationlayer where imageID = '"+imageLayerID.toString()+"'",
                     QSqlDatabase::database("category"));
 
+    ui->toolButtonNewSample->setEnabled(ui->comboBox->count()!=0);
+    ui->toolButtonRemoveSelected->setEnabled(ui->comboBox->count()!=0);
+    ui->toolButtonEditSample->setEnabled(ui->comboBox->count()!=0);
+    if (ui->comboBox->count()==0)
+        sampleModel->clear();
+}
+
+void CDTTrainingSamplesForm::updateListView()
+{
+    int index = ui->comboBox->currentIndex();
+    if (index<0) return;
+
+    QSqlQueryModel * model = (QSqlQueryModel *)(ui->comboBox->model());
+    QString segmentationID = model->data(model->index(index,1)).toString();
+
+    sampleModel->setQuery("select name,id from sample_segmenation where segmenationid='"+segmentationID+"'",QSqlDatabase::database("category"));
 }
 
 void CDTTrainingSamplesForm::setImageID(QUuid uuid)
 {
-    imageLayerID = uuid;    
+    imageLayerID = uuid;
 
     QList<CDTImageLayer*> layers = CDTImageLayer::getLayers();
     foreach (CDTImageLayer* layer, layers) {
         if (layer->id()==uuid)
         {
-            connect(model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            connect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                     layer,SIGNAL(imageLayerChanged()));
-            connect(model,SIGNAL(beforeInsert(QSqlRecord&)),
+            connect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
                     layer,SIGNAL(imageLayerChanged()));
-            connect(model,SIGNAL(beforeDelete(int)),
+            connect(categoryModel,SIGNAL(beforeDelete(int)),
                     layer,SIGNAL(imageLayerChanged()));
         }
         else
         {
-            disconnect(model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            disconnect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                        layer,SIGNAL(imageLayerChanged()));
-            disconnect(model,SIGNAL(beforeInsert(QSqlRecord&)),
+            disconnect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
                        layer,SIGNAL(imageLayerChanged()));
-            disconnect(model,SIGNAL(beforeDelete(int)),
+            disconnect(categoryModel,SIGNAL(beforeDelete(int)),
                        layer,SIGNAL(imageLayerChanged()));
         }
     }
@@ -104,7 +134,6 @@ bool CDTTrainingSamplesForm::isValid()
         qDebug()<<query.lastError().text();
 
     query.next();
-    qDebug()<<query.value(0);
     if (query.value(0).toInt()==1)
         return true;
 
@@ -112,11 +141,22 @@ bool CDTTrainingSamplesForm::isValid()
     return false;
 }
 
+QUuid CDTTrainingSamplesForm::currentCategoryID()
+{
+    QModelIndex currentIndex = ui->tableView->currentIndex();
+    if (!currentIndex.isValid())
+        return QUuid();
+    QString id = categoryModel->data(categoryModel->index(currentIndex.row(),0)).toString();
+    if (id.isNull())
+        return QUuid();
+    return QUuid(id);
+}
+
 void CDTTrainingSamplesForm::on_actionInsert_triggered()
 {
     if (!this->isValid()) return;
 
-    model->insertRow(model->rowCount());
+    categoryModel->insertRow(categoryModel->rowCount());
     ui->actionInsert->setEnabled(false);
 }
 
@@ -125,27 +165,32 @@ void CDTTrainingSamplesForm::on_actionRemove_triggered()
     if (!this->isValid()) return;
     int row = ui->tableView->currentIndex().row();
     if (row <0) return;
-    model->removeRow(row);
+    categoryModel->removeRow(row);
+    ui->tableView->resizeColumnsToContents();
+    ui->tableView->resizeRowsToContents();
 }
 
 void CDTTrainingSamplesForm::on_actionRemove_All_triggered()
 {
     if (!this->isValid()) return;
-    model->removeRows(0,model->rowCount());
+    categoryModel->removeRows(0,categoryModel->rowCount());
+    ui->tableView->resizeColumnsToContents();
+    ui->tableView->resizeRowsToContents();
 }
 
 void CDTTrainingSamplesForm::on_actionRevert_triggered()
 {
     if (!this->isValid()) return;
-    model->revertAll();
+    categoryModel->revertAll();
+    ui->actionInsert->setEnabled(true);
     ui->tableView->resizeColumnsToContents();
     ui->tableView->resizeRowsToContents();
 }
 
 void CDTTrainingSamplesForm::on_actionSubmit_triggered()
 {
-    if (model->submitAll()==false)
-        qDebug()<<"Submit failed:"<<model->lastError();
+    if (categoryModel->submitAll()==false)
+        qDebug()<<"Submit failed:"<<categoryModel->lastError();
     ui->actionInsert->setEnabled(true);
     ui->tableView->resizeColumnsToContents();
     ui->tableView->resizeRowsToContents();
@@ -178,16 +223,114 @@ void CDTTrainingSamplesForm::on_actionEdit_triggered(bool checked)
         ui->tableView->setEditTriggers(QTableView::NoEditTriggers);
 }
 
-QDataStream &operator <<(QDataStream &out,const CategoryInformation &categoryInformation)
+
+
+void CDTTrainingSamplesForm::on_toolButtonRefresh_clicked()
 {
-    out<<categoryInformation.id<<categoryInformation.categoryName<<categoryInformation.color;
-    return out;
+    updateComboBox();
 }
 
-QDataStream &operator >>(QDataStream &in, CategoryInformation &categoryInformation)
+void CDTTrainingSamplesForm::on_comboBox_currentIndexChanged(int index)
 {
-    in>>categoryInformation.id>>categoryInformation.categoryName>>categoryInformation.color;
-    return in;
+    updateListView();
 }
 
+void CDTTrainingSamplesForm::on_toolButtonEditSample_toggled(bool checked)
+{
+    if (checked)
+    {
+        lastMapTool = MainWindow::getCurrentMapCanvas()->mapTool();
+        currentMapTool =
+                new CDTMapToolSelectTrainingSamples(MainWindow::getCurrentMapCanvas());
+        MainWindow::getCurrentMapCanvas()->setMapTool(currentMapTool);
+        MainWindow::getCurrentProjectWidget()->menuBar()->setEnabled(false);
 
+        int index = ui->listView->currentIndex().row();
+        if (index>=0)
+        {
+            QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();
+            currentMapTool->setSampleID(sampleid);
+        }
+    }
+    else
+    {
+        MainWindow::getCurrentMapCanvas()->setMapTool(lastMapTool);
+        currentMapTool->clearRubberBand();
+        if(currentMapTool) delete currentMapTool;
+        MainWindow::getCurrentProjectWidget()->menuBar()->setEnabled(true);
+    }
+
+
+}
+
+void CDTTrainingSamplesForm::on_toolButtonSampleRename_clicked()
+{
+    if (!this->isValid()) return;
+    int index = ui->listView->currentIndex().row();
+    if (index<0)
+        return;
+
+    QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();
+    QString sampleName = sampleModel->data(sampleModel->index(index,0)).toString();
+
+    sampleName =
+            QInputDialog::getText(this,tr("New Sample Name"),tr("Name:"),QLineEdit::Normal,sampleName);
+    if (sampleName.isEmpty())
+        return;
+
+    QSqlQuery q(QSqlDatabase::database("category"));
+    q.prepare("update sample_segmenation set name = ? where id = ?");
+    q.bindValue(0,sampleName);
+    q.bindValue(1,sampleid);
+    q.exec();
+
+    updateListView();
+}
+
+void CDTTrainingSamplesForm::on_toolButtonNewSample_clicked()
+{
+    if (!this->isValid()) return;
+
+    QString sampleName =
+            QInputDialog::getText(this,tr("New Sample Name"),tr("Name:"),QLineEdit::Normal,tr("New Sample"));
+    if (sampleName.isEmpty())
+        return;
+
+    QSqlQueryModel * model = (QSqlQueryModel *)(ui->comboBox->model());
+    QString segmentationID = model->data(model->index(ui->comboBox->currentIndex(),1)).toString();
+
+    QSqlQuery q(QSqlDatabase::database("category"));
+    q.prepare("insert into sample_segmenation values(?,?,?)");
+    q.bindValue(0,QUuid::createUuid().toString());
+    q.bindValue(1,sampleName);
+    q.bindValue(2,segmentationID);
+    q.exec();
+
+    updateListView();
+}
+
+void CDTTrainingSamplesForm::on_toolButtonRemoveSelected_clicked()
+{
+    if (!this->isValid()) return;
+    int index = ui->listView->currentIndex().row();
+    if (index<0)
+        return;
+
+    QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();
+    QSqlQuery q(QSqlDatabase::database("category"));
+    q.prepare("delete from sample_segmenation where id = ?");
+    q.bindValue(0,sampleid);
+    q.exec();
+
+    updateListView();
+}
+
+void CDTTrainingSamplesForm::on_listView_clicked(const QModelIndex &index)
+{
+    if (currentMapTool)
+    {
+        QString sampleid   = sampleModel->data(sampleModel->index(index.row(),1)).toString();
+        currentMapTool->setSampleID(sampleid);
+
+    }
+}

@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);    
     supervisor = new RecentFileSupervisor(this);
     dialogConsole = new  DialogConsole(this);
+
     recentFileToolButton = new QToolButton(this);
 
     mainWindow = this;
@@ -67,7 +68,7 @@ QTreeView *MainWindow::getProjectTreeView()
     return mainWindow->ui->treeViewProject;
 }
 
-CDTTrainingSamplesForm *MainWindow::getCategoryForm()
+CDTTrainingSamplesForm *MainWindow::getTrainingSampleForm()
 {
     return mainWindow->ui->trainingSampleForm;
 }
@@ -75,6 +76,18 @@ CDTTrainingSamplesForm *MainWindow::getCategoryForm()
 CDTAttributesWidget *MainWindow::getAttributesWidget()
 {
     return mainWindow->ui->widgetAttributes;
+}
+
+CDTProjectWidget *MainWindow::getCurrentProjectWidget()
+{
+    return (CDTProjectWidget *)(mainWindow->ui->tabWidgetProject->currentWidget());
+}
+
+QgsMapCanvas *MainWindow::getCurrentMapCanvas()
+{
+    CDTProjectWidget *projectWidget = getCurrentProjectWidget();
+    if (projectWidget == NULL) return NULL;
+    return projectWidget->mapCanvas;
 }
 
 void MainWindow::onCurrentTabChanged(int i)

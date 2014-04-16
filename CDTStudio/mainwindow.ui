@@ -29,6 +29,9 @@
     </property>
     <item>
      <widget class="CDTProjectTabWidget" name="tabWidgetProject">
+      <property name="contextMenuPolicy">
+       <enum>Qt::NoContextMenu</enum>
+      </property>
       <property name="tabsClosable">
        <bool>true</bool>
       </property>

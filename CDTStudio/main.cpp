@@ -82,7 +82,13 @@ bool initDatabase()
     }
 
     /// Create category table(name text,color blob,imageID text).
-    ret = query.exec("CREATE TABLE category (id text NOT NULL,name text NOT NULL, color blob, imageID text NOT NULL,Primary Key(id),UNIQUE (name,imageID) )");
+    ret = query.exec("CREATE TABLE category "
+                     "(id text NOT NULL,"
+                     "name text NOT NULL, "
+                     "color blob, "
+                     "imageID text NOT NULL,"
+                     "Primary Key(id),"
+                     "UNIQUE (name,imageID) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table category failed!\nerror:")+query.lastError().text());
@@ -92,9 +98,10 @@ bool initDatabase()
 
     ///  Create segmentation sample_segmenation table(id text,name text,shapefilePath text,markfilePath text,imageID text).
     ret = query.exec("CREATE TABLE sample_segmenation"
-                     "(sampleid text NOT NULL, "
+                     "(id text NOT NULL, "
+                     "name text NOT NULL, "
                      "segmenationid text NOT NULL,"
-                     "Primary Key(sampleid) )");
+                     "Primary Key(id) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table sample_segmenation failed!\nerror:")+query.lastError().text());

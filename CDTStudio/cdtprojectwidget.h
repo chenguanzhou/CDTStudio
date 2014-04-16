@@ -28,13 +28,12 @@ public:
     int  maybeSave();
     QString filePath();
     bool closeProject(CDTProjectTabWidget *parent,const int &index);
+    QToolBar *menuBar();
 
 signals:
     void projectChanged();
 public slots:
     void onContextMenu(QPoint pt,QModelIndex index);
-//    void setProjectName(const QString& name);
-//    void setProjectPath(const QString& path);
     void setIsChanged();
     bool saveProject(QString &path);
 
