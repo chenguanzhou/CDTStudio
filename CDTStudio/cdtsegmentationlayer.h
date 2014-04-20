@@ -1,22 +1,26 @@
 #ifndef CDTSEGMENTATIONLAYER_H
 #define CDTSEGMENTATIONLAYER_H
 
-#include <QObject>
-#include <QMap>
-#include <QVector>
-#include <QVariant>
-#include <QAction>
-#include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
 #include "cdtattributeswidget.h"
-#include "cdttrainingsamplesform.h"
 
-
+class CDTDatabaseConnInfo;
 class CDTClassification;
-struct CDTDatabaseConnInfo;
 class CDTMapToolSelectTrainingSamples;
-typedef QMap<int,QString> TrainingSample;
-typedef QList<TrainingSample > CDTTrainingSampleList;
+class CDTTrainingSamplesForm;
+class CDTProjectTreeItem;
+
+class SampleElement
+{
+public:
+    SampleElement(int objID=0,QUuid ctgrID=QUuid(),QUuid spID=QUuid())
+        :ObjectID(objID),categoryID(ctgrID),sampleID(spID){}
+    friend QDataStream &operator<<(QDataStream &out,const SampleElement &sample);
+    friend QDataStream &operator>>(QDataStream &in, SampleElement &sample);
+    int ObjectID;
+    QUuid categoryID;
+    QUuid sampleID;
+};
 
 class CDTSegmentationLayer:public CDTBaseObject
 {
@@ -62,13 +66,17 @@ public slots:
     void setLayerInfo(const QString& name,const QString &shpPath,const QString &mkPath);
     void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
     void setDatabaseURL(CDTDatabaseConnInfo url);
+
+private:
+    void loadSamplesFromStruct(const QMap<QString,QString> &sample_id_name,const QList<SampleElement> &samples);
+    void saveSamplesToStruct(QMap<QString,QString> &sample_id_name,QList<SampleElement> &samples) const;
 private:
     QString m_imagePath;
     CDTDatabaseConnInfo    m_dbUrl;
     QString m_method;
     QMap<QString,QVariant> m_params;
     QVector<CDTClassification *> classifications;
-    CDTTrainingSampleList trainingSampleList;
+//    CDTTrainingSampleList trainingSampleList;
 
 //    CDTMapToolSelectTrainingSamples* maptoolTraining;
 

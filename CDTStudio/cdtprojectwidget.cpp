@@ -312,19 +312,19 @@ QString CDTProjectWidget::filePath()
     return QFileInfo(file).absoluteFilePath();
 }
 
-bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index)
-{
-    int ret = this->maybeSave();
-    if(ret == QMessageBox::Cancel  )
-    {
-        return false;
-    }
-    else
-    {
-        parent->removeTab(index);
-        return true;
-    }
-}
+//bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index)
+//{
+//    int ret = this->maybeSave();
+//    if(ret == QMessageBox::Cancel  )
+//    {
+//        return false;
+//    }
+//    else
+//    {
+//        parent->removeTab(index);
+//        return true;
+//    }
+//}
 
 QToolBar *CDTProjectWidget::menuBar()
 {

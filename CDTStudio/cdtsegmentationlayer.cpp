@@ -1,18 +1,30 @@
-#include "cdtclassification.h"
+//#include "cdtclassification.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtimagelayer.h"
 #include "cdtproject.h"
-#include <QList>
-#include <QMenu>
-#include <QInputDialog>
-#include <QMessageBox>
-#include <QtXml>
+#include "cdtattributeswidget.h"
+#include "cdtmaptoolselecttrainingsamples.h"
+#include "stable.h"
+
 #include <qgsvectorlayer.h>
 #include <qgsmaplayerregistry.h>
 #include <qgssinglesymbolrendererv2.h>
 #include <qgsrendererv2widget.h>
 #include <qgsfillsymbollayerv2.h>
-#include "cdtmaptoolselecttrainingsamples.h"
+
+
+QDataStream &operator<<(QDataStream &out, const SampleElement &sample)
+{
+    out<<sample.ObjectID<<sample.categoryID<<sample.sampleID;
+    return out;
+}
+
+QDataStream &operator>>(QDataStream &in, SampleElement &sample)
+{
+    in>>sample.ObjectID>>sample.categoryID>>sample.sampleID;
+    return in;
+}
+
 
 QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
 
@@ -336,6 +348,48 @@ void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
     emit segmentationChanged();
 }
 
+void CDTSegmentationLayer::loadSamplesFromStruct(const QMap<QString, QString> &sample_id_name, const QList<SampleElement> &samples)
+{
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("insert into sample_segmenation values(?,?,?)");
+    foreach (QString id, sample_id_name.keys()) {
+        QString name = sample_id_name.value(id);
+        query.bindValue(0,id);
+        query.bindValue(1,name);
+        query.bindValue(2,this->id().toString());
+        query.exec();
+    }
+
+    query.prepare("insert into samples values(?,?,?)");
+    foreach (SampleElement sample, samples) {
+        query.bindValue(0,sample.ObjectID);
+        query.bindValue(1,sample.categoryID.toString());
+        query.bindValue(2,sample.sampleID.toString());
+        query.exec();
+    }
+}
+
+void CDTSegmentationLayer::saveSamplesToStruct(QMap<QString, QString> &sample_id_name, QList<SampleElement> &samples) const
+{
+    sample_id_name.clear();
+    samples.clear();
+
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.exec("select id,name from sample_segmenation where segmenationid ='" + this->id().toString() +"'");
+    while(query.next())
+    {       
+        sample_id_name.insert(query.value(0).toString(),query.value(1).toString());
+    }
+
+    foreach (QString sampleID, sample_id_name.keys()) {
+        query.exec("select objectid,categoryid from samples where sampleid ='" + sampleID+"'");
+        while(query.next())
+        {
+            samples<<SampleElement(query.value(0).toInt(),query.value(1).toString(),sampleID);
+        }
+    }
+}
+
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
 {    
     QSqlQuery query(QSqlDatabase::database("category"));
@@ -349,13 +403,9 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
         <<segmentation.m_method<<segmentation.m_params<<segmentation.m_dbUrl;
 
     QMap<QString,QString> sample;
-    query.exec("select id,name from sample_segmenation where segmenationid ='" + segmentation.id().toString() +"'");
-    while(query.next())
-    {
-        sample.insert(query.value(0).toString(),query.value(1).toString());
-    }
-    out<<sample;
-
+    QList<SampleElement> samples;
+    segmentation.saveSamplesToStruct(sample,samples);
+    out<<sample<<samples;
     out<<segmentation.classifications.size();
     for (int i=0;i<segmentation.classifications.size();++i)
         out<<*(segmentation.classifications[i]);
@@ -380,17 +430,11 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
     segmentation.setMethodParams(temp,paramsTemp);
     in>>segmentation.m_dbUrl;
 
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("insert into sample_segmenation values(?,?,?)");
+
     QMap<QString,QString> sample;
-    in>>sample;
-    foreach (QString id, sample.keys()) {
-        QString name = sample.value(id);
-        query.bindValue(0,id);
-        query.bindValue(1,name);
-        query.bindValue(2,segmentation.uuid.toString());
-        query.exec();
-    }
+    QList<SampleElement> samples;
+    in>>sample>>samples;
+    segmentation.loadSamplesFromStruct(sample,samples);
 
     int count;
     in>>count;

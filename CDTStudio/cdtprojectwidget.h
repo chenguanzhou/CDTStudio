@@ -27,7 +27,7 @@ public:
     bool saveAsProject(QString &path);
     int  maybeSave();
     QString filePath();
-    bool closeProject(CDTProjectTabWidget *parent,const int &index);
+//    bool closeProject(CDTProjectTabWidget *parent,const int &index);
     QToolBar *menuBar();
 
 signals:

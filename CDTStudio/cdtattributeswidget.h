@@ -11,8 +11,9 @@ class CDTAttributesWidget;
 class QToolBar;
 class QMenuBar;
 class CDTSegmentationLayer;
-struct CDTDatabaseConnInfo
+class CDTDatabaseConnInfo
 {
+public:
     QString dbType;
     QString dbName;
     QString username;

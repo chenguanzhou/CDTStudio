@@ -61,6 +61,9 @@ void CDTTrainingSamplesForm::updateTable()
     categoryModel->setFilter("imageID='"+imageLayerID.toString()+"'");
     categoryModel->select();
 
+    if (categoryModel->rowCount()>0)
+        ui->tableView->setCurrentIndex(categoryModel->index(0,0));
+
     ui->tableView->setItemDelegateForColumn(2,delegateColor);
     ui->tableView->hideColumn(0);
     ui->tableView->hideColumn(3);
@@ -93,6 +96,17 @@ void CDTTrainingSamplesForm::updateListView()
     QString segmentationID = model->data(model->index(index,1)).toString();
 
     sampleModel->setQuery("select name,id from sample_segmenation where segmenationid='"+segmentationID+"'",QSqlDatabase::database("category"));
+    if (sampleModel->rowCount()>0)
+        ui->listView->setCurrentIndex(sampleModel->index(0,0));
+}
+
+void CDTTrainingSamplesForm::clear()
+{
+    sampleModel->setQuery("select NULL");
+    categoryModel->clear();
+
+    imageLayerID = QUuid();
+    if (currentMapTool) delete currentMapTool;
 }
 
 void CDTTrainingSamplesForm::setImageID(QUuid uuid)
@@ -109,6 +123,7 @@ void CDTTrainingSamplesForm::setImageID(QUuid uuid)
                     layer,SIGNAL(imageLayerChanged()));
             connect(categoryModel,SIGNAL(beforeDelete(int)),
                     layer,SIGNAL(imageLayerChanged()));
+            connect(layer,SIGNAL(destroyed()),SLOT(clear()));
         }
         else
         {
@@ -118,9 +133,11 @@ void CDTTrainingSamplesForm::setImageID(QUuid uuid)
                        layer,SIGNAL(imageLayerChanged()));
             disconnect(categoryModel,SIGNAL(beforeDelete(int)),
                        layer,SIGNAL(imageLayerChanged()));
+            disconnect(layer,SIGNAL(destroyed()),this,SLOT(clear()));
         }
     }
 
+    ui->toolButtonEditSample->setChecked(false);
     updateComboBox();
     updateTable();
 }
@@ -237,29 +254,8 @@ void CDTTrainingSamplesForm::on_comboBox_currentIndexChanged(int index)
 
 void CDTTrainingSamplesForm::on_toolButtonEditSample_toggled(bool checked)
 {
-    if (checked)
-    {
-        lastMapTool = MainWindow::getCurrentMapCanvas()->mapTool();
-        currentMapTool =
-                new CDTMapToolSelectTrainingSamples(MainWindow::getCurrentMapCanvas());
-        MainWindow::getCurrentMapCanvas()->setMapTool(currentMapTool);
-        MainWindow::getCurrentProjectWidget()->menuBar()->setEnabled(false);
-
-        int index = ui->listView->currentIndex().row();
-        if (index>=0)
-        {
-            QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();
-            currentMapTool->setSampleID(sampleid);
-        }
-    }
-    else
-    {
-        MainWindow::getCurrentMapCanvas()->setMapTool(lastMapTool);
-        currentMapTool->clearRubberBand();
-        if(currentMapTool) delete currentMapTool;
-        MainWindow::getCurrentProjectWidget()->menuBar()->setEnabled(true);
-    }
-
+    if (currentMapTool)
+        currentMapTool->setReadOnly(!checked);
 
 }
 
@@ -332,5 +328,33 @@ void CDTTrainingSamplesForm::on_listView_clicked(const QModelIndex &index)
         QString sampleid   = sampleModel->data(sampleModel->index(index.row(),1)).toString();
         currentMapTool->setSampleID(sampleid);
 
+    }
+}
+
+void CDTTrainingSamplesForm::on_groupBoxSamples_toggled(bool toggled)
+{
+    ui->frameSample->setEnabled(toggled);
+    if (toggled)
+    {
+        lastMapTool = MainWindow::getCurrentMapCanvas()->mapTool();
+        currentMapTool =
+                new CDTMapToolSelectTrainingSamples(MainWindow::getCurrentMapCanvas(),!ui->groupBoxSamples->isChecked());
+        connect(MainWindow::getCurrentMapCanvas(),SIGNAL(destroyed()),currentMapTool,SLOT(clearRubberBand()));
+        MainWindow::getCurrentMapCanvas()->setMapTool(currentMapTool);
+        MainWindow::getCurrentProjectWidget()->menuBar()->setEnabled(false);
+
+        int index = ui->listView->currentIndex().row();
+        if (index>=0)
+        {
+            QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();
+            currentMapTool->setSampleID(sampleid);
+        }
+    }
+    else
+    {
+        MainWindow::getCurrentMapCanvas()->setMapTool(lastMapTool);
+        if(currentMapTool) delete currentMapTool;
+        currentMapTool = NULL;
+        MainWindow::getCurrentProjectWidget()->menuBar()->setEnabled(true);
     }
 }

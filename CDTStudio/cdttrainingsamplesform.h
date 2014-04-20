@@ -14,6 +14,7 @@ struct QUuid;
 class QSqlRecord;
 class CDTMapToolSelectTrainingSamples;
 class QColor;
+class QColorDialog;
 
 class CategoryInformation
 {
@@ -100,6 +101,7 @@ public slots:
     void updateTable();
     void updateComboBox();
     void updateListView();
+    void clear();
 private slots:
     void on_actionInsert_triggered();
     void on_actionRemove_triggered();
@@ -115,8 +117,8 @@ private slots:
     void on_toolButtonSampleRename_clicked();
     void on_toolButtonNewSample_clicked();
     void on_toolButtonRemoveSelected_clicked();
-
     void on_listView_clicked(const QModelIndex &index);
+    void on_groupBoxSamples_toggled(bool toggled);
 
 private:
     Ui::CDTTrainingSamplesForm *ui;    

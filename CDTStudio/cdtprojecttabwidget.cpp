@@ -116,12 +116,13 @@ bool CDTProjectTabWidget::saveAsProject()
 bool CDTProjectTabWidget::closeTab(const int &index)
 {
     CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
-    if(tabItem->closeProject(this,index))
-    {
-        delete (tabItem);
-        tabItem = nullptr;
-    }
 
+    int ret = tabItem->maybeSave();
+    if(ret == QMessageBox::Cancel  )
+        return true;
+
+    this->removeTab(index);
+    delete (tabItem);
     return true;
 }
 
