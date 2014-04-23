@@ -23,8 +23,8 @@ public slots:
 private:
     QUuid sampleID;
     QgsMapCanvas *mapCanvas;
-    QMultiMap<QString,qint64> samples;
-    QList<QgsRubberBand*> rubberBands;
+//    QList<QgsRubberBand*> rubberBands;
+    QMap<qint64,QgsRubberBand*> rubberBands;
     bool mDragging;
     bool mReadOnly;
 

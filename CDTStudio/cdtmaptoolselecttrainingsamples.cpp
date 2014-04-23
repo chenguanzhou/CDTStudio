@@ -10,8 +10,8 @@ CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *c
     QgsMapTool(canvas),
     mapCanvas(canvas),
     mReadOnly(isReadOnly)/*,
-      segmentationLayer(NULL),
-      trainingSampleForm(NULL)*/
+            segmentationLayer(NULL),
+            trainingSampleForm(NULL)*/
 {
 }
 
@@ -113,8 +113,7 @@ void CDTMapToolSelectTrainingSamples::setSampleID(QUuid id)
     if (id.isNull()) return;
 
     sampleID = id;
-    samples.clear();
-
+    clearRubberBand();
     updateRubber();
 }
 
@@ -125,16 +124,16 @@ void CDTMapToolSelectTrainingSamples::setReadOnly(bool readOnly)
 
 void CDTMapToolSelectTrainingSamples::clearRubberBand()
 {
-    foreach (QgsRubberBand* band, rubberBands) {
-       mapCanvas->scene()->removeItem(band);
-       if (band) delete band;
+    foreach (QgsRubberBand* band, rubberBands.values()) {
+        mapCanvas->scene()->removeItem(band);
+        if (band) delete band;
     }
-    rubberBands.clear();    
+    rubberBands.clear();
 }
 
 void CDTMapToolSelectTrainingSamples::updateRubber()
 {
-    clearRubberBand();
+    //    clearRubberBand();
 
     QgsVectorLayer* vlayer = NULL;
     if ( !mapCanvas->currentLayer()
@@ -146,28 +145,45 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
 
 
     QSqlQuery query(QSqlDatabase::database("category"));
+    QList<qint64> newRubberBandsID;
 
     query.prepare("select samples.objectid,category.color from samples natural join category where samples.categoryid = category.id and samples.sampleID = ?");
     query.bindValue(0,sampleID.toString());
     query.exec();
     while (query.next()) {
         qint64 objectID = query.value(0).toInt();
-        QColor color = query.value(1).value<QColor>();
-
-        QgsRubberBand *rubberBand = new QgsRubberBand(mapCanvas,QGis::Polygon);
-
-        rubberBand->setColor(color);
-        rubberBand->setBrushStyle(Qt::Dense3Pattern);
-
-        QgsFeature f;
-        QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest().setFilterExpression("GridCode="+QString::number(objectID)));
-        while(features.nextFeature(f))
+        newRubberBandsID<<objectID;
+        if (!rubberBands.keys().contains(objectID))
         {
-            rubberBand->addGeometry(f.geometry(),vlayer);
-        }
+            QColor color = query.value(1).value<QColor>();
+            QgsRubberBand *rubberBand = new QgsRubberBand(mapCanvas,QGis::Polygon);
 
-        rubberBands<<rubberBand;
+            rubberBand->setColor(color);
+            rubberBand->setBrushStyle(Qt::Dense3Pattern);
+            QgsFeature f;
+            QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest().setFilterExpression("GridCode="+QString::number(objectID)));
+            while(features.nextFeature(f))
+            {
+                rubberBand->addGeometry(f.geometry(),vlayer);
+            }
+            rubberBands.insert(objectID,rubberBand);
+        }
     }
+
+    //    foreach (int64 objID, rubberBands.keys()) {
+    QList<qint64> objects = rubberBands.keys();
+    for (int i=0;i<objects.size();++i)
+    {
+        int64 objID = rubberBands.keys().at(i);
+        if (!newRubberBandsID.contains(objID))
+        {
+            QgsRubberBand *band = rubberBands.value(objID);
+            mapCanvas->scene()->removeItem(band);
+            if (band) delete band;
+            rubberBands.remove(objID);
+        }
+    }
+    //    }
 }
 
 void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
@@ -186,17 +202,17 @@ void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
     }
 
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("select * from samples where objectid = ? and categoryID = ? and sampleID = ?");
+    query.prepare("select * from samples where objectid = ?  and sampleID = ?");
     query.bindValue(0,id);
-    query.bindValue(1,categoryID.toString());
-    query.bindValue(2,sampleID.toString());
+    //    query.bindValue(1,categoryID.toString());
+    query.bindValue(1,sampleID.toString());
     query.exec();
     if (query.next())
     {//Exsist in table
-        query.prepare("delete from samples where objectid = ? and categoryID = ? and sampleID = ?");
+        query.prepare("delete from samples where objectid = ?  and sampleID = ?");
         query.bindValue(0,id);
-        query.bindValue(1,categoryID.toString());
-        query.bindValue(2,sampleID.toString());
+        //        query.bindValue(1,categoryID.toString());
+        query.bindValue(1,sampleID.toString());
         query.exec();
     }
     else
@@ -208,9 +224,5 @@ void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
         query.exec();
     }
 
-    //    if (samples.contains(currentCategoryName,id))
-    //        samples.remove(currentCategoryName,id);
-    //    else
-    //        samples.insert(currentCategoryName,id);
     updateRubber();
 }
