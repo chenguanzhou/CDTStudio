@@ -52,3 +52,18 @@ void DialogConsole::on_listView_clicked(const QModelIndex &index)
     ui->tableView->resizeColumnsToContents();
     ui->tableView->resizeRowsToContents();
 }
+
+void DialogConsole::on_pushButtonQuery_clicked()
+{
+    QSqlQuery query(db);
+    if (query.exec(ui->plainTextEditQuery->toPlainText())==false)
+    {
+        QMessageBox::critical(this,tr("Query failed!"),query.lastError().text());
+        return;
+    }
+    QSqlQueryModel* tableModel = new QSqlQueryModel(ui->tableView);
+    if (ui->tableView->model())
+        delete ui->tableView->model();
+    tableModel->setQuery(query);
+    ui->tableView->setModel(tableModel);
+}

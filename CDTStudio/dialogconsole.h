@@ -18,9 +18,12 @@ public:
     explicit DialogConsole(QWidget *parent = 0);
     ~DialogConsole();
 
-private slots:
+public slots:
     void on_pushButtonRefresh_clicked();
     void on_listView_clicked(const QModelIndex &index);
+
+private slots:
+    void on_pushButtonQuery_clicked();
 
 private:
 
