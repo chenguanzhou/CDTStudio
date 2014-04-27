@@ -5,7 +5,7 @@
 #include "cdtattributeswidget.h"
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "stable.h"
-
+#include "dialogdbconnection.h"
 #include <qgsvectorlayer.h>
 #include <qgsmaplayerregistry.h>
 #include <qgssinglesymbolrendererv2.h>

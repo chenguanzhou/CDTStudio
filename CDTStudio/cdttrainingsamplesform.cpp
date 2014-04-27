@@ -349,6 +349,7 @@ void CDTTrainingSamplesForm::on_groupBoxSamples_toggled(bool toggled)
             QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();
             currentMapTool->setSampleID(sampleid);
         }
+        currentMapTool->setReadOnly(!ui->toolButtonEditSample->isChecked());
     }
     else
     {

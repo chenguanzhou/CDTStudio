@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     cdtmaptoolselecttrainingsamples.cpp \
     cdttrainingsamplesform.cpp \
     dialogconsole.cpp \
-    dialognewclassification.cpp
+    dialognewclassification.cpp \
+    dialogdbconnection.cpp
 
 HEADERS  += \
     ../Interfaces/cdtsegmentationInterface.h \
@@ -62,7 +63,8 @@ HEADERS  += \
     cdtmaptoolselecttrainingsamples.h \
     cdttrainingsamplesform.h \
     dialogconsole.h \
-    dialognewclassification.h
+    dialognewclassification.h \
+    dialogdbconnection.h
 
 FORMS    += mainwindow.ui \
     dialognewproject.ui \
@@ -72,7 +74,8 @@ FORMS    += mainwindow.ui \
     dialoggenerateattributes.ui \
     cdttrainingsamplesform.ui \
     dialogconsole.ui \
-    dialognewclassification.ui
+    dialognewclassification.ui \
+    dialogdbconnection.ui
 
 INCLUDEPATH += ../Interfaces
 

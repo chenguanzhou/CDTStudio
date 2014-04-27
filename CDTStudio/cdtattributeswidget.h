@@ -11,21 +11,7 @@ class CDTAttributesWidget;
 class QToolBar;
 class QMenuBar;
 class CDTSegmentationLayer;
-class CDTDatabaseConnInfo
-{
-public:
-    QString dbType;
-    QString dbName;
-    QString username;
-    QString password;
-    QString hostName;
-    int port;
-
-    bool operator==(const CDTDatabaseConnInfo& rhs) const;
-    bool isNull();
-};
-QDataStream &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo);
-QDataStream &operator>>(QDataStream &in, CDTDatabaseConnInfo &dbInfo);
+#include "dialogdbconnection.h"
 
 class CDTAttributesWidget : public QWidget
 {

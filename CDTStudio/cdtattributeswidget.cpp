@@ -1,13 +1,10 @@
 #include "cdtattributeswidget.h"
 #include "ui_cdtattributeswidget.h"
-#include <QToolBar>
-#include <QMenuBar>
-#include <QtSql>
-#include <QDebug>
+#include "stable.h"
 #include "cdtsegmentationlayer.h"
 #include "dialoggenerateattributes.h"
-#include <QMessageBox>
-#include <QTableView>
+
+
 
 CDTAttributesWidget::CDTAttributesWidget(QWidget *parent) :
     QWidget(parent),
@@ -99,7 +96,9 @@ void CDTAttributesWidget::updateTable()
 
 void CDTAttributesWidget::onActionEditDataSourceTriggered()
 {
-    ui->connGroupBox->setEnabled(true);
+//    ui->connGroupBox->setEnabled(true);
+    DialogDBConnection dlg(_dbConnInfo);
+    dlg.exec();
 }
 
 void CDTAttributesWidget::onActionGenerateAttributesTriggered()
@@ -214,25 +213,4 @@ QDataStream &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo)
 {
     out<<dbInfo.dbType<<dbInfo.dbName<<dbInfo.username<<dbInfo.password<<dbInfo.hostName<<dbInfo.port;
     return out;
-}
-
-QDataStream &operator>>(QDataStream &in, CDTDatabaseConnInfo &dbInfo)
-{
-    in>>dbInfo.dbType>>dbInfo.dbName>>dbInfo.username>>dbInfo.password>>dbInfo.hostName>>dbInfo.port;
-    return in;
-}
-
-bool CDTDatabaseConnInfo::operator==(const CDTDatabaseConnInfo &rhs) const
-{
-    return this->dbType==rhs.dbType &&
-            this->dbName==rhs.dbName &&
-            this->username==rhs.username &&
-            this->password==rhs.password &&
-            this->hostName==rhs.hostName &&
-            this->port==rhs.port;
-}
-
-bool CDTDatabaseConnInfo::isNull()
-{
-    return dbName.isEmpty();
 }
