@@ -130,7 +130,8 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(item->getCorrespondingObject());
         if (segmentationLayer != NULL)
         {
-            ui->widgetAttributes->setSegmentationLayer(segmentationLayer);
+            ui->trainingSampleForm->setSegmentationID(segmentationLayer->id());
+            ui->widgetAttributes->setSegmentationLayer(segmentationLayer);            
             ui->dockWidgetAttributes->setEnabled(true);
 
             if (segmentationLayer->canvasLayer()!=NULL)

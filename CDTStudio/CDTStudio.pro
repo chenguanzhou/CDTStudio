@@ -14,6 +14,8 @@ TEMPLATE = app
 CONFIG+=precompile_header
 PRECOMPILED_HEADER = stable.h
 
+DESTDIR = ../bin
+
 SOURCES += main.cpp\
         mainwindow.cpp \
     cdtproject.cpp \
@@ -23,23 +25,19 @@ SOURCES += main.cpp\
     cdtprojecttabwidget.cpp \
     cdtprojectwidget.cpp \
     cdtprojecttreemodel.cpp \
-    cdtprojecttreeitem.cpp \
-    dialognewproject.cpp \
-    dialognewsegmentation.cpp\
-    dialognewimage.cpp \
+    cdtprojecttreeitem.cpp \    
     cdtbaseobject.cpp \
     cdtattributeswidget.cpp\
-    recentfilesupervisor.cpp \
-    dialoggenerateattributes.cpp \
+    recentfilesupervisor.cpp \    
     cdtattributegenerator.cpp \
     cdtmaptoolselecttrainingsamples.cpp \
-    cdttrainingsamplesform.cpp \
-    dialogconsole.cpp \
-    dialognewclassification.cpp \
-    dialogdbconnection.cpp
+    cdttrainingsamplesform.cpp\    
+    dialognewsegmentation.cpp\    
+    dialoggenerateattributes.cpp \    
+    dialognewclassification.cpp
 
-HEADERS  += \
-    ../Interfaces/cdtsegmentationInterface.h \
+
+HEADERS  += \    
     mainwindow.h \
     cdtproject.h \
     cdtimagelayer.h \
@@ -48,38 +46,33 @@ HEADERS  += \
     cdtprojecttabwidget.h \
     cdtprojectwidget.h \
     cdtprojecttreemodel.h \
-    cdtprojecttreeitem.h \
-    dialognewproject.h \
-    dialognewimage.h\
-    dialognewsegmentation.h \
+    cdtprojecttreeitem.h \    
     cdtbaseobject.h \
     cdtpluginloader.h \
     cdtattributeswidget.h\
     recentfilesupervisor.h \
-    ../Interfaces/cdtattributesinterface.h \
-    dialoggenerateattributes.h \
+    ../Interfaces/cdtattributesinterface.h \    
     cdtattributegenerator.h \
     cdtbasethread.h \
     cdtmaptoolselecttrainingsamples.h \
-    cdttrainingsamplesform.h \
-    dialogconsole.h \
-    dialognewclassification.h \
-    dialogdbconnection.h
+    cdttrainingsamplesform.h\    
+    dialognewsegmentation.h \
+    dialoggenerateattributes.h \    
+    dialognewclassification.h
 
-FORMS    += mainwindow.ui \
-    dialognewproject.ui \
+
+FORMS    += mainwindow.ui \            
+    cdtattributeswidget.ui \    
+    cdttrainingsamplesform.ui\
     dialognewsegmentation.ui\
-        dialognewimage.ui \
-    cdtattributeswidget.ui \
-    dialoggenerateattributes.ui \
-    cdttrainingsamplesform.ui \
-    dialogconsole.ui \
-    dialognewclassification.ui \
-    dialogdbconnection.ui
+    dialoggenerateattributes.ui \    
+    dialognewclassification.ui
 
-INCLUDEPATH += ../Interfaces
+INCLUDEPATH += ../Interfaces \
+../tools/CDTDialogs
 
-LIBS += -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis
+LIBS += -L../lib -lCDTDialogs \
+ -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis
 
 unix{
 LIBS += -lgdal -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc

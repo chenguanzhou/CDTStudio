@@ -1,6 +1,7 @@
 #include "dialogdbconnection.h"
 #include "ui_dialogdbconnection.h"
-#include "stable.h"
+#include <QtCore>
+#include <QtSql>
 
 
 QDataStream &operator>>(QDataStream &in, CDTDatabaseConnInfo &dbInfo)
@@ -42,6 +43,8 @@ DialogDBConnection::DialogDBConnection(CDTDatabaseConnInfo dbInfo, QWidget *pare
     int id = ui->comboDriver->findText("QSQLITE");
     if ( id != -1)
         ui->comboDriver->setCurrentIndex(id);
+
+    initialize();
 }
 
 DialogDBConnection::~DialogDBConnection()
@@ -75,5 +78,10 @@ void DialogDBConnection::on_toolButton_clicked()
 
 void DialogDBConnection::on_comboDriver_currentIndexChanged(const QString &arg1)
 {
-    ui->toolButton->setVisible(arg1 == QString("QSQLITE"));
+    bool isSQLite = arg1 == QString("QSQLITE");
+    ui->toolButton->setVisible(isSQLite);
+    ui->editHostname->setEnabled(!isSQLite);
+    ui->editUsername->setEnabled(!isSQLite);
+    ui->editPassword->setEnabled(!isSQLite);
+    ui->portSpinBox->setEnabled(!isSQLite);
 }

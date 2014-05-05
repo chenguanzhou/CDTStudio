@@ -12,7 +12,7 @@ CONFIG += plugin
 
 
 
-DESTDIR = ../../../CDTStudio/plugins
+DESTDIR = ../../../bin/plugins
 
 
 INCLUDEPATH += ../../../Interfaces

@@ -89,6 +89,7 @@ public:
     ~CDTTrainingSamplesForm();
 
     void setImageID(QUuid uuid);
+    void setSegmentationID(QUuid uuid);
     bool isValid();
 
     QUuid currentCategoryID();

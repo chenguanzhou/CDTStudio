@@ -10,7 +10,7 @@ TARGET = MSTMethod
 TEMPLATE = lib
 CONFIG += plugin
 
-DESTDIR = ../../../CDTStudio/plugins
+DESTDIR = ../../../bin/plugins
 
 SOURCES += \
     mstmethodinterface.cpp \

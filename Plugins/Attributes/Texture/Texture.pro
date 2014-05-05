@@ -10,7 +10,7 @@ TARGET = texture
 TEMPLATE = lib
 CONFIG += plugin
 
-DESTDIR = ../../../CDTStudio/plugins
+DESTDIR = ../../../bin/plugins
 
 INCLUDEPATH += ../../../Interfaces
 

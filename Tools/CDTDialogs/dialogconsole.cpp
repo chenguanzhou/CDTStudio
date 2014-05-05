@@ -1,11 +1,8 @@
 #include "dialogconsole.h"
 #include "ui_dialogconsole.h"
 #include <QtCore>
-#include <QtSql>
 #include <QMessageBox>
 #include <QStringListModel>
-#include <QSqlTableModel>
-
 
 DialogConsole::DialogConsole(QWidget *parent) :
     QDialog(parent),

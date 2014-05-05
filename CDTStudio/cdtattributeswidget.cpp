@@ -104,7 +104,7 @@ void CDTAttributesWidget::onActionEditDataSourceTriggered()
 void CDTAttributesWidget::onActionGenerateAttributesTriggered()
 {
     clearTables();
-    DialogGenerateAttributes dlg(segmentationLayer(),3);
+    DialogGenerateAttributes dlg(segmentationLayer()->id(),3);
     dlg.exec();
     updateTable();
 }

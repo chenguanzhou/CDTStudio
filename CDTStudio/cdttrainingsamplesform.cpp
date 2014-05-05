@@ -142,6 +142,21 @@ void CDTTrainingSamplesForm::setImageID(QUuid uuid)
     updateTable();
 }
 
+void CDTTrainingSamplesForm::setSegmentationID(QUuid uuid)
+{
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    bool ret = query.exec("select imageID,name from segmentationlayer where id  = '"+ uuid +"'");
+    if (!ret)
+        qDebug()<<query.lastError().text();
+    query.next();
+    QString imageID = query.value(0).toString();
+    setImageID(imageID);
+    QString segName = query.value(1).toString();
+    ui->comboBox->setCurrentIndex(ui->comboBox->findText(segName));
+
+}
+
 bool CDTTrainingSamplesForm::isValid()
 {
     QSqlDatabase db = QSqlDatabase::database("category");
@@ -249,6 +264,9 @@ void CDTTrainingSamplesForm::on_toolButtonRefresh_clicked()
 
 void CDTTrainingSamplesForm::on_comboBox_currentIndexChanged(int index)
 {
+    QString segID = ui->comboBox->model()->data(ui->comboBox->model()->index(index,1)).toString();
+    CDTSegmentationLayer *segLayer = CDTSegmentationLayer::getLayer(segID);
+    MainWindow::getCurrentMapCanvas()->setCurrentLayer(segLayer->canvasLayer());
     updateListView();
 }
 

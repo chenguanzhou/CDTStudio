@@ -2,6 +2,7 @@
 #define DIALOGDBCONNECTION_H
 
 #include <QDialog>
+#include <QFileDialog>
 
 namespace Ui {
 class DialogDBConnection;
@@ -35,7 +36,6 @@ public:
 
 private slots:
     void on_toolButton_clicked();
-
     void on_comboDriver_currentIndexChanged(const QString &arg1);
 
 private:

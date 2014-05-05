@@ -131,6 +131,7 @@ int main(int argc, char *argv[])
     appTranslator.load(":/trans/" + QLocale::system().name()+".qm");
     a.installTranslator(&appTranslator);
 
+    QgsApplication::setPluginPath(QDir::currentPath()+"/plugins");
     QgsApplication::initQgis();
 
     if (initDatabase()==false)

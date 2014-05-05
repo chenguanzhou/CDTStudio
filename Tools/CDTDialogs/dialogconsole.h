@@ -2,13 +2,13 @@
 #define DIALOGCONSOLE_H
 
 #include <QDialog>
-
+#include <QtSql>
 namespace Ui {
 class DialogConsole;
 }
-class QSqlDatabase;
+
 class QStringListModel;
-class QSqlTableModel;
+class QModelIndex;
 
 class DialogConsole : public QDialog
 {
@@ -26,7 +26,6 @@ private slots:
     void on_pushButtonQuery_clicked();
 
 private:
-
     Ui::DialogConsole *ui;
     QSqlDatabase db;
     QStringListModel* listModel;

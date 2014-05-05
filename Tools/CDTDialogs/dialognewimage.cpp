@@ -2,8 +2,7 @@
 #include "ui_dialognewimage.h"
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QDebug>
-#include <QSettings>
+#include <QtCore>
 DialogNewImage::DialogNewImage(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogNewImage)

@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QMap>
-#include "cdtsegmentationlayer.h"
 
 namespace Ui {
 class DialogGenerateAttributes;
@@ -12,6 +11,7 @@ class DialogGenerateAttributes;
 class QModelIndex;
 class QTreeWidgetItem;
 class QListWidget;
+struct QUuid;
 
 class DialogGenerateAttributes : public QDialog
 {
@@ -19,7 +19,7 @@ class DialogGenerateAttributes : public QDialog
     Q_PROPERTY(int bandCount READ bandCount)
 
 public:
-    explicit DialogGenerateAttributes(CDTSegmentationLayer* segLayer,int nBandCount,QWidget *parent = 0);
+    explicit DialogGenerateAttributes(QUuid segmentationID,int nBandCount,QWidget *parent = 0);
     ~DialogGenerateAttributes();
 
     int bandCount()const;
@@ -37,7 +37,8 @@ private slots:
 
 private:
     Ui::DialogGenerateAttributes *ui;
-    CDTSegmentationLayer* segmentationLayer;
+//    CDTSegmentationLayer* segmentationLayer;
+    QUuid segID;
     int _bandCount;
     QMap<QString,QListWidget*> toolBoxWidgets;
 

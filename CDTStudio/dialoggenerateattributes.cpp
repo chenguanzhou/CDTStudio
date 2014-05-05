@@ -5,12 +5,14 @@
 #include "cdtattributegenerator.h"
 #include <QListWidget>
 #include <QMessageBox>
+#include <QtCore>
+#include "cdtsegmentationlayer.h"
 
 extern QList<CDTAttributesInterface *>     attributesPlugins;
 
-DialogGenerateAttributes::DialogGenerateAttributes(CDTSegmentationLayer *segLayer, int bandCount, QWidget *parent) :
+DialogGenerateAttributes::DialogGenerateAttributes(QUuid segmentationID, int bandCount, QWidget *parent) :
     QDialog(parent),
-    segmentationLayer(segLayer),
+    segID(segmentationID),
     ui(new Ui::DialogGenerateAttributes),
     _bandCount(bandCount)
 {
@@ -148,6 +150,8 @@ void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
             attributes.insert(type,items);
         }
     }
+    CDTSegmentationLayer* segmentationLayer =
+            CDTSegmentationLayer::getLayer(segID);
     CDTAttributeGenerator* attributeGenerator = new CDTAttributeGenerator(
                 segmentationLayer->imagePath(),
                 segmentationLayer->markfilePath(),
