@@ -27,14 +27,14 @@ SOURCES += main.cpp\
     cdtprojecttreemodel.cpp \
     cdtprojecttreeitem.cpp \    
     cdtbaseobject.cpp \
-    cdtattributeswidget.cpp\
     recentfilesupervisor.cpp \    
     cdtattributegenerator.cpp \
     cdtmaptoolselecttrainingsamples.cpp \
     cdttrainingsamplesform.cpp\    
     dialognewsegmentation.cpp\    
     dialoggenerateattributes.cpp \    
-    dialognewclassification.cpp
+    dialognewclassification.cpp \
+    cdtattributedockwidget.cpp
 
 
 HEADERS  += \    
@@ -49,7 +49,6 @@ HEADERS  += \
     cdtprojecttreeitem.h \    
     cdtbaseobject.h \
     cdtpluginloader.h \
-    cdtattributeswidget.h\
     recentfilesupervisor.h \
     ../Interfaces/cdtattributesinterface.h \    
     cdtattributegenerator.h \
@@ -58,15 +57,16 @@ HEADERS  += \
     cdttrainingsamplesform.h\    
     dialognewsegmentation.h \
     dialoggenerateattributes.h \    
-    dialognewclassification.h
+    dialognewclassification.h \
+    cdtattributedockwidget.h
 
 
 FORMS    += mainwindow.ui \            
-    cdtattributeswidget.ui \    
     cdttrainingsamplesform.ui\
     dialognewsegmentation.ui\
     dialoggenerateattributes.ui \    
-    dialognewclassification.ui
+    dialognewclassification.ui \
+    cdtattributedockwidget.ui
 
 INCLUDEPATH += ../Interfaces \
 ../tools/CDTDialogs

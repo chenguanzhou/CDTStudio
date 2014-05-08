@@ -133,36 +133,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidgetAttributes">
-   <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea|Qt::TopDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>Attributes Manager</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QHBoxLayout" name="horizontalLayoutAttributes">
-     <property name="leftMargin">
-      <number>2</number>
-     </property>
-     <property name="topMargin">
-      <number>2</number>
-     </property>
-     <property name="rightMargin">
-      <number>2</number>
-     </property>
-     <property name="bottomMargin">
-      <number>2</number>
-     </property>
-     <item>
-      <widget class="CDTAttributesWidget" name="widgetAttributes" native="true"/>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <widget class="QDockWidget" name="dockWidgetTrainingSample">
    <property name="windowTitle">
     <string>Category Manager</string>
@@ -256,12 +226,6 @@
    <class>CDTProjectTabWidget</class>
    <extends>QTabWidget</extends>
    <header>cdtprojecttabwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>CDTAttributesWidget</class>
-   <extends>QWidget</extends>
-   <header>cdtattributeswidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

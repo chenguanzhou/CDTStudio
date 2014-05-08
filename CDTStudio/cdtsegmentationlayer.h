@@ -2,7 +2,7 @@
 #define CDTSEGMENTATIONLAYER_H
 
 #include "cdtbaseobject.h"
-#include "cdtattributeswidget.h"
+#include "cdtattributedockwidget.h"
 
 class CDTDatabaseConnInfo;
 class CDTClassification;

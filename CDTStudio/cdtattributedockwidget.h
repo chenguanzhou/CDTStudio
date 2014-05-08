@@ -1,28 +1,27 @@
-#ifndef FORMATTRIBUTES_H
-#define FORMATTRIBUTES_H
+#ifndef CDTATTRIBUTEDOCKWIDGET_H
+#define CDTATTRIBUTEDOCKWIDGET_H
 
+#include <QDockWidget>
 #include <QWidget>
 #include <QtSql>
-
-namespace Ui {
-class CDTAttributesWidget;
-}
+#include "dialogdbconnection.h"
 
 class QToolBar;
 class QMenuBar;
 class CDTSegmentationLayer;
-#include "dialogdbconnection.h"
 
-class CDTAttributesWidget : public QWidget
+namespace Ui {
+class CDTAttributeDockWidget;
+}
+
+class CDTAttributeDockWidget : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    explicit CDTAttributesWidget(QWidget *parent = 0);
-    ~CDTAttributesWidget();
+    explicit CDTAttributeDockWidget(QWidget *parent = 0);
+    ~CDTAttributeDockWidget();
 
-    QMenuBar *menuBar()const;
-    CDTDatabaseConnInfo databaseURL() const;
     CDTSegmentationLayer *segmentationLayer()const;
 
 signals:
@@ -37,14 +36,14 @@ public slots:
 private slots:
     void onActionEditDataSourceTriggered();
     void onActionGenerateAttributesTriggered();
-    void onDatabaseChanged(CDTDatabaseConnInfo connInfo);    
+    void onDatabaseChanged(CDTDatabaseConnInfo connInfo);
     void clearTables();
 
 private:
-    Ui::CDTAttributesWidget *ui;
+    Ui::CDTAttributeDockWidget *ui;
     QMenuBar *_menuBar;
     CDTDatabaseConnInfo _dbConnInfo;
     CDTSegmentationLayer* _segmentationLayer;
 };
 
-#endif // FORMATTRIBUTES_H
+#endif // CDTATTRIBUTEDOCKWIDGET_H

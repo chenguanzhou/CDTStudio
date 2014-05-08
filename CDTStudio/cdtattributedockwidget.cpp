@@ -1,60 +1,51 @@
-#include "cdtattributeswidget.h"
-#include "ui_cdtattributeswidget.h"
+#include "cdtattributedockwidget.h"
+#include "ui_cdtattributedockwidget.h"
 #include "stable.h"
 #include "cdtsegmentationlayer.h"
 #include "dialoggenerateattributes.h"
 
-
-
-CDTAttributesWidget::CDTAttributesWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::CDTAttributesWidget),
-    _menuBar(new QMenuBar(/*tr("Attributes"),*/this)),
-    _segmentationLayer(NULL)
+CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
+    QDockWidget(parent),
+    ui(new Ui::CDTAttributeDockWidget)
 {
     ui->setupUi(this);
+    setWindowTitle(tr("Attributes Manager"));
+    setAllowedAreas(Qt::TopDockWidgetArea|Qt::BottomDockWidgetArea);
 
-    QAction *actionEditDataSource = new QAction(tr("Edit Data Source"),_menuBar);
+    QMenuBar *menuBar = new QMenuBar(this);
+    QAction *actionEditDataSource = new QAction(tr("Edit Data Source"),menuBar);
     connect(actionEditDataSource,SIGNAL(triggered()),this,SLOT(onActionEditDataSourceTriggered()));
-    _menuBar->addAction(actionEditDataSource);
+    menuBar->addAction(actionEditDataSource);
 
-    QAction *actionGenerateAttributes = new QAction(tr("Generate Attributes"),_menuBar);
+    QAction *actionGenerateAttributes = new QAction(tr("Generate Attributes"),menuBar);
     connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
-    _menuBar->addAction(actionGenerateAttributes);
+    menuBar->addAction(actionGenerateAttributes);
 
+
+    ui->verticalLayout->setMenuBar(menuBar);
     connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),this,SLOT(onDatabaseChanged(CDTDatabaseConnInfo)));
 }
 
-CDTAttributesWidget::~CDTAttributesWidget()
+CDTAttributeDockWidget::~CDTAttributeDockWidget()
 {
     delete ui;
 }
 
-QMenuBar *CDTAttributesWidget::menuBar() const
-{
-    return _menuBar;
-}
-
-CDTDatabaseConnInfo CDTAttributesWidget::databaseURL() const
-{
-    return _dbConnInfo;
-}
-
-CDTSegmentationLayer *CDTAttributesWidget::segmentationLayer() const
+CDTSegmentationLayer *CDTAttributeDockWidget::segmentationLayer() const
 {
     return _segmentationLayer;
 }
 
-void CDTAttributesWidget::setDatabaseURL(CDTDatabaseConnInfo url)
+void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
 {
     if (_dbConnInfo == url)return;
     _dbConnInfo = url;
     emit databaseURLChanged(url);
 }
 
-void CDTAttributesWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
+void CDTAttributeDockWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
 {
-    if (_segmentationLayer == layer)        
+    if (_segmentationLayer == layer)
         return;
 
     _segmentationLayer = layer;
@@ -63,7 +54,7 @@ void CDTAttributesWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
     connect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
 }
 
-void CDTAttributesWidget::updateTable()
+void CDTAttributeDockWidget::updateTable()
 {
     QStringList tableNames = QSqlDatabase::database("attribute").tables();
     foreach (QString tableName, tableNames) {
@@ -79,7 +70,14 @@ void CDTAttributesWidget::updateTable()
     }
 }
 
-void CDTAttributesWidget::onActionEditDataSourceTriggered()
+void CDTAttributeDockWidget::clear()
+{
+    ui->tabWidget->setEnabled(false);
+    _dbConnInfo = CDTDatabaseConnInfo();
+    clearTables();
+}
+
+void CDTAttributeDockWidget::onActionEditDataSourceTriggered()
 {
     DialogDBConnection dlg(_dbConnInfo);
     if (dlg.exec()==QDialog::Accepted)
@@ -87,10 +85,9 @@ void CDTAttributesWidget::onActionEditDataSourceTriggered()
         qDebug()<<dlg.dbConnectInfo().dbName;
         setDatabaseURL(dlg.dbConnectInfo());
     }
-
 }
 
-void CDTAttributesWidget::onActionGenerateAttributesTriggered()
+void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
 {
     clearTables();
     DialogGenerateAttributes dlg(segmentationLayer()->id(),3);
@@ -98,17 +95,7 @@ void CDTAttributesWidget::onActionGenerateAttributesTriggered()
     updateTable();
 }
 
-void CDTAttributesWidget::clearTables()
-{
-    while (ui->tabWidget->widget(0))
-    {
-        QWidget *widget = ui->tabWidget->widget(0);
-        ui->tabWidget->removeTab(0);
-        delete widget;
-    }
-}
-
-void CDTAttributesWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
+void CDTAttributeDockWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
 {
     clearTables();
 
@@ -132,15 +119,12 @@ void CDTAttributesWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
     }
 }
 
-void CDTAttributesWidget::clear()
+void CDTAttributeDockWidget::clearTables()
 {
-    ui->tabWidget->setEnabled(false);
-    _dbConnInfo = CDTDatabaseConnInfo();
-    clearTables();
-}
-
-QDataStream &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo)
-{
-    out<<dbInfo.dbType<<dbInfo.dbName<<dbInfo.username<<dbInfo.password<<dbInfo.hostName<<dbInfo.port;
-    return out;
+    while (ui->tabWidget->widget(0))
+    {
+        QWidget *widget = ui->tabWidget->widget(0);
+        ui->tabWidget->removeTab(0);
+        delete widget;
+    }
 }

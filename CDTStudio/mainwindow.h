@@ -12,7 +12,7 @@ class MainWindow;
 class QModelIndex;
 class QTreeView;
 class CDTTrainingSamplesForm;
-class CDTAttributesWidget;
+class CDTAttributeDockWidget;
 class DialogConsole;
 class CDTProjectWidget;
 class QgsMapCanvas;
@@ -29,7 +29,7 @@ public:
     static MainWindow   *getMainWindow();
     static QTreeView    *getProjectTreeView();
     static CDTTrainingSamplesForm   *getTrainingSampleForm();
-    static CDTAttributesWidget *getAttributesWidget();
+    static CDTAttributeDockWidget *getAttributesWidget();
     static CDTProjectWidget *getCurrentProjectWidget();
     static QgsMapCanvas *getCurrentMapCanvas();
 
@@ -56,6 +56,7 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    CDTAttributeDockWidget *dockWidgetAttributes;
     RecentFileSupervisor *supervisor;
     int recentFileCount;
     QToolButton* recentFileToolButton;

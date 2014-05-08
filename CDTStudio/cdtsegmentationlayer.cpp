@@ -2,7 +2,7 @@
 #include "cdtsegmentationlayer.h"
 #include "cdtimagelayer.h"
 #include "cdtproject.h"
-#include "cdtattributeswidget.h"
+#include "cdtattributesdockwidget.h"
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "stable.h"
 #include "dialogdbconnection.h"

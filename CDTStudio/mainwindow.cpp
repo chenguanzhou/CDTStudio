@@ -3,9 +3,8 @@
 
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
-#include "cdtattributeswidget.h"
 #include "cdttrainingsamplesform.h"
-#include "cdtattributeswidget.h"
+#include "cdtattributedockwidget.h"
 #include <qgsmaplayer.h>
 #include "dialogconsole.h"
 #include "stable.h"
@@ -21,9 +20,11 @@ MainWindow::MainWindow(QWidget *parent) :
     dialogConsole(NULL)
 {        
     ui->setupUi(this);    
-//    ui->dockWidgetAttributes->hide();
-//    ui->dockWidgetTrainingSample->hide();
-    ui->widgetAttributes->hide();
+
+    dockWidgetAttributes = new CDTAttributeDockWidget(this);
+    this->addDockWidget(Qt::BottomDockWidgetArea, dockWidgetAttributes);
+    dockWidgetAttributes->raise();
+    dockWidgetAttributes->hide();
 
     supervisor = new RecentFileSupervisor(this);
     dialogConsole = new  DialogConsole(this);
@@ -39,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->addAction(ui->actionConsole);
     connect(ui->actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(show()));
+    connect(ui->actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(on_pushButtonRefresh_clicked()));
 
     connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewProject,SLOT(expandAll()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
@@ -46,8 +48,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this,SIGNAL(loadSetting()),supervisor,SLOT(loadSetting()));
     connect(this,SIGNAL(updateSetting()),supervisor,SLOT(updateSetting()));
 
-    ui->horizontalLayoutAttributes->setMenuBar(ui->widgetAttributes->menuBar());
-    ui->dockWidgetAttributes->setEnabled(false);
+//    ui->horizontalLayoutAttributes->setMenuBar(ui->widgetAttributes->menuBar());
+//    ui->dockWidgetAttributes->setEnabled(false);
 
     emit loadSetting();
 }
@@ -74,9 +76,9 @@ CDTTrainingSamplesForm *MainWindow::getTrainingSampleForm()
     return mainWindow->ui->trainingSampleForm;
 }
 
-CDTAttributesWidget *MainWindow::getAttributesWidget()
+CDTAttributeDockWidget *MainWindow::getAttributesWidget()
 {
-    return mainWindow->ui->widgetAttributes;
+    return mainWindow->dockWidgetAttributes;
 }
 
 CDTProjectWidget *MainWindow::getCurrentProjectWidget()
@@ -144,15 +146,14 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     if (item==NULL)    return;
 
     int type = item->getType();
-    ui->dockWidgetAttributes->setEnabled(false);
     if (type == CDTProjectTreeItem::SEGMENTION)
     {
         CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(item->getCorrespondingObject());
         if (segmentationLayer != NULL)
         {
             ui->trainingSampleForm->setSegmentationID(segmentationLayer->id());
-            ui->widgetAttributes->setSegmentationLayer(segmentationLayer);            
-            ui->dockWidgetAttributes->setEnabled(true);
+            dockWidgetAttributes->setSegmentationLayer(segmentationLayer);
+            dockWidgetAttributes->show();
 
             if (segmentationLayer->canvasLayer()!=NULL)
             {
