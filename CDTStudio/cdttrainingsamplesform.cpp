@@ -111,6 +111,8 @@ void CDTTrainingSamplesForm::clear()
 
 void CDTTrainingSamplesForm::setImageID(QUuid uuid)
 {
+    if (imageLayerID == uuid)
+        return;
     imageLayerID = uuid;
 
     QList<CDTImageLayer*> layers = CDTImageLayer::getLayers();

@@ -13,7 +13,6 @@ CDTAttributesWidget::CDTAttributesWidget(QWidget *parent) :
     _segmentationLayer(NULL)
 {
     ui->setupUi(this);
-    ui->connGroupBox->setEnabled(false);
 
     QAction *actionEditDataSource = new QAction(tr("Edit Data Source"),_menuBar);
     connect(actionEditDataSource,SIGNAL(triggered()),this,SLOT(onActionEditDataSourceTriggered()));
@@ -22,19 +21,6 @@ CDTAttributesWidget::CDTAttributesWidget(QWidget *parent) :
     QAction *actionGenerateAttributes = new QAction(tr("Generate Attributes"),_menuBar);
     connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
     _menuBar->addAction(actionGenerateAttributes);
-
-    QStringList drivers = QSqlDatabase::drivers();
-    // remove compat names
-    drivers.removeAll("QMYSQL3");
-    drivers.removeAll("QOCI8");
-    drivers.removeAll("QODBC3");
-    drivers.removeAll("QPSQL7");
-    drivers.removeAll("QTDS7");
-
-    ui->comboDriver->addItems(drivers);
-    int id = ui->comboDriver->findText("QSQLITE");
-    if ( id != -1)
-        ui->comboDriver->setCurrentIndex(id);
 
     connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),this,SLOT(onDatabaseChanged(CDTDatabaseConnInfo)));
 }
@@ -73,9 +59,8 @@ void CDTAttributesWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
 
     _segmentationLayer = layer;
     setDatabaseURL(_segmentationLayer->databaseURL());
-    updateWidgetsByUrl(_segmentationLayer->databaseURL());
     connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),_segmentationLayer,SLOT(setDatabaseURL(CDTDatabaseConnInfo)));
-    connect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(onSegmentationDestroyed()));
+    connect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
 }
 
 void CDTAttributesWidget::updateTable()
@@ -96,9 +81,13 @@ void CDTAttributesWidget::updateTable()
 
 void CDTAttributesWidget::onActionEditDataSourceTriggered()
 {
-//    ui->connGroupBox->setEnabled(true);
     DialogDBConnection dlg(_dbConnInfo);
-    dlg.exec();
+    if (dlg.exec()==QDialog::Accepted)
+    {
+        qDebug()<<dlg.dbConnectInfo().dbName;
+        setDatabaseURL(dlg.dbConnectInfo());
+    }
+
 }
 
 void CDTAttributesWidget::onActionGenerateAttributesTriggered()
@@ -107,44 +96,6 @@ void CDTAttributesWidget::onActionGenerateAttributesTriggered()
     DialogGenerateAttributes dlg(segmentationLayer()->id(),3);
     dlg.exec();
     updateTable();
-}
-
-void CDTAttributesWidget::on_pushButtonApply_clicked()
-{
-    ui->connGroupBox->setEnabled(false);
-    setDatabaseURL(dbConnInfoFromWidgets()) ;
-}
-void CDTAttributesWidget::on_pushButtonReset_clicked()
-{
-    updateWidgetsByUrl(databaseURL());
-}
-
-CDTDatabaseConnInfo CDTAttributesWidget::dbConnInfoFromWidgets()
-{
-    CDTDatabaseConnInfo dbConnInfo;
-    dbConnInfo.dbType = ui->comboDriver->currentText();
-    dbConnInfo.dbName = ui->editDatabase->text();
-    dbConnInfo.username = ui->editUsername->text();
-    dbConnInfo.password = ui->editPassword->text();
-    dbConnInfo.hostName = ui->editHostname->text();
-    dbConnInfo.port = ui->portSpinBox->value();
-
-    return dbConnInfo;
-}
-
-void CDTAttributesWidget::updateWidgetsByUrl(const CDTDatabaseConnInfo &dbConnInfo)
-{
-    if (ui->comboDriver->findText(dbConnInfo.dbType)==-1)
-    {
-        ui->connGroupBox->setEnabled(false);
-        return;
-    }
-    ui->comboDriver->setCurrentIndex( ui->comboDriver->findText(dbConnInfo.dbType));
-    ui->editDatabase->setText(dbConnInfo.dbName);
-    ui->editUsername->setText(dbConnInfo.username);
-    ui->editPassword->setText(dbConnInfo.password);
-    ui->editHostname->setText(dbConnInfo.hostName);
-    ui->portSpinBox->setValue(dbConnInfo.port);
 }
 
 void CDTAttributesWidget::clearTables()
@@ -157,34 +108,13 @@ void CDTAttributesWidget::clearTables()
     }
 }
 
-void CDTAttributesWidget::on_comboDriver_currentIndexChanged(const QString &arg1)
-{
-    if(arg1 == "QSQLITE")
-    {
-        ui->editUsername->clear();
-        ui->editPassword->clear();
-        ui->editHostname->clear();
-        ui->portSpinBox->clear();
-        ui->editUsername->setEnabled(false);
-        ui->editPassword->setEnabled(false);
-        ui->editHostname->setEnabled(false);
-        ui->portSpinBox->setEnabled(false);
-    }
-    else
-    {
-        ui->editUsername->setEnabled(true);
-        ui->editPassword->setEnabled(true);
-        ui->editHostname->setEnabled(true);
-        ui->portSpinBox->setEnabled(true);
-    }
-}
-
 void CDTAttributesWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
 {
     clearTables();
 
     if (connInfo.isNull())
         return;
+    _dbConnInfo = connInfo;
     QSqlDatabase db = QSqlDatabase::addDatabase(connInfo.dbType,"attribute");
     db.setDatabaseName(connInfo.dbName);
     db.setHostName(connInfo.hostName);
@@ -202,11 +132,11 @@ void CDTAttributesWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
     }
 }
 
-void CDTAttributesWidget::onSegmentationDestroyed()
+void CDTAttributesWidget::clear()
 {
     ui->tabWidget->setEnabled(false);
     _dbConnInfo = CDTDatabaseConnInfo();
-    updateWidgetsByUrl(_dbConnInfo);
+    clearTables();
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo)

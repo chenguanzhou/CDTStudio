@@ -2,7 +2,7 @@
 #include "ui_dialogdbconnection.h"
 #include <QtCore>
 #include <QtSql>
-
+#include <QMessageBox>
 
 QDataStream &operator>>(QDataStream &in, CDTDatabaseConnInfo &dbInfo)
 {
@@ -54,6 +54,7 @@ DialogDBConnection::~DialogDBConnection()
 
 CDTDatabaseConnInfo DialogDBConnection::dbConnectInfo()
 {
+    updateConnInfo();
     return dbConnInfo;
 }
 
@@ -65,6 +66,16 @@ void DialogDBConnection::initialize()
     ui->editPassword->setText(dbConnInfo.password);
     ui->editHostname->setText(dbConnInfo.hostName);
     ui->portSpinBox->setValue(dbConnInfo.port);
+}
+
+void DialogDBConnection::updateConnInfo()
+{
+    dbConnInfo.dbType = ui->comboDriver->currentText();
+    dbConnInfo.dbName = ui->editDatabase->text();
+    dbConnInfo.username = ui->editUsername->text();
+    dbConnInfo.password = ui->editPassword->text();
+    dbConnInfo.hostName = ui->editHostname->text();
+    dbConnInfo.port = ui->portSpinBox->value();
 }
 
 void DialogDBConnection::on_toolButton_clicked()
@@ -84,4 +95,24 @@ void DialogDBConnection::on_comboDriver_currentIndexChanged(const QString &arg1)
     ui->editUsername->setEnabled(!isSQLite);
     ui->editPassword->setEnabled(!isSQLite);
     ui->portSpinBox->setEnabled(!isSQLite);
+}
+
+void DialogDBConnection::on_pushButtonTest_clicked()
+{
+    updateConnInfo();
+    QSqlDatabase db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"test");
+    db.setDatabaseName(dbConnInfo.dbName);
+    db.setUserName(dbConnInfo.username);
+    db.setPassword(dbConnInfo.password);
+    db.setHostName(dbConnInfo.hostName);
+    db.setPort(dbConnInfo.port);
+    if (db.open()==false)
+    {
+        QMessageBox::warning(this, QObject::tr("Unable to open database"),
+                             QObject::tr("An error occurred while opening the connection: ")
+                             + db.lastError().text());
+        QSqlDatabase::removeDatabase("test");
+        return;
+    }
+    QMessageBox::information(this,tr("Connection Test"),tr("Test Seccessfully!"));
 }

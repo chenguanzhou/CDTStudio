@@ -1,18 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
-#include <QMenu>
-#include <QVector>
-#include <QAction>
 #include "cdtattributeswidget.h"
 #include "cdttrainingsamplesform.h"
 #include "cdtattributeswidget.h"
-#include <QMessageBox>
 #include <qgsmaplayer.h>
 #include "dialogconsole.h"
+#include "stable.h"
 
 MainWindow* MainWindow::mainWindow = NULL;
+bool MainWindow::isLocked = false;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,11 +21,13 @@ MainWindow::MainWindow(QWidget *parent) :
     dialogConsole(NULL)
 {        
     ui->setupUi(this);    
+//    ui->dockWidgetAttributes->hide();
+//    ui->dockWidgetTrainingSample->hide();
+    ui->widgetAttributes->hide();
+
     supervisor = new RecentFileSupervisor(this);
     dialogConsole = new  DialogConsole(this);
-
     recentFileToolButton = new QToolButton(this);
-
     mainWindow = this;
 
 
@@ -90,6 +91,27 @@ QgsMapCanvas *MainWindow::getCurrentMapCanvas()
     return projectWidget->mapCanvas;
 }
 
+bool MainWindow::setActiveImage(QUuid uuid)
+{
+    if (isLocked)
+    {
+        qWarning()<<tr("It's locked!");
+        return false;
+    }
+
+    getTrainingSampleForm()->setImageID(uuid);
+//    ui->dockWidgetAttributes->show();
+//    ui->dockWidgetTrainingSample->show();
+    return true;
+}
+
+bool MainWindow::setActiveSegmentation(QUuid uuid)
+{
+//    ui->dockWidgetAttributes->show();
+//    ui->dockWidgetTrainingSample->show();
+    return true;
+}
+
 void MainWindow::onCurrentTabChanged(int i)
 {
     if(i==-1)   return ;
@@ -98,8 +120,6 @@ void MainWindow::onCurrentTabChanged(int i)
     ui->treeViewProject->expandAll();
     ui->treeViewProject->resizeColumnToContents(0);
 }
-
-
 
 void MainWindow::on_action_New_triggered()
 {

@@ -16,6 +16,7 @@ class CDTAttributesWidget;
 class DialogConsole;
 class CDTProjectWidget;
 class QgsMapCanvas;
+struct QUuid;
 
 class MainWindow : public QMainWindow
 {
@@ -32,6 +33,8 @@ public:
     static CDTProjectWidget *getCurrentProjectWidget();
     static QgsMapCanvas *getCurrentMapCanvas();
 
+    static bool setActiveImage(QUuid uuid);
+    static bool setActiveSegmentation(QUuid uuid);
 signals:
     void loadSetting();
     void updateSetting();
@@ -60,6 +63,7 @@ private:
     DialogConsole* dialogConsole;
 
     static MainWindow* mainWindow;
+    static bool isLocked;
 };
 
 #endif // MAINWINDOW_H

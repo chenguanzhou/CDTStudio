@@ -39,7 +39,6 @@ private:
     GDALDataset*    _poImageDS;
     GDALDataset*    _poFlagDS;
     OGRDataSource*  _poGeometryDS;
-//    QSqlDatabase    _db;
     QMap<QString,QStringList> _attributes;
     QMap<QString,CDTAttributesInterface*> _plugins;
     QMap<int,OGRPolygon *> _geometryObjects;
