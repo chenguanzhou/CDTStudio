@@ -1,11 +1,12 @@
-#ifndef CDTTRAININGSAMPLESFORM_H
-#define CDTTRAININGSAMPLESFORM_H
+#ifndef CDTSAMPLEDOCKWIDGET_H
+#define CDTSAMPLEDOCKWIDGET_H
 
-#include <QWidget>
+#include <QDockWidget>
 
 namespace Ui {
-class CDTTrainingSamplesForm;
+class CDTSampleDockWidget;
 }
+
 class CDTImageLayer;
 class QSqlRelationalTableModel;
 class QSqlQueryModel;
@@ -15,6 +16,7 @@ class QSqlRecord;
 class CDTMapToolSelectTrainingSamples;
 class QColor;
 class QColorDialog;
+
 
 class CategoryInformation
 {
@@ -80,18 +82,17 @@ public:
     }
 };*/
 
-class CDTTrainingSamplesForm : public QWidget
+class CDTSampleDockWidget : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    explicit CDTTrainingSamplesForm( QWidget *parent = 0);
-    ~CDTTrainingSamplesForm();
+    explicit CDTSampleDockWidget(QWidget *parent = 0);
+    ~CDTSampleDockWidget();
 
     void setImageID(QUuid uuid);
     void setSegmentationID(QUuid uuid);
     bool isValid();
-
     QUuid currentCategoryID();
 
 signals:
@@ -103,6 +104,7 @@ public slots:
     void updateComboBox();
     void updateListView();
     void clear();
+
 private slots:
     void on_actionInsert_triggered();
     void on_actionRemove_triggered();
@@ -121,8 +123,9 @@ private slots:
     void on_listView_clicked(const QModelIndex &index);
     void on_groupBoxSamples_toggled(bool toggled);
 
+
 private:
-    Ui::CDTTrainingSamplesForm *ui;    
+    Ui::CDTSampleDockWidget *ui;
     QSqlRelationalTableModel *categoryModel;
     QSqlQueryModel *sampleModel;
     QAbstractItemDelegate* delegateColor;
@@ -133,4 +136,4 @@ private:
     CDTMapToolSelectTrainingSamples* currentMapTool;
 };
 
-#endif // CDTTRAININGSAMPLESFORM_H
+#endif // CDTSAMPLEDOCKWIDGET_H

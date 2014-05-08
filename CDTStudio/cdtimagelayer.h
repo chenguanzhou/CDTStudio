@@ -7,7 +7,7 @@
 #include "cdtclassification.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
-#include "cdttrainingsamplesform.h"
+#include "cdtsampledockwidget.h"
 
 class CDTImageLayer:public CDTBaseObject
 {

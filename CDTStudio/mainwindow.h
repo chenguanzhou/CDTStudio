@@ -11,7 +11,7 @@ class MainWindow;
 
 class QModelIndex;
 class QTreeView;
-class CDTTrainingSamplesForm;
+class CDTSampleDockWidget;
 class CDTAttributeDockWidget;
 class DialogConsole;
 class CDTProjectWidget;
@@ -26,10 +26,14 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();       
 
+private:
+    void initDockWidgets();
+
+public:
     static MainWindow   *getMainWindow();
     static QTreeView    *getProjectTreeView();
-    static CDTTrainingSamplesForm   *getTrainingSampleForm();
-    static CDTAttributeDockWidget *getAttributesWidget();
+    static CDTSampleDockWidget   *getSampleDockWidget();
+    static CDTAttributeDockWidget *getAttributesDockWidget();
     static CDTProjectWidget *getCurrentProjectWidget();
     static QgsMapCanvas *getCurrentMapCanvas();
 
@@ -54,9 +58,11 @@ private slots:
 protected:
     void closeEvent(QCloseEvent *);
 
+
 private:
     Ui::MainWindow *ui;
     CDTAttributeDockWidget *dockWidgetAttributes;
+    CDTSampleDockWidget *dockWidgetSample;
     RecentFileSupervisor *supervisor;
     int recentFileCount;
     QToolButton* recentFileToolButton;

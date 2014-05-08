@@ -19,12 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     supervisor(NULL),
     dialogConsole(NULL)
 {        
-    ui->setupUi(this);    
-
-    dockWidgetAttributes = new CDTAttributeDockWidget(this);
-    this->addDockWidget(Qt::BottomDockWidgetArea, dockWidgetAttributes);
-    dockWidgetAttributes->raise();
-    dockWidgetAttributes->hide();
+    ui->setupUi(this);
+    initDockWidgets();
 
     supervisor = new RecentFileSupervisor(this);
     dialogConsole = new  DialogConsole(this);
@@ -61,6 +57,19 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::initDockWidgets()
+{
+    dockWidgetAttributes = new CDTAttributeDockWidget(this);
+    this->addDockWidget(Qt::BottomDockWidgetArea, dockWidgetAttributes);
+    dockWidgetAttributes->raise();
+    dockWidgetAttributes->hide();
+
+    dockWidgetSample = new CDTSampleDockWidget(this);
+    this->addDockWidget(Qt::RightDockWidgetArea, dockWidgetSample);
+    dockWidgetSample->raise();
+    dockWidgetSample->hide();
+}
+
 MainWindow *MainWindow::getMainWindow()
 {
     return mainWindow;
@@ -71,12 +80,12 @@ QTreeView *MainWindow::getProjectTreeView()
     return mainWindow->ui->treeViewProject;
 }
 
-CDTTrainingSamplesForm *MainWindow::getTrainingSampleForm()
+CDTSampleDockWidget *MainWindow::getSampleDockWidget()
 {
-    return mainWindow->ui->trainingSampleForm;
+    return mainWindow->dockWidgetSample;
 }
 
-CDTAttributeDockWidget *MainWindow::getAttributesWidget()
+CDTAttributeDockWidget *MainWindow::getAttributesDockWidget()
 {
     return mainWindow->dockWidgetAttributes;
 }
@@ -101,7 +110,7 @@ bool MainWindow::setActiveImage(QUuid uuid)
         return false;
     }
 
-    getTrainingSampleForm()->setImageID(uuid);
+    getSampleDockWidget()->setImageID(uuid);
 //    ui->dockWidgetAttributes->show();
 //    ui->dockWidgetTrainingSample->show();
     return true;
@@ -151,9 +160,11 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(item->getCorrespondingObject());
         if (segmentationLayer != NULL)
         {
-            ui->trainingSampleForm->setSegmentationID(segmentationLayer->id());
-            dockWidgetAttributes->setSegmentationLayer(segmentationLayer);
+            dockWidgetSample->setSegmentationID(segmentationLayer->id());
+            dockWidgetSample->show();
             dockWidgetAttributes->show();
+            dockWidgetAttributes->setSegmentationLayer(segmentationLayer);
+
 
             if (segmentationLayer->canvasLayer()!=NULL)
             {
@@ -168,7 +179,8 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         CDTImageLayer* imageLayer = (CDTImageLayer*)(item->getCorrespondingObject());
         if (imageLayer != NULL)
         {
-            ui->trainingSampleForm->setImageID(imageLayer->id());
+            dockWidgetSample->show();
+            dockWidgetSample->setImageID(imageLayer->id());
         }
     }
 }

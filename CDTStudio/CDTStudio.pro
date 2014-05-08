@@ -30,11 +30,11 @@ SOURCES += main.cpp\
     recentfilesupervisor.cpp \    
     cdtattributegenerator.cpp \
     cdtmaptoolselecttrainingsamples.cpp \
-    cdttrainingsamplesform.cpp\    
     dialognewsegmentation.cpp\    
     dialoggenerateattributes.cpp \    
     dialognewclassification.cpp \
-    cdtattributedockwidget.cpp
+    cdtattributedockwidget.cpp \
+    cdtsampledockwidget.cpp
 
 
 HEADERS  += \    
@@ -54,22 +54,24 @@ HEADERS  += \
     cdtattributegenerator.h \
     cdtbasethread.h \
     cdtmaptoolselecttrainingsamples.h \
-    cdttrainingsamplesform.h\    
     dialognewsegmentation.h \
     dialoggenerateattributes.h \    
     dialognewclassification.h \
-    cdtattributedockwidget.h
+    cdtattributedockwidget.h \
+    cdtsampledockwidget.h
 
 
 FORMS    += mainwindow.ui \            
-    cdttrainingsamplesform.ui\
     dialognewsegmentation.ui\
     dialoggenerateattributes.ui \    
     dialognewclassification.ui \
-    cdtattributedockwidget.ui
+    cdtattributedockwidget.ui \
+    cdtsampledockwidget.ui
 
 INCLUDEPATH += ../Interfaces \
 ../tools/CDTDialogs
+
+DEPENDPATH += ../tools/CDTDialogs
 
 LIBS += -L../lib -lCDTDialogs \
  -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis

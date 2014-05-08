@@ -133,33 +133,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidgetTrainingSample">
-   <property name="windowTitle">
-    <string>Category Manager</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_3">
-    <layout class="QVBoxLayout" name="verticalLayout_3">
-     <property name="leftMargin">
-      <number>2</number>
-     </property>
-     <property name="topMargin">
-      <number>2</number>
-     </property>
-     <property name="rightMargin">
-      <number>2</number>
-     </property>
-     <property name="bottomMargin">
-      <number>2</number>
-     </property>
-     <item>
-      <widget class="CDTTrainingSamplesForm" name="trainingSampleForm" native="true"/>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <action name="action_New">
    <property name="icon">
     <iconset resource="../resource.qrc">
@@ -216,7 +189,6 @@
     <string>F12</string>
    </property>
   </action>
-  <zorder>dockWidgetAttributes</zorder>
   <zorder>dockWidgetProject</zorder>
   <zorder>dockWidgetTrainingSample</zorder>
  </widget>
@@ -226,12 +198,6 @@
    <class>CDTProjectTabWidget</class>
    <extends>QTabWidget</extends>
    <header>cdtprojecttabwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>CDTTrainingSamplesForm</class>
-   <extends>QWidget</extends>
-   <header>cdttrainingsamplesform.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

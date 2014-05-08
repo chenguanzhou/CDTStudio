@@ -23,7 +23,7 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
 
 
     ui->verticalLayout->setMenuBar(menuBar);
-    connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),this,SLOT(onDatabaseChanged(CDTDatabaseConnInfo)));
+    connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),SLOT(onDatabaseChanged(CDTDatabaseConnInfo)));
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()

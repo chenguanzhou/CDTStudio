@@ -4,6 +4,13 @@
 #include <QtSql>
 #include <QMessageBox>
 
+
+QDataStream &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo)
+{
+    out<<dbInfo.dbType<<dbInfo.dbName<<dbInfo.username<<dbInfo.password<<dbInfo.hostName<<dbInfo.port;
+    return out;
+}
+
 QDataStream &operator>>(QDataStream &in, CDTDatabaseConnInfo &dbInfo)
 {
     in>>dbInfo.dbType>>dbInfo.dbName>>dbInfo.username>>dbInfo.password>>dbInfo.hostName>>dbInfo.port;

@@ -194,7 +194,7 @@ void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
         return;
     }
 
-    QUuid categoryID = MainWindow::getTrainingSampleForm()->currentCategoryID();
+    QUuid categoryID = MainWindow::getSampleDockWidget()->currentCategoryID();
     if (categoryID.isNull())
     {
         qWarning()<<tr("No category selected!");
