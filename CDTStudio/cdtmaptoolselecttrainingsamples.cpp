@@ -2,7 +2,7 @@
 #include "qgsrubberband.h"
 #include "stable.h"
 #include "qgsvectorlayer.h"
-#include "cdttrainingsamplesform.h"
+//#include "cdttrainingsamplesform.h"
 #include "cdtimagelayer.h"
 #include "mainwindow.h"
 

@@ -13,6 +13,12 @@ DialogConsole::DialogConsole(QWidget *parent) :
     listModel = new QStringListModel(ui->listView);
     ui->listView->setModel(listModel);
     setWindowFlags(Qt::Window);
+
+    connect(ui->pushButtonRefresh,SIGNAL(clicked()),SLOT(updateDatabases()));
+    connect(ui->comboBox,SIGNAL(currentIndexChanged(QString)),SLOT(onDatabaseChanged(QString)));
+    connect(ui->listView,SIGNAL(clicked(QModelIndex)),SLOT(onTableSelected(QModelIndex)));
+    connect(ui->pushButtonQuery,SIGNAL(clicked()),SLOT(onQuery()));
+    connect(ui->plainTextEditQuery,SIGNAL(textChanged()),SLOT(onQueryTextChanged()));
 }
 
 DialogConsole::~DialogConsole()
@@ -20,24 +26,13 @@ DialogConsole::~DialogConsole()
     delete ui;
 }
 
-void DialogConsole::updateTableList()
+void DialogConsole::updateDatabases()
 {
-    QStringList list = db.tables();
-    listModel->setStringList(list);
+    ui->comboBox->clear();
+    ui->comboBox->addItems(QSqlDatabase::connectionNames());
 }
 
-void DialogConsole::on_pushButtonRefresh_clicked()
-{
-    db = QSqlDatabase::database(ui->comboBox->currentText());
-    if (!db.isValid())
-    {
-        QMessageBox::critical(this,tr("Error"),db.lastError().text());
-    }
-
-    updateTableList();
-}
-
-void DialogConsole::on_listView_clicked(const QModelIndex &index)
+void DialogConsole::onTableSelected(const QModelIndex &index)
 {
     QString tableName = listModel->data(index,Qt::DisplayRole).toString();
     QSqlTableModel* tableModel = new QSqlTableModel(ui->tableView,db);
@@ -50,7 +45,7 @@ void DialogConsole::on_listView_clicked(const QModelIndex &index)
     ui->tableView->resizeRowsToContents();
 }
 
-void DialogConsole::on_pushButtonQuery_clicked()
+void DialogConsole::onQuery()
 {
     QSqlQuery query(db);
     if (query.exec(ui->plainTextEditQuery->toPlainText())==false)
@@ -63,4 +58,26 @@ void DialogConsole::on_pushButtonQuery_clicked()
         delete ui->tableView->model();
     tableModel->setQuery(query);
     ui->tableView->setModel(tableModel);
+}
+
+void DialogConsole::onQueryTextChanged()
+{
+    ui->pushButtonQuery->setEnabled(!ui->plainTextEditQuery->toPlainText().isEmpty());
+}
+
+void DialogConsole::onDatabaseChanged(QString connName)
+{
+    if (connName.isEmpty())
+    {
+        listModel->setStringList(QStringList());
+        return ;
+    }
+    db = QSqlDatabase::database(connName);
+    if (!db.isValid())
+    {
+        QMessageBox::critical(this,tr("Error"),db.lastError().text());
+        return;
+    }
+    QStringList list = db.tables();
+    listModel->setStringList(list);
 }

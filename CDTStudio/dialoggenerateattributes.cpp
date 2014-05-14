@@ -159,6 +159,10 @@ void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
                 QSqlDatabase::database("attribute"),
                 attributes,
                 this);
+    qDebug()<<segmentationLayer->imagePath();
+    qDebug()<<segmentationLayer->markfilePath();
+    qDebug()<<segmentationLayer->shapefilePath();
+
     if(!attributeGenerator->isValid())
     {
         QMessageBox::critical(this,tr("Error"),tr("Construct attribute generator failed!\n")+attributeGenerator->errorInfo());

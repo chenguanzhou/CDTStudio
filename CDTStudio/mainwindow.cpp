@@ -3,7 +3,7 @@
 
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
-#include "cdttrainingsamplesform.h"
+//#include "cdttrainingsamplesform.h"
 #include "cdtattributedockwidget.h"
 #include <qgsmaplayer.h>
 #include "dialogconsole.h"

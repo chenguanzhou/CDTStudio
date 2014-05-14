@@ -37,7 +37,6 @@ public:
 private slots:
     void on_toolButton_clicked();
     void on_comboDriver_currentIndexChanged(const QString &arg1);
-
     void on_pushButtonTest_clicked();
 
 private:

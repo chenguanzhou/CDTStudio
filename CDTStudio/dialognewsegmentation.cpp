@@ -187,7 +187,11 @@ void DialogNewSegmentation::on_pushButtonStart_clicked()
     ui->labelProgress->show();
     this->adjustSize();
 
-    QThread *thread = segmentationPlugins[ui->comboBox->currentIndex()]
+    CDTSegmentationInterface *interface = segmentationPlugins[ui->comboBox->currentIndex()];
+    interface->setMarkfilePath(ui->comboBoxMarkfile->currentText());
+    interface->setShapefilePath(ui->comboBoxShapefile->currentText());
+
+    QThread *thread = interface
             ->thread(gridLatoutPlugin->itemAtPosition(0,0)->widget());
     connect(thread, SIGNAL(finished()), this, SLOT(onFinished()));
     connect(thread, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));

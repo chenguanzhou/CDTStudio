@@ -19,18 +19,18 @@ public:
     ~DialogConsole();
 
 public slots:
-    void on_pushButtonRefresh_clicked();
-    void on_listView_clicked(const QModelIndex &index);
+    void updateDatabases();
 
 private slots:
-    void on_pushButtonQuery_clicked();
+    void onTableSelected(const QModelIndex &index);
+    void onQuery();
+    void onQueryTextChanged();
+    void onDatabaseChanged(QString connName);
 
 private:
     Ui::DialogConsole *ui;
     QSqlDatabase db;
     QStringListModel* listModel;
-
-    void updateTableList();
 };
 
 

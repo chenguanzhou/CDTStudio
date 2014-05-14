@@ -231,7 +231,7 @@ QString CDTSegmentationLayer::markfilePath() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
-    query.exec("select shapefilePath from markfilePath where id ='" + this->id().toString() +"'");
+    query.exec("select markfilePath from segmentationlayer where id ='" + this->id().toString() +"'");
     query.next();
     return query.value(0).toString();
 //    return m_markfilePath;

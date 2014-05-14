@@ -85,9 +85,14 @@ void DialogDBConnection::updateConnInfo()
     dbConnInfo.port = ui->portSpinBox->value();
 }
 
+/// Only for SQLITE
 void DialogDBConnection::on_toolButton_clicked()
 {
-    QString path = QFileDialog::getOpenFileName(this,tr("Open"),ui->editDatabase->text());
+    QString path;
+    if (ui->editDatabase->text().isEmpty())
+        path = QFileDialog::getSaveFileName(this,tr("Save"),ui->editDatabase->text());
+    else
+        path = QFileDialog::getOpenFileName(this,tr("Open"),ui->editDatabase->text());
     if (!path.isNull())
     {
         ui->editDatabase->setText(path);
