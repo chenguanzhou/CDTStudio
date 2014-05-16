@@ -26,6 +26,7 @@ public:
     void setCategoryInfo(const CDTCategoryInformationList& info);
     QString path()const;
     QString name()const;
+    int bandCount()const;
 
     void addSegmentation(CDTSegmentationLayer* segmentation);
 

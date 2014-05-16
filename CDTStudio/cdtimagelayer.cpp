@@ -152,6 +152,13 @@ QString CDTImageLayer::name() const
     return query.value(0).toString();
 }
 
+int CDTImageLayer::bandCount() const
+{
+    QgsRasterLayer* layer = (QgsRasterLayer*)mapCanvasLayer;
+    if (layer==NULL) return 0;
+    return layer->bandCount();
+}
+
 void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
 {
     segmentations.push_back(segmentation);

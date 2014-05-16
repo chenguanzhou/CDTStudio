@@ -1,6 +1,7 @@
 #include "cdtattributedockwidget.h"
 #include "ui_cdtattributedockwidget.h"
 #include "stable.h"
+#include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
 #include "dialoggenerateattributes.h"
 
@@ -90,7 +91,8 @@ void CDTAttributeDockWidget::onActionEditDataSourceTriggered()
 void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
 {
     clearTables();
-    DialogGenerateAttributes dlg(segmentationLayer()->id(),3);
+    CDTImageLayer* layer = (CDTImageLayer*)(segmentationLayer()->parent());
+    DialogGenerateAttributes dlg(segmentationLayer()->id(),layer->bandCount());
     dlg.exec();
     updateTable();
 }
