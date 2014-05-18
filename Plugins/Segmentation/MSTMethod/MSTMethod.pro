@@ -9,8 +9,9 @@ QT       += core gui
 TARGET = MSTMethod
 TEMPLATE = lib
 CONFIG += plugin
+QMAKE_CXXFLAGS += -std=c++0x
 
-DESTDIR = ../../../bin/plugins
+DESTDIR = ../../../bin/Plugins
 
 SOURCES += \
     mstmethodinterface.cpp \
@@ -42,7 +43,16 @@ unix {
 FORMS += \
     formmst.ui
 
-LIBS += -lgdal_i -lstxxl
+LIBS += -lstxxl
 
+unix{
+LIBS += -lgdal
+
+INCLUDEPATH += /usr/include/gdal \
+/usr/local/include/gdal \
+}
+!unix{
+LIBS += -lgdal_i
+}
 
 #DEFINES += BOOST_THREAD_USE_LIB

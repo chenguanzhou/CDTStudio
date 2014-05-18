@@ -17,7 +17,7 @@ signals:
     void treeModelUpdated();
 public slots:
     void createNewProject();
-    void openProject(QString &filepath);
+    void openProject(const QString &filepath);
     void openProject();
     bool saveProject();
     bool saveAllProject();
@@ -26,9 +26,9 @@ public slots:
     void closeAll();
 private:
     QString readLastProjectDir();
-    void writeLastProjectDir(QString &path);
-    void writeRecentFilePath(QString &path);
-    bool compareFilePath(QString &path);
+    void writeLastProjectDir(const QString &path);
+    void writeRecentFilePath(const QString &path);
+    bool compareFilePath(const QString &path);
 
 };
 

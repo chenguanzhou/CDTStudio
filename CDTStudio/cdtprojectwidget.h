@@ -22,9 +22,9 @@ public:
     explicit CDTProjectWidget(QWidget *parent = 0);
     ~CDTProjectWidget();
 
-    bool readProject(QString &filepath);
+    bool readProject(const QString &filepath);
     bool writeProject();
-    bool saveAsProject(QString &path);
+    bool saveAsProject(const QString &path);
     int  maybeSave();
     QString filePath();
 //    bool closeProject(CDTProjectTabWidget *parent,const int &index);

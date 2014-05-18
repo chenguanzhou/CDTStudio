@@ -157,10 +157,14 @@ bool MSTSegmenter::_CheckAndInit()
     if (_layerWeights.size()==0)
     {
         _layerWeights.resize(poSrcDS->GetRasterCount());
-        std::for_each(_layerWeights.begin(),_layerWeights.end(),[&](double &data)
+//        std::for_each(_layerWeights.begin(),_layerWeights.end(),[&](double &data)
+//        {
+//            data = 1./poSrcDS->GetRasterCount();
+//        });
+        for(QVector<double>::Iterator iter = _layerWeights.begin();iter != _layerWeights.end();++iter)
         {
-            data = 1./poSrcDS->GetRasterCount();
-        });
+            *iter = 1./poSrcDS->GetRasterCount();
+        }
     }
 
     //3.Init Output Image

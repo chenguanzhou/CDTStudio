@@ -9,8 +9,9 @@ QT       += core gui sql
 TARGET = texture
 TEMPLATE = lib
 CONFIG += plugin
+QMAKE_CXXFLAGS += -std=c++0x
 
-DESTDIR = ../../../bin/plugins
+DESTDIR = ../../../bin/Plugins
 
 INCLUDEPATH += ../../../Interfaces
 
@@ -20,9 +21,14 @@ HEADERS += textureinterface.h\
     ../../../Interfaces/cdtattributesinterface.h
 OTHER_FILES += texture.json
 
-LIBS += -lgdal_i
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
+unix{
+target.path = /usr/lib
+INSTALLS += target
+LIBS += -lgdal
+INCLUDEPATH += /usr/include/gdal \
+/usr/local/include/gdal \
 }
+!unix{
+LIBS += -lgdal_i
+}
+

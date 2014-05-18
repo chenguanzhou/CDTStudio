@@ -56,7 +56,7 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
     }
 }
 
-bool CDTProjectWidget::readProject(QString &filepath)
+bool CDTProjectWidget::readProject(const QString &filepath)
 {
     QFileInfo info(filepath);
     if(!info.exists())
@@ -97,7 +97,7 @@ bool CDTProjectWidget::writeProject()
     return true;
 }
 
-bool CDTProjectWidget::saveAsProject(QString &path)
+bool CDTProjectWidget::saveAsProject(const QString &path)
 {    
     if (path.isEmpty())
         return false;

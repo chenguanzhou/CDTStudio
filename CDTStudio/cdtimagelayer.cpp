@@ -30,7 +30,7 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     connect(addSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
     connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
-    connect(this,SIGNAL(imageLayerChanged()),(CDTProject*)(this->parent()),SLOT(projectChanged()));
+    connect(this,SIGNAL(imageLayerChanged()),(CDTProject*)(this->parent()),SIGNAL(projectChanged()));
     connect(removeAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
     connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
     connect(actionCategoryInformation,SIGNAL(triggered()),this,SLOT(onActionCategoryInformation()));

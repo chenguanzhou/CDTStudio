@@ -2,9 +2,10 @@
 #define MSTSEGMENTER_H
 
 #include <QObject>
-#include "CDTBaseThread.h"
+#include "cdtbasethread.h"
 #include <map>
 #include <vector>
+#include <limits>
 #include <QMap>
 #include <QVector>
 

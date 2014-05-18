@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = CDTStudio
 TEMPLATE = app
-
+QMAKE_CXXFLAGS += -std=c++0x
 CONFIG+=precompile_header
 PRECOMPILED_HEADER = stable.h
 
@@ -69,7 +69,7 @@ FORMS    += mainwindow.ui \
     cdtsampledockwidget.ui
 
 INCLUDEPATH += ../Interfaces \
-../tools/CDTDialogs
+../Tools/CDTDialogs
 
 DEPENDPATH += ../tools/CDTDialogs
 
@@ -77,7 +77,15 @@ LIBS += -L../lib -lCDTDialogs \
  -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis
 
 unix{
-LIBS += -lgdal -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc
+LIBS += -lgdal -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc -lgomp
+
+INCLUDEPATH += /usr/include/gdal \
+/usr/local/include/gdal \
+INCLUDEPATH += /usr/include/qgis \
+/usr/local/include/qgis \
+
+DEFINES += CORE_EXPORT=
+DEFINES += GUI_EXPORT=
 }
 !unix{
 DEFINES += CORE_EXPORT=__declspec(dllimport)

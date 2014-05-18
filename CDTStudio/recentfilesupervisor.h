@@ -2,12 +2,13 @@
 #define RECENTFILESUPERVISOR_H
 
 #include <QObject>
-#include "mainwindow.h"
+//#include "mainwindow.h"
 
-namespace Ui {
+//namespace Ui {
+//class MainWindow;
+//}
+
 class MainWindow;
-}
-
 class RecentFileSupervisor : public QObject
 {
     Q_OBJECT

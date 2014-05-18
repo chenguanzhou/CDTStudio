@@ -1,5 +1,5 @@
 #include "geometryinterface.h"
-
+#include <limits>
 
 GeometryInterface::GeometryInterface(QObject *parent) :
     CDTAttributesInterface(parent)

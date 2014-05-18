@@ -1,5 +1,6 @@
 #include "recentfilesupervisor.h"
 #include "cdtprojecttabwidget.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMenu>
 #include <QDebug>

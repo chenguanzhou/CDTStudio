@@ -39,7 +39,7 @@ void CDTProjectTabWidget::createNewProject()
     }
 }
 
-void CDTProjectTabWidget::openProject(QString &filepath)
+void CDTProjectTabWidget::openProject(const QString &filepath)
 {
     if(!filepath.isEmpty())
     {
@@ -143,7 +143,7 @@ QString CDTProjectTabWidget::readLastProjectDir()
     return dir;
 }
 
-void CDTProjectTabWidget::writeLastProjectDir(QString &path)
+void CDTProjectTabWidget::writeLastProjectDir(const QString &path)
 {
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("Project");
@@ -152,7 +152,7 @@ void CDTProjectTabWidget::writeLastProjectDir(QString &path)
 }
 
 
-bool CDTProjectTabWidget::compareFilePath(QString &path)
+bool CDTProjectTabWidget::compareFilePath(const QString &path)
 {
     int count = this->count();
     for(int i=0; i< count;++i)

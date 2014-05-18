@@ -10,7 +10,7 @@ class CDTPluginLoader
 public:
     static QList<T*> getPlugins()
     {
-        QDir pluginDir=directoryof("plugins");
+        QDir pluginDir=directoryof("Plugins");
         QList<T*> plugins;
         foreach (QString fileName, pluginDir.entryList(QDir::Files))
         {
