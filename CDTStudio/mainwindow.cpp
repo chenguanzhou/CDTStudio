@@ -157,13 +157,13 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     int type = item->getType();
     if (type == CDTProjectTreeItem::SEGMENTION)
     {
-        CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(item->getCorrespondingObject());
+        CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(item->correspondingObject());
         if (segmentationLayer != NULL)
         {
             dockWidgetSample->setSegmentationID(segmentationLayer->id());
-            dockWidgetSample->show();
-            dockWidgetAttributes->show();
+            dockWidgetSample->show();            
             dockWidgetAttributes->setSegmentationLayer(segmentationLayer);
+            dockWidgetAttributes->show();
 
 
             if (segmentationLayer->canvasLayer()!=NULL)
@@ -176,7 +176,7 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     else if (type == CDTProjectTreeItem::IMAGE_ROOT)
     {
         //set current layer?
-        CDTImageLayer* imageLayer = (CDTImageLayer*)(item->getCorrespondingObject());
+        CDTImageLayer* imageLayer = (CDTImageLayer*)(item->correspondingObject());
         if (imageLayer != NULL)
         {
             dockWidgetSample->show();

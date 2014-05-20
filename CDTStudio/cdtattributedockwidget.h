@@ -9,6 +9,7 @@
 class QToolBar;
 class QMenuBar;
 class CDTSegmentationLayer;
+class QwtPlotCurve;
 
 namespace Ui {
 class CDTAttributeDockWidget;
@@ -24,6 +25,9 @@ public:
 
     CDTSegmentationLayer *segmentationLayer()const;
 
+private:
+    void initHistogram();
+
 signals:
     void databaseURLChanged(CDTDatabaseConnInfo);
 
@@ -37,10 +41,13 @@ private slots:
     void onActionEditDataSourceTriggered();
     void onActionGenerateAttributesTriggered();
     void onDatabaseChanged(CDTDatabaseConnInfo connInfo);
+    void onItemClicked(QModelIndex index);
+    void updateHistogram(const QString& featureName,const QString& tableName);
     void clearTables();
 
 private:
     Ui::CDTAttributeDockWidget *ui;
+    QwtPlotCurve *histogram;
     QMenuBar *_menuBar;
     CDTDatabaseConnInfo _dbConnInfo;
     CDTSegmentationLayer* _segmentationLayer;

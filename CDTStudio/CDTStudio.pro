@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CDTStudio
 TEMPLATE = app
 QMAKE_CXXFLAGS += -std=c++0x
-CONFIG+=precompile_header
+CONFIG+=precompile_header qwt
 PRECOMPILED_HEADER = stable.h
 
 DESTDIR = ../bin
@@ -69,12 +69,13 @@ FORMS    += mainwindow.ui \
     cdtsampledockwidget.ui
 
 INCLUDEPATH += ../Interfaces \
-../Tools/CDTDialogs
+../Tools/CDTDialogs \
+../Tools/QWTComponent
 
 DEPENDPATH += ../tools/CDTDialogs
 
 LIBS += -L../lib -lCDTDialogs \
- -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis
+ -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 unix{
 LIBS += -lgdal -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc -lgomp

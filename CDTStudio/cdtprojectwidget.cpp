@@ -49,7 +49,7 @@ void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
     int type = item->getType();
 
 
-    CDTBaseObject* correspondingObject = item->getCorrespondingObject();
+    CDTBaseObject* correspondingObject = item->correspondingObject();
     if (correspondingObject)
     {
         correspondingObject->onContextMenuRequest(this);
@@ -164,7 +164,7 @@ void CDTProjectWidget::appendLayers(QList<QgsMapLayer *> layers)
     foreach (QgsMapLayer *lyr, activeLayers) {
         layersVisible.insert(lyr,true);
     }
-    refreshMapCanvas(false);
+    refreshMapCanvas();
 }
 
 void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)

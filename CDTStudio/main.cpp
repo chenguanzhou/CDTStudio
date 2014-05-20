@@ -135,13 +135,63 @@ int main(int argc, char *argv[])
     QgsApplication::initQgis();
 
     if (initDatabase()==false)
-        return 0; 
+        return 0;
 
     MainWindow w;
-    w.showMaximized();    
+    w.showMaximized();
 
     segmentationPlugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();
     attributesPlugins   = CDTPluginLoader<CDTAttributesInterface>::getPlugins();
 
     return a.exec();
 }
+
+//#include <stdlib.h>
+//#include <qapplication.h>
+//#include <qpen.h>
+//#include <qwt_plot.h>
+//#include <qwt_plot_grid.h>
+//#include <qwt_plot_marker.h>
+//#include <qwt_plot_histogram.h>
+//#include <qwt_interval.h>
+//#include <qwt_plot_curve.h>
+
+//int main(int argc, char **argv)
+//{
+//    QApplication a(argc, argv);
+
+//    QwtPlot plot;
+//    plot.setCanvasBackground(QColor(Qt::lightGray));
+//    plot.setTitle("Histogram");
+
+//    QwtPlotCurve *histogram = new QwtPlotCurve("Haha");
+//    histogram->setStyle(QwtPlotCurve::Lines);
+//    histogram->setPaintAttribute(QwtPlotCurve::FilterPoints);
+//    histogram->setPen(QColor(0,0,0),2);
+//    histogram->setBrush(QBrush(QColor(0,0,0,127)));
+
+//    QVector<QPointF> datas;
+//    QVector<int> counts(100,0);
+//    for (int i=0;i<1000;++i)
+//    {
+//        counts[rand()%100]++;
+//    }
+//    for (int i=0;i<counts.size();++i)
+//    {
+//        datas.push_back(QPointF(i,counts[i]));
+//    }
+
+//    histogram->setData(new QwtPointSeriesData(datas));
+//    histogram->attach(&plot);
+
+//    plot.replot();
+
+//#if QT_VERSION < 0x040000
+//    a.setMainWidget(&plot);
+//#endif
+
+//    plot.resize(600,400);
+//    plot.show();
+
+//    return a.exec();
+//}

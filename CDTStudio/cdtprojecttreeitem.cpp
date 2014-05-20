@@ -1,7 +1,7 @@
 #include "cdtprojecttreeitem.h"
 
 CDTProjectTreeItem::CDTProjectTreeItem(CDTItemType tp, LayerType ly, const QString &text, CDTBaseObject *crspdObject)
-    :_itemType(tp),layerType(ly),correspondingObject(crspdObject),qgsMapLayer(NULL)
+    :_itemType(tp),layerType(ly),corrObject(crspdObject),qgsMapLayer(NULL)
 {
     setText(text);
     initAlignment();
