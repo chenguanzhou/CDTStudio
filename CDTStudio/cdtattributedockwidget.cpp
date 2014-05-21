@@ -64,8 +64,6 @@ void CDTAttributeDockWidget::initHistogram()
 
     QwtPlotCanvas *canvas = (QwtPlotCanvas*)(ui->qwtPlot->canvas());
     canvas->setFrameStyle(QwtPlotCanvas::NoFrame);
-
-
 }
 
 void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
@@ -82,14 +80,13 @@ void CDTAttributeDockWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
 
     if (_segmentationLayer)
     {
-//        disconnect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),_segmentationLayer,SLOT(setDatabaseURL(CDTDatabaseConnInfo)));
         disconnect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
     }
 
     _segmentationLayer = layer;
-//    connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),_segmentationLayer,SLOT(setDatabaseURL(CDTDatabaseConnInfo)));
     connect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
     setDatabaseURL(_segmentationLayer->databaseURL());
+    ui->tabWidget->setEnabled(true);
 }
 
 void CDTAttributeDockWidget::updateTable()
@@ -114,6 +111,8 @@ void CDTAttributeDockWidget::clear()
     ui->tabWidget->setEnabled(false);
     _dbConnInfo = CDTDatabaseConnInfo();
     clearTables();
+    clearHistogram();
+    _segmentationLayer =NULL;
 }
 
 void CDTAttributeDockWidget::onActionEditDataSourceTriggered()
@@ -141,14 +140,15 @@ void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
 void CDTAttributeDockWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
 {
     clearTables();
-
     if (connInfo.isNull())
         return;
+
     _dbConnInfo = connInfo;
     QSqlDatabase db = QSqlDatabase::addDatabase(connInfo.dbType,"attribute");
     db.setDatabaseName(connInfo.dbName);
     db.setHostName(connInfo.hostName);
     db.setPort(connInfo.port);
+
     if (!db.open(connInfo.username, connInfo.password)) {
         QSqlError err = db.lastError();
         db = QSqlDatabase();
@@ -214,4 +214,10 @@ void CDTAttributeDockWidget::clearTables()
         ui->tabWidget->removeTab(0);
         delete widget;
     }
+}
+
+void CDTAttributeDockWidget::clearHistogram()
+{
+    histogram->setData(NULL);
+    ui->qwtPlot->replot();
 }

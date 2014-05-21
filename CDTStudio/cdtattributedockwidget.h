@@ -44,6 +44,7 @@ private slots:
     void onItemClicked(QModelIndex index);
     void updateHistogram(const QString& featureName,const QString& tableName);
     void clearTables();
+    void clearHistogram();
 
 private:
     Ui::CDTAttributeDockWidget *ui;

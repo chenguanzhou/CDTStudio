@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->addAction(ui->actionConsole);
     connect(ui->actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(show()));
-    connect(ui->actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(on_pushButtonRefresh_clicked()));
+    connect(ui->actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(updateDatabases()));
 
     connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewProject,SLOT(expandAll()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
