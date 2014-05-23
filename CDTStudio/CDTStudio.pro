@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     dialoggenerateattributes.cpp \    
     dialognewclassification.cpp \
     cdtattributedockwidget.cpp \
-    cdtsampledockwidget.cpp
+    cdtsampledockwidget.cpp \
+    wizardnewclassification.cpp
 
 
 HEADERS  += \    
@@ -58,7 +59,8 @@ HEADERS  += \
     dialoggenerateattributes.h \    
     dialognewclassification.h \
     cdtattributedockwidget.h \
-    cdtsampledockwidget.h
+    cdtsampledockwidget.h \
+    wizardnewclassification.h
 
 
 FORMS    += mainwindow.ui \            
@@ -66,16 +68,14 @@ FORMS    += mainwindow.ui \
     dialoggenerateattributes.ui \    
     dialognewclassification.ui \
     cdtattributedockwidget.ui \
-    cdtsampledockwidget.ui
+    cdtsampledockwidget.ui \
+    wizardnewclassification.ui
 
 INCLUDEPATH += ../Interfaces \
 ../Tools/CDTDialogs \
 ../Tools/QWTComponent
 
 DEPENDPATH += ../tools/CDTDialogs
-
-LIBS += -L../lib -lCDTDialogs \
- -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 unix{
 LIBS += -lgdal -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc -lgomp
@@ -89,11 +89,12 @@ DEFINES += CORE_EXPORT=
 DEFINES += GUI_EXPORT=
 }
 !unix{
-DEFINES += CORE_EXPORT=__declspec(dllimport)
-DEFINES += GUI_EXPORT=__declspec(dllimport)
+include(../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
+LIBS += -L../lib -lCDTDialogs \
+ -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 RESOURCES += \
     ../resource.qrc

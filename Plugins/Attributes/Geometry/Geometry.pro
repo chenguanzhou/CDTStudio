@@ -32,5 +32,6 @@ INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
 !unix{
+include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }

@@ -11,6 +11,7 @@
 #include <qgssinglesymbolrendererv2.h>
 #include <qgsrendererv2widget.h>
 #include <qgsfillsymbollayerv2.h>
+#include "wizardnewclassification.h"
 
 
 QDataStream &operator<<(QDataStream &out, const SampleElement &sample)
@@ -34,9 +35,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
       addClassifications(new QAction(tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this)),
       actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this)),
-      actionRename(new QAction(tr("Rename Segmentation Name"),this)),
-      actionTrainingSamples(new QAction(tr("Set Training Samples"),this))/*,
-      maptoolTraining(NULL)*/
+      actionRename(new QAction(tr("Rename Segmentation Name"),this))
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
@@ -56,8 +55,6 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
     paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
-//    maptoolTraining = new CDTMapToolSelectTrainingSamples(mapCanvas);
-
     layers.push_back(this);
 
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
@@ -69,7 +66,6 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
     connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),this,SLOT(removeAllClassifications()));
     connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
-    connect(actionTrainingSamples,SIGNAL(triggered()),this,SLOT(onTrainingSamples()));
 }
 
 CDTSegmentationLayer::~CDTSegmentationLayer()
@@ -84,13 +80,6 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
     if (!ret)
         qDebug()<<"prepare:"<<query.lastError().text();
 }
-
-//void CDTSegmentationLayer::addClassification(CDTClassification *classification)
-//{
-//    classifications.push_back(classification);
-//    emit methodParamsChanged();
-//    connect(classification,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
-//}
 
 void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
 {    
@@ -150,7 +139,6 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     menu->addAction(actionRemoveAllClassifications);
     menu->addSeparator();
     menu->addAction(actionRename);
-    menu->addAction(actionTrainingSamples);
     menu->exec(QCursor::pos());
 }
 
@@ -165,18 +153,11 @@ void CDTSegmentationLayer::onActionRename()
         setName(text);
 }
 
-//void CDTSegmentationLayer::addClassification()
-//{
-//    QMap<QString,QVariant> param;
-//    param["k"] ="new k";
-
-//    CDTClassification *classification =new CDTClassification(this);
-//    classification->setName("new classification");
-//    classification->setShapefilePath("new shapefilepath");
-//    classification->setMethodParams("new knn",param);
-
-//    addClassification(classification);
-//}
+void CDTSegmentationLayer::addClassification()
+{
+    WizardNewClassification dlg;
+    dlg.exec();
+}
 
 void CDTSegmentationLayer::remove()
 {
@@ -203,11 +184,6 @@ void CDTSegmentationLayer::remove()
 //    emit segmentationChanged();
 //}
 
-void CDTSegmentationLayer::onTrainingSamples()
-{
-//    maptoolTraining->setSegmentationLayer(this);
-//    mapCanvas->setMapTool(maptoolTraining);
-}
 
 QString CDTSegmentationLayer::name() const
 {
@@ -234,7 +210,6 @@ QString CDTSegmentationLayer::markfilePath() const
     query.exec("select markfilePath from segmentationlayer where id ='" + this->id().toString() +"'");
     query.next();
     return query.value(0).toString();
-//    return m_markfilePath;
 }
 
 QString CDTSegmentationLayer::method() const
@@ -389,6 +364,13 @@ void CDTSegmentationLayer::saveSamplesToStruct(QMap<QString, QString> &sample_id
         }
     }
 }
+
+//void CDTSegmentationLayer::addClassification(CDTClassification *classification)
+//{
+//    classifications.push_back(classification);
+//    emit methodParamsChanged();
+//    connect(classification,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
+//}
 
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
 {    
