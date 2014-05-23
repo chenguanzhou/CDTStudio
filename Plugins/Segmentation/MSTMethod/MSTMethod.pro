@@ -43,7 +43,7 @@ unix {
 FORMS += \
     formmst.ui
 
-LIBS += -lstxxl
+
 
 unix{
 LIBS += -lgdal
@@ -52,7 +52,10 @@ INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
 !unix{
+include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
+
+LIBS += -lstxxl
 
 #DEFINES += BOOST_THREAD_USE_LIB

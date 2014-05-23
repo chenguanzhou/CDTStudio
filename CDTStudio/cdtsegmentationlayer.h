@@ -34,7 +34,7 @@ public:
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
     friend QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);
 
-//    void addClassification(CDTClassification* classification);
+
 
     QString name()const;
     QString shapefilePath() const;
@@ -58,10 +58,9 @@ public slots:
     void onContextMenuRequest(QWidget *parent);
     void onActionRename();
     void remove();
-//    void addClassification();    
+    void addClassification();
 //    void removeClassification(CDTClassification *);
 //    void removeAllClassifications();
-    void onTrainingSamples();
     void setName(const QString& name);
     void setLayerInfo(const QString& name,const QString &shpPath,const QString &mkPath);
     void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
@@ -70,21 +69,19 @@ public slots:
 private:
     void loadSamplesFromStruct(const QMap<QString,QString> &sample_id_name,const QList<SampleElement> &samples);
     void saveSamplesToStruct(QMap<QString,QString> &sample_id_name,QList<SampleElement> &samples) const;
+//    void addClassification(CDTClassification* classification);
 private:
     QString m_imagePath;
     CDTDatabaseConnInfo    m_dbUrl;
     QString m_method;
     QMap<QString,QVariant> m_params;
     QVector<CDTClassification *> classifications;
-//    CDTTrainingSampleList trainingSampleList;
 
-//    CDTMapToolSelectTrainingSamples* maptoolTraining;
 
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;
     QAction *actionRemoveAllClassifications;
     QAction *actionRename;
-    QAction *actionTrainingSamples;
 
     CDTProjectTreeItem* shapefileItem;
     CDTProjectTreeItem* markfileItem;
