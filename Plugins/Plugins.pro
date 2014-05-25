@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     Segmentation \
-    Attributes
+    Attributes \
+    Classifier

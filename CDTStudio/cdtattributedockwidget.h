@@ -35,6 +35,7 @@ public slots:
     void setDatabaseURL(CDTDatabaseConnInfo url);
     void setSegmentationLayer(CDTSegmentationLayer *layer);
     void updateTable();
+    void clearTables();
     void clear();
 
 private slots:
@@ -42,8 +43,7 @@ private slots:
     void onActionGenerateAttributesTriggered();
     void onDatabaseChanged(CDTDatabaseConnInfo connInfo);
     void onItemClicked(QModelIndex index);
-    void updateHistogram(const QString& featureName,const QString& tableName);
-    void clearTables();
+    void updateHistogram(const QString& featureName,const QString& tableName);    
     void clearHistogram();
 
 private:

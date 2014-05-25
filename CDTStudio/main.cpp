@@ -8,9 +8,11 @@
 #include "cdtpluginloader.h"
 #include "cdtsegmentationInterface.h"
 #include "cdtattributesinterface.h"
+#include "cdtclassifierinterface.h"
 
 QList<CDTSegmentationInterface *>   segmentationPlugins;
 QList<CDTAttributesInterface *>     attributesPlugins;
+QList<CDTClassifierInterface *>     classifierPlugins;
 
 #ifdef Q_OS_WIN
 #include <opencv2/core/version.hpp>
@@ -96,15 +98,15 @@ bool initDatabase()
     }
 
 
-    ///  Create segmentation sample_segmenation table(id text,name text,shapefilePath text,markfilePath text,imageID text).
-    ret = query.exec("CREATE TABLE sample_segmenation"
+    ///  Create segmentation sample_segmentation table(id text,name text,shapefilePath text,markfilePath text,imageID text).
+    ret = query.exec("CREATE TABLE sample_segmentation"
                      "(id text NOT NULL, "
                      "name text NOT NULL, "
-                     "segmenationid text NOT NULL,"
+                     "segmentationid text NOT NULL,"
                      "Primary Key(id) )");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table sample_segmenation failed!\nerror:")+query.lastError().text());
+        QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table sample_segmentation failed!\nerror:")+query.lastError().text());
         return false;
     }
 
@@ -116,7 +118,7 @@ bool initDatabase()
                      "Primary Key(objectid,categoryid,sampleid) )");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table sample_segmenation failed!\nerror:")+query.lastError().text());
+        QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table sample_segmentation failed!\nerror:")+query.lastError().text());
         return false;
     }
 
@@ -142,56 +144,7 @@ int main(int argc, char *argv[])
 
     segmentationPlugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();
     attributesPlugins   = CDTPluginLoader<CDTAttributesInterface>::getPlugins();
+    classifierPlugins   = CDTPluginLoader<CDTClassifierInterface>::getPlugins();
 
     return a.exec();
 }
-
-//#include <stdlib.h>
-//#include <qapplication.h>
-//#include <qpen.h>
-//#include <qwt_plot.h>
-//#include <qwt_plot_grid.h>
-//#include <qwt_plot_marker.h>
-//#include <qwt_plot_histogram.h>
-//#include <qwt_interval.h>
-//#include <qwt_plot_curve.h>
-
-//int main(int argc, char **argv)
-//{
-//    QApplication a(argc, argv);
-
-//    QwtPlot plot;
-//    plot.setCanvasBackground(QColor(Qt::lightGray));
-//    plot.setTitle("Histogram");
-
-//    QwtPlotCurve *histogram = new QwtPlotCurve("Haha");
-//    histogram->setStyle(QwtPlotCurve::Lines);
-//    histogram->setPaintAttribute(QwtPlotCurve::FilterPoints);
-//    histogram->setPen(QColor(0,0,0),2);
-//    histogram->setBrush(QBrush(QColor(0,0,0,127)));
-
-//    QVector<QPointF> datas;
-//    QVector<int> counts(100,0);
-//    for (int i=0;i<1000;++i)
-//    {
-//        counts[rand()%100]++;
-//    }
-//    for (int i=0;i<counts.size();++i)
-//    {
-//        datas.push_back(QPointF(i,counts[i]));
-//    }
-
-//    histogram->setData(new QwtPointSeriesData(datas));
-//    histogram->attach(&plot);
-
-//    plot.replot();
-
-//#if QT_VERSION < 0x040000
-//    a.setMainWidget(&plot);
-//#endif
-
-//    plot.resize(600,400);
-//    plot.show();
-
-//    return a.exec();
-//}

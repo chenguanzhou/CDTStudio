@@ -24,7 +24,7 @@ QString SpectralInterface::attributesType() const
 
 QString SpectralInterface::tableName() const
 {
-    return QString("ObjectID_Spectral");
+    return QString("Spectral");
 }
 
 qreal SpectralInterface::brightness(const AttributeParamsMultiBand &param) const

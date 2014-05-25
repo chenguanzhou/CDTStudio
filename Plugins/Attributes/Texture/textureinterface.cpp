@@ -19,7 +19,7 @@ QString TextureInterface::attributesType() const
 
 QString TextureInterface::tableName() const
 {
-    return QString("ObjectID_Texture");
+    return QString("Texture");
 }
 
 QStringList TextureInterface::attributesName(QString name, QString funcName)

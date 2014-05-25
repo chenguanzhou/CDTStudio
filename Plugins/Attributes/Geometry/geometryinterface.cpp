@@ -18,7 +18,7 @@ QString GeometryInterface::attributesType() const
 
 QString GeometryInterface::tableName() const
 {
-    return QString("ObjectID_Geometry");
+    return QString("Geometry");
 }
 
 qreal  GeometryInterface::area(const AttributeParamsMultiBand &param) const

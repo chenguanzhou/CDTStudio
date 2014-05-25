@@ -32,7 +32,6 @@ SOURCES += main.cpp\
     cdtmaptoolselecttrainingsamples.cpp \
     dialognewsegmentation.cpp\    
     dialoggenerateattributes.cpp \    
-    dialognewclassification.cpp \
     cdtattributedockwidget.cpp \
     cdtsampledockwidget.cpp \
     wizardnewclassification.cpp
@@ -51,13 +50,11 @@ HEADERS  += \
     cdtbaseobject.h \
     cdtpluginloader.h \
     recentfilesupervisor.h \
-    ../Interfaces/cdtattributesinterface.h \    
     cdtattributegenerator.h \
     cdtbasethread.h \
     cdtmaptoolselecttrainingsamples.h \
     dialognewsegmentation.h \
     dialoggenerateattributes.h \    
-    dialognewclassification.h \
     cdtattributedockwidget.h \
     cdtsampledockwidget.h \
     wizardnewclassification.h
@@ -66,14 +63,13 @@ HEADERS  += \
 FORMS    += mainwindow.ui \            
     dialognewsegmentation.ui\
     dialoggenerateattributes.ui \    
-    dialognewclassification.ui \
     cdtattributedockwidget.ui \
     cdtsampledockwidget.ui \
     wizardnewclassification.ui
 
 INCLUDEPATH += ../Interfaces \
 ../Tools/CDTDialogs \
-../Tools/QWTComponent
+../Tools/QPropertyEditor\
 
 DEPENDPATH += ../tools/CDTDialogs
 
@@ -93,7 +89,7 @@ include(../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
-LIBS += -L../lib -lCDTDialogs \
+LIBS += -L../lib -lCDTDialogs -lQPropertyEditor\
  -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 RESOURCES += \

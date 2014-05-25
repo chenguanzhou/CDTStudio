@@ -12,6 +12,7 @@
 #include <qgsrendererv2widget.h>
 #include <qgsfillsymbollayerv2.h>
 #include "wizardnewclassification.h"
+#include <mainwindow.h>
 
 
 QDataStream &operator<<(QDataStream &out, const SampleElement &sample)
@@ -155,8 +156,10 @@ void CDTSegmentationLayer::onActionRename()
 
 void CDTSegmentationLayer::addClassification()
 {
+    MainWindow::getAttributesDockWidget()->clearTables();
     WizardNewClassification dlg;
     dlg.exec();
+    MainWindow::getAttributesDockWidget()->updateTable();
 }
 
 void CDTSegmentationLayer::remove()
@@ -326,7 +329,7 @@ void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
 void CDTSegmentationLayer::loadSamplesFromStruct(const QMap<QString, QString> &sample_id_name, const QList<SampleElement> &samples)
 {
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("insert into sample_segmenation values(?,?,?)");
+    query.prepare("insert into sample_segmentation values(?,?,?)");
     foreach (QString id, sample_id_name.keys()) {
         QString name = sample_id_name.value(id);
         query.bindValue(0,id);
@@ -350,7 +353,7 @@ void CDTSegmentationLayer::saveSamplesToStruct(QMap<QString, QString> &sample_id
     samples.clear();
 
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.exec("select id,name from sample_segmenation where segmenationid ='" + this->id().toString() +"'");
+    query.exec("select id,name from sample_segmentation where segmentationid ='" + this->id().toString() +"'");
     while(query.next())
     {       
         sample_id_name.insert(query.value(0).toString(),query.value(1).toString());

@@ -122,7 +122,6 @@ public:
         }
         return methods;
     }
-
 };
 
 

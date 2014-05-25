@@ -94,7 +94,7 @@ void CDTSampleDockWidget::updateListView()
     QSqlQueryModel * model = (QSqlQueryModel *)(ui->comboBox->model());
     QString segmentationID = model->data(model->index(index,1)).toString();
 
-    sampleModel->setQuery("select name,id from sample_segmenation where segmenationid='"+segmentationID+"'",QSqlDatabase::database("category"));
+    sampleModel->setQuery("select name,id from sample_segmentation where segmentationid='"+segmentationID+"'",QSqlDatabase::database("category"));
     if (sampleModel->rowCount()>0)
         ui->listView->setCurrentIndex(sampleModel->index(0,0));
 }
@@ -294,7 +294,7 @@ void CDTSampleDockWidget::on_toolButtonSampleRename_clicked()
         return;
 
     QSqlQuery q(QSqlDatabase::database("category"));
-    q.prepare("update sample_segmenation set name = ? where id = ?");
+    q.prepare("update sample_segmentation set name = ? where id = ?");
     q.bindValue(0,sampleName);
     q.bindValue(1,sampleid);
     q.exec();
@@ -315,7 +315,7 @@ void CDTSampleDockWidget::on_toolButtonNewSample_clicked()
     QString segmentationID = model->data(model->index(ui->comboBox->currentIndex(),1)).toString();
 
     QSqlQuery q(QSqlDatabase::database("category"));
-    q.prepare("insert into sample_segmenation values(?,?,?)");
+    q.prepare("insert into sample_segmentation values(?,?,?)");
     q.bindValue(0,QUuid::createUuid().toString());
     q.bindValue(1,sampleName);
     q.bindValue(2,segmentationID);
@@ -333,7 +333,7 @@ void CDTSampleDockWidget::on_toolButtonRemoveSelected_clicked()
 
     QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();
     QSqlQuery q(QSqlDatabase::database("category"));
-    q.prepare("delete from sample_segmenation where id = ?");
+    q.prepare("delete from sample_segmentation where id = ?");
     q.bindValue(0,sampleid);
     q.exec();
 
