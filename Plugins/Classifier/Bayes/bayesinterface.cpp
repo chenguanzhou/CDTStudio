@@ -28,9 +28,14 @@ QString BayesInterface::classifierName() const
     return tr("Normal Bayes Classifier");
 }
 
-cv::Mat BayesInterface::startClassification(const cv::Mat &data, const cv::Mat &response)
+cv::Mat BayesInterface::startClassification(const cv::Mat &data, const cv::Mat &train_data, const cv::Mat &responses)
 {
-    return data;
+    cv::Mat result(data.rows,1,CV_32SC1);
+    cv::NormalBayesClassifier classifier;
+    classifier.train(train_data,responses);
+    classifier.predict(data,&result);
+    std::cout<<result;
+    return result;
 }
 
 

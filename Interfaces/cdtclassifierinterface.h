@@ -12,7 +12,7 @@ public:
     explicit CDTClassifierInterface(QObject* parent = 0):QObject(parent){}    
 
     virtual QString classifierName() const = 0;
-    virtual cv::Mat startClassification(const cv::Mat &data,const cv::Mat &response) = 0;
+    virtual cv::Mat startClassification(const cv::Mat &data,const cv::Mat &train_data,const cv::Mat &responses) = 0;
 signals:        
 
 private:    

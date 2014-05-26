@@ -21,7 +21,7 @@
 
 class KNNInterfacePrivate
 {
-    KNNInterfacePrivate():maxK(32){}
+    KNNInterfacePrivate():maxK(10){}
     friend class KNNInterface;
     int maxK;
 };
@@ -42,9 +42,24 @@ QString KNNInterface::classifierName() const
     return tr("K-Nearest Neighbors");
 }
 
-cv::Mat KNNInterface::startClassification(const cv::Mat &data, const cv::Mat &response)
+cv::Mat KNNInterface::startClassification(const cv::Mat &data, const cv::Mat &train_data, const cv::Mat &responses)
 {
-    return data;
+    cv::Mat result(data.rows,1,CV_32SC1);
+    cv::KNearest classifier;
+
+    classifier.train(train_data,responses,cv::Mat(),false,maxK());
+
+    cv::Mat testSample(1, data.cols, CV_32FC1);
+    for (int i=0;i<data.rows;++i)
+    {
+        for (int j=0; j<data.cols; ++j)
+        {
+            testSample.at<float>(0, j) = data.at<float>(i,j);
+        }
+        float flag = classifier.find_nearest(testSample,maxK());
+        result.at<int>(i,0) = flag+0.5;
+    }
+    return result;
 }
 
 int KNNInterface::maxK() const

@@ -20,7 +20,7 @@ public:
     ~KNNInterface();
     QString classifierName() const;
 
-    cv::Mat startClassification(const cv::Mat &data,const cv::Mat &response);
+    cv::Mat startClassification(const cv::Mat &data,const cv::Mat &train_data,const cv::Mat &responses);
 
     int maxK()const;
 

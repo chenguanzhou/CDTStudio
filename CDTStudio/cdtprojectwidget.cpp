@@ -65,11 +65,21 @@ bool CDTProjectWidget::readProject(const QString &filepath)
         return false;
     }
 
-//    project->setLayerInfo(QString(),filepath);
     if (openProjectFile(filepath)==false)
         return false;
 
-    QDataStream in(&(file));
+    QByteArray compressedData = file.readAll();
+    QByteArray data = qUncompress(compressedData);
+    qDebug()<<data.size();
+    QTemporaryFile tempFile;
+    tempFile.open();
+    tempFile.write(data);
+    qDebug()<<tempFile.size();
+    tempFile.flush();
+    tempFile.seek(0);
+    QDataStream in(&(tempFile));
+
+//    QDataStream in(&(file));
     quint32 magicNumber;
     in>>  magicNumber;
     if (magicNumber != (quint32)0xABCDEF)
@@ -88,12 +98,32 @@ bool CDTProjectWidget::readProject(const QString &filepath)
 
 bool CDTProjectWidget::writeProject()
 {
+//    file.seek(0);
+//    QDataStream out(&file);
+//    out << (quint32)0xABCDEF;
+//    out<<*project;
+//    file.flush();
+//    isChanged = false;
+
+    QTemporaryFile tempFile;
+    tempFile.open();
+    QDataStream temp(&tempFile);
+    temp << (quint32)0xABCDEF;
+    temp <<*project;
+    tempFile.flush();
+    tempFile.seek(0);
+    qDebug()<<"tempFile:"<<tempFile.size();
+
+    QByteArray array = tempFile.readAll();
+    QByteArray compressedDat = qCompress(array);
+    qDebug()<<"compressedData:"<<compressedDat.size();
     file.seek(0);
-    QDataStream out(&file);
-    out << (quint32)0xABCDEF;
-    out<<*project;
+    file.resize(0);
+    file.write(compressedDat);
     file.flush();
+    qDebug()<<"compressedFile:"<<file.size();
     isChanged = false;
+
     return true;
 }
 

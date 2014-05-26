@@ -15,7 +15,7 @@ class WizardNewClassification : public QWizard
     Q_OBJECT
 
 public:
-    explicit WizardNewClassification(QWidget *parent = 0);
+    explicit WizardNewClassification(QUuid segmentationID,QWidget *parent = 0);
     ~WizardNewClassification();
 
 private:
@@ -23,7 +23,7 @@ private:
     void updateFeatures(QString segID);
     static QStringList attributeNames();
     bool validateCurrentPage();
-
+    void startClassification();
 
 private slots:
     void onSegmentationChanged(int index);

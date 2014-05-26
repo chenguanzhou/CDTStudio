@@ -157,7 +157,7 @@ void CDTSegmentationLayer::onActionRename()
 void CDTSegmentationLayer::addClassification()
 {
     MainWindow::getAttributesDockWidget()->clearTables();
-    WizardNewClassification dlg;
+    WizardNewClassification dlg(id());
     dlg.exec();
     MainWindow::getAttributesDockWidget()->updateTable();
 }
