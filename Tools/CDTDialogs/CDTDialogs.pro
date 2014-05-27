@@ -4,13 +4,15 @@
 #
 #-------------------------------------------------
 
-QT       += widgets sql xml
+QT       += sql xml
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = CDTDialogs
 TEMPLATE = lib
-CONFIG += staticlib
+#CONFIG += staticlib
 
 INCLUDEPATH += ../../Interfaces
+DEFINES += CDTDIALOGS_LIBRARY
 
 SOURCES +=  dialogdbconnection.cpp\
     dialognewproject.cpp \
@@ -18,6 +20,7 @@ SOURCES +=  dialogdbconnection.cpp\
     dialogconsole.cpp \
 
 HEADERS += ../../Interfaces/cdtsegmentationInterface.h \
+    cdtdialogs_global.h \
     dialogdbconnection.h \
     dialognewproject.h \
     dialognewimage.h \
@@ -29,6 +32,7 @@ FORMS    += dialogdbconnection.ui\
     dialogconsole.ui \
 
 DESTDIR = ../../lib
+DLLDESTDIR = ../../bin
 
 unix {
     target.path = /usr/lib

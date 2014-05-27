@@ -2,13 +2,14 @@
 #define DIALOGDBCONNECTION_H
 
 #include <QDialog>
-#include <QFileDialog>
 
+
+#include "cdtdialogs_global.h"
 namespace Ui {
 class DialogDBConnection;
 }
 
-class CDTDatabaseConnInfo
+class CDTDIALOGS_EXPORT CDTDatabaseConnInfo
 {
 public:
     QString dbType;
@@ -21,10 +22,10 @@ public:
     bool operator==(const CDTDatabaseConnInfo& rhs) const;
     bool isNull();
 };
-QDataStream &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo);
-QDataStream &operator>>(QDataStream &in, CDTDatabaseConnInfo &dbInfo);
+QDataStream CDTDIALOGS_EXPORT &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo);
+QDataStream CDTDIALOGS_EXPORT &operator>>(QDataStream &in, CDTDatabaseConnInfo &dbInfo);
 
-class DialogDBConnection : public QDialog
+class CDTDIALOGS_EXPORT DialogDBConnection : public QDialog
 {
     Q_OBJECT
 

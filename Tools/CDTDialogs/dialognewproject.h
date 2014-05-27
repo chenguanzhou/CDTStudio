@@ -2,12 +2,13 @@
 #define DIALOGNEWPROJECT_H
 
 #include <QDialog>
+#include "cdtdialogs_global.h"
 
 namespace Ui {
 class DialogNewProject;
 }
 
-class DialogNewProject : public QDialog
+class CDTDIALOGS_EXPORT DialogNewProject : public QDialog
 {
     Q_OBJECT
 

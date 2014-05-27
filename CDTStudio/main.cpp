@@ -31,6 +31,12 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 #pragma comment(lib,cvLIB("ml"))
 #endif
 
+//TODO  Build file system
+//TODO  Classification effect
+//TODO  Encrypt password
+
+//BUG   Stxxl
+
 bool initDatabase()
 {
     /// Add database

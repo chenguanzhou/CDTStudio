@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QtSql>
+#include "cdtdialogs_global.h"
+
 namespace Ui {
 class DialogConsole;
 }
@@ -10,7 +12,7 @@ class DialogConsole;
 class QStringListModel;
 class QModelIndex;
 
-class DialogConsole : public QDialog
+class CDTDIALOGS_EXPORT DialogConsole : public QDialog
 {
     Q_OBJECT
 

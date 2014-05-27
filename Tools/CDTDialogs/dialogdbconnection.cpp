@@ -3,7 +3,7 @@
 #include <QtCore>
 #include <QtSql>
 #include <QMessageBox>
-
+#include <QFileDialog>
 
 QDataStream &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo)
 {

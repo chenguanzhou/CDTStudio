@@ -2,12 +2,13 @@
 #define DIALOGNEWIMAGE_H
 
 #include <QDialog>
+#include "cdtdialogs_global.h"
 
 namespace Ui {
 class DialogNewImage;
 }
 
-class DialogNewImage : public QDialog
+class CDTDIALOGS_EXPORT DialogNewImage : public QDialog
 {
     Q_OBJECT
 

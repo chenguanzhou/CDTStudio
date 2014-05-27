@@ -1,0 +1,12 @@
+#ifndef CDTDIALOGS_GLOBAL_H
+#define CDTDIALOGS_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(CDTDIALOGS_LIBRARY)
+#  define CDTDIALOGS_EXPORT Q_DECL_EXPORT
+#else
+#  define CDTDIALOGS_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // CDTDIALOGS_GLOBAL_H

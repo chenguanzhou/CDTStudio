@@ -28,6 +28,7 @@
 #define QPROPERTYEDITORWIDGET_H_
 
 #include <QTreeView>
+#include <QPropertyEditor_Global.h>
 
 class QPropertyModel;
 class Property;
@@ -55,7 +56,7 @@ class Property;
  * editor for QColor (based on the Color Editor Factory Example from Trolltech). But it can easily be extended by yourself
  * either within the library or for special datatypes also outside of the library in your application.
  */
-class QPropertyEditorWidget : public QTreeView
+class QPROPERTYEDITOR_EXPORT QPropertyEditorWidget : public QTreeView
 {
 	Q_OBJECT
 public:
