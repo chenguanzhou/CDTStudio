@@ -167,6 +167,11 @@ WizardNewClassification::~WizardNewClassification()
         QSqlDatabase::removeDatabase("cls");
 }
 
+bool WizardNewClassification::isValid() const
+{
+    return finished;
+}
+
 void WizardNewClassification::initClassifiers()
 {
     ui->comboBoxClassifier->clear();
@@ -251,6 +256,7 @@ bool WizardNewClassification::validateCurrentPage()
 void WizardNewClassification::startClassification()
 {
     //Init
+    finished = false;
     bool isTransform = ui->checkBoxNormalize->isChecked();
     QString transformMethod = ui->comboBoxNormalize->currentText();
     bool isPCA = ui->checkBoxPCA->isChecked();
@@ -265,7 +271,7 @@ void WizardNewClassification::startClassification()
     QString imageID = query.value(0).toString();
 
     //Samples
-    QMap<QString,int> categoryID_Index;
+    categoryID_Index.clear();
     query.exec(QString("select id from category where imageid ='%1'").arg(imageID));
     int index = 0;
     while(query.next())
@@ -339,7 +345,7 @@ void WizardNewClassification::startClassification()
     for (int i=0;i<samples.keys().size();++i)
     {
         int objID = samples.keys().at(i);
-        int catID = categoryID_Index.value(samples.value(objID));
+        int catID = categoryID_Index.value(samples.value(objID)).toInt();
         float* pData = data.ptr<float>(objID);
         float* pTrain = train_data.ptr<float>(i);
 
@@ -349,9 +355,18 @@ void WizardNewClassification::startClassification()
 
     CDTClassifierInterface *interface = classifierPlugins[ui->comboBoxClassifier->currentIndex()];
     cv::Mat result = interface->startClassification(data,train_data,responses);
-    QVector<int> label(result.rows) ;
+
+    //Export
+    name = ui->lineEditOutputName->text();
+    method = ui->comboBoxClassifier->currentText();
+    label.clear();
     for (int i=0;i<result.rows;++i)
-        label[i] = result.at<int>(i,0);
+        label<<result.at<int>(i,0);
+
+
+    params = interface->params();
+    qDebug()<<params.size();
+
 
     finished = true;
 }

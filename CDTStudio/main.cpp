@@ -34,6 +34,11 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 //TODO  Build file system
 //TODO  Classification effect
 //TODO  Encrypt password
+//TODO  QWTPlot Frame(Histogram)
+//TODO  Some QButtonGroup
+//TODO  Same name
+//TODO  Project tree Checkbox
+//TODO  Translation
 
 //BUG   Stxxl
 
@@ -46,8 +51,16 @@ bool initDatabase()
         return false;
     }
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","category");
-    db.setDatabaseName(":memory:");
-//    db.setDatabaseName("d:/hehe.db");
+
+    QString dbPath;
+    dbPath = ":memory:";
+
+//    QTemporaryFile dbFile;
+//    dbFile.open();
+//    dbPath = dbFile.fileName();
+//    dbFile.close();
+
+    db.setDatabaseName(dbPath);
     if (!db.open())
     {
         QMessageBox::warning(NULL, QObject::tr("Unable to open database"),
@@ -89,6 +102,22 @@ bool initDatabase()
         return false;
     }
 
+    ///  Create classification layer table(id text,name text,data blob,clsinfo blob,segmentationID text).
+    ret = query.exec("CREATE TABLE classificationlayer"
+                     "(id text NOT NULL, "
+                     "name text NOT NULL,"
+                     "method text NOT NULL,"
+                     "params blob NOT NULL,"
+                     "data blob NOT NULL,"
+                     "clsinfo blob NOT NULL,"
+                     "segmentationID text NOT NULL,"
+                     "Primary Key(id) )");
+    if (ret == false)
+    {
+        QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table classificationlayer failed!\nerror:")+query.lastError().text());
+        return false;
+    }
+
     /// Create category table(name text,color blob,imageID text).
     ret = query.exec("CREATE TABLE category "
                      "(id text NOT NULL,"
@@ -124,11 +153,22 @@ bool initDatabase()
                      "Primary Key(objectid,categoryid,sampleid) )");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table sample_segmentation failed!\nerror:")+query.lastError().text());
+        QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table samples failed!\nerror:")+query.lastError().text());
         return false;
     }
 
     return true;
+}
+
+void clearDatabase()
+{
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QString databaseName = db.databaseName();
+    db.removeDatabase("category");
+    if (databaseName != ":memory:")
+    {
+        QFile::remove(databaseName);
+    }
 }
 
 int main(int argc, char *argv[])
@@ -152,5 +192,9 @@ int main(int argc, char *argv[])
     attributesPlugins   = CDTPluginLoader<CDTAttributesInterface>::getPlugins();
     classifierPlugins   = CDTPluginLoader<CDTClassifierInterface>::getPlugins();
 
-    return a.exec();
+    int ret = a.exec();
+
+    clearDatabase();
+
+    return ret;
 }

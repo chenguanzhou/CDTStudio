@@ -242,28 +242,8 @@ void CDTImageLayer::onActionCategoryInformation()
 
 }
 
-void CDTImageLayer::updateTreeModel(CDTProjectTreeItem *parent)
-{
-    CDTProjectTreeItem *imageroot =new CDTProjectTreeItem(
-                CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,name(),this);
-    CDTProjectTreeItem *value =new CDTProjectTreeItem(
-                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,path(),this);
-    CDTProjectTreeItem *segmentationsroot =new CDTProjectTreeItem(
-                CDTProjectTreeItem::SEGMENTION_ROOT,CDTProjectTreeItem::GROUP,tr("segmentations"),this);
-
-    parent->setChild(parent->rowCount(),0,imageroot);
-    parent->setChild(parent->rowCount()-1,1,value);
-    imageroot->setChild(0,segmentationsroot);
-
-    for(int i=0;i<segmentations.size();++i)
-    {
-        segmentations[i]->updateTreeModel(segmentationsroot);
-    }
-}
-
 void CDTImageLayer::onContextMenuRequest(QWidget *parent)
 {
-
     removeImage->setIcon(QIcon(":/Icon/remove.png"));
     removeAllSegmentations->setIcon(QIcon(":/Icon/remove.png"));
     addSegmentationLayer->setIcon(QIcon(":/Icon/add.png"));

@@ -18,6 +18,8 @@ public:
     explicit WizardNewClassification(QUuid segmentationID,QWidget *parent = 0);
     ~WizardNewClassification();
 
+    bool isValid()const;
+
 private:
     void initClassifiers();
     void updateFeatures(QString segID);
@@ -31,6 +33,14 @@ private slots:
     void onCurrentPageChanged(int pageID);
     void onButtonClicked(int buttonID);
     void updateSelectedFeature();
+
+public:
+    //Export
+    QString name;
+    QString method;
+    QList<QVariant> label;//QList<int>
+    QMap<QString,QVariant> categoryID_Index;//QMap<QString,int>
+    QMap<QString,QVariant> params;
 
 private:
     Ui::WizardNewClassification *ui;

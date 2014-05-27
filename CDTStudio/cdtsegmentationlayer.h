@@ -34,8 +34,6 @@ public:
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
     friend QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);
 
-
-
     QString name()const;
     QString shapefilePath() const;
     QString markfilePath() const;
@@ -53,20 +51,23 @@ signals:
     void nameChanged();
     void segmentationChanged();
     void removeSegmentation(CDTSegmentationLayer*);
+
 public slots:
-    void updateTreeModel(CDTProjectTreeItem* parent);
     void onContextMenuRequest(QWidget *parent);
     void onActionRename();
     void remove();
+
     void addClassification();
 //    void removeClassification(CDTClassification *);
 //    void removeAllClassifications();
+
     void setName(const QString& name);
     void setLayerInfo(const QString& name,const QString &shpPath,const QString &mkPath);
     void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
     void setDatabaseURL(CDTDatabaseConnInfo url);
 
 private:
+    void addClassification(CDTClassification* classification);
     void loadSamplesFromStruct(const QMap<QString,QString> &sample_id_name,const QList<SampleElement> &samples);
     void saveSamplesToStruct(QMap<QString,QString> &sample_id_name,QList<SampleElement> &samples) const;
 //    void addClassification(CDTClassification* classification);
@@ -87,6 +88,7 @@ private:
     CDTProjectTreeItem* markfileItem;
     CDTProjectTreeItem* paramRootItem;
     CDTProjectTreeItem* paramRootValueItem;
+    CDTProjectTreeItem* classificationRootItem;
 
     static QList<CDTSegmentationLayer *> layers;
 };

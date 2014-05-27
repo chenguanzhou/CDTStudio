@@ -9,12 +9,10 @@
 #include <QAction>
 
 
+
 class CDTClassification:public CDTBaseObject
 {
-    Q_OBJECT
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(QString shapefilePath READ shapefilePath WRITE setShapefilePath NOTIFY shapefilePathChanged)
-    Q_PROPERTY(QString method READ method)
+    Q_OBJECT   
 public:
     explicit CDTClassification(QUuid uuid,QObject* parent=0);
 
@@ -22,29 +20,39 @@ public:
     friend QDataStream &operator>>(QDataStream &in, CDTClassification &classification);
 
     QString name()const;
-    QString shapefilePath() const;
-    QString method()const;
+    QString method()const;    
+    QMap<QString,QVariant> params()const;
+    QList<QVariant> data()const;
+    QMap<QString,QVariant> clsInfo()const;
 
-    void setName(const QString& name);
-    void setShapefilePath(const QString &shpPath);
-    void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
+    void initClassificationLayer(
+            const QString &name,
+            const QString &methodName,
+            const QMap<QString, QVariant> &param,
+            const QList<QVariant> &data,
+            const QMap<QString, QVariant> &clsInfo
+    );
 
 signals:
-    void nameChanged();
-    void shapefilePathChanged();
-    void methodParamsChanged();
     void removeClassification(CDTClassification*);
+    void classificationLayerChanged();
+
 public slots:
-    void updateTreeModel(CDTProjectTreeItem* parent);
     void onContextMenuRequest(QWidget *parent);
     void remove();
 
 private:
-    QString m_name;
-    QString m_shapefilePath;
-    QString m_method;
-    QMap<QString,QVariant> m_params;
+    void setName(const QString& name);
+    void setMethod(const QString &methodName);
+    void setParam(const QMap<QString,QVariant> &param);
+    void setData(const QList<QVariant>& data);
+    void setClsInfo(const QMap<QString,QVariant>& clsInfo)const;
+
+private:
     QAction* actionRemoveClassification;
+
+    CDTProjectTreeItem* paramRootItem;
+    CDTProjectTreeItem* paramRootValueItem;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);

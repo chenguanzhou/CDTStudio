@@ -36,8 +36,8 @@ public:
 signals:
     void imageLayerChanged();
     void removeImageLayer(CDTImageLayer*);
-public slots:
-    void updateTreeModel(CDTProjectTreeItem* parent);
+
+public slots:    
     void onContextMenuRequest(QWidget *parent);
     void addSegmentation();
     void remove();

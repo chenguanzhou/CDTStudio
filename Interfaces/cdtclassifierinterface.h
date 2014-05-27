@@ -13,6 +13,20 @@ public:
 
     virtual QString classifierName() const = 0;
     virtual cv::Mat startClassification(const cv::Mat &data,const cv::Mat &train_data,const cv::Mat &responses) = 0;
+    QMap<QString,QVariant> params() const
+    {
+        QMap<QString,QVariant> params;
+        const QMetaObject *metaObj = this->metaObject();
+        for(int i=metaObj->propertyOffset();i<metaObj->propertyCount();++i)
+        {
+            QMetaProperty property = metaObj->property(i);
+            if (property.isUser() && property.isDesignable())
+            {
+                params.insert(property.name(),this->property(property.name()));
+            }
+        }
+        return params;
+    }
 signals:        
 
 private:    

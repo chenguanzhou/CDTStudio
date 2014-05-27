@@ -38,6 +38,8 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
       actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this)),
       actionRename(new QAction(tr("Rename Segmentation Name"),this))
 {
+    layers.push_back(this);
+
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
 
@@ -56,12 +58,13 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
     paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
-    layers.push_back(this);
+    classificationRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::GROUP,tr("Classification"),this);
+    keyItem->appendRow(classificationRootItem);
 
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
-    connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),(CDTImageLayer*)(this->parent()),SLOT(removeSegmentation(CDTSegmentationLayer*)));
-    connect(this,SIGNAL(segmentationChanged()),(CDTImageLayer*)(this->parent()),SIGNAL(imageLayerChanged()));
+    connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
+    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
 
     connect(addClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
     connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
@@ -80,52 +83,6 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
     ret = query.exec("delete from segmentationlayer where id = '"+uuid.toString()+"'");
     if (!ret)
         qDebug()<<"prepare:"<<query.lastError().text();
-}
-
-void CDTSegmentationLayer::updateTreeModel(CDTProjectTreeItem *parent)
-{    
-    CDTProjectTreeItem *segment =new CDTProjectTreeItem(
-                CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::GROUP,this->name(),this);
-    CDTProjectTreeItem *paramShp =new CDTProjectTreeItem(
-                CDTProjectTreeItem::PARAM,CDTProjectTreeItem::VECTOR,tr("Shapefile path"),this);
-    CDTProjectTreeItem *valueShp =new CDTProjectTreeItem(
-                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,this->shapefilePath(),this);
-    CDTProjectTreeItem *paramMk =new CDTProjectTreeItem(
-                CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("Markfile path"),this);
-    CDTProjectTreeItem *valueMk =new CDTProjectTreeItem(
-                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,this->markfilePath(),this);
-    CDTProjectTreeItem *methodroot =new CDTProjectTreeItem(
-                CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
-    CDTProjectTreeItem *methodrootvalue =new CDTProjectTreeItem(
-                CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,m_method,this);
-    CDTProjectTreeItem *classificationsroot =new CDTProjectTreeItem(
-                CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::EMPTY,tr("Classifications"),this);
-
-    for(int i=0;i<m_params.size();++i)
-    {
-        QList<QString> keys =m_params.keys();
-        CDTProjectTreeItem *methodparam =new CDTProjectTreeItem(
-                    CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,keys[i],this);
-        CDTProjectTreeItem *methodvalue =new CDTProjectTreeItem(
-                    CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,m_params[keys[i]].toString(),this);
-        methodroot->setChild(i,0,methodparam);
-        methodroot->setChild(i,1,methodvalue);
-    }
-
-    segment->setChild(0,0,paramShp);
-    segment->setChild(0,1,valueShp);
-    segment->setChild(1,0,paramMk);
-    segment->setChild(1,1,valueMk);
-    segment->setChild(2,0,methodroot);
-    segment->setChild(2,1,methodrootvalue);
-    segment->setChild(3,classificationsroot);
-
-    parent->appendRow(segment);
-
-    for(int i=0;i<classifications.size();++i)
-    {
-        classifications[i]->updateTreeModel(classificationsroot);
-    }
 }
 
 void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
@@ -158,8 +115,21 @@ void CDTSegmentationLayer::addClassification()
 {
     MainWindow::getAttributesDockWidget()->clearTables();
     WizardNewClassification dlg(id());
-    dlg.exec();
+    int ret = dlg.exec();
     MainWindow::getAttributesDockWidget()->updateTable();
+
+    if (ret == QWizard::Accepted || dlg.isValid())
+    {
+        CDTClassification *classification = new CDTClassification(QUuid::createUuid(),this);
+        classification->initClassificationLayer(
+            dlg.name,
+            dlg.method,
+            dlg.params,
+            dlg.label,
+            dlg.categoryID_Index);
+        classificationRootItem->appendRow(classification->standardItems());
+        addClassification(classification);
+    }
 }
 
 void CDTSegmentationLayer::remove()
@@ -326,6 +296,12 @@ void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
     emit segmentationChanged();
 }
 
+void CDTSegmentationLayer::addClassification(CDTClassification *classification)
+{
+    classifications.push_back(classification);
+    emit segmentationChanged();
+}
+
 void CDTSegmentationLayer::loadSamplesFromStruct(const QMap<QString, QString> &sample_id_name, const QList<SampleElement> &samples)
 {
     QSqlQuery query(QSqlDatabase::database("category"));
@@ -427,6 +403,7 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
     {
         CDTClassification* classification = new CDTClassification(QUuid(),&segmentation);
         in>>*classification;
+        segmentation.classificationRootItem->appendRow(classification->standardItems());
         segmentation.classifications.push_back(classification);
     }
     return in;
