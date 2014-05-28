@@ -200,13 +200,28 @@ QString CDTSegmentationLayer::imagePath() const
     return m_imagePath;
 }
 
+void CDTSegmentationLayer::setClassificationInfo(CDTClassification *classification)
+{
+    classification->data();
+    classification->clsInfo();
+
+    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
+    QgsFields fields = p->pendingFields();
+    qDebug()<<fields.indexFromName("ClassID");
+    if (fields.indexFromName("ClassID")==-1)
+    {
+        QgsField field("ClassID",QVariant::String);
+        fields.append(field);
+    }
+
+}
+
 void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
 {
     QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
     if (p!=NULL)
     {
         p->setRendererV2(r);
-
     }
 }
 

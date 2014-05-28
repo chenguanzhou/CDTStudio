@@ -179,6 +179,7 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         if (classificationLayer != NULL)
         {
             CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());
+            segmentationLayer->setClassificationInfo(classificationLayer);
             segmentationLayer->setRenderer(classificationLayer->renderer());
         }
     }

@@ -90,9 +90,6 @@ QgsFeatureRendererV2 *CDTClassification::renderer()
     QList<QVariant> data = this->data();
     QMap<QString,QVariant> clsInfo = this->clsInfo();
     QMap<QString,QgsFillSymbolV2*> symbols;
-    qDebug()<<"data.size():"<<data.size();
-    qDebug()<<"clsInfo.size():"<<clsInfo.size();
-
 
     foreach (QString categoryID, clsInfo.keys()) {
         QSqlQuery query(QSqlDatabase::database("category"));
@@ -105,21 +102,17 @@ QgsFeatureRendererV2 *CDTClassification::renderer()
         symbols.insert(categoryID,fillSymbol);
     }
 
-    qDebug()<<"symbols.size():"<<symbols.size();
-
     QgsCategoryList categoryList;
-    for (int objID = 0;objID<data.size();++objID)
-    {
-        QString categoryID = data[objID].toString();
-//        categoryList<<QgsRendererCategoryV2(objID,symbols[categoryID],QString::number(objID));
-        QgsRendererCategoryV2 rend;
-        rend.setValue(objID);
-        rend.setSymbol(symbols[categoryID]);
-        rend.setLabel(QString::number(objID));
-        categoryList<<rend;
-    }
+//    for (int objID = 0;objID<data.size();++objID)
+//    {
+//        QString categoryID = data[objID].toString();
+//        QgsRendererCategoryV2 rend;
+//        rend.setValue(objID);
+//        rend.setSymbol(symbols[categoryID]);
+//        rend.setLabel(QString::number(objID));
+//        categoryList<<rend;
+//    }
     QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("GridCode",categoryList);
-    qDebug()<<"hehe";
     return categorizedSymbolRenderer;
 }
 
@@ -203,9 +196,6 @@ void CDTClassification::initClassificationLayer(
     query.exec();
 
     keyItem->setText(name);
-
-    qDebug()<<QVariant::fromValue(clsInfo);
-    qDebug()<<this->clsInfo();
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTClassification &classification)

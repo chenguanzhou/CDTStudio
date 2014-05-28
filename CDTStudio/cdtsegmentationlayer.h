@@ -42,6 +42,7 @@ public:
     CDTDatabaseConnInfo databaseURL() const;
     QString imagePath()const;
 
+    void setClassificationInfo(CDTClassification* classification);
     void setRenderer(QgsFeatureRendererV2 *r);
 
     static QList<CDTSegmentationLayer *> getLayers();
