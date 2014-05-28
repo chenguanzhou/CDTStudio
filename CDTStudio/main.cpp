@@ -54,6 +54,7 @@ bool initDatabase()
 
     QString dbPath;
     dbPath = ":memory:";
+//    dbPath = "C:/Users/cgz/Documents/data/lalalla.db";
 
 //    QTemporaryFile dbFile;
 //    dbFile.open();
@@ -107,9 +108,9 @@ bool initDatabase()
                      "(id text NOT NULL, "
                      "name text NOT NULL,"
                      "method text NOT NULL,"
-                     "params blob NOT NULL,"
-                     "data blob NOT NULL,"
-                     "clsinfo blob NOT NULL,"
+                     "params blob,"
+                     "data blob,"
+                     "clsinfo blob,"
                      "segmentationID text NOT NULL,"
                      "Primary Key(id) )");
     if (ret == false)

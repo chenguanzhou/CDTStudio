@@ -57,7 +57,8 @@ HEADERS  += \
     dialoggenerateattributes.h \    
     cdtattributedockwidget.h \
     cdtsampledockwidget.h \
-    wizardnewclassification.h
+    wizardnewclassification.h \
+    cdtvariantconverter.h
 
 
 FORMS    += mainwindow.ui \            

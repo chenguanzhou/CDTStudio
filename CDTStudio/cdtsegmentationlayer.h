@@ -9,6 +9,7 @@ class CDTClassification;
 class CDTMapToolSelectTrainingSamples;
 class CDTTrainingSamplesForm;
 class CDTProjectTreeItem;
+class QgsFeatureRendererV2;
 
 class SampleElement
 {
@@ -41,7 +42,7 @@ public:
     CDTDatabaseConnInfo databaseURL() const;
     QString imagePath()const;
 
-    CDTTrainingSamplesForm *trainingForm()const;
+    void setRenderer(QgsFeatureRendererV2 *r);
 
     static QList<CDTSegmentationLayer *> getLayers();
     static CDTSegmentationLayer * getLayer(QUuid uuid);

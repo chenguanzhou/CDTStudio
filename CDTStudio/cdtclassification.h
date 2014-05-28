@@ -2,13 +2,11 @@
 #define CDTCLASSIFICATION_H
 
 #include <QtCore>
-#include <QMap>
-#include <QVariant>
 #include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
-#include <QAction>
 
-
+class QAction;
+class QgsFeatureRendererV2;
 
 class CDTClassification:public CDTBaseObject
 {
@@ -21,9 +19,11 @@ public:
 
     QString name()const;
     QString method()const;    
-    QMap<QString,QVariant> params()const;
-    QList<QVariant> data()const;
-    QMap<QString,QVariant> clsInfo()const;
+    QVariantMap params()const;
+    QVariantList data()const;
+    QVariantMap clsInfo()const;
+
+    QgsFeatureRendererV2* renderer();
 
     void initClassificationLayer(
             const QString &name,
@@ -43,10 +43,10 @@ public slots:
 
 private:
     void setName(const QString& name);
-    void setMethod(const QString &methodName);
-    void setParam(const QMap<QString,QVariant> &param);
-    void setData(const QList<QVariant>& data);
-    void setClsInfo(const QMap<QString,QVariant>& clsInfo)const;
+//    void setMethod(const QString &methodName);
+//    void setParam(const QMap<QString,QVariant> &param);
+//    void setData(const QList<QVariant>& data);
+//    void setClsInfo(const QMap<QString,QVariant>& clsInfo)const;
 
 private:
     QAction* actionRemoveClassification;

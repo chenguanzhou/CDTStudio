@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>CDTStudio</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -190,7 +190,6 @@
    </property>
   </action>
   <zorder>dockWidgetProject</zorder>
-  <zorder>dockWidgetTrainingSample</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

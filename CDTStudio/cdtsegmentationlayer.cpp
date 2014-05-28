@@ -200,9 +200,14 @@ QString CDTSegmentationLayer::imagePath() const
     return m_imagePath;
 }
 
-CDTTrainingSamplesForm *CDTSegmentationLayer::trainingForm() const
+void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
 {
-    return ((CDTImageLayer*) parent())->trainingForm;
+    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
+    if (p!=NULL)
+    {
+        p->setRendererV2(r);
+
+    }
 }
 
 QList<CDTSegmentationLayer *> CDTSegmentationLayer::getLayers()
@@ -249,13 +254,15 @@ void CDTSegmentationLayer::setLayerInfo(const QString &name, const QString &shpP
     shapefileItem->setText(shpPath);
     markfileItem->setText(mkPath);
 
-    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
+
     QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
     symbolLayer->setColor(QColor(0,0,0,0));
     symbolLayer->setBorderColor(QColor(qrand()%255,qrand()%255,qrand()%255));
     QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
     QgsSingleSymbolRendererV2* singleSymbolRenderer = new QgsSingleSymbolRendererV2(fillSymbol);
-    p->setRendererV2(singleSymbolRenderer);
+    this->setRenderer(singleSymbolRenderer);
+
+
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
     keyItem->setMapLayer(mapCanvasLayer);
 
@@ -343,13 +350,6 @@ void CDTSegmentationLayer::saveSamplesToStruct(QMap<QString, QString> &sample_id
         }
     }
 }
-
-//void CDTSegmentationLayer::addClassification(CDTClassification *classification)
-//{
-//    classifications.push_back(classification);
-//    emit methodParamsChanged();
-//    connect(classification,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
-//}
 
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)
 {    

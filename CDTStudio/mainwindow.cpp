@@ -173,6 +173,15 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
             }
         }
     }
+    if (type == CDTProjectTreeItem::CLASSIFICATION)
+    {
+        CDTClassification* classificationLayer = (CDTClassification*)(item->correspondingObject());
+        if (classificationLayer != NULL)
+        {
+            CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());
+            segmentationLayer->setRenderer(classificationLayer->renderer());
+        }
+    }
     else if (type == CDTProjectTreeItem::IMAGE_ROOT)
     {
         //set current layer?

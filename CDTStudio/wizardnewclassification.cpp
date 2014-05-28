@@ -365,7 +365,6 @@ void WizardNewClassification::startClassification()
 
 
     params = interface->params();
-    qDebug()<<params.size();
 
 
     finished = true;

@@ -1,6 +1,12 @@
 #include "cdtclassification.h"
 #include "cdtsegmentationlayer.h"
-#include <QMenu>
+#include "stable.h"
+#include <qgsvectorlayer.h>
+#include <qgsmaplayerregistry.h>
+#include <qgssinglesymbolrendererv2.h>
+#include <qgsfillsymbollayerv2.h>
+#include <qgscategorizedsymbolrendererv2.h>
+#include "cdtvariantconverter.h"
 
 CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
     :CDTBaseObject(uuid,parent),
@@ -13,7 +19,7 @@ CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
     paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
-    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(segmentationChanged()));
+    connect(this,SIGNAL(classificationLayerChanged()),this->parent(),SIGNAL(segmentationChanged()));
     connect(actionRemoveClassification,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeClassification(CDTClassification*)),this->parent(),SLOT(removeClassification(CDTClassification*)));
 }
@@ -50,31 +56,71 @@ QString CDTClassification::method() const
     return query.value(0).toString();
 }
 
-QMap<QString, QVariant> CDTClassification::params() const
+QVariantMap CDTClassification::params() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
     query.exec("select params from classificationlayer where id ='" + this->id().toString() +"'");
     query.next();
-    return query.value(0).toMap();
+
+    return variantToData<QVariantMap>(query.value(0));
 }
 
-QList<QVariant> CDTClassification::data() const
+QVariantList CDTClassification::data() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
     query.exec("select data from classificationlayer where id ='" + this->id().toString() +"'");
     query.next();
-    return query.value(0).toList();
+
+    return variantToData<QVariantList>(query.value(0));
 }
 
-QMap<QString, QVariant> CDTClassification::clsInfo() const
+QVariantMap CDTClassification::clsInfo() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
     query.exec("select clsinfo from classificationlayer where id ='" + this->id().toString() +"'");
     query.next();
-    return query.value(0).toMap();
+    return variantToData<QVariantMap>(query.value(0));
+}
+
+QgsFeatureRendererV2 *CDTClassification::renderer()
+{
+    QList<QVariant> data = this->data();
+    QMap<QString,QVariant> clsInfo = this->clsInfo();
+    QMap<QString,QgsFillSymbolV2*> symbols;
+    qDebug()<<"data.size():"<<data.size();
+    qDebug()<<"clsInfo.size():"<<clsInfo.size();
+
+
+    foreach (QString categoryID, clsInfo.keys()) {
+        QSqlQuery query(QSqlDatabase::database("category"));
+        query.exec(QString("select color from category where id = '%1'").arg(categoryID));
+        query.next();
+        QColor clr = query.value(0).value<QColor>();
+        QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+        symbolLayer->setColor(clr);
+        QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
+        symbols.insert(categoryID,fillSymbol);
+    }
+
+    qDebug()<<"symbols.size():"<<symbols.size();
+
+    QgsCategoryList categoryList;
+    for (int objID = 0;objID<data.size();++objID)
+    {
+        QString categoryID = data[objID].toString();
+//        categoryList<<QgsRendererCategoryV2(objID,symbols[categoryID],QString::number(objID));
+        QgsRendererCategoryV2 rend;
+        rend.setValue(objID);
+        rend.setSymbol(symbols[categoryID]);
+        rend.setLabel(QString::number(objID));
+        categoryList<<rend;
+    }
+    QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("GridCode",categoryList);
+    qDebug()<<"hehe";
+    return categorizedSymbolRenderer;
 }
 
 void CDTClassification::setName(const QString &name)
@@ -88,41 +134,41 @@ void CDTClassification::setName(const QString &name)
     keyItem->setText(name);
 }
 
-void CDTClassification::setMethod(const QString &methodName)
-{
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE classificationlayer set method = ? where id =?");
-    query.bindValue(0,QVariant(methodName));
-    query.bindValue(1,this->id().toString());
-    query.exec();
-}
+//void CDTClassification::setMethod(const QString &methodName)
+//{
+//    QSqlQuery query(QSqlDatabase::database("category"));
+//    query.prepare("UPDATE classificationlayer set method = ? where id =?");
+//    query.bindValue(0,QVariant(methodName));
+//    query.bindValue(1,this->id().toString());
+//    query.exec();
+//}
 
-void CDTClassification::setParam(const QMap<QString, QVariant> &param)
-{
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE classificationlayer set params = ? where id =?");
-    query.bindValue(0,QVariant(param));
-    query.bindValue(1,this->id().toString());
-    query.exec();
-}
+//void CDTClassification::setParam(const QMap<QString, QVariant> &param)
+//{
+//    QSqlQuery query(QSqlDatabase::database("category"));
+//    query.prepare("UPDATE classificationlayer set params = ? where id =?");
+//    query.bindValue(0,QVariant(param));
+//    query.bindValue(1,this->id().toString());
+//    query.exec();
+//}
 
-void CDTClassification::setData(const QList<QVariant> &data)
-{
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE classificationlayer set data = ? where id =?");
-    query.bindValue(0,QVariant(data));
-    query.bindValue(1,this->id().toString());
-    query.exec();
-}
+//void CDTClassification::setData(const QList<QVariant> &data)
+//{
+//    QSqlQuery query(QSqlDatabase::database("category"));
+//    query.prepare("UPDATE classificationlayer set data = ? where id =?");
+//    query.bindValue(0,QVariant(data));
+//    query.bindValue(1,this->id().toString());
+//    query.exec();
+//}
 
-void CDTClassification::setClsInfo(const QMap<QString, QVariant> &clsInfo) const
-{
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE classificationlayer set clsinfo = ? where id =?");
-    query.bindValue(0,QVariant(clsInfo));
-    query.bindValue(1,this->id().toString());
-    query.exec();
-}
+//void CDTClassification::setClsInfo(const QMap<QString, QVariant> &clsInfo) const
+//{
+//    QSqlQuery query(QSqlDatabase::database("category"));
+//    query.prepare("UPDATE classificationlayer set clsinfo = ? where id =?");
+//    query.bindValue(0,QVariant(clsInfo));
+//    query.bindValue(1,this->id().toString());
+//    query.exec();
+//}
 
 void CDTClassification::initClassificationLayer(
         const QString &name,
@@ -147,27 +193,29 @@ void CDTClassification::initClassificationLayer(
 
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("insert into classificationlayer VALUES(?,?,?,?,?,?,?)");
-    query.bindValue(0,id().toString());
-    query.bindValue(1,name);
-    query.bindValue(2,methodName);
-    query.bindValue(3,param);
-    query.bindValue(4,data);
-    query.bindValue(5,clsInfo);
-    query.bindValue(6,((CDTSegmentationLayer*)parent())->id().toString());
+    query.addBindValue(id().toString());
+    query.addBindValue(name);
+    query.addBindValue(methodName);
+    query.addBindValue(dataToVariant(param));
+    query.addBindValue(dataToVariant(data));
+    query.addBindValue(dataToVariant(clsInfo));
+    query.addBindValue(((CDTSegmentationLayer*)parent())->id().toString());
     query.exec();
 
     keyItem->setText(name);
 
+    qDebug()<<QVariant::fromValue(clsInfo);
+    qDebug()<<this->clsInfo();
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTClassification &classification)
 {
     out<<classification.uuid
-        <<classification.name()
-        <<classification.method()
-        <<classification.params()
-        <<classification.data()
-        <<classification.clsInfo();
+      <<classification.name()
+     <<classification.method()
+    <<classification.params()
+    <<classification.data()
+    <<classification.clsInfo();
     return out;
 }
 
