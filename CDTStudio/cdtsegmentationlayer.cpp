@@ -122,11 +122,11 @@ void CDTSegmentationLayer::addClassification()
     {
         CDTClassification *classification = new CDTClassification(QUuid::createUuid(),this);
         classification->initClassificationLayer(
-            dlg.name,
-            dlg.method,
-            dlg.params,
-            dlg.label,
-            dlg.categoryID_Index);
+                    dlg.name,
+                    dlg.method,
+                    dlg.params,
+                    dlg.label,
+                    dlg.categoryID_Index);
         classificationRootItem->appendRow(classification->standardItems());
         addClassification(classification);
     }
@@ -202,18 +202,40 @@ QString CDTSegmentationLayer::imagePath() const
 
 void CDTSegmentationLayer::setClassificationInfo(CDTClassification *classification)
 {
-    classification->data();
-    classification->clsInfo();
+    QVariantList data = classification->data();
+    QVariantMap clsInfo = classification->clsInfo();
 
-    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
-    QgsFields fields = p->pendingFields();
-    qDebug()<<fields.indexFromName("ClassID");
-    if (fields.indexFromName("ClassID")==-1)
+    OGRDataSource *poDS = OGRSFDriverRegistrar::Open(this->shapefilePath().toUtf8().constData(), TRUE );
+    if( poDS == NULL )
     {
-        QgsField field("ClassID",QVariant::String);
-        fields.append(field);
+        qDebug( "Open failed." );
+        return;
+    }
+    OGRLayer* layer = poDS->GetLayer(0);
+    if( layer == NULL )
+    {
+        qDebug( "Open layer failed." );
+        return;
     }
 
+    OGRFeatureDefn* defn = layer->GetLayerDefn();
+    if (defn->GetFieldIndex("ClassID")<0)
+    {
+        OGRFieldDefn field("ClassID",OFTInteger);
+        layer->CreateField(&field);
+    }
+
+    for (int i=0;i<layer->GetFeatureCount();++i)
+    {
+        OGRFeature *feature = layer->GetFeature(i);
+        int objID = feature->GetFieldAsInteger("GridCode");
+        int categoryID = data[objID].toInt();
+        feature->SetField("ClassID",categoryID);
+        layer->SetFeature(feature);
+    }
+
+    OGRDataSource::DestroyDataSource( poDS );
+    OGRCleanupAll();
 }
 
 void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
@@ -283,7 +305,7 @@ void CDTSegmentationLayer::setLayerInfo(const QString &name, const QString &shpP
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
-    ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?)"); 
+    ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?)");
     query.bindValue(0,uuid.toString());
     query.bindValue(1,name);
     query.bindValue(2,shpPath);
@@ -353,7 +375,7 @@ void CDTSegmentationLayer::saveSamplesToStruct(QMap<QString, QString> &sample_id
     QSqlQuery query(QSqlDatabase::database("category"));
     query.exec("select id,name from sample_segmentation where segmentationid ='" + this->id().toString() +"'");
     while(query.next())
-    {       
+    {
         sample_id_name.insert(query.value(0).toString(),query.value(1).toString());
     }
 
@@ -373,10 +395,10 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
     query.next();
 
     out <<segmentation.uuid         //id
-        <<query.value(1).toString() //name
-        <<query.value(2).toString() //shapfile
-        <<query.value(3).toString() //markfile
-        <<segmentation.m_method<<segmentation.m_params<<segmentation.m_dbUrl;
+       <<query.value(1).toString() //name
+      <<query.value(2).toString() //shapfile
+     <<query.value(3).toString() //markfile
+    <<segmentation.m_method<<segmentation.m_params<<segmentation.m_dbUrl;
 
     QMap<QString,QString> sample;
     QList<SampleElement> samples;

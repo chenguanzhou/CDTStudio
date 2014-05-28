@@ -180,7 +180,7 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         {
             CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());
             segmentationLayer->setClassificationInfo(classificationLayer);
-            segmentationLayer->setRenderer(classificationLayer->renderer());
+//            segmentationLayer->setRenderer(classificationLayer->renderer());
         }
     }
     else if (type == CDTProjectTreeItem::IMAGE_ROOT)
