@@ -87,31 +87,51 @@ QVariantMap CDTClassification::clsInfo() const
 
 QgsFeatureRendererV2 *CDTClassification::renderer()
 {
-    QList<QVariant> data = this->data();
     QMap<QString,QVariant> clsInfo = this->clsInfo();
-    QMap<QString,QgsFillSymbolV2*> symbols;
+
+    //    QgsCategoryList categoryList;
+    //    foreach (QString categoryID, clsInfo.keys()) {
+    //        QSqlQuery query(QSqlDatabase::database("category"));
+    //        query.exec(QString("select color from category where id = '%1'").arg(categoryID));
+    //        query.next();
+    //        QColor clr = query.value(0).value<QColor>();
+    //        QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+    //        symbolLayer->setColor(clr);
+    //        QgsRendererCategoryV2 rend;
+    //        rend.setValue(clsInfo.value(categoryID));
+    //        rend.setSymbol(new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer));
+    //        rend.setLabel(categoryID);
+    //        categoryList<<rend;
+    //    }
+    //    qDebug()<<"lalalalla:"<<categoryList.size();
+    //    QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("ClassID",categoryList);
+
+    QVariantList data = this->data();
+    QVector<QColor> colorList(data.size());
+    QSqlQuery query(QSqlDatabase::database("category"));
 
     foreach (QString categoryID, clsInfo.keys()) {
-        QSqlQuery query(QSqlDatabase::database("category"));
         query.exec(QString("select color from category where id = '%1'").arg(categoryID));
         query.next();
         QColor clr = query.value(0).value<QColor>();
-        QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
-        symbolLayer->setColor(clr);
-        QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
-        symbols.insert(categoryID,fillSymbol);
+//        symbolsColor.insert(clsInfo.value(categoryID),clr);
+        colorList[clsInfo.value(categoryID).toInt()] = clr;
     }
 
     QgsCategoryList categoryList;
-//    for (int objID = 0;objID<data.size();++objID)
-//    {
-//        QString categoryID = data[objID].toString();
-//        QgsRendererCategoryV2 rend;
-//        rend.setValue(objID);
-//        rend.setSymbol(symbols[categoryID]);
-//        rend.setLabel(QString::number(objID));
-//        categoryList<<rend;
+//    foreach (QVariant objID, data) {
+    for(int i=0;i<data.size();++i)
+    {
+        QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+        symbolLayer->setColor(colorList[data[i].toInt()]);
+        QgsRendererCategoryV2 rend;
+        rend.setValue(i);
+        rend.setSymbol(new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer));
+        rend.setLabel(QString::number(i));
+        categoryList<<rend;
+    }
 //    }
+
     QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("GridCode",categoryList);
     return categorizedSymbolRenderer;
 }

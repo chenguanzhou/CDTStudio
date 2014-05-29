@@ -11,6 +11,7 @@
 #include <qgssinglesymbolrendererv2.h>
 #include <qgsrendererv2widget.h>
 #include <qgsfillsymbollayerv2.h>
+#include <qgsvectordataprovider.h>
 #include "wizardnewclassification.h"
 #include <mainwindow.h>
 
@@ -203,39 +204,28 @@ QString CDTSegmentationLayer::imagePath() const
 void CDTSegmentationLayer::setClassificationInfo(CDTClassification *classification)
 {
     QVariantList data = classification->data();
-    QVariantMap clsInfo = classification->clsInfo();
 
-    OGRDataSource *poDS = OGRSFDriverRegistrar::Open(this->shapefilePath().toUtf8().constData(), TRUE );
-    if( poDS == NULL )
+    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
+    p->startEditing();
+
+    if (p->fieldNameIndex("ClassID")<0)
     {
-        qDebug( "Open failed." );
-        return;
-    }
-    OGRLayer* layer = poDS->GetLayer(0);
-    if( layer == NULL )
-    {
-        qDebug( "Open layer failed." );
-        return;
+        QgsField field("ClassID",QVariant::Int);
+        p->dataProvider()->addAttributes(QList<QgsField>()<<field);
     }
 
-    OGRFeatureDefn* defn = layer->GetLayerDefn();
-    if (defn->GetFieldIndex("ClassID")<0)
-    {
-        OGRFieldDefn field("ClassID",OFTInteger);
-        layer->CreateField(&field);
+    QgsFeatureIterator iterator = p->getFeatures();
+    QgsFeature f;
+
+    int gridCodeIndex = p->fieldNameIndex("GridCode");
+    int classIDIndex = p->fieldNameIndex("ClassID");
+    while (iterator.nextFeature(f)) {
+        int objID = f.attribute(gridCodeIndex).toInt();
+        f.setAttribute(classIDIndex,data.value(objID));
+        p->updateFeature(f);
     }
 
-    for (int i=0;i<layer->GetFeatureCount();++i)
-    {
-        OGRFeature *feature = layer->GetFeature(i);
-        int objID = feature->GetFieldAsInteger("GridCode");
-        int categoryID = data[objID].toInt();
-        feature->SetField("ClassID",categoryID);
-        layer->SetFeature(feature);
-    }
-
-    OGRDataSource::DestroyDataSource( poDS );
-    OGRCleanupAll();
+    p->commitChanges();
 }
 
 void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
