@@ -32,15 +32,20 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 #endif
 
 //TODO  Build file system
-//TODO  Classification effect
 //TODO  Encrypt password
 //TODO  QWTPlot Frame(Histogram)
 //TODO  Some QButtonGroup
-//TODO  Same name
 //TODO  Project tree Checkbox
 //TODO  Translation
+//TODO  CDTBaseObject more independent
+//TODO  SVM
+//TODO  Segmentation plugins
+
 
 //BUG   Stxxl
+//BUG   Same name
+//BUG   Attribute dockwidget size
+//BUG   PCA and transform information to show
 
 bool initDatabase()
 {

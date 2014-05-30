@@ -45,13 +45,12 @@ CDTImageLayer::~CDTImageLayer()
     bool ret;
     ret = query.exec("delete from imagelayer where id = '"+uuid.toString()+"'");
     if (!ret)
-        qDebug()<<"prepare:"<<query.lastError().text();
+        qWarning()<<"prepare:"<<query.lastError().text();
     layers.removeAll(this);
 }
 
 void CDTImageLayer::setName(const QString &name)
 {
-//    m_name = name;
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("UPDATE imageLayer set name = ? where id =?");
     query.bindValue(0,name);
@@ -72,8 +71,6 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
         return;
     }
 
-//    m_name = name;
-//    m_path = path;
     keyItem->setText(name);
     valueItem->setText(path);
     if (mapCanvasLayer)

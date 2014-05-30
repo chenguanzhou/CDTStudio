@@ -13,6 +13,7 @@ class CDTClassification:public CDTBaseObject
     Q_OBJECT   
 public:
     explicit CDTClassification(QUuid uuid,QObject* parent=0);
+    ~CDTClassification();
 
     friend QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
     friend QDataStream &operator>>(QDataStream &in, CDTClassification &classification);
@@ -43,10 +44,6 @@ public slots:
 
 private:
     void setName(const QString& name);
-//    void setMethod(const QString &methodName);
-//    void setParam(const QMap<QString,QVariant> &param);
-//    void setData(const QList<QVariant>& data);
-//    void setClsInfo(const QMap<QString,QVariant>& clsInfo)const;
 
 private:
     QAction* actionRemoveClassification;

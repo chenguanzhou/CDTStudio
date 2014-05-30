@@ -59,7 +59,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
     paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
-    classificationRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::GROUP,tr("Classification"),this);
+    classificationRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::EMPTY,tr("Classification"),this);
     keyItem->appendRow(classificationRootItem);
 
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
@@ -83,7 +83,7 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
     bool ret;
     ret = query.exec("delete from segmentationlayer where id = '"+uuid.toString()+"'");
     if (!ret)
-        qDebug()<<"prepare:"<<query.lastError().text();
+        qWarning()<<"prepare:"<<query.lastError().text();
 }
 
 void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
@@ -138,25 +138,31 @@ void CDTSegmentationLayer::remove()
     emit removeSegmentation(this);
 }
 
-//void CDTSegmentationLayer::removeClassification(CDTClassification* clf)
-//{
-//    for(int i =0;i <classifications.size();++i)
-//    {
-//        if(clf->name() == classifications[i]->name())
-//        {
-//            classifications.remove(i);
-//            emit segmentationChanged();
-//            connect(clf,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
+void CDTSegmentationLayer::removeClassification(CDTClassification* clf)
+{
+    int index = classifications.indexOf(clf);
+    if (index>=0)
+    {
+        QStandardItem* keyItem = clf->standardItems()[0];
+        keyItem->parent()->removeRow(keyItem->index().row());
+        classifications.remove(index);
+        emit removeLayer(QList<QgsMapLayer*>()<<clf->canvasLayer());
+        delete clf;
+        emit segmentationChanged();
+    }
+}
 
-//        }
-//    }
-//}
-
-//void CDTSegmentationLayer::removeAllClassifications()
-//{
-//    classifications.clear();
-//    emit segmentationChanged();
-//}
+void CDTSegmentationLayer::removeAllClassifications()
+{
+    foreach (CDTClassification* clf, classifications) {
+        QStandardItem* keyItem = clf->standardItems()[0];
+        keyItem->parent()->removeRow(keyItem->index().row());
+        emit removeLayer(QList<QgsMapLayer*>()<<clf->canvasLayer());
+        delete clf;
+    }
+    classifications.clear();
+    emit segmentationChanged();
+}
 
 
 QString CDTSegmentationLayer::name() const
@@ -201,33 +207,6 @@ QString CDTSegmentationLayer::imagePath() const
     return m_imagePath;
 }
 
-void CDTSegmentationLayer::setClassificationInfo(CDTClassification *classification)
-{
-    QVariantList data = classification->data();
-
-    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
-    p->startEditing();
-
-    if (p->fieldNameIndex("ClassID")<0)
-    {
-        QgsField field("ClassID",QVariant::Int);
-        p->dataProvider()->addAttributes(QList<QgsField>()<<field);
-    }
-
-    QgsFeatureIterator iterator = p->getFeatures();
-    QgsFeature f;
-
-    int gridCodeIndex = p->fieldNameIndex("GridCode");
-    int classIDIndex = p->fieldNameIndex("ClassID");
-    while (iterator.nextFeature(f)) {
-        int objID = f.attribute(gridCodeIndex).toInt();
-        f.setAttribute(classIDIndex,data.value(objID));
-        p->updateFeature(f);
-    }
-
-    p->commitChanges();
-}
-
 void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
 {
     QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
@@ -235,6 +214,16 @@ void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
     {
         p->setRendererV2(r);
     }
+}
+
+void CDTSegmentationLayer::setOriginRenderer()
+{
+    QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+    symbolLayer->setColor(QColor(0,0,0,0));
+    symbolLayer->setBorderColor(QColor(qrand()%255,qrand()%255,qrand()%255));
+    QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
+    QgsSingleSymbolRendererV2* singleSymbolRenderer = new QgsSingleSymbolRendererV2(fillSymbol);
+    this->setRenderer(singleSymbolRenderer);
 }
 
 QList<CDTSegmentationLayer *> CDTSegmentationLayer::getLayers()
@@ -281,14 +270,7 @@ void CDTSegmentationLayer::setLayerInfo(const QString &name, const QString &shpP
     shapefileItem->setText(shpPath);
     markfileItem->setText(mkPath);
 
-
-    QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
-    symbolLayer->setColor(QColor(0,0,0,0));
-    symbolLayer->setBorderColor(QColor(qrand()%255,qrand()%255,qrand()%255));
-    QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
-    QgsSingleSymbolRendererV2* singleSymbolRenderer = new QgsSingleSymbolRendererV2(fillSymbol);
-    this->setRenderer(singleSymbolRenderer);
-
+    setOriginRenderer();
 
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
     keyItem->setMapLayer(mapCanvasLayer);

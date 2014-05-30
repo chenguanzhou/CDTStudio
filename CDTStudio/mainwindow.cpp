@@ -165,12 +165,14 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
             dockWidgetAttributes->setSegmentationLayer(segmentationLayer);
             dockWidgetAttributes->show();
 
+            segmentationLayer->setOriginRenderer();
 
             if (segmentationLayer->canvasLayer()!=NULL)
             {
                 CDTProjectWidget* widget = (CDTProjectWidget*)ui->tabWidgetProject->currentWidget();
-                widget->mapCanvas->setCurrentLayer(segmentationLayer->canvasLayer());
+                widget->mapCanvas->setCurrentLayer(segmentationLayer->canvasLayer());                
             }
+            getCurrentMapCanvas()->refresh();
         }
     }
     if (type == CDTProjectTreeItem::CLASSIFICATION)
@@ -179,7 +181,6 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         if (classificationLayer != NULL)
         {
             CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());
-//            segmentationLayer->setClassificationInfo(classificationLayer);
             segmentationLayer->setRenderer(classificationLayer->renderer());
             getCurrentMapCanvas()->refresh();
         }

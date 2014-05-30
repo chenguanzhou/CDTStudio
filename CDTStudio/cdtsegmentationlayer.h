@@ -42,8 +42,9 @@ public:
     CDTDatabaseConnInfo databaseURL() const;
     QString imagePath()const;
 
-    void setClassificationInfo(CDTClassification* classification);
+
     void setRenderer(QgsFeatureRendererV2 *r);
+    void setOriginRenderer();
 
     static QList<CDTSegmentationLayer *> getLayers();
     static CDTSegmentationLayer * getLayer(QUuid uuid);
@@ -60,8 +61,8 @@ public slots:
     void remove();
 
     void addClassification();
-//    void removeClassification(CDTClassification *);
-//    void removeAllClassifications();
+    void removeClassification(CDTClassification *);
+    void removeAllClassifications();
 
     void setName(const QString& name);
     void setLayerInfo(const QString& name,const QString &shpPath,const QString &mkPath);
@@ -69,6 +70,7 @@ public slots:
     void setDatabaseURL(CDTDatabaseConnInfo url);
 
 private:
+    QgsFeatureRendererV2 *renderer();
     void addClassification(CDTClassification* classification);
     void loadSamplesFromStruct(const QMap<QString,QString> &sample_id_name,const QList<SampleElement> &samples);
     void saveSamplesToStruct(QMap<QString,QString> &sample_id_name,QList<SampleElement> &samples) const;

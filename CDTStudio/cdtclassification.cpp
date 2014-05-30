@@ -12,7 +12,7 @@ CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
     :CDTBaseObject(uuid,parent),
       actionRemoveClassification(new QAction(tr("Remove Classification"),this))
 {
-    keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::VECTOR,QString(),this);
+    keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
 
     paramRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
@@ -22,6 +22,18 @@ CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
     connect(this,SIGNAL(classificationLayerChanged()),this->parent(),SIGNAL(segmentationChanged()));
     connect(actionRemoveClassification,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeClassification(CDTClassification*)),this->parent(),SLOT(removeClassification(CDTClassification*)));
+}
+
+CDTClassification::~CDTClassification()
+{
+    if (id().isNull())
+        return;
+
+    QSqlQuery query(QSqlDatabase::database("category"));
+    bool ret;
+    ret = query.exec("delete from classificationlayer where id = '"+uuid.toString()+"'");
+    if (!ret)
+        qWarning()<<"prepare:"<<query.lastError().text();
 }
 
 void CDTClassification::onContextMenuRequest(QWidget *parent)

@@ -30,7 +30,7 @@ CDTProject::~CDTProject()
     bool ret;
     ret = query.exec("delete from project where id = '"+uuid.toString()+"'");
     if (!ret)
-        qDebug()<<"prepare:"<<query.lastError().text();
+        qWarning()<<"prepare:"<<query.lastError().text();
 }
 
 void CDTProject::addImageLayer()
