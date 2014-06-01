@@ -3,4 +3,5 @@ TEMPLATE = subdirs
 SUBDIRS += \
     CDTDialogs\
     QPropertyEditor\
-    CDTFileSystem
+    CDTFileSystem\
+	CDTHistogramPlot
