@@ -4,21 +4,13 @@
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
 #include "dialoggenerateattributes.h"
-#include <qwt_plot_curve.h>
-#include <qwt_plot_canvas.h>
-#include <qwt_plot_picker.h>
-#include <qwt_plot_marker.h>
-#include <qwt_picker_machine.h>
-#include <qwt_symbol.h>
 
 CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     QDockWidget(parent),
     ui(new Ui::CDTAttributeDockWidget),
-    histogram(new QwtPlotCurve),
     _segmentationLayer(NULL)
 {
     ui->setupUi(this);
-    initHistogram();
 
     setWindowTitle(tr("Attributes Manager"));
     setAllowedAreas(Qt::TopDockWidgetArea|Qt::BottomDockWidgetArea);
@@ -39,31 +31,11 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
 CDTAttributeDockWidget::~CDTAttributeDockWidget()
 {
     delete ui;
-    delete histogram;
 }
 
 CDTSegmentationLayer *CDTAttributeDockWidget::segmentationLayer() const
 {
     return _segmentationLayer;
-}
-
-void CDTAttributeDockWidget::initHistogram()
-{
-    histogram->attach(ui->qwtPlot);
-    histogram->setStyle(QwtPlotCurve::Lines);
-    histogram->setPen(QColor(255,0,0),2);
-    histogram->setBrush(QBrush(QColor(255,0,0,127)));
-
-    QwtPlotPicker *picker = new QwtPlotPicker( QwtPlot::xBottom, QwtPlot::yLeft,
-                                               QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn,
-                                               ui->qwtPlot->canvas() );
-    picker->setStateMachine( new QwtPickerTrackerMachine() );
-    picker->setRubberBandPen( QColor( Qt::green ) );
-    picker->setRubberBand( QwtPicker::VLineRubberBand );
-    picker->setTrackerPen( QColor( Qt::blue ) );
-
-    QwtPlotCanvas *canvas = (QwtPlotCanvas*)(ui->qwtPlot->canvas());
-    canvas->setFrameStyle(QwtPlotCanvas::NoFrame);
 }
 
 void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
@@ -111,7 +83,6 @@ void CDTAttributeDockWidget::clear()
     ui->tabWidget->setEnabled(false);
     _dbConnInfo = CDTDatabaseConnInfo();
     clearTables();
-    clearHistogram();
     _segmentationLayer =NULL;
 }
 
@@ -170,39 +141,12 @@ void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
     QString tableName = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
     QString featureName = view->model()->headerData(index.column(),Qt::Horizontal).toString();
 
-    updateHistogram(featureName,tableName);
-}
-
-void CDTAttributeDockWidget::updateHistogram(const QString &featureName, const QString &tableName)
-{
     qDebug()<<tableName<<featureName;
 
-    QSqlDatabase db = QSqlDatabase::database("attribute");
-    QSqlQuery query(db);
-    query.exec(QString("select min(%1),max(%1) from %2").arg(featureName).arg(tableName));
-    query.next();
-    double minVal = query.value(0).toDouble();
-    double maxVal = query.value(1).toDouble();
-    int intervals = ui->qwtPlot->canvas()->width();
-    intervals = intervals>120?120:intervals;
-    double intervalStep = (maxVal - minVal)/intervals;
-    qDebug()<<QString("min:%1 max:%2 width:%3").arg(minVal).arg(maxVal).arg(intervals);
+    ui->qwtPlot->setDatabase(QSqlDatabase::database("attribute"));
+    ui->qwtPlot->setTableName(tableName);
+    ui->qwtPlot->setFieldName(featureName);
 
-    QVector<int> counts(intervals,0);
-    query.exec(QString("select %1 from %2").arg(featureName).arg(tableName));
-    while(query.next())
-    {
-        double val = query.value(0).toDouble();
-        int id = (val-minVal)/intervalStep;
-        if (id == intervals) --id;
-        ++counts[id];
-    }
-
-    QVector<QPointF> datas;
-    for (int i=0;i<intervals;++i)
-        datas.push_back(QPointF(i*intervalStep+minVal,counts[i]));
-
-    histogram->setSamples(new QwtPointSeriesData(datas));
     ui->qwtPlot->replot();
 }
 
@@ -216,8 +160,3 @@ void CDTAttributeDockWidget::clearTables()
     }
 }
 
-void CDTAttributeDockWidget::clearHistogram()
-{
-    histogram->setData(NULL);
-    ui->qwtPlot->replot();
-}

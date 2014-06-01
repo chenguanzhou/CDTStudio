@@ -40,7 +40,7 @@
         </sizepolicy>
        </property>
       </widget>
-      <widget class="QwtPlot" name="qwtPlot">
+      <widget class="CDTHistogramPlot" name="qwtPlot">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>1</horstretch>
@@ -58,9 +58,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QwtPlot</class>
+   <class>CDTHistogramPlot</class>
    <extends>QFrame</extends>
-   <header>qwt_plot.h</header>
+   <header>cdthistogramplot.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

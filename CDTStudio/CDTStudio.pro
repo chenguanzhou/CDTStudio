@@ -71,6 +71,7 @@ FORMS    += mainwindow.ui \
 INCLUDEPATH += ../Interfaces \
 ../Tools/CDTDialogs \
 ../Tools/QPropertyEditor\
+../Tools/CDTHistogramPlot
 
 DEPENDPATH += ../tools/CDTDialogs
 
@@ -90,7 +91,7 @@ include(../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
-LIBS += -L../lib -lCDTDialogs -lQPropertyEditor\
+LIBS += -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot\
  -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 RESOURCES += \
