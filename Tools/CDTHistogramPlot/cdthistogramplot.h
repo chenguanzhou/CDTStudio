@@ -26,6 +26,7 @@ public slots:
 private:
     void initHistogram();
     bool updateHistogram();
+
 private:
     QwtPlotCurve *histogram;
     CDTHistogramPlotPrivate *pData;
