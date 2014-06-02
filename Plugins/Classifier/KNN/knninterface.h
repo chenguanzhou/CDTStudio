@@ -1,5 +1,5 @@
-#ifndef BAYESINTERFACE_H
-#define BAYESINTERFACE_H
+#ifndef KNNINTERFACE_H
+#define KNNINTERFACE_H
 
 #include "../../../Interfaces/cdtclassifierinterface.h"
 
@@ -8,7 +8,7 @@ class KNNInterface : public CDTClassifierInterface
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTClassifierInterface" FILE "Bayes.json")
+    Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTClassifierInterface" FILE "KNN.json")
 #else
     Q_INTERFACES(CDTClassifierInterface)
 #endif // QT_VERSION >= 0x050000
@@ -31,4 +31,4 @@ private:
     KNNInterfacePrivate* data;
 };
 
-#endif // BAYESINTERFACE_H
+#endif // KNNINTERFACE_H

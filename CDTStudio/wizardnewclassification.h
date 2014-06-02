@@ -27,12 +27,14 @@ private:
     bool validateCurrentPage();
     void startClassification();
 
+
 private slots:
     void onSegmentationChanged(int index);
     void onClassifierChanged(int index);
     void onCurrentPageChanged(int pageID);
     void onButtonClicked(int buttonID);
     void updateSelectedFeature();
+    void updateHistogram();
 
 public:
     //Export

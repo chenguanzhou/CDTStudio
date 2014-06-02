@@ -44,7 +44,7 @@ QString KNNInterface::classifierName() const
 
 cv::Mat KNNInterface::startClassification(const cv::Mat &data, const cv::Mat &train_data, const cv::Mat &responses)
 {
-    cv::Mat result(data.rows,1,CV_32SC1);
+    cv::Mat result(data.rows,1,CV_32FC1);
     cv::KNearest classifier;
 
     classifier.train(train_data,responses,cv::Mat(),false,maxK());
@@ -56,8 +56,7 @@ cv::Mat KNNInterface::startClassification(const cv::Mat &data, const cv::Mat &tr
         {
             testSample.at<float>(0, j) = data.at<float>(i,j);
         }
-        float flag = classifier.find_nearest(testSample,maxK());
-        result.at<int>(i,0) = flag+0.5;
+        result.at<float>(i,0) = classifier.find_nearest(testSample,maxK());
     }
     return result;
 }

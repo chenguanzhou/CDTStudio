@@ -35,6 +35,9 @@
          <property name="text">
           <string>Input layer</string>
          </property>
+         <property name="buddy">
+          <cstring>comboBoxInput</cstring>
+         </property>
         </widget>
        </item>
        <item row="3" column="0">
@@ -52,6 +55,9 @@
          <property name="text">
           <string>Output Name</string>
          </property>
+         <property name="buddy">
+          <cstring>lineEditOutputName</cstring>
+         </property>
         </widget>
        </item>
        <item row="2" column="1">
@@ -61,6 +67,9 @@
         <widget class="QLabel" name="label_3">
          <property name="text">
           <string>Sample</string>
+         </property>
+         <property name="buddy">
+          <cstring>comboBoxSample</cstring>
          </property>
         </widget>
        </item>
@@ -111,6 +120,9 @@
            </property>
            <property name="text">
             <string>Classifier</string>
+           </property>
+           <property name="buddy">
+            <cstring>comboBoxClassifier</cstring>
            </property>
           </widget>
          </item>
@@ -234,12 +246,18 @@
            <property name="text">
             <string>All Feature Attributes:</string>
            </property>
+           <property name="buddy">
+            <cstring>treeWidgetAllFeatures</cstring>
+           </property>
           </widget>
          </item>
          <item row="1" column="1">
           <widget class="QLabel" name="label_6">
            <property name="text">
             <string>Selected Feature Attributes:</string>
+           </property>
+           <property name="buddy">
+            <cstring>listViewSelectedFeatures</cstring>
            </property>
           </widget>
          </item>

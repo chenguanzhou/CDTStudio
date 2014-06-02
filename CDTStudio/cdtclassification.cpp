@@ -101,48 +101,32 @@ QgsFeatureRendererV2 *CDTClassification::renderer()
 {
     QMap<QString,QVariant> clsInfo = this->clsInfo();
 
-    //    QgsCategoryList categoryList;
-    //    foreach (QString categoryID, clsInfo.keys()) {
-    //        QSqlQuery query(QSqlDatabase::database("category"));
-    //        query.exec(QString("select color from category where id = '%1'").arg(categoryID));
-    //        query.next();
-    //        QColor clr = query.value(0).value<QColor>();
-    //        QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
-    //        symbolLayer->setColor(clr);
-    //        QgsRendererCategoryV2 rend;
-    //        rend.setValue(clsInfo.value(categoryID));
-    //        rend.setSymbol(new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer));
-    //        rend.setLabel(categoryID);
-    //        categoryList<<rend;
-    //    }
-    //    qDebug()<<"lalalalla:"<<categoryList.size();
-    //    QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("ClassID",categoryList);
-
     QVariantList data = this->data();
-    QVector<QColor> colorList(data.size());
+    QMap<int,QColor> colorList/*(clsInfo.size())*/;
     QSqlQuery query(QSqlDatabase::database("category"));
 
     foreach (QString categoryID, clsInfo.keys()) {
         query.exec(QString("select color from category where id = '%1'").arg(categoryID));
         query.next();
         QColor clr = query.value(0).value<QColor>();
-//        symbolsColor.insert(clsInfo.value(categoryID),clr);
-        colorList[clsInfo.value(categoryID).toInt()] = clr;
+//        colorList[clsInfo.value(categoryID).toInt()] = clr;
+        colorList.insert(clsInfo.value(categoryID).toInt(),clr);
     }
+    qDebug()<<"11:"<<colorList;
 
     QgsCategoryList categoryList;
-//    foreach (QVariant objID, data) {
     for(int i=0;i<data.size();++i)
     {
         QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
-        symbolLayer->setColor(colorList[data[i].toInt()]);
+//        symbolLayer->setColor(colorList[data[i].toInt()]);
+        symbolLayer->setColor(colorList.value(data[i].toInt()));
         QgsRendererCategoryV2 rend;
         rend.setValue(i);
         rend.setSymbol(new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer));
         rend.setLabel(QString::number(i));
         categoryList<<rend;
     }
-//    }
+//    qDebug()<<data;
 
     QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("GridCode",categoryList);
     return categorizedSymbolRenderer;

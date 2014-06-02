@@ -144,6 +144,7 @@ WizardNewClassification::WizardNewClassification(QUuid segmentationID, QWidget *
     connect(ui->checkBoxNormalize,SIGNAL(toggled(bool)),ui->comboBoxNormalize,SLOT(setEnabled(bool)));
     connect(ui->checkBoxNormalize,SIGNAL(toggled(bool)),ui->radioButtonTransformed,SLOT(setEnabled(bool)));
     connect(ui->checkBoxPCA,SIGNAL(toggled(bool)),ui->spinBoxPCA,SLOT(setEnabled(bool)));
+    connect(ui->listViewSelectedFeatures,SIGNAL(clicked(QModelIndex)),SLOT(updateHistogram()));
     connect(this,SIGNAL(currentIdChanged(int)),SLOT(onCurrentPageChanged(int)));
     connect(this,SIGNAL(customButtonClicked(int)),SLOT(onButtonClicked(int)));
 
@@ -360,13 +361,13 @@ void WizardNewClassification::startClassification()
     name = ui->lineEditOutputName->text();
     method = ui->comboBoxClassifier->currentText();
     label.clear();
-    for (int i=0;i<result.rows;++i)
-        label<<result.at<int>(i,0);
 
+    for (int i=0;i<result.rows;++i)
+    {
+        label<<static_cast<int>(result.at<float>(i,0)+0.5);
+    }
 
     params = interface->params();
-
-
     finished = true;
 }
 
@@ -425,4 +426,23 @@ void WizardNewClassification::updateSelectedFeature()
         ui->checkBoxPCA->setChecked(false);
     else
         ui->spinBoxPCA->setMaximum(list.size());
+}
+
+void WizardNewClassification::updateHistogram()
+{
+    int index = ui->listViewSelectedFeatures->currentIndex().row();
+    if (index<0)
+        return;
+
+    QString plotName = modelSelectedFeature->stringList().at(index);
+    QStringList temp = plotName.split("->");
+
+    bool isOrigin = ui->radioButtonOriginal->isChecked();
+
+    ui->qwtPlot->setDatabase(QSqlDatabase::database("cls"));
+    ui->qwtPlot->setTableName(temp[0]);
+    ui->qwtPlot->setFieldName(temp[1]);
+
+
+    ui->qwtPlot->replot();
 }

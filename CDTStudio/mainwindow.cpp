@@ -181,7 +181,11 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         if (classificationLayer != NULL)
         {
             CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());
-            segmentationLayer->setRenderer(classificationLayer->renderer());
+//            qDebug()<<"11";
+            QgsFeatureRendererV2 *renderer = classificationLayer->renderer();
+//            qDebug()<<"22";
+            segmentationLayer->setRenderer(renderer);
+//            qDebug()<<"33";
             getCurrentMapCanvas()->refresh();
         }
     }

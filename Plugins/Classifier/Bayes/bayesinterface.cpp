@@ -30,11 +30,10 @@ QString BayesInterface::classifierName() const
 
 cv::Mat BayesInterface::startClassification(const cv::Mat &data, const cv::Mat &train_data, const cv::Mat &responses)
 {
-    cv::Mat result(data.rows,1,CV_32SC1);
+    cv::Mat result(data.rows,1,CV_32FC1);
     cv::NormalBayesClassifier classifier;
     classifier.train(train_data,responses);
     classifier.predict(data,&result);
-    std::cout<<result;
     return result;
 }
 

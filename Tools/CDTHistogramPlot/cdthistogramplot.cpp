@@ -3,6 +3,9 @@
 #include <qwt_plot_canvas.h>
 #include <qwt_plot_picker.h>
 #include <qwt_plot_marker.h>
+#include <qwt_plot_magnifier.h>
+#include <qwt_plot_panner.h>
+#include <qwt_plot_zoomer.h>
 #include <qwt_picker_machine.h>
 #include <qwt_symbol.h>
 #include <QtSql>
@@ -65,14 +68,18 @@ void CDTHistogramPlot::initHistogram()
     histogram->setPen(QColor(255,0,0),2);
     histogram->setBrush(QBrush(QColor(255,0,0,127)));
 
+    QwtPlotPanner *plotPanner = new QwtPlotPanner( this->canvas() );
+
+    QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( this->canvas() );
+    magnifier->setMouseButton( Qt::NoButton );
+
     QwtPlotPicker *picker = new QwtPlotPicker( QwtPlot::xBottom, QwtPlot::yLeft,
                                                QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn,
-                                               this );
+                                               this->canvas() );
     picker->setStateMachine( new QwtPickerTrackerMachine() );
     picker->setRubberBandPen( QColor( Qt::green ) );
     picker->setRubberBand( QwtPicker::VLineRubberBand );
     picker->setTrackerPen( QColor( Qt::blue ) );
-
 
     this->setFrameStyle(QwtPlotCanvas::NoFrame);
 }

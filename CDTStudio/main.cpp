@@ -33,7 +33,6 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 
 //TODO  Build file system
 //TODO  Encrypt password
-//TODO  QWTPlot Frame(Histogram)
 //TODO  Some QButtonGroup
 //TODO  Project tree Checkbox
 //TODO  Translation
