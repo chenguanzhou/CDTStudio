@@ -40,6 +40,7 @@ signals:
 
 public slots:
     void onContextMenuRequest(QWidget *parent);
+    void rename();
     void remove();
 
 private:
@@ -47,6 +48,7 @@ private:
 
 private:
     QAction* actionRemoveClassification;
+    QAction *actionRename;
 
     CDTProjectTreeItem* paramRootItem;
     CDTProjectTreeItem* paramRootValueItem;

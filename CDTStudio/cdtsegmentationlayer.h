@@ -57,7 +57,7 @@ signals:
 
 public slots:
     void onContextMenuRequest(QWidget *parent);
-    void onActionRename();
+    void rename();
     void remove();
 
     void addClassification();

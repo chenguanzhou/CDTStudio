@@ -6,19 +6,15 @@
 
 CDTProject::CDTProject(QUuid uuid, QObject *parent):
     CDTBaseObject(uuid,parent),
-    actionAddImage(new QAction(tr("Add Image"),this)),
-    removeAllImages(new QAction(tr("Remove All images"),this)),
-    actionRename(new QAction(tr("Rename Project"),this))
+    actionAddImage(new QAction(QIcon(":/Icon/add.png"),tr("Add Image"),this)),
+    removeAllImages(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All images"),this)),
+    actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Project"),this))
 {
-    removeAllImages->setIcon(QIcon(":/Icon/remove.png"));
-    actionAddImage->setIcon(QIcon(":/Icon/add.png"));
-    actionRename->setIcon(QIcon(":/Icon/rename.png"));
-
     keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);
     valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
     connect(removeAllImages,SIGNAL(triggered()),this,SLOT(removeAllImageLayers()));
-    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
 }
 
 CDTProject::~CDTProject()
@@ -122,11 +118,11 @@ void CDTProject::onContextMenuRequest(QWidget* parent)
     menu->exec(QCursor::pos());
 }
 
-void CDTProject::onActionRename()
+void CDTProject::rename()
 {
     bool ok;
     QString text = QInputDialog::getText(NULL, tr("Input Project Name"),
-                                         tr("Project name:"), QLineEdit::Normal,
+                                         tr("Project rename:"), QLineEdit::Normal,
                                          name(), &ok);
     if (ok && !text.isEmpty())
     {

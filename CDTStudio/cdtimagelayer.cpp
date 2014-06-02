@@ -13,10 +13,10 @@ QList<CDTImageLayer *> CDTImageLayer::layers;
 
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     : CDTBaseObject(uuid,parent),
-      addSegmentationLayer(new QAction(tr("Add Segmentation"),this)),
-      removeImage(new QAction(tr("Remove Image"),this)),
-      removeAllSegmentations(new QAction(tr("Remove All Segmentations"),this)),
-      actionRename(new QAction(tr("Rename Image"),this)),
+      addSegmentationLayer(new QAction(QIcon(":/Icon/add.png"),tr("Add Segmentation"),this)),
+      removeImage(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Image"),this)),
+      removeAllSegmentations(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Segmentations"),this)),
+      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Image"),this)),
       actionCategoryInformation(new QAction(tr("Category Information"),this)),
       trainingForm(NULL)
 {
@@ -32,7 +32,7 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
     connect(this,SIGNAL(imageLayerChanged()),(CDTProject*)(this->parent()),SIGNAL(projectChanged()));
     connect(removeAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
-    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
     connect(actionCategoryInformation,SIGNAL(triggered()),this,SLOT(onActionCategoryInformation()));
 }
 
@@ -222,11 +222,11 @@ void CDTImageLayer::removeAllSegmentationLayers()
     emit imageLayerChanged();
 }
 
-void CDTImageLayer::onActionRename()
+void CDTImageLayer::rename()
 {
     bool ok;
     QString text = QInputDialog::getText(NULL, tr("Input Image Name"),
-                                         tr("Image name:"), QLineEdit::Normal,
+                                         tr("Image rename:"), QLineEdit::Normal,
                                          this->name(), &ok);
     if (ok && !text.isEmpty())
     {
@@ -240,11 +240,7 @@ void CDTImageLayer::onActionCategoryInformation()
 }
 
 void CDTImageLayer::onContextMenuRequest(QWidget *parent)
-{
-    removeImage->setIcon(QIcon(":/Icon/remove.png"));
-    removeAllSegmentations->setIcon(QIcon(":/Icon/remove.png"));
-    addSegmentationLayer->setIcon(QIcon(":/Icon/add.png"));
-    actionRename->setIcon(QIcon(":/Icon/rename.png"));
+{    
     QMenu *menu =new QMenu(parent);
 
     menu->addAction(addSegmentationLayer);

@@ -34,10 +34,10 @@ QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
 CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject *parent)
     : CDTBaseObject(uuid,parent),
       m_imagePath(imagePath),
-      addClassifications(new QAction(tr("Add Classification"),this)),
-      actionRemoveSegmentation(new QAction(tr("Remove Segmentation"),this)),
-      actionRemoveAllClassifications(new QAction(tr("Remove All Classifications"),this)),
-      actionRename(new QAction(tr("Rename Segmentation Name"),this))
+      addClassifications(new QAction(QIcon(":/Icon/add.png"),tr("Add Classification"),this)),
+      actionRemoveSegmentation(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Segmentation"),this)),
+      actionRemoveAllClassifications(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Classifications"),this)),
+      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Segmentation"),this))
 {
     layers.push_back(this);
 
@@ -70,7 +70,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
     connect(addClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
     connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),this,SLOT(removeAllClassifications()));
-    connect(actionRename,SIGNAL(triggered()),this,SLOT(onActionRename()));
+    connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
 }
 
 CDTSegmentationLayer::~CDTSegmentationLayer()
@@ -87,11 +87,7 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
 }
 
 void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
-{
-    actionRemoveSegmentation->setIcon(QIcon(":/Icon/remove.png"));
-    actionRemoveAllClassifications->setIcon(QIcon(":/Icon/remove.png"));
-    addClassifications->setIcon(QIcon(":/Icon/add.png"));
-    actionRename->setIcon(QIcon(":/Icon/rename.png"));
+{    
     QMenu *menu =new QMenu(parent);
     menu->addAction(addClassifications);
     menu->addAction(actionRemoveSegmentation);
@@ -101,12 +97,12 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     menu->exec(QCursor::pos());
 }
 
-void CDTSegmentationLayer::onActionRename()
+void CDTSegmentationLayer::rename()
 {
     bool ok;
     QString text = QInputDialog::getText(
                 NULL, tr("Input Segmentation Name"),
-                tr("Segmentation name:"), QLineEdit::Normal,
+                tr("Segmentation rename:"), QLineEdit::Normal,
                 this->name(), &ok);
     if (ok && !text.isEmpty())
         setName(text);

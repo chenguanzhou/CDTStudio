@@ -10,7 +10,8 @@
 
 CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
     :CDTBaseObject(uuid,parent),
-      actionRemoveClassification(new QAction(tr("Remove Classification"),this))
+      actionRemoveClassification(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Classification"),this)),
+      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Classification"),this))
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
@@ -20,8 +21,9 @@ CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
     connect(this,SIGNAL(classificationLayerChanged()),this->parent(),SIGNAL(segmentationChanged()));
-    connect(actionRemoveClassification,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeClassification(CDTClassification*)),this->parent(),SLOT(removeClassification(CDTClassification*)));
+    connect(actionRemoveClassification,SIGNAL(triggered()),SLOT(remove()));
+    connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
 }
 
 CDTClassification::~CDTClassification()
@@ -37,12 +39,23 @@ CDTClassification::~CDTClassification()
 }
 
 void CDTClassification::onContextMenuRequest(QWidget *parent)
-{
-    actionRemoveClassification->setIcon(QIcon(":/Icon/remove.png"));
+{    
     QMenu *menu =new QMenu(parent);
-
     menu->addAction(actionRemoveClassification);
+    menu->addSeparator();
+    menu->addAction(actionRename);
     menu->exec(QCursor::pos());
+}
+
+void CDTClassification::rename()
+{
+    bool ok;
+    QString text = QInputDialog::getText(
+                NULL, tr("Input Classification Name"),
+                tr("Segmentation rename:"), QLineEdit::Normal,
+                this->name(), &ok);
+    if (ok && !text.isEmpty())
+        setName(text);
 }
 
 void CDTClassification::remove()

@@ -43,7 +43,7 @@ public slots:
     void remove();
     void removeSegmentation(CDTSegmentationLayer*);
     void removeAllSegmentationLayers();
-    void onActionRename();
+    void rename();
     void onActionCategoryInformation();
 
 private:        

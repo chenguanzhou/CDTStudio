@@ -34,7 +34,7 @@ public slots:
     void removeImageLayer(CDTImageLayer *image);
     void removeAllImageLayers();
     void onContextMenuRequest(QWidget *parent);
-    void onActionRename();    
+    void rename();    
     void setName(const QString& name);
 
 private:
