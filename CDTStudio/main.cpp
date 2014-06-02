@@ -37,7 +37,6 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 //TODO  Project tree Checkbox
 //TODO  Translation
 //TODO  CDTBaseObject more independent
-//TODO  SVM
 //TODO  Segmentation plugins
 
 
@@ -191,7 +190,8 @@ int main(int argc, char *argv[])
         return 0;
 
     MainWindow w;
-    w.showMaximized();
+//    w.showMaximized();
+    w.show();
 
     segmentationPlugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();
     attributesPlugins   = CDTPluginLoader<CDTAttributesInterface>::getPlugins();

@@ -56,7 +56,7 @@ private slots:
     void onRecentFileTriggered();
 
 protected:
-    void closeEvent(QCloseEvent *);
+    void closeEvent(QCloseEvent *event);
 
 
 private:

@@ -89,7 +89,7 @@ bool CDTHistogramPlot::updateHistogram()
     bool ret;
     if (!pData->db.isValid())
     {
-        qDebug()<<"DataBase not opened!";
+        qDebug()<<"Database not opened!";
         return false;
     }
     QSqlQuery query(pData->db);

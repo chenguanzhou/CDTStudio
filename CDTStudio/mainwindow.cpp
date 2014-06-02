@@ -27,7 +27,6 @@ MainWindow::MainWindow(QWidget *parent) :
     recentFileToolButton = new QToolButton(this);
     mainWindow = this;
 
-
     recentFileToolButton->setText(tr("&Recent"));
     recentFileToolButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     recentFileToolButton->setIcon(QIcon(":/Icon/recentfile.png"));
@@ -47,12 +46,15 @@ MainWindow::MainWindow(QWidget *parent) :
 //    ui->horizontalLayoutAttributes->setMenuBar(ui->widgetAttributes->menuBar());
 //    ui->dockWidgetAttributes->setEnabled(false);
 
+    QSettings setting("WHU","CDTStudio");
+    this->restoreGeometry(setting.value("geometry").toByteArray());
+    this->restoreState(setting.value("windowState").toByteArray());
     emit loadSetting();
 }
 
 
 MainWindow::~MainWindow()
-{
+{    
     emit updateSetting();
     delete ui;
 }
@@ -181,11 +183,8 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         if (classificationLayer != NULL)
         {
             CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());
-//            qDebug()<<"11";
             QgsFeatureRendererV2 *renderer = classificationLayer->renderer();
-//            qDebug()<<"22";
             segmentationLayer->setRenderer(renderer);
-//            qDebug()<<"33";
             getCurrentMapCanvas()->refresh();
         }
     }
@@ -227,7 +226,11 @@ void MainWindow::onRecentFileTriggered()
     ui->tabWidgetProject->openProject(action->text());
 }
 
-void MainWindow::closeEvent(QCloseEvent *)
+void MainWindow::closeEvent(QCloseEvent *event)
 {
     ui->tabWidgetProject->closeAll();
+    QSettings setting("WHU","CDTStudio");
+    setting.setValue("geometry", saveGeometry());
+    setting.setValue("windowState", saveState());
+    QMainWindow::closeEvent(event);
 }

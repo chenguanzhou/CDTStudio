@@ -45,7 +45,7 @@ void RecentFileSupervisor::updateSetting()
         {
             window->recentFilePaths.push_back(path);
         }
-    }
+    }    
 
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("Project");
