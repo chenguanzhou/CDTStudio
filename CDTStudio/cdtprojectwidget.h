@@ -27,7 +27,6 @@ public:
     bool saveAsProject(const QString &path);
     int  maybeSave();
     QString filePath();
-//    bool closeProject(CDTProjectTabWidget *parent,const int &index);
     QToolBar *menuBar();
 
 signals:
@@ -53,7 +52,7 @@ private:
     bool isChanged;
     CDTProject *project;
     QFile file;
-    CDTProjectTreeModel* treeModel;
+    QStandardItemModel* treeModel;
 
     QgsMapCanvas* mapCanvas;
     QToolBar *initToolBar();

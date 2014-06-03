@@ -1,6 +1,10 @@
 #include "cdtattributegenerator.h"
 #include <opencv2/opencv.hpp>
 
+#ifndef Q_MOC_RUN
+#include <stxxl/sorter>
+#endif
+
 extern QList<CDTAttributesInterface *>     attributesPlugins;
 typedef stxxl::sorter<ObjectInfo,ObjectInfoComparator,sizeof(ObjectInfo)*1024*1024> ObjectSorter;
 

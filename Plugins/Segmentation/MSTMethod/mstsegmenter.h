@@ -9,6 +9,13 @@
 #include <QMap>
 #include <QVector>
 
+#ifndef Q_MOC_RUN
+#include <stxxl/vector>
+#include <stxxl/sorter>
+#include <stxxl/algorithm>
+#endif
+
+
 class GraphKruskal;
 
 enum EdgeWeightMethod
@@ -47,6 +54,8 @@ struct edge_comparator
         return edge(0,0,std::numeric_limits<float>::max());
     }
 };
+
+typedef stxxl::sorter<edge,edge_comparator> EdgeVector;
 
 class GraphVertex
 {

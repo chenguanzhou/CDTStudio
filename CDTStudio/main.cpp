@@ -1,14 +1,11 @@
 #include "mainwindow.h"
 #include <qgsapplication.h>
-#include <QTranslator>
-#include <QDebug>
-#include <QDir>
-#include <QtSql>
-#include <QMessageBox>
+#include "stable.h"
 #include "cdtpluginloader.h"
 #include "cdtsegmentationInterface.h"
 #include "cdtattributesinterface.h"
 #include "cdtclassifierinterface.h"
+#include <stxxl.h>
 
 QList<CDTSegmentationInterface *>   segmentationPlugins;
 QList<CDTAttributesInterface *>     attributesPlugins;
@@ -38,9 +35,8 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 //TODO  Translation
 //TODO  CDTBaseObject more independent
 //TODO  Segmentation plugins
+//TODO  Recent file
 
-
-//BUG   Stxxl
 //BUG   Same name
 //BUG   Attribute dockwidget size
 //BUG   PCA and transform information to show
@@ -175,6 +171,18 @@ void clearDatabase()
     }
 }
 
+
+void initStxxl()
+{
+    stxxl::config * cfg = stxxl::config::get_instance();
+#ifdef Q_OS_WIN
+    stxxl::disk_config disk((QDir::tempPath()+"\\cdtstudio_stxxl").toLocal8Bit().constData(), 800 * 1024 * 1024, "wincall delete");
+#elif Q_OS_UNIX
+    stxxl::disk_config disk((QDir::tempPath()+"\cdtstudio_stxxl").toLocal8Bit().constData(), 800 * 1024 * 1024, "syscall unlink");
+#endif
+    cfg->add_disk(disk);
+}
+
 int main(int argc, char *argv[])
 {
     QgsApplication a(argc, argv,true);
@@ -188,6 +196,8 @@ int main(int argc, char *argv[])
 
     if (initDatabase()==false)
         return 0;
+
+    initStxxl();
 
     MainWindow w;
 //    w.showMaximized();

@@ -17,7 +17,7 @@ CDTBaseObject::CDTBaseObject(QUuid uuid, QObject *parent) :
 
 CDTBaseObject::~CDTBaseObject()
 {
-//    delete mapCanvasLayer;
+
 }
 
 QList<QStandardItem *> CDTBaseObject::standardItems() const

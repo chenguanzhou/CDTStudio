@@ -7,15 +7,6 @@
 #include "graphkruskal.h"
 #include <gdal_priv.h>
 
-#ifndef Q_MOC_RUN
-#include <stxxl/vector>
-#include <stxxl/sorter>
-#include <stxxl/algorithm>
-#endif
-
-
-typedef stxxl::sorter<edge,edge_comparator> EdgeVector;
-
 MSTSegmenter::MSTSegmenter(const QString &inputImagePath,
                            const QString &outputImagePath,
                            const QString &shapefilePath,
@@ -37,6 +28,14 @@ MSTSegmenter::MSTSegmenter(const QString &inputImagePath,
 {
     GDALAllRegister();
     CPLSetConfigOption("GDAL_FILENAME_IS_UTF8","YES");
+
+    stxxl::config * cfg = stxxl::config::get_instance();
+#ifdef Q_OS_WIN
+    stxxl::disk_config disk((QDir::tempPath()+"\\cdtstudio_seg_stxxl").toLocal8Bit().constData(), 800 * 1024 * 1024, "wincall delete");
+#elif Q_OS_UNIX
+    stxxl::disk_config disk((QDir::tempPath()+"\cdtstudio_seg_stxxl").toLocal8Bit().constData(), 800 * 1024 * 1024, "syscall unlink");
+#endif
+    cfg->add_disk(disk);
 }
 
 MSTSegmenter::~MSTSegmenter()
@@ -97,7 +96,7 @@ void MSTSegmenter::run()
     delete vecEdge;
 
     emit currentProgressChanged(tr("Generating index"));
-//    std::map<unsigned,unsigned> mapRootidObjectid;
+    //    std::map<unsigned,unsigned> mapRootidObjectid;
     QMap<unsigned,unsigned> mapRootidObjectid;
 
     GDALRasterBand* poMaskBand = poDstDS->GetRasterBand(1)->GetMaskBand();
@@ -123,7 +122,7 @@ void MSTSegmenter::run()
     polygonizer->run();
 
     qDebug()<<"mst segmentation cost: "<<(clock()-tSatart)/(double)CLOCKS_PER_SEC<<"s";
-    emit completed();    
+    emit completed();
 }
 
 
@@ -157,10 +156,10 @@ bool MSTSegmenter::_CheckAndInit()
     if (_layerWeights.size()==0)
     {
         _layerWeights.resize(poSrcDS->GetRasterCount());
-//        std::for_each(_layerWeights.begin(),_layerWeights.end(),[&](double &data)
-//        {
-//            data = 1./poSrcDS->GetRasterCount();
-//        });
+        //        std::for_each(_layerWeights.begin(),_layerWeights.end(),[&](double &data)
+        //        {
+        //            data = 1./poSrcDS->GetRasterCount();
+        //        });
         for(QVector<double>::Iterator iter = _layerWeights.begin();iter != _layerWeights.end();++iter)
         {
             *iter = 1./poSrcDS->GetRasterCount();
@@ -278,8 +277,8 @@ bool MSTSegmenter::_CreateEdgeWeights(void *p)
                         buffer1[k] = SRCVAL(lineBufferUp[k],gdalDataType,x);
                         buffer2[k] = SRCVAL(lineBufferUp[k],gdalDataType,x+1);
                     }
-//                    emit computeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
-//                    ++edgeSize;
+                    //                    emit computeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
+                    //                    ++edgeSize;
                     onComputeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
                 }
             }
@@ -293,8 +292,8 @@ bool MSTSegmenter::_CreateEdgeWeights(void *p)
                         buffer1[k] = SRCVAL(lineBufferUp[k],gdalDataType,x);
                         buffer2[k] = SRCVAL(lineBufferDown[k],gdalDataType,x);
                     }
-//                    emit computeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
-//                    ++edgeSize;
+                    //                    emit computeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
+                    //                    ++edgeSize;
                     onComputeEdgeWeight(nodeID1,nodeIDNextLIne,buffer1,buffer2,_layerWeights,vecEdge);
                 }
             }
@@ -332,9 +331,9 @@ bool MSTSegmenter::_CreateEdgeWeights(void *p)
 }
 
 bool MSTSegmenter::_ObjectMerge(GraphKruskal *&graph,
-        void *p,
-        unsigned num_vertices,
-        double threshold)
+                                void *p,
+                                unsigned num_vertices,
+                                double threshold)
 {
     EdgeVector* vecEdge = (EdgeVector*)p;
     graph = new GraphKruskal(num_vertices);

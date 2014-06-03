@@ -89,14 +89,10 @@ QString CDTProject::name() const
     query.exec();
     query.next();
     return query.value(0).toString();
-
-//    return projectName;
 }
 
 void CDTProject::setName(const QString &name)
 {
-//    projectName = n;
-
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("UPDATE project set name = ? where id =?");
     query.bindValue(0,name);

@@ -115,14 +115,13 @@ QgsFeatureRendererV2 *CDTClassification::renderer()
     QMap<QString,QVariant> clsInfo = this->clsInfo();
 
     QVariantList data = this->data();
-    QMap<int,QColor> colorList/*(clsInfo.size())*/;
+    QMap<int,QColor> colorList;
     QSqlQuery query(QSqlDatabase::database("category"));
 
     foreach (QString categoryID, clsInfo.keys()) {
         query.exec(QString("select color from category where id = '%1'").arg(categoryID));
         query.next();
         QColor clr = query.value(0).value<QColor>();
-//        colorList[clsInfo.value(categoryID).toInt()] = clr;
         colorList.insert(clsInfo.value(categoryID).toInt(),clr);
     }
     qDebug()<<"11:"<<colorList;
@@ -131,7 +130,6 @@ QgsFeatureRendererV2 *CDTClassification::renderer()
     for(int i=0;i<data.size();++i)
     {
         QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
-//        symbolLayer->setColor(colorList[data[i].toInt()]);
         symbolLayer->setColor(colorList.value(data[i].toInt()));
         QgsRendererCategoryV2 rend;
         rend.setValue(i);
@@ -139,7 +137,6 @@ QgsFeatureRendererV2 *CDTClassification::renderer()
         rend.setLabel(QString::number(i));
         categoryList<<rend;
     }
-//    qDebug()<<data;
 
     QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("GridCode",categoryList);
     return categorizedSymbolRenderer;
@@ -155,42 +152,6 @@ void CDTClassification::setName(const QString &name)
 
     keyItem->setText(name);
 }
-
-//void CDTClassification::setMethod(const QString &methodName)
-//{
-//    QSqlQuery query(QSqlDatabase::database("category"));
-//    query.prepare("UPDATE classificationlayer set method = ? where id =?");
-//    query.bindValue(0,QVariant(methodName));
-//    query.bindValue(1,this->id().toString());
-//    query.exec();
-//}
-
-//void CDTClassification::setParam(const QMap<QString, QVariant> &param)
-//{
-//    QSqlQuery query(QSqlDatabase::database("category"));
-//    query.prepare("UPDATE classificationlayer set params = ? where id =?");
-//    query.bindValue(0,QVariant(param));
-//    query.bindValue(1,this->id().toString());
-//    query.exec();
-//}
-
-//void CDTClassification::setData(const QList<QVariant> &data)
-//{
-//    QSqlQuery query(QSqlDatabase::database("category"));
-//    query.prepare("UPDATE classificationlayer set data = ? where id =?");
-//    query.bindValue(0,QVariant(data));
-//    query.bindValue(1,this->id().toString());
-//    query.exec();
-//}
-
-//void CDTClassification::setClsInfo(const QMap<QString, QVariant> &clsInfo) const
-//{
-//    QSqlQuery query(QSqlDatabase::database("category"));
-//    query.prepare("UPDATE classificationlayer set clsinfo = ? where id =?");
-//    query.bindValue(0,QVariant(clsInfo));
-//    query.bindValue(1,this->id().toString());
-//    query.exec();
-//}
 
 void CDTClassification::initClassificationLayer(
         const QString &name,

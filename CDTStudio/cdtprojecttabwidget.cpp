@@ -54,7 +54,7 @@ void CDTProjectTabWidget::openProject(const QString &filepath)
 
         if(!compareFilePath(QFileInfo(filepath).absoluteFilePath()))
             return;
-        connect(projectWidget->treeModel,SIGNAL(updated()),this,SIGNAL(treeModelUpdated()));
+
         addTab(projectWidget,projectWidget->project->name());
         this->setCurrentWidget(projectWidget);
         emit menuRecentChanged(filepath);

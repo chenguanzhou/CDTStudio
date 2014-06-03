@@ -8,10 +8,6 @@
 #include <QtSql>
 #include "cdtattributesinterface.h"
 
-#ifndef Q_MOC_RUN
-#include <stxxl/sorter>
-#endif
-
 const double PI = 3.1415926536;
 
 class CDTAttributeGenerator : public CDTBaseThread

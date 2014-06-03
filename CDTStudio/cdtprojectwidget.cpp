@@ -16,7 +16,7 @@
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
     project(NULL),
-    treeModel(new CDTProjectTreeModel(this)),
+    treeModel(new QStandardItemModel(this)),
     isChanged(false),
     mapCanvas(new QgsMapCanvas(this))
 {
