@@ -70,9 +70,15 @@ FORMS    += mainwindow.ui \
 INCLUDEPATH += ../Interfaces \
 ../Tools/CDTDialogs \
 ../Tools/QPropertyEditor \
-../Tools/CDTHistogramPlot
+../Tools/CDTHistogramPlot \
+../Tools/QtColorPicker
 
-DEPENDPATH += ../tools/CDTDialogs
+
+DEPENDPATH += \
+../Tools/CDTDialogs \
+../Tools/QPropertyEditor \
+../Tools/CDTHistogramPlot \
+../Tools/QtColorPicker
 
 unix{
 QMAKE_CXXFLAGS += -std=c++0x
@@ -91,7 +97,7 @@ include(../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
-LIBS += -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot\
+LIBS += -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
  -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 RESOURCES += \

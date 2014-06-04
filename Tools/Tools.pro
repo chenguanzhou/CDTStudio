@@ -4,4 +4,5 @@ SUBDIRS += \
     CDTDialogs\
     QPropertyEditor\
     CDTFileSystem\
-	CDTHistogramPlot
+	CDTHistogramPlot\
+	QtColorPicker

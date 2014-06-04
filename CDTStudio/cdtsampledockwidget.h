@@ -2,6 +2,7 @@
 #define CDTSAMPLEDOCKWIDGET_H
 
 #include <QDockWidget>
+#include <QColorDialog>
 
 namespace Ui {
 class CDTSampleDockWidget;
@@ -65,6 +66,13 @@ public:
     {
         QColorDialog *dlg = static_cast<QColorDialog*>(editor);
         model->setData(index,dlg->currentColor()) ;
+    }
+    void updateEditorGeometry(QWidget * editor,
+                              const QStyleOptionViewItem & option,
+                              const QModelIndex & index) const
+    {
+        QRect scr = QApplication::desktop()->screenGeometry();
+        editor->move( scr.center() - editor->mapToGlobal( editor->rect().center()) );
     }
 };
 
