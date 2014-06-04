@@ -3,12 +3,7 @@ QT       += core gui
 TARGET = SVM
 TEMPLATE = lib
 CONFIG += plugin
-QMAKE_CXXFLAGS += -std=c++0x
-
-
 DESTDIR = ../../../bin/Plugins
-
-
 INCLUDEPATH += ../../../Interfaces
 
 SOURCES += svminterface.cpp
@@ -19,6 +14,7 @@ HEADERS += svminterface.h \
 OTHER_FILES += SVM.json
 
 unix{
+QMAKE_CXXFLAGS += -std=c++0x
 target.path = /usr/lib
 INSTALLS += target
 LIBS += -lopencv_core -lopencv_ml

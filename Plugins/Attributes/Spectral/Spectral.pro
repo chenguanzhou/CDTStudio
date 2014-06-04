@@ -9,9 +9,8 @@ QT       += core gui sql
 TARGET = Spectral
 TEMPLATE = lib
 CONFIG += Plugin
-QMAKE_CXXFLAGS += -std=c++0x
 
-DESTDIR = ../../../bin/plugins
+DESTDIR = ../../../bin/Plugins
 
 INCLUDEPATH += ../../../Interfaces
 
@@ -22,6 +21,7 @@ HEADERS += spectralinterface.h \
 OTHER_FILES += Spectral.json
 
 unix{
+QMAKE_CXXFLAGS += -std=c++0x
 target.path = /usr/lib
 INSTALLS += target
 LIBS += -lgdal

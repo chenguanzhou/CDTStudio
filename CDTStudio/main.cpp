@@ -53,12 +53,12 @@ bool initDatabase()
 
     QString dbPath;
     dbPath = ":memory:";
-//    dbPath = "C:/Users/cgz/Documents/data/lalalla.db";
+    //    dbPath = "C:/Users/cgz/Documents/data/lalalla.db";
 
-//    QTemporaryFile dbFile;
-//    dbFile.open();
-//    dbPath = dbFile.fileName();
-//    dbFile.close();
+    //    QTemporaryFile dbFile;
+    //    dbFile.open();
+    //    dbPath = dbFile.fileName();
+    //    dbFile.close();
 
     db.setDatabaseName(dbPath);
     if (!db.open())
@@ -171,17 +171,14 @@ void clearDatabase()
     }
 }
 
-
+#ifdef Q_OS_WIN
 void initStxxl()
 {
     stxxl::config * cfg = stxxl::config::get_instance();
-#ifdef Q_OS_WIN
     stxxl::disk_config disk((QDir::tempPath()+"\\cdtstudio_stxxl").toLocal8Bit().constData(), 800 * 1024 * 1024, "wincall delete");
-#elif Q_OS_UNIX
-    stxxl::disk_config disk((QDir::tempPath()+"\cdtstudio_stxxl").toLocal8Bit().constData(), 800 * 1024 * 1024, "syscall unlink");
-#endif
     cfg->add_disk(disk);
 }
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -197,10 +194,12 @@ int main(int argc, char *argv[])
     if (initDatabase()==false)
         return 0;
 
+#ifdef Q_OS_WIN
     initStxxl();
+#endif
 
     MainWindow w;
-//    w.showMaximized();
+    //    w.showMaximized();
     w.show();
 
     segmentationPlugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();

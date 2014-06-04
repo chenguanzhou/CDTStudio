@@ -10,7 +10,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = CDTStudio
 TEMPLATE = app
-QMAKE_CXXFLAGS += -std=c++0x
 CONFIG+=precompile_header qwt
 PRECOMPILED_HEADER = stable.h
 
@@ -70,12 +69,13 @@ FORMS    += mainwindow.ui \
 
 INCLUDEPATH += ../Interfaces \
 ../Tools/CDTDialogs \
-../Tools/QPropertyEditor\
+../Tools/QPropertyEditor \
 ../Tools/CDTHistogramPlot
 
 DEPENDPATH += ../tools/CDTDialogs
 
 unix{
+QMAKE_CXXFLAGS += -std=c++0x
 LIBS += -lgdal -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc -lgomp
 
 INCLUDEPATH += /usr/include/gdal \

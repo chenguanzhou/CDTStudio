@@ -9,12 +9,8 @@ QT       += core gui sql
 TARGET = Geometry
 TEMPLATE = lib
 CONFIG += plugin
-QMAKE_CXXFLAGS += -std=c++0x
-
 
 DESTDIR = ../../../bin/Plugins
-
-
 INCLUDEPATH += ../../../Interfaces
 
 SOURCES += geometryinterface.cpp
@@ -25,6 +21,7 @@ HEADERS += geometryinterface.h \
 OTHER_FILES += Geometry.json
 
 unix{
+QMAKE_CXXFLAGS += -std=c++0x
 target.path = /usr/lib
 INSTALLS += target
 LIBS += -lgdal

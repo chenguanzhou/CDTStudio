@@ -3,11 +3,8 @@ QT       += core gui
 TARGET = AutoSVM
 TEMPLATE = lib
 CONFIG += plugin
-QMAKE_CXXFLAGS += -std=c++0x
-
 
 DESTDIR = ../../../bin/Plugins
-
 
 INCLUDEPATH += ../../../Interfaces
 
@@ -19,6 +16,7 @@ HEADERS += autosvminterface.h \
 OTHER_FILES += AutoSVM.json
 
 unix{
+QMAKE_CXXFLAGS += -std=c++0x
 target.path = /usr/lib
 INSTALLS += target
 LIBS += -lopencv_core -lopencv_ml

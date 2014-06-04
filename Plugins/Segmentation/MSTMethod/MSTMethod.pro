@@ -9,7 +9,6 @@ QT       += core gui
 TARGET = MSTMethod
 TEMPLATE = lib
 CONFIG += plugin
-QMAKE_CXXFLAGS += -std=c++0x
 
 DESTDIR = ../../../bin/Plugins
 
@@ -47,7 +46,7 @@ FORMS += \
 
 unix{
 LIBS += -lgdal
-
+QMAKE_CXXFLAGS += -std=c++0x
 INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }

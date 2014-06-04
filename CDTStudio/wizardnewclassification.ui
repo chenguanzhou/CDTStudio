@@ -340,7 +340,7 @@
   <customwidget>
    <class>QPropertyEditorWidget</class>
    <extends>QTreeView</extends>
-   <header>qpropertyeditorwidget.h</header>
+   <header>QPropertyEditorWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

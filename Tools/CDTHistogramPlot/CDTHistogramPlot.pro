@@ -15,7 +15,10 @@ DESTDIR = ../../lib
 DLLDESTDIR = ../../bin
 DEFINES += CDTHISTOGRAMPLOT_LIBRARY
 
-LIBS += -lqwt
-!unix{
+unix{
+INCLUDEPATH += /usr/include/qwt
+}
+else{
 include(../Config/win.pri)
 }
+LIBS += -lqwt

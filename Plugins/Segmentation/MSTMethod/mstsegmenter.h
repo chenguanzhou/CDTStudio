@@ -13,6 +13,7 @@
 #include <stxxl/vector>
 #include <stxxl/sorter>
 #include <stxxl/algorithm>
+#include <stxxl/bits/version.h>
 #endif
 
 

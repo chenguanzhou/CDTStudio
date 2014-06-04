@@ -65,7 +65,7 @@ void CDTHistogramPlot::initHistogram()
 {
     histogram->attach(this);
     histogram->setStyle(QwtPlotCurve::Lines);
-    histogram->setPen(QColor(255,0,0),2);
+    histogram->setPen(QPen(QColor(255,0,0),2));
     histogram->setBrush(QBrush(QColor(255,0,0,127)));
 
     QwtPlotPanner *plotPanner = new QwtPlotPanner( this->canvas() );
@@ -128,6 +128,7 @@ bool CDTHistogramPlot::updateHistogram()
     for (int i=0;i<intervals;++i)
         datas.push_back(QPointF(i*intervalStep+minVal,counts[i]));
 
-    histogram->setSamples(new QwtPointSeriesData(datas));
+//    histogram->setSamples(new QwtPointSeriesData(datas));
+    histogram->setSamples(datas);
     return true;
 }

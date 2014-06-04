@@ -79,7 +79,6 @@ bool CDTProjectWidget::readProject(const QString &filepath)
     tempFile.seek(0);
     QDataStream in(&(tempFile));
 
-//    QDataStream in(&(file));
     quint32 magicNumber;
     in>>  magicNumber;
     if (magicNumber != (quint32)0xABCDEF)
@@ -98,13 +97,6 @@ bool CDTProjectWidget::readProject(const QString &filepath)
 
 bool CDTProjectWidget::writeProject()
 {
-//    file.seek(0);
-//    QDataStream out(&file);
-//    out << (quint32)0xABCDEF;
-//    out<<*project;
-//    file.flush();
-//    isChanged = false;
-
     QTemporaryFile tempFile;
     tempFile.open();
     QDataStream temp(&tempFile);
@@ -225,6 +217,7 @@ void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
             mapLayers<<QgsMapCanvasLayer(lyr);
         }
     }
+
     mapCanvas->setLayerSet(mapLayers);
     if (zoomToFullExtent)
         mapCanvas->zoomToFullExtent();
@@ -249,7 +242,7 @@ QToolBar *CDTProjectWidget::initToolBar()
     actionZoomIn   = new QAction(QIcon(":/Icon/mActionZoomIn.svg"),tr("Zoom In"),this);
     actionPan      = new QAction(QIcon(":/Icon/mActionPan.svg"),tr("Pan"),this);
     actionFullExtent = new QAction(QIcon(":/Icon/mActionZoomFullExtent.svg"),tr("Full Extent"),this);
-    QAction* hehe = new QAction(tr("Hehe"),this);
+//    QAction* hehe = new QAction(tr("Hehe"),this);
 
     actionZoomOut->setCheckable(true);
     actionZoomIn->setCheckable(true);
@@ -259,13 +252,13 @@ QToolBar *CDTProjectWidget::initToolBar()
     toolBar->addAction(actionZoomIn );
     toolBar->addAction(actionPan);
     toolBar->addAction(actionFullExtent);
-    toolBar->addAction(hehe);
+//    toolBar->addAction(hehe);
 
     connect(actionZoomOut,SIGNAL(triggered(bool)),this,SLOT(onZoomOutTool(bool)));
     connect(actionZoomIn ,SIGNAL(triggered(bool)),this,SLOT(onZoomInTool(bool)));
     connect(actionPan,SIGNAL(triggered(bool)),this,SLOT(onPanTool(bool)));
     connect(actionFullExtent,SIGNAL(triggered()),this,SLOT(onFullExtent()));
-    connect(hehe,SIGNAL(triggered()),this,SLOT(onHehe()));
+//    connect(hehe,SIGNAL(triggered()),this,SLOT(onHehe()));
 
     zoomOutTool = new QgsMapToolZoom(mapCanvas,TRUE);
     zoomInTool = new QgsMapToolZoom(mapCanvas,FALSE);
@@ -303,7 +296,6 @@ void CDTProjectWidget::createProject(QUuid id)
     connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
 
     treeModel->appendRow(project->standardItems());
-//    project->setName(name);
 }
 
 void CDTProjectWidget::untoggledToolBar()
@@ -313,10 +305,10 @@ void CDTProjectWidget::untoggledToolBar()
     actionPan->setChecked(false);
 }
 
-void CDTProjectWidget::onHehe()
-{
+//void CDTProjectWidget::onHehe()
+//{
 
-}
+//}
 
 int CDTProjectWidget::maybeSave()
 {
@@ -341,20 +333,6 @@ QString CDTProjectWidget::filePath()
 {
     return QFileInfo(file).absoluteFilePath();
 }
-
-//bool CDTProjectWidget::closeProject(CDTProjectTabWidget* parent,const int &index)
-//{
-//    int ret = this->maybeSave();
-//    if(ret == QMessageBox::Cancel  )
-//    {
-//        return false;
-//    }
-//    else
-//    {
-//        parent->removeTab(index);
-//        return true;
-//    }
-//}
 
 QToolBar *CDTProjectWidget::menuBar()
 {
