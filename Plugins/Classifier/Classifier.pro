@@ -1,7 +1,9 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-	AutoSVM\
-	SVM\
+    AutoSVM\
+    SVM\
     Bayes\
-    KNN
+    KNN\
+    RTrees\
+    ERTrees\
