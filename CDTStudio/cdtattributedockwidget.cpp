@@ -4,6 +4,9 @@
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
 #include "dialoggenerateattributes.h"
+#include "cdtattributesinterface.h"
+
+extern QList<CDTAttributesInterface *>     attributesPlugins;
 
 CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     QDockWidget(parent),
@@ -26,10 +29,17 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
 
     ui->horizontalLayout->setMenuBar(menuBar);
     connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),SLOT(onDatabaseChanged(CDTDatabaseConnInfo)));
+
+    QSettings settings("WHU","CDTStudio");
+    ui->splitter->restoreGeometry(settings.value("CDTAttributeDockWidget/geometry").toByteArray());
+    ui->splitter->restoreState(settings.value("CDTAttributeDockWidget/windowState").toByteArray());
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()
 {
+    QSettings settings("WHU","CDTStudio");
+    settings.setValue("CDTAttributeDockWidget/geometry", ui->splitter->saveGeometry());
+    settings.setValue("CDTAttributeDockWidget/windowState", ui->splitter->saveState());
     delete ui;
 }
 
@@ -62,17 +72,26 @@ void CDTAttributeDockWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
 }
 
 void CDTAttributeDockWidget::updateTable()
-{
-    QStringList tableNames = QSqlDatabase::database("attribute").tables();
+{   
+    QStringList attributes = attributeNames();
+    QStringList originalTables = QSqlDatabase::database("attribute").tables();
+    QStringList tableNames;
+    foreach (QString name, originalTables) {
+        if (attributes.contains(name))
+            tableNames<<name;
+    }
     foreach (QString tableName, tableNames) {
         QTableView* widget = new QTableView(ui->tabWidget);
-        QSqlRelationalTableModel* model = new QSqlRelationalTableModel(widget,QSqlDatabase::database("attribute"));
+        QSqlTableModel* model = new QSqlTableModel(widget,QSqlDatabase::database("attribute"));
         model->setTable(tableName);
         model->select();
         widget->setModel(model);
         widget->resizeColumnsToContents();
         widget->resizeRowsToContents();
         widget->setEditTriggers(QTableView::NoEditTriggers);
+        widget->setItemDelegateForColumn(0,new CDTObjectIDDelegate(this));
+        widget->verticalHeader()->hide();
+
         ui->tabWidget->addTab(widget,tableName);
         connect(widget,SIGNAL(clicked(QModelIndex)),SLOT(onItemClicked(QModelIndex)));
     }
@@ -141,13 +160,22 @@ void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
     QString tableName = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
     QString featureName = view->model()->headerData(index.column(),Qt::Horizontal).toString();
 
-    qDebug()<<tableName<<featureName;
-
+    if (featureName.toLower() == "objectid")
+        return;
     ui->qwtPlot->setDatabase(QSqlDatabase::database("attribute"));
     ui->qwtPlot->setTableName(tableName);
     ui->qwtPlot->setFieldName(featureName);
 
     ui->qwtPlot->replot();
+}
+
+QStringList CDTAttributeDockWidget::attributeNames()
+{
+    QStringList list;
+    foreach (CDTAttributesInterface *interface, attributesPlugins) {
+        list<<interface->tableName();
+    }
+    return list;
 }
 
 void CDTAttributeDockWidget::clearTables()

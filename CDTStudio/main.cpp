@@ -28,14 +28,15 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 #pragma comment(lib,cvLIB("ml"))
 #endif
 
-//TODO  Build file system
-//TODO  Encrypt password
+//TODO  File system
 //TODO  Some QButtonGroup
 //TODO  Project tree Checkbox
 //TODO  Translation
 //TODO  CDTBaseObject more independent
 //TODO  Segmentation plugins
 //TODO  Recent file
+//TODO  Segmentation Border Color
+//TODO  AttributeTable fields
 
 //BUG   Same name
 //BUG   Attribute dockwidget size

@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QtSql>
 #include "dialogdbconnection.h"
+#include <QPainter>
 
 class QToolBar;
 class QMenuBar;
@@ -13,6 +14,29 @@ class CDTSegmentationLayer;
 namespace Ui {
 class CDTAttributeDockWidget;
 }
+
+class CDTObjectIDDelegate:public QItemDelegate
+{
+    Q_OBJECT
+public:
+    CDTObjectIDDelegate ( QObject * parent = 0 ):QItemDelegate(parent){}
+    void paint(QPainter *painter,
+               const QStyleOptionViewItem &option,
+               const QModelIndex &index) const
+    {
+        QString text = index.data(Qt::DisplayRole).toString();
+        painter->save();
+        QRect cellRect = option.rect;
+        painter->setPen(QColor(255,0,0));
+
+        QFont font = index.data(Qt::FontRole).value<QFont>();
+        font.setBold(true);
+        painter->setFont(font);
+
+        painter->drawText(cellRect, Qt::AlignHCenter|Qt::AlignVCenter, text);
+        painter->restore();
+    }
+};
 
 class CDTAttributeDockWidget : public QDockWidget
 {
@@ -39,7 +63,8 @@ private slots:
     void onActionGenerateAttributesTriggered();
     void onDatabaseChanged(CDTDatabaseConnInfo connInfo);
     void onItemClicked(QModelIndex index);
-
+private:
+    static QStringList attributeNames();
 private:
     Ui::CDTAttributeDockWidget *ui;
     QMenuBar *_menuBar;

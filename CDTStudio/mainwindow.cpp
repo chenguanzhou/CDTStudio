@@ -43,9 +43,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this,SIGNAL(loadSetting()),supervisor,SLOT(loadSetting()));
     connect(this,SIGNAL(updateSetting()),supervisor,SLOT(updateSetting()));
 
-//    ui->horizontalLayoutAttributes->setMenuBar(ui->widgetAttributes->menuBar());
-//    ui->dockWidgetAttributes->setEnabled(false);
-
     QSettings setting("WHU","CDTStudio");
     this->restoreGeometry(setting.value("geometry").toByteArray());
     this->restoreState(setting.value("windowState").toByteArray());

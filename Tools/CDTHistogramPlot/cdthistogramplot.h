@@ -6,6 +6,10 @@
 #include <QSqlDatabase>
 
 class QwtPlotCurve;
+class QwtPlotPicker;
+class QwtPlotMagnifier;
+class QwtPlotPanner;
+
 class CDTHistogramPlotPrivate;
 
 class CDTHISTOGRAMPLOT_EXPORT CDTHistogramPlot:public QwtPlot
@@ -25,10 +29,15 @@ public slots:
 
 private:
     void initHistogram();
+    void initTools();
     bool updateHistogram();
 
 private:
     QwtPlotCurve *histogram;
+    QwtPlotPicker *picker;
+    QwtPlotMagnifier *magnifier;
+    QwtPlotPanner *plotPanner;
+
     CDTHistogramPlotPrivate *pData;
 };
 

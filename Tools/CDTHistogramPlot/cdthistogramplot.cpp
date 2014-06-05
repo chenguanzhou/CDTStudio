@@ -22,6 +22,7 @@ CDTHistogramPlot::CDTHistogramPlot(QWidget *parent)
       pData(new CDTHistogramPlotPrivate),
       histogram(new QwtPlotCurve)
 {
+    initTools();
     initHistogram();
 }
 
@@ -58,7 +59,12 @@ void CDTHistogramPlot::setFieldName(const QString &name)
 void CDTHistogramPlot::replot()
 {
     if (updateHistogram())
+    {
+        this->setTitle(QString("%1->%2").arg(pData->tableName).arg(pData->fieldName));
+        setAxisAutoScale(QwtPlot::xBottom);
+        setAxisAutoScale(QwtPlot::yLeft);
         QwtPlot::replot();
+    }
 }
 
 void CDTHistogramPlot::initHistogram()
@@ -66,22 +72,26 @@ void CDTHistogramPlot::initHistogram()
     histogram->attach(this);
     histogram->setStyle(QwtPlotCurve::Lines);
     histogram->setPen(QPen(QColor(255,0,0),2));
-    histogram->setBrush(QBrush(QColor(255,0,0,127)));
+    histogram->setBrush(QBrush(QColor(255,0,0,127)));    
 
-    QwtPlotPanner *plotPanner = new QwtPlotPanner( this->canvas() );
 
-    QwtPlotMagnifier *magnifier = new QwtPlotMagnifier( this->canvas() );
-    magnifier->setMouseButton( Qt::NoButton );
+    this->setFrameStyle(QwtPlotCanvas::NoFrame);
+}
 
-    QwtPlotPicker *picker = new QwtPlotPicker( QwtPlot::xBottom, QwtPlot::yLeft,
+void CDTHistogramPlot::initTools()
+{
+    plotPanner = new QwtPlotPanner( this->canvas() );
+    magnifier = new QwtPlotMagnifier( this->canvas() );
+    picker = new QwtPlotPicker( QwtPlot::xBottom, QwtPlot::yLeft,
                                                QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn,
                                                this->canvas() );
+
+    magnifier->setMouseButton( Qt::NoButton );
+
     picker->setStateMachine( new QwtPickerTrackerMachine() );
     picker->setRubberBandPen( QColor( Qt::green ) );
     picker->setRubberBand( QwtPicker::VLineRubberBand );
     picker->setTrackerPen( QColor( Qt::blue ) );
-
-    this->setFrameStyle(QwtPlotCanvas::NoFrame);
 }
 
 bool CDTHistogramPlot::updateHistogram()
@@ -128,7 +138,6 @@ bool CDTHistogramPlot::updateHistogram()
     for (int i=0;i<intervals;++i)
         datas.push_back(QPointF(i*intervalStep+minVal,counts[i]));
 
-//    histogram->setSamples(new QwtPointSeriesData(datas));
     histogram->setSamples(datas);
     return true;
 }
