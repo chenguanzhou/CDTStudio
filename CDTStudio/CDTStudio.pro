@@ -10,13 +10,14 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = CDTStudio
 TEMPLATE = app
+DESTDIR = ../bin
+
+#PRECOMPILED HEADER
 CONFIG+=precompile_header qwt
 PRECOMPILED_HEADER = stable.h
 
-DESTDIR = ../bin
-
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     cdtproject.cpp \
     cdtimagelayer.cpp \
     cdtsegmentationlayer.cpp \
@@ -60,29 +61,32 @@ HEADERS  += \
     cdtvariantconverter.h
 
 
-FORMS    += mainwindow.ui \            
+FORMS    += \
+    mainwindow.ui \
     dialognewsegmentation.ui\
     dialoggenerateattributes.ui \    
     cdtattributedockwidget.ui \
     cdtsampledockwidget.ui \
     wizardnewclassification.ui
 
-INCLUDEPATH += ../Interfaces \
-../Tools/CDTDialogs \
-../Tools/QPropertyEditor \
-../Tools/CDTHistogramPlot \
-../Tools/QtColorPicker
+INCLUDEPATH += \
+    ../Interfaces \
+    ../Tools/CDTDialogs \
+    ../Tools/QPropertyEditor \
+    ../Tools/CDTHistogramPlot \
+    ../Tools/QtColorPicker
 
 
 DEPENDPATH += \
-../Tools/CDTDialogs \
-../Tools/QPropertyEditor \
-../Tools/CDTHistogramPlot \
-../Tools/QtColorPicker
+    ../Tools/CDTDialogs \
+    ../Tools/QPropertyEditor \
+    ../Tools/CDTHistogramPlot \
+    ../Tools/QtColorPicker
 
+#Libraries
 unix{
 QMAKE_CXXFLAGS += -std=c++0x
-LIBS += -lgdal -lopencv_core -lopencv_highgui -lopencv_ml -lopencv_imgproc -lgomp
+LIBS += -lgdal -lgomp
 
 INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
@@ -99,6 +103,12 @@ LIBS += -lgdal_i
 
 LIBS += -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
  -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
+
+#log4qt
+include(../Tools/log4qt/log4qt.pri)
+
+#opencv
+include(../Tools/Config/link2opencv.pri)
 
 RESOURCES += \
     ../resource.qrc
