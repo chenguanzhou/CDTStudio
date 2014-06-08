@@ -19,7 +19,6 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 //TODO  Segmentation plugins
 //TODO  Recent file
 //TODO  Segmentation Border Color
-//TODO  AttributeTable fields
 //TODO  Log System
 //TODO  Comment
 //TODO  Unit Test(Auto)
@@ -47,12 +46,15 @@ bool initDatabase()
     //    dbPath = dbFile.fileName();
     //    dbFile.close();
 
+    Log4Qt::Logger::rootLogger()->info("Program database is %1!",dbPath);
+
     db.setDatabaseName(dbPath);
     if (!db.open())
     {
         QMessageBox::warning(NULL, QObject::tr("Unable to open database"),
                              QObject::tr("An error occurred while opening the connection: ")
                              + db.lastError().text());
+        Log4Qt::Logger::rootLogger()->warn("Program db open failed!\nerror msg:%1",db.lastError().text());
         return false;
     }
 
@@ -64,6 +66,7 @@ bool initDatabase()
     if (ret == false)
     {
         QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table project failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table project failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -72,6 +75,7 @@ bool initDatabase()
     if (ret == false)
     {
         QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table imagelayer failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table imagelayer failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -86,6 +90,7 @@ bool initDatabase()
     if (ret == false)
     {
         QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table segmentationlayer failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table segmentationlayer failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -102,6 +107,7 @@ bool initDatabase()
     if (ret == false)
     {
         QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table classificationlayer failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table classificationlayer failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -116,6 +122,7 @@ bool initDatabase()
     if (ret == false)
     {
         QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table category failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table category failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -129,6 +136,7 @@ bool initDatabase()
     if (ret == false)
     {
         QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table sample_segmentation failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table sample_segmentation failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -141,9 +149,11 @@ bool initDatabase()
     if (ret == false)
     {
         QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table samples failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table samples failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
+    Log4Qt::Logger::rootLogger()->info("Program database initialized!");
     return true;
 }
 
@@ -161,22 +171,35 @@ void clearDatabase()
 #ifdef Q_OS_WIN
 void initStxxl()
 {
-    stxxl::config * cfg = stxxl::config::get_instance();
-    stxxl::disk_config disk((QDir::tempPath()+"\\cdtstudio_stxxl").toLocal8Bit().constData(), 800 * 1024 * 1024, "wincall delete");
+    QString stxxlFilePath = QDir::tempPath()+"\\cdtstudio_stxxl";
+    stxxl::config * cfg = stxxl::config::get_instance();    
+    stxxl::disk_config disk(stxxlFilePath.toLocal8Bit().constData(), 800 * 1024 * 1024, "wincall delete");
     cfg->add_disk(disk);
+    Log4Qt::Logger::rootLogger()->info("Stxxl file path is %1",stxxlFilePath);
 }
 #endif
 
 int main(int argc, char *argv[])
 {
     QgsApplication a(argc, argv,true);
+    a.setApplicationName("CDTStudio");
+    a.setApplicationVersion("v0.1");
+
+    Log4Qt::BasicConfigurator::configure();
+    Log4Qt::Logger::rootLogger()->info("Log4Qt is running!");
 
     QTranslator appTranslator;
-    appTranslator.load(":/trans/" + QLocale::system().name()+".qm");
-    a.installTranslator(&appTranslator);
+    if (appTranslator.load(":/trans/" + QLocale::system().name()+".qm"))
+    {
+        a.installTranslator(&appTranslator);
+        Log4Qt::Logger::rootLogger()->info(QString("Current translation file is %1!")
+                .arg(":/trans/" + QLocale::system().name()+".qm"));
+    }
+    else
+        Log4Qt::Logger::rootLogger()->warn("Load translation file failed!");
 
     QgsApplication::setPluginPath(QDir::currentPath()+"/Plugins");
-    QgsApplication::initQgis();
+    QgsApplication::initQgis();    
 
     if (initDatabase()==false)
         return 0;
@@ -185,13 +208,14 @@ int main(int argc, char *argv[])
     initStxxl();
 #endif
 
-    MainWindow w;
-    //    w.showMaximized();
-    w.show();
-
     segmentationPlugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();
     attributesPlugins   = CDTPluginLoader<CDTAttributesInterface>::getPlugins();
     classifierPlugins   = CDTPluginLoader<CDTClassifierInterface>::getPlugins();
+
+
+    MainWindow w;
+    //    w.showMaximized();
+    w.show();
 
     int ret = a.exec();
 
