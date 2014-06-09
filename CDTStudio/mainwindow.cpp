@@ -47,6 +47,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->restoreGeometry(setting.value("geometry").toByteArray());
     this->restoreState(setting.value("windowState").toByteArray());
     emit loadSetting();
+
+    logger()->info("MainWindow initialized");
 }
 
 
@@ -54,6 +56,7 @@ MainWindow::~MainWindow()
 {    
     emit updateSetting();
     delete ui;
+    logger()->info("MainWindow destruct");
 }
 
 void MainWindow::initDockWidgets()
@@ -124,15 +127,18 @@ bool MainWindow::setActiveSegmentation(QUuid uuid)
 
 void MainWindow::onCurrentTabChanged(int i)
 {
-    if(i==-1)   return ;
+    if(i==-1)   return ;    
+
     CDTProjectWidget* projectWidget = (CDTProjectWidget*)(ui->tabWidgetProject->currentWidget());
     ui->treeViewProject->setModel(projectWidget->treeModel);
     ui->treeViewProject->expandAll();
     ui->treeViewProject->resizeColumnToContents(0);
+    logger()->info("Current tab is changed to %1",ui->tabWidgetProject->tabText(i));
 }
 
 void MainWindow::on_action_New_triggered()
 {
+    logger()->info("Create a new project");
     ui->tabWidgetProject->createNewProject();
 }
 

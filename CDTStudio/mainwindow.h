@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QToolButton>
 #include "recentfilesupervisor.h"
+#include "log4qt/logger.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,6 +22,7 @@ struct QUuid;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
     friend class RecentFileSupervisor;
 public:
     explicit MainWindow(QWidget *parent = 0);
