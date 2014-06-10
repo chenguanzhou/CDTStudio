@@ -7,28 +7,38 @@
 class CDTSegmentationInterface:public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString inputImagePath READ inputImagePath WRITE setInputImagePath)
-    Q_PROPERTY(QString markfilePath READ markfilePath WRITE setMarkfilePath NOTIFY onMarkfilePathChanged)
-    Q_PROPERTY(QString shapefilePath READ shapefilePath WRITE setShapefilePath NOTIFY onShapefilePathChanged)
 public:
     explicit CDTSegmentationInterface(QObject* parent = 0):QObject(parent){}
 
     virtual QString segmentationMethod()const =0;
-    virtual QWidget* paramsForm() =0;
-    virtual QMap<QString,QVariant> params(QWidget* form)=0;
-    virtual QThread* thread(QWidget* form) =0;
+    virtual void startSegmentation() =0;
+
+    QVariantMap params() const
+    {
+        QMap<QString,QVariant> params;
+        const QMetaObject *metaObj = this->metaObject();
+        for(int i=metaObj->propertyOffset();i<metaObj->propertyCount();++i)
+        {
+            QMetaProperty property = metaObj->property(i);
+            if (property.isUser() && property.isDesignable())
+            {
+                params.insert(property.name(),this->property(property.name()));
+            }
+        }
+        return params;
+    }
 
     void setInputImagePath(const QString &path){_inputImagePath=path;}
     void setMarkfilePath  (const QString &path){_markfilePath=path;}
     void setShapefilePath (const QString &path){_shapefilePath=path;}
 
-    QString inputImagePath()const{return _inputImagePath;}
-    QString markfilePath()  const{return _markfilePath;}
-    QString shapefilePath() const{return _shapefilePath;}
 
-signals:    
-    void onMarkfilePathChanged(const QString& path);
-    void onShapefilePathChanged(const QString& path);
+
+//    QString inputImagePath()const{return _inputImagePath;}
+//    QString markfilePath()  const{return _markfilePath;}
+//    QString shapefilePath() const{return _shapefilePath;}
+signals:
+    void finished();
 
 private:
     QString _inputImagePath;

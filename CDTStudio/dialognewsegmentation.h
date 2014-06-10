@@ -37,7 +37,6 @@ private slots:
 private:
     Ui::DialogNewSegmentation *ui;
     QMap<QString,QVariant> segmentationParams;
-    QGridLayout* gridLatoutPlugin;
     QString inputImagePath;
 
     void loadPlugins();

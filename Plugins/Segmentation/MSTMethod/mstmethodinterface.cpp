@@ -1,11 +1,18 @@
 #include "mstmethodinterface.h"
-#include "formmst.h"
 
+class MSTMethodPrivate
+{
+public:
+    MSTMethodPrivate():threshold(20),minObjectCount(100),shieldNulValue(false){}
+    double threshold;
+    int minObjectCount;
+    bool shieldNulValue;
+};
 
 MSTMethodInterface::MSTMethodInterface(QObject *parent)
-    :CDTSegmentationInterface(parent)
+    :CDTSegmentationInterface(parent),
+      pData(new MSTMethodPrivate)
 {
-
 }
 
 MSTMethodInterface::~MSTMethodInterface()
@@ -17,24 +24,39 @@ QString MSTMethodInterface::segmentationMethod() const
     return QString("mst");
 }
 
-QWidget *MSTMethodInterface::paramsForm()
+void MSTMethodInterface::startSegmentation()
 {
-    FormMST *frmMST= new FormMST();
-    frmMST->setInterface(this);    
-    return frmMST;
+
 }
 
-QMap<QString, QVariant> MSTMethodInterface::params(QWidget *form)
+double MSTMethodInterface::threshold() const
 {
-    return ((FormMST*)form)->params();
+    return pData->threshold;
 }
 
-QThread *MSTMethodInterface::thread(QWidget *form)
+int MSTMethodInterface::minObjectCount() const
 {
-    if (form==NULL) return NULL;
+    return pData->minObjectCount;
+}
 
-    FormMST *frmMST=(FormMST *)form;
-    return frmMST->thread();
+bool MSTMethodInterface::shieldNulValue() const
+{
+    return pData->shieldNulValue;
+}
+
+void MSTMethodInterface::setThreshold(double val)
+{
+    pData->threshold = val;
+}
+
+void MSTMethodInterface::setMinObjectCount(int val)
+{
+    pData->minObjectCount = val;
+}
+
+void MSTMethodInterface::setShieldNulValue(bool val)
+{
+    pData->shieldNulValue = val;
 }
 
 #if QT_VERSION < 0x050000

@@ -22,6 +22,7 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 //TODO  Log System
 //TODO  Comment
 //TODO  Unit Test(Auto)
+//TODO  ProgressBar Manager
 
 //BUG   Same name
 //BUG   Attribute dockwidget size

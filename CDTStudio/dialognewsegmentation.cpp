@@ -9,12 +9,9 @@ extern QList<CDTSegmentationInterface *> segmentationPlugins;
 DialogNewSegmentation::DialogNewSegmentation(const QString &inputImage, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogNewSegmentation),
-    gridLatoutPlugin(new QGridLayout()),
     inputImagePath(inputImage)
 {
     ui->setupUi(this);
-    ui->frame->setLayout(gridLatoutPlugin);
-    gridLatoutPlugin->setMargin(0);
     loadPlugins();
     loadHistoryPaths();
     ui->labelProgress->hide();
@@ -92,17 +89,7 @@ void DialogNewSegmentation::loadHistoryPaths()
 
 void DialogNewSegmentation::on_comboBox_currentIndexChanged(int index)
 {    
-    if (gridLatoutPlugin->itemAtPosition(0,0) != NULL)
-    {
-        QWidget* lastWidget = gridLatoutPlugin->itemAtPosition(0,0)->widget();
-        if (lastWidget!=NULL)
-        {
-            gridLatoutPlugin->removeWidget(lastWidget);
-            delete lastWidget;
-        }
-    }
-    gridLatoutPlugin->addWidget(segmentationPlugins[index]->paramsForm(),0,0);
-    this->adjustSize();
+    ui->propertyWidget->setObject(segmentationPlugins[index]);
 }
 
 void DialogNewSegmentation::on_pushButtonMarkfile_clicked()
@@ -174,9 +161,7 @@ void DialogNewSegmentation::onFinished()
     ui->labelProgress->hide();
     ui->progressBar->hide();
     ui->frameTotal->adjustSize();
-    this->adjustSize();
-    segmentationParams = segmentationPlugins[ui->comboBox->currentIndex()]
-            ->params(gridLatoutPlugin->itemAtPosition(0,0)->widget());
+    this->adjustSize();    
     ui->frameTotal->setEnabled(true);
     ui->pushButtonStart->setEnabled(true);
 }
@@ -191,13 +176,15 @@ void DialogNewSegmentation::on_pushButtonStart_clicked()
     interface->setMarkfilePath(ui->comboBoxMarkfile->currentText());
     interface->setShapefilePath(ui->comboBoxShapefile->currentText());
 
-    QThread *thread = interface
-            ->thread(gridLatoutPlugin->itemAtPosition(0,0)->widget());
-    connect(thread, SIGNAL(finished()), this, SLOT(onFinished()));
-    connect(thread, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
-    connect(thread, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
-    connect(thread, SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
-    thread->start();
+//    QThread *thread = interface
+//            ->thread(gridLatoutPlugin->itemAtPosition(0,0)->widget());
+//    connect(thread, SIGNAL(finished()), this, SLOT(onFinished()));
+//    connect(thread, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
+//    connect(thread, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
+//    connect(thread, SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
+//    thread->start();
+    interface->startSegmentation();
+
     ui->frameTotal->setEnabled(false);
     ui->pushButtonStart->setEnabled(false);
 }
