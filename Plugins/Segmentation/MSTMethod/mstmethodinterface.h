@@ -21,7 +21,7 @@ public:
     explicit MSTMethodInterface(QObject* parent = 0);
     ~MSTMethodInterface();
     QString segmentationMethod()const;
-    void startSegmentation();
+    void startSegmentation(QProgressBar *progressBar,QLabel *label);
 
     double  threshold()const;
     int minObjectCount() const;

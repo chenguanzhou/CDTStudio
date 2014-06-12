@@ -46,7 +46,7 @@ QString DialogNewSegmentation::method() const
     return ui->comboBox->currentText();
 }
 
-QMap<QString, QVariant> DialogNewSegmentation::params() const
+QVariantMap DialogNewSegmentation::params() const
 {
     return segmentationParams;
 }
@@ -157,6 +157,8 @@ void DialogNewSegmentation::on_comboBoxShapefile_currentIndexChanged(const QStri
 
 void DialogNewSegmentation::onFinished()
 {
+    disconnect(sender(),SIGNAL(finished()),this,SLOT(onFinished()));
+
     ui->buttonBox->setStandardButtons(ui->buttonBox->standardButtons()|QDialogButtonBox::Ok);
     ui->labelProgress->hide();
     ui->progressBar->hide();
@@ -176,15 +178,10 @@ void DialogNewSegmentation::on_pushButtonStart_clicked()
     interface->setMarkfilePath(ui->comboBoxMarkfile->currentText());
     interface->setShapefilePath(ui->comboBoxShapefile->currentText());
 
-//    QThread *thread = interface
-//            ->thread(gridLatoutPlugin->itemAtPosition(0,0)->widget());
-//    connect(thread, SIGNAL(finished()), this, SLOT(onFinished()));
-//    connect(thread, SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
-//    connect(thread, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
-//    connect(thread, SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
-//    thread->start();
-    interface->startSegmentation();
+    connect(interface,SIGNAL(finished()),this,SLOT(onFinished()));
+    interface->startSegmentation(ui->progressBar,ui->labelProgress);
 
+    segmentationParams = interface->params();
     ui->frameTotal->setEnabled(false);
     ui->pushButtonStart->setEnabled(false);
 }

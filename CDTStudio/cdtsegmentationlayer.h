@@ -74,14 +74,13 @@ private:
     void addClassification(CDTClassification* classification);
     void loadSamplesFromStruct(const QMap<QString,QString> &sample_id_name,const QList<SampleElement> &samples);
     void saveSamplesToStruct(QMap<QString,QString> &sample_id_name,QList<SampleElement> &samples) const;
-//    void addClassification(CDTClassification* classification);
+
 private:
     QString m_imagePath;
     CDTDatabaseConnInfo    m_dbUrl;
     QString m_method;
-    QMap<QString,QVariant> m_params;
+    QVariantMap m_params;
     QVector<CDTClassification *> classifications;
-
 
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;

@@ -1,4 +1,5 @@
 #include "mstmethodinterface.h"
+#include "mstsegmenter.h"
 
 class MSTMethodPrivate
 {
@@ -24,9 +25,31 @@ QString MSTMethodInterface::segmentationMethod() const
     return QString("mst");
 }
 
-void MSTMethodInterface::startSegmentation()
+void MSTMethodInterface::startSegmentation(QProgressBar *progressBar,QLabel *label)
 {
+    MSTSegmenter* mstSegmenter = new MSTSegmenter(
+                inputImagePath,
+                markfilePath,
+                shapefilePath,
+                //                    ui->comboBoxMergeRule->currentIndex(),
+                pData->threshold,
+                pData->minObjectCount,
+                pData->shieldNulValue);
 
+
+    connect(mstSegmenter, SIGNAL(finished()), this, SIGNAL(finished()));
+
+    if (progressBar)
+    {
+        connect(mstSegmenter, SIGNAL(progressBarSizeChanged(int,int)),progressBar,SLOT(setRange(int,int)));
+        connect(mstSegmenter, SIGNAL(progressBarValueChanged(int)),progressBar,SLOT(setValue(int)));
+    }
+    if (label)
+    {
+        connect(mstSegmenter, SIGNAL(currentProgressChanged(QString)),label,SLOT(setText(QString)));
+    }
+
+    mstSegmenter->start();
 }
 
 double MSTMethodInterface::threshold() const

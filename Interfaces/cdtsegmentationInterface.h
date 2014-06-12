@@ -3,6 +3,8 @@
 
 #include <QtCore>
 #include <QtPlugin>
+#include <QProgressBar>
+#include <QLabel>
 
 class CDTSegmentationInterface:public QObject
 {
@@ -11,7 +13,7 @@ public:
     explicit CDTSegmentationInterface(QObject* parent = 0):QObject(parent){}
 
     virtual QString segmentationMethod()const =0;
-    virtual void startSegmentation() =0;
+    virtual void startSegmentation(QProgressBar *progressBar,QLabel *label) =0;
 
     QVariantMap params() const
     {
@@ -28,9 +30,9 @@ public:
         return params;
     }
 
-    void setInputImagePath(const QString &path){_inputImagePath=path;}
-    void setMarkfilePath  (const QString &path){_markfilePath=path;}
-    void setShapefilePath (const QString &path){_shapefilePath=path;}
+    void setInputImagePath(const QString &path){inputImagePath=path;}
+    void setMarkfilePath  (const QString &path){markfilePath=path;}
+    void setShapefilePath (const QString &path){shapefilePath=path;}
 
 
 
@@ -40,10 +42,10 @@ public:
 signals:
     void finished();
 
-private:
-    QString _inputImagePath;
-    QString _markfilePath;
-    QString _shapefilePath;
+protected:
+    QString inputImagePath;
+    QString markfilePath;
+    QString shapefilePath;
 };
 
 Q_DECLARE_INTERFACE(CDTSegmentationInterface,"cn.edu.WHU.CDTStudio.CDTSegmentationInterface/1.0")

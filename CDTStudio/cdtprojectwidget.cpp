@@ -20,6 +20,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     isChanged(false),
     mapCanvas(new QgsMapCanvas(this))
 {
+    treeModel->setHorizontalHeaderLabels(QStringList()<<tr("Layer")<<tr("Value"));
     connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));    
     connect(this,SIGNAL(projectChanged()),this,SLOT(setIsChanged()));
 

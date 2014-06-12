@@ -80,7 +80,7 @@ public:
     MSTSegmenter(const QString &inputImagePath,
                  const QString &outputImagePath,
                  const QString &shapefilePath,
-                 int MergeRule ,
+//                 int MergeRule ,
                  double threshold,
                  int minObjectSize,
                  bool shield,
@@ -105,7 +105,7 @@ private:
     QString             _inputImagePath;
     QString             _outputImagePath;
     QString             _shapefilePath;
-    int                 _mergeRule;             //The Merge Rule Of the Algorithm
+//    int                 _mergeRule;             //The Merge Rule Of the Algorithm
     double              _threshold;             //The Threshold of Segmentation
     int                 _minObjectSize;         //The minimal Object Size in Output Image
     bool                shield_0_255;

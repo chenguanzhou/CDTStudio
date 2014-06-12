@@ -23,7 +23,7 @@ public:
     QString markfilePath() const;
     QString shapefilePath() const;
     QString method() const;
-    QMap<QString,QVariant> params() const;
+    QVariantMap params() const;
 
 private slots:
     void on_comboBox_currentIndexChanged(int index);
@@ -36,7 +36,7 @@ private slots:
 
 private:
     Ui::DialogNewSegmentation *ui;
-    QMap<QString,QVariant> segmentationParams;
+    QVariantMap segmentationParams;
     QString inputImagePath;
 
     void loadPlugins();
