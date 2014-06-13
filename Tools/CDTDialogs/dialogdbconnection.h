@@ -2,7 +2,7 @@
 #define DIALOGDBCONNECTION_H
 
 #include <QDialog>
-
+#include <QMetaType>
 
 #include "cdtdialogs_global.h"
 namespace Ui {
@@ -22,8 +22,13 @@ public:
     bool operator==(const CDTDatabaseConnInfo& rhs) const;
     bool isNull();
 };
+
+Q_DECLARE_METATYPE(CDTDatabaseConnInfo)
+
 QDataStream CDTDIALOGS_EXPORT &operator<<(QDataStream &out, const CDTDatabaseConnInfo &dbInfo);
 QDataStream CDTDIALOGS_EXPORT &operator>>(QDataStream &in, CDTDatabaseConnInfo &dbInfo);
+
+
 
 class CDTDIALOGS_EXPORT DialogDBConnection : public QDialog
 {

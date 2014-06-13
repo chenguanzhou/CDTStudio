@@ -65,8 +65,13 @@ public slots:
     void removeAllClassifications();
 
     void setName(const QString& name);
-    void setLayerInfo(const QString& name,const QString &shpPath,const QString &mkPath);
-    void setMethodParams(const QString& methodName,const QMap<QString,QVariant> &params);
+    void initSegmentationLayer(const QString& name,
+            const QString &shpPath,
+            const QString &mkPath,
+            const QString &method,
+            const QVariantMap &params,
+            CDTDatabaseConnInfo url);
+
     void setDatabaseURL(CDTDatabaseConnInfo url);
 
 private:
@@ -77,9 +82,7 @@ private:
 
 private:
     QString m_imagePath;
-    CDTDatabaseConnInfo    m_dbUrl;
-    QString m_method;
-    QVariantMap m_params;
+//    CDTDatabaseConnInfo    m_dbUrl;
     QVector<CDTClassification *> classifications;
 
     QAction *addClassifications;

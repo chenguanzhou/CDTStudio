@@ -6,14 +6,9 @@
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "stable.h"
 #include "dialogdbconnection.h"
-#include <qgsvectorlayer.h>
-#include <qgsmaplayerregistry.h>
-#include <qgssinglesymbolrendererv2.h>
-#include <qgsrendererv2widget.h>
-#include <qgsfillsymbollayerv2.h>
-#include <qgsvectordataprovider.h>
 #include "wizardnewclassification.h"
-#include <mainwindow.h>
+#include "cdtvariantconverter.h"
+#include "mainwindow.h"
 
 
 QDataStream &operator<<(QDataStream &out, const SampleElement &sample)
@@ -190,12 +185,21 @@ QString CDTSegmentationLayer::markfilePath() const
 
 QString CDTSegmentationLayer::method() const
 {
-    return m_method;
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select method from segmentationlayer where id ='" + this->id().toString() +"'");
+    query.next();
+    return query.value(0).toString();
 }
 
 CDTDatabaseConnInfo CDTSegmentationLayer::databaseURL() const
 {
-    return m_dbUrl;
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select dbUrl from segmentationlayer where id ='" + this->id().toString() +"'");
+    query.next();
+    CDTDatabaseConnInfo url = variantToData<CDTDatabaseConnInfo>(query.value(0));
+    return url;
 }
 
 QString CDTSegmentationLayer::imagePath() const
@@ -248,7 +252,12 @@ void CDTSegmentationLayer::setName(const QString &name)
     emit nameChanged();
 }
 
-void CDTSegmentationLayer::setLayerInfo(const QString &name, const QString &shpPath, const QString &mkPath)
+void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
+                                                 const QString &shpPath,
+                                                 const QString &mkPath,
+                                                 const QString &method,
+                                                 const QVariantMap &params,
+                                                 CDTDatabaseConnInfo url)
 {
     QgsVectorLayer *newLayer = new QgsVectorLayer(/*QFileInfo(shpPath).absolutePath()*/shpPath,QFileInfo(shpPath).completeBaseName(),"ogr");
     if (!newLayer->isValid())
@@ -271,40 +280,44 @@ void CDTSegmentationLayer::setLayerInfo(const QString &name, const QString &shpP
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
     keyItem->setMapLayer(mapCanvasLayer);
 
-    QSqlQuery query(QSqlDatabase::database("category"));
-    bool ret ;
-    ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?)");
-    query.bindValue(0,uuid.toString());
-    query.bindValue(1,name);
-    query.bindValue(2,shpPath);
-    query.bindValue(3,mkPath);
-    query.bindValue(4,((CDTImageLayer*)parent())->id().toString());
-    query.exec();
-
-    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
-    emit segmentationChanged();
-}
-
-void CDTSegmentationLayer::setMethodParams(const QString &methodName, const QMap<QString, QVariant> &params)
-{
-    m_method = methodName;
+    //set method $ params
     paramRootItem->removeRows(0,paramRootItem->rowCount());
-    paramRootValueItem->setText(m_method);
-    m_params = params;
-    QStringList keys = m_params.keys();
+    paramRootValueItem->setText(method);
+    QStringList keys = params.keys();
     foreach (QString key, keys) {
-        QVariant value = m_params.value(key);
+        QVariant value = params.value(key);
         paramRootItem->appendRow(
                     QList<QStandardItem*>()
                     <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,key,this)
                     <<new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,value.toString(),this)
                     );
     }
+    QSqlQuery query(QSqlDatabase::database("category"));
+    bool ret ;
+    ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?,?,?,?)");
+    query.bindValue(0,uuid.toString());
+    query.bindValue(1,name);
+    query.bindValue(2,shpPath);
+    query.bindValue(3,mkPath);
+    query.bindValue(4,method);
+    query.bindValue(5,dataToVariant(params));
+
+    query.bindValue(6,dataToVariant(url));
+    query.bindValue(7,((CDTImageLayer*)parent())->id().toString());
+    query.exec();
+
+    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    emit segmentationChanged();
 }
 
 void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
 {
-    m_dbUrl = url;
+    //    m_dbUrl = url;
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("UPDATE segmentationlayer set dbUrl = ? where id =?");
+    query.bindValue(0,dataToVariant(url));
+    query.bindValue(1,this->id().toString());
+    query.exec();
     emit segmentationChanged();
 }
 
@@ -366,7 +379,9 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
        <<query.value(1).toString() //name
       <<query.value(2).toString() //shapfile
      <<query.value(3).toString() //markfile
-    <<segmentation.m_method<<segmentation.m_params<<segmentation.m_dbUrl;
+    <<query.value(4).toString() //method
+    <<query.value(5)//params
+    <<query.value(6);//dbUrl
 
     QMap<QString,QString> sample;
     QList<SampleElement> samples;
@@ -384,17 +399,15 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
 {
     in>>segmentation.uuid;
 
-    QString name,shp,mark;
-    in>>name>>shp>>mark;
-    segmentation.setLayerInfo(name,shp,mark);
-
-    QString temp;
+    QString name,shp,mark,method;
+    in>>name>>shp>>mark>>method;
+    QVariant temp;
     in>>temp;
+    QVariantMap params = variantToData<QVariantMap>(temp);
+    in>>temp;
+    CDTDatabaseConnInfo url = variantToData<CDTDatabaseConnInfo>(temp);
 
-    QMap<QString,QVariant> paramsTemp;
-    in>>paramsTemp;
-    segmentation.setMethodParams(temp,paramsTemp);
-    in>>segmentation.m_dbUrl;
+    segmentation.initSegmentationLayer(name,shp,mark,method,params,url);
 
 
     QMap<QString,QString> sample;

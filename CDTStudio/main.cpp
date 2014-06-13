@@ -23,6 +23,7 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 //TODO  Comment
 //TODO  Unit Test(Auto)
 //TODO  ProgressBar Manager
+//TODO  ORM
 
 //BUG   Same name
 //BUG   Attribute dockwidget size
@@ -86,7 +87,10 @@ bool initDatabase()
                      "name text NOT NULL,"
                      "shapefilePath text NOT NULL,"
                      "markfilePath text NOT NULL,"
-                     "imageID text NOT NULL,"
+                     "method text NOT NULL,"
+                     "params blob,"
+                     "dbUrl blob,"
+                     "imageID text NOT NULL,"                     
                      "Primary Key(id) )");
     if (ret == false)
     {

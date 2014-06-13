@@ -1,13 +1,7 @@
 #include "cdtimagelayer.h"
-#include <QMenu>
-#include <QInputDialog>
 #include "dialognewsegmentation.h"
 #include "cdtproject.h"
-#include <qgsrasterlayer.h>
-#include <qgsmapcanvas.h>
-#include <qgsrasterlayer.h>
-#include <qgsmaplayerregistry.h>
-#include <QMessageBox>
+#include "stable.h"
 
 QList<CDTImageLayer *> CDTImageLayer::layers;
 
@@ -182,8 +176,9 @@ void CDTImageLayer::addSegmentation()
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
         CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this->path(),this);
-        segmentation->setLayerInfo(dlg->name(),dlg->shapefilePath(),dlg->markfilePath());
-        segmentation->setMethodParams(dlg->method(),dlg->params());
+        segmentation->initSegmentationLayer(
+                    dlg->name(),dlg->shapefilePath(),dlg->markfilePath(),
+                    dlg->method(),dlg->params(),CDTDatabaseConnInfo());
         segmentationsroot->appendRow(segmentation->standardItems());
         addSegmentation(segmentation);
     }

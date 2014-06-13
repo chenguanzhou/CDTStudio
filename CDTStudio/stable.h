@@ -21,6 +21,17 @@
 //QGIS
 #include <qgis.h>
 #include <qgisgui.h>
+#include <qgsrasterlayer.h>
+#include <qgsvectorlayer.h>
+#include <qgsmaplayerregistry.h>
+#include <qgssinglesymbolrendererv2.h>
+#include <qgsrendererv2widget.h>
+#include <qgsfillsymbollayerv2.h>
+#include <qgsvectordataprovider.h>
+
+#include <qgsmapcanvas.h>
+#include <qgsrasterlayer.h>
+#include <qgsmaplayerregistry.h>
 
 //Log4Qt
 #include "log4qt/logger.h"

@@ -62,7 +62,7 @@ void CDTAttributeDockWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
 
     if (_segmentationLayer)
     {
-        disconnect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
+        disconnect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));        
     }
 
     _segmentationLayer = layer;
