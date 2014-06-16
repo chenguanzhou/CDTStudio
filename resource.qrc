@@ -5,7 +5,6 @@
         <file>Icon/save.png</file>
         <file>Icon/save_all.png</file>
         <file>Icon/save_as.png</file>
-        <file>trans/zh_CN.qm</file>
         <file>Icon/remove.png</file>
         <file>Icon/add.png</file>
         <file>Icon/recentfile.png</file>
@@ -21,5 +20,6 @@
         <file>Icon/revert.png</file>
         <file>Icon/refresh.png</file>
         <file>Icon/sample.png</file>
+        <file>Trans/zh_CN.qm</file>
     </qresource>
 </RCC>

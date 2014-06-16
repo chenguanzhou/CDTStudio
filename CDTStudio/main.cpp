@@ -26,14 +26,15 @@ int main(int argc, char *argv[])
     Log4Qt::Logger::rootLogger()->info("Log4Qt is running!");
 
     QTranslator appTranslator;
-    if (appTranslator.load(":/trans/" + QLocale::system().name()+".qm"))
+    if (appTranslator.load(":/Trans/" + QLocale::system().name()+".qm"))
     {
         a.installTranslator(&appTranslator);
         Log4Qt::Logger::rootLogger()->info(QString("Current translation file is %1!")
-                .arg(":/trans/" + QLocale::system().name()+".qm"));
+                .arg(":/Trans/" + QLocale::system().name()+".qm"));
     }
     else
-        Log4Qt::Logger::rootLogger()->warn("Load translation file failed!");
+        Log4Qt::Logger::rootLogger()->warn("Load translation file %1 failed!",
+                                           ":/Trans/" + QLocale::system().name()+".qm");
 
 
     MainWindow w;

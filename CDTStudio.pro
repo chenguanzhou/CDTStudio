@@ -12,6 +12,5 @@ SUBDIRS += \
     CDTStudio \
     Tests
 
-TRANSLATIONS  += trans/zh_CN.ts
-
+TRANSLATIONS  += Trans/zh_CN.ts
 
