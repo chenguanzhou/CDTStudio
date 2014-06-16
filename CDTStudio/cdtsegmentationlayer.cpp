@@ -131,7 +131,9 @@ void CDTSegmentationLayer::addClassification()
                     dlg.method,
                     dlg.params,
                     dlg.label,
-                    dlg.categoryID_Index);
+                    dlg.categoryID_Index,
+                    dlg.normalizeMethod,
+                    dlg.pcaParams);
         classificationRootItem->appendRow(classification->standardItems());
         addClassification(classification);
     }

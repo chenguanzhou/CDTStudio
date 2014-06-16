@@ -20,6 +20,17 @@ CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
     paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
+    normalizeItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+    keyItem->appendRow(
+                QList<QStandardItem*>()
+                <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("Normalize"),this)
+                <<normalizeItem);
+    pcaItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+    keyItem->appendRow(
+                QList<QStandardItem*>()
+                <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("PCA"),this)
+                <<pcaItem);
+
     connect(this,SIGNAL(classificationLayerChanged()),this->parent(),SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(removeClassification(CDTClassification*)),this->parent(),SLOT(removeClassification(CDTClassification*)));
     connect(actionRemoveClassification,SIGNAL(triggered()),SLOT(remove()));
@@ -110,6 +121,24 @@ QVariantMap CDTClassification::clsInfo() const
     return variantToData<QVariantMap>(query.value(0));
 }
 
+QString CDTClassification::normalizeMethod() const
+{
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select normalizeMethod from classificationlayer where id ='" + this->id().toString() +"'");
+    query.next();
+    return query.value(0).toString();
+}
+
+QString CDTClassification::pcaParams() const
+{
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select pca from classificationlayer where id ='" + this->id().toString() +"'");
+    query.next();
+    return query.value(0).toString();
+}
+
 QgsFeatureRendererV2 *CDTClassification::renderer()
 {
     QMap<QString,QVariant> clsInfo = this->clsInfo();
@@ -158,7 +187,9 @@ void CDTClassification::initClassificationLayer(
         const QString &methodName,
         const QMap<QString, QVariant> &param,
         const QList<QVariant> &data,
-        const QMap<QString, QVariant> &clsInfo  )
+        const QMap<QString, QVariant> &clsInfo,
+        const QString &normalizeMethod,
+        const QString &pcaParams)
 {
     keyItem->setText(name);
 
@@ -174,18 +205,21 @@ void CDTClassification::initClassificationLayer(
                     );
     }
 
+    normalizeItem->setText(normalizeMethod);
+    pcaItem->setText(pcaParams);
+
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("insert into classificationlayer VALUES(?,?,?,?,?,?,?)");
+    query.prepare("insert into classificationlayer VALUES(?,?,?,?,?,?,?,?,?)");
     query.addBindValue(id().toString());
     query.addBindValue(name);
     query.addBindValue(methodName);
     query.addBindValue(dataToVariant(param));
     query.addBindValue(dataToVariant(data));
     query.addBindValue(dataToVariant(clsInfo));
+    query.addBindValue(normalizeMethod);
+    query.addBindValue(pcaParams);
     query.addBindValue(((CDTSegmentationLayer*)parent())->id().toString());
     query.exec();
-
-    keyItem->setText(name);
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTClassification &classification)
@@ -195,7 +229,9 @@ QDataStream &operator<<(QDataStream &out, const CDTClassification &classificatio
      <<classification.method()
     <<classification.params()
     <<classification.data()
-    <<classification.clsInfo();
+    <<classification.clsInfo()
+    <<classification.normalizeMethod()
+    <<classification.pcaParams();
     return out;
 }
 
@@ -207,9 +243,11 @@ QDataStream &operator>>(QDataStream &in, CDTClassification &classification)
     QMap<QString, QVariant> param;
     QList<QVariant> data;
     QMap<QString, QVariant> clsInfo;
+    QString normalize;
+    QString pca;
 
-    in>>classification.uuid>>name>>method>>param>>data>>clsInfo;
-    classification.initClassificationLayer(name,method,param,data,clsInfo);
+    in>>classification.uuid>>name>>method>>param>>data>>clsInfo>>normalize>>pca;
+    classification.initClassificationLayer(name,method,param,data,clsInfo,normalize,pca);
 
     return in;
 }

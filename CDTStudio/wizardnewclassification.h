@@ -43,6 +43,8 @@ public:
     QList<QVariant> label;//QList<int>
     QMap<QString,QVariant> categoryID_Index;//QMap<QString,int>
     QMap<QString,QVariant> params;
+    QString normalizeMethod;
+    QString pcaParams;
 
 private:
     Ui::WizardNewClassification *ui;

@@ -333,11 +333,21 @@ void WizardNewClassification::startClassification()
 
     //Transform
     if (isTransform)
+    {
         dataNormalize(data,transformMethod);
+        normalizeMethod = transformMethod;
+    }
+    else
+        normalizeMethod = QString::null;
 
     //PCA
     if (isPCA)
+    {
         pcaTransform(data,pca);
+        pcaParams = QString::number(pca);
+    }
+    else
+        pcaParams = QString::null;
 
     //Start
     cv::Mat train_data(samples.size(),featureCount,CV_32FC1);

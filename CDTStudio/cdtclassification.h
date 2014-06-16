@@ -23,6 +23,8 @@ public:
     QVariantMap params()const;
     QVariantList data()const;
     QVariantMap clsInfo()const;
+    QString normalizeMethod()const;
+    QString pcaParams()const;
 
     QgsFeatureRendererV2* renderer();
 
@@ -31,8 +33,9 @@ public:
             const QString &methodName,
             const QMap<QString, QVariant> &param,
             const QList<QVariant> &data,
-            const QMap<QString, QVariant> &clsInfo
-    );
+            const QMap<QString, QVariant> &clsInfo,
+            const QString &normalizeMethod,
+            const QString &pcaParams);
 
 signals:
     void removeClassification(CDTClassification*);
@@ -52,6 +55,8 @@ private:
 
     CDTProjectTreeItem* paramRootItem;
     CDTProjectTreeItem* paramRootValueItem;
+    CDTProjectTreeItem* normalizeItem;
+    CDTProjectTreeItem* pcaItem;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);

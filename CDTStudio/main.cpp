@@ -16,7 +16,6 @@
 //TODO  Classification Assessment
 
 //BUG   Same name
-//BUG   PCA and transform information to show
 
 int main(int argc, char *argv[])
 {

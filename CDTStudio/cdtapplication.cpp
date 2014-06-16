@@ -122,6 +122,8 @@ bool CDTApplication::initDatabase()
                      "params blob,"
                      "data blob,"
                      "clsinfo blob,"
+                     "normalizeMethod text,"
+                     "pca text,"
                      "segmentationID text NOT NULL,"
                      "Primary Key(id) )");
     if (ret == false)
