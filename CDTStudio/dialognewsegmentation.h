@@ -22,6 +22,7 @@ public:
     QString name() const;
     QString markfilePath() const;
     QString shapefilePath() const;
+    QColor  borderColor() const;
     QString method() const;
     QVariantMap params() const;
 

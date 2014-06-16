@@ -13,6 +13,8 @@ public:
         IMAGE_ROOT,
         SEGMENTION_ROOT,
         SEGMENTION,
+        EXTRACTION_ROOT,
+        EXTRACTION,
         CLASSIFICATION_ROOT,
         CLASSIFICATION,
         METHOD_PARAMS,

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>263</width>
-    <height>302</height>
+    <width>276</width>
+    <height>335</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,20 +37,6 @@
       </property>
       <item>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Shapefile Path</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Markfile Path</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="2">
          <widget class="QPushButton" name="pushButtonShapefile">
           <property name="sizePolicy">
@@ -67,6 +53,30 @@
           </property>
           <property name="text">
            <string>...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Markfile Path</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Shapefile Path</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="comboBoxShapefile">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+          <property name="insertPolicy">
+           <enum>QComboBox::InsertAtTop</enum>
           </property>
          </widget>
         </item>
@@ -89,6 +99,13 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Segmentation Name</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="1" colspan="2">
          <widget class="QLineEdit" name="lineEditName">
           <property name="sizePolicy">
@@ -102,23 +119,6 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Segmentation Name</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="comboBoxShapefile">
-          <property name="editable">
-           <bool>true</bool>
-          </property>
-          <property name="insertPolicy">
-           <enum>QComboBox::InsertAtTop</enum>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="comboBoxMarkfile">
           <property name="editable">
@@ -126,6 +126,20 @@
           </property>
           <property name="insertPolicy">
            <enum>QComboBox::InsertAtTop</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Border Color</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="2">
+         <widget class="QtColorPicker" name="colorPicker">
+          <property name="text">
+           <string/>
           </property>
          </widget>
         </item>
@@ -199,6 +213,11 @@
    <class>QPropertyEditorWidget</class>
    <extends>QTreeView</extends>
    <header>QPropertyEditorWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtColorPicker</class>
+   <extends>QPushButton</extends>
+   <header>qtcolorpicker.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

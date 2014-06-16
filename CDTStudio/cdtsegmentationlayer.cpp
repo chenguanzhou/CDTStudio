@@ -9,6 +9,7 @@
 #include "wizardnewclassification.h"
 #include "cdtvariantconverter.h"
 #include "mainwindow.h"
+#include "qtcolorpicker.h"
 
 
 QDataStream &operator<<(QDataStream &out, const SampleElement &sample)
@@ -32,7 +33,8 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
       addClassifications(new QAction(QIcon(":/Icon/add.png"),tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Segmentation"),this)),
       actionRemoveAllClassifications(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Classifications"),this)),
-      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Segmentation"),this))
+      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Segmentation"),this)),
+      actionChangeBorderColor(new QWidgetAction(this))
 {
     layers.push_back(this);
 
@@ -55,7 +57,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
     classificationRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::EMPTY,tr("Classification"),this);
-    keyItem->appendRow(classificationRootItem);
+    keyItem->appendRow(classificationRootItem);    
 
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
@@ -83,13 +85,24 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
 
 void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
 {    
+    QtColorPicker *borderColorPicker = new QtColorPicker();
+    borderColorPicker->setStandardColors();
+    borderColorPicker->setCurrentColor(color());
+    connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
+    actionChangeBorderColor->setDefaultWidget(borderColorPicker);
+
     QMenu *menu =new QMenu(parent);
+    menu->addAction(actionChangeBorderColor);
+    menu->addSeparator();
     menu->addAction(addClassifications);
     menu->addAction(actionRemoveSegmentation);
-    menu->addAction(actionRemoveAllClassifications);
+    menu->addAction(actionRemoveAllClassifications);    
     menu->addSeparator();
     menu->addAction(actionRename);
     menu->exec(QCursor::pos());
+
+    actionChangeBorderColor->releaseWidget(borderColorPicker);
+    delete borderColorPicker;
 }
 
 void CDTSegmentationLayer::rename()
@@ -202,6 +215,16 @@ CDTDatabaseConnInfo CDTSegmentationLayer::databaseURL() const
     return url;
 }
 
+QColor CDTSegmentationLayer::color() const
+{
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select color from segmentationlayer where id ='" + this->id().toString() +"'");
+    query.next();
+    qDebug()<<query.value(0);
+    return query.value(0).value<QColor>();
+}
+
 QString CDTSegmentationLayer::imagePath() const
 {
     return m_imagePath;
@@ -220,7 +243,7 @@ void CDTSegmentationLayer::setOriginRenderer()
 {
     QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
     symbolLayer->setColor(QColor(0,0,0,0));
-    symbolLayer->setBorderColor(QColor(qrand()%255,qrand()%255,qrand()%255));
+    symbolLayer->setBorderColor(color());
     QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
     QgsSingleSymbolRendererV2* singleSymbolRenderer = new QgsSingleSymbolRendererV2(fillSymbol);
     this->setRenderer(singleSymbolRenderer);
@@ -252,12 +275,26 @@ void CDTSegmentationLayer::setName(const QString &name)
     emit nameChanged();
 }
 
+void CDTSegmentationLayer::setBorderColor(const QColor &clr)
+{
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("UPDATE segmentationlayer set color = ? where id =?");
+    query.bindValue(0,clr);
+    query.bindValue(1,this->id().toString());
+    query.exec();
+
+    setOriginRenderer();
+    this->mapCanvas->refresh();
+    emit nameChanged();
+}
+
 void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
                                                  const QString &shpPath,
                                                  const QString &mkPath,
                                                  const QString &method,
                                                  const QVariantMap &params,
-                                                 CDTDatabaseConnInfo url)
+                                                 CDTDatabaseConnInfo url,
+                                                 const QColor &color)
 {
     QgsVectorLayer *newLayer = new QgsVectorLayer(/*QFileInfo(shpPath).absolutePath()*/shpPath,QFileInfo(shpPath).completeBaseName(),"ogr");
     if (!newLayer->isValid())
@@ -273,9 +310,7 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
 
     keyItem->setText(name);
     shapefileItem->setText(shpPath);
-    markfileItem->setText(mkPath);
-
-    setOriginRenderer();
+    markfileItem->setText(mkPath);    
 
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
     keyItem->setMapLayer(mapCanvasLayer);
@@ -294,7 +329,7 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     }
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
-    ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?,?,?,?)");
+    ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?,?,?,?,?)");
     query.bindValue(0,uuid.toString());
     query.bindValue(1,name);
     query.bindValue(2,shpPath);
@@ -303,8 +338,11 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     query.bindValue(5,dataToVariant(params));
 
     query.bindValue(6,dataToVariant(url));
-    query.bindValue(7,((CDTImageLayer*)parent())->id().toString());
+    query.bindValue(7,color);
+    query.bindValue(8,((CDTImageLayer*)parent())->id().toString());
     query.exec();
+
+    setOriginRenderer();
 
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
     emit segmentationChanged();
@@ -381,7 +419,8 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
      <<query.value(3).toString() //markfile
     <<query.value(4).toString() //method
     <<query.value(5)//params
-    <<query.value(6);//dbUrl
+    <<query.value(6)//dbUrl
+    <<query.value(7);//Border Color
 
     QMap<QString,QString> sample;
     QList<SampleElement> samples;
@@ -406,8 +445,10 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
     QVariantMap params = variantToData<QVariantMap>(temp);
     in>>temp;
     CDTDatabaseConnInfo url = variantToData<CDTDatabaseConnInfo>(temp);
+    in>>temp;
+    QColor color = temp.value<QColor>();
 
-    segmentation.initSegmentationLayer(name,shp,mark,method,params,url);
+    segmentation.initSegmentationLayer(name,shp,mark,method,params,url,color);
 
 
     QMap<QString,QString> sample;

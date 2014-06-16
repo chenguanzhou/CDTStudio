@@ -37,8 +37,7 @@ unix {
     INSTALLS += target
 }
 
-FORMS += \
-    formmst.ui
+FORMS +=
 
 
 

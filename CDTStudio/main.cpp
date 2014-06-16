@@ -16,17 +16,16 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 //TODO  Project tree Checkbox
 //TODO  Translation
 //TODO  CDTBaseObject more independent
-//TODO  Segmentation plugins
 //TODO  Recent file
-//TODO  Segmentation Border Color
 //TODO  Log System
 //TODO  Comment
 //TODO  Unit Test(Auto)
 //TODO  ProgressBar Manager
 //TODO  ORM
+//TODO  Semi-auto segmentation
+//TODO  Classification Assessment
 
 //BUG   Same name
-//BUG   Attribute dockwidget size
 //BUG   PCA and transform information to show
 
 bool initDatabase()
@@ -90,6 +89,7 @@ bool initDatabase()
                      "method text NOT NULL,"
                      "params blob,"
                      "dbUrl blob,"
+                     "color blob,"
                      "imageID text NOT NULL,"                     
                      "Primary Key(id) )");
     if (ret == false)

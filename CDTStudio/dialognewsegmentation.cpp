@@ -17,6 +17,7 @@ DialogNewSegmentation::DialogNewSegmentation(const QString &inputImage, QWidget 
     ui->labelProgress->hide();
     ui->progressBar->hide();
     ui->frameTotal->adjustSize();
+    ui->colorPicker->setStandardColors();
     this->adjustSize();
 }
 
@@ -39,6 +40,11 @@ QString DialogNewSegmentation::markfilePath() const
 QString DialogNewSegmentation::shapefilePath() const
 {
     return ui->comboBoxShapefile->currentText();
+}
+
+QColor DialogNewSegmentation::borderColor() const
+{
+    return ui->colorPicker->currentColor();
 }
 
 QString DialogNewSegmentation::method() const

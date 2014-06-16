@@ -10,6 +10,7 @@ class CDTMapToolSelectTrainingSamples;
 class CDTTrainingSamplesForm;
 class CDTProjectTreeItem;
 class QgsFeatureRendererV2;
+class QWidgetAction;
 
 class SampleElement
 {
@@ -40,6 +41,7 @@ public:
     QString markfilePath() const;
     QString method()const;
     CDTDatabaseConnInfo databaseURL() const;
+    QColor  color()const;
     QString imagePath()const;
 
 
@@ -60,17 +62,20 @@ public slots:
     void rename();
     void remove();
 
+
     void addClassification();
     void removeClassification(CDTClassification *);
     void removeAllClassifications();
 
     void setName(const QString& name);
+    void setBorderColor(const QColor &clr);
     void initSegmentationLayer(const QString& name,
             const QString &shpPath,
             const QString &mkPath,
             const QString &method,
             const QVariantMap &params,
-            CDTDatabaseConnInfo url);
+            CDTDatabaseConnInfo url,
+            const QColor &color);
 
     void setDatabaseURL(CDTDatabaseConnInfo url);
 
@@ -82,13 +87,13 @@ private:
 
 private:
     QString m_imagePath;
-//    CDTDatabaseConnInfo    m_dbUrl;
     QVector<CDTClassification *> classifications;
 
     QAction *addClassifications;
     QAction *actionRemoveSegmentation;
     QAction *actionRemoveAllClassifications;
     QAction *actionRename;
+    QWidgetAction *actionChangeBorderColor;
 
     CDTProjectTreeItem* shapefileItem;
     CDTProjectTreeItem* markfileItem;
