@@ -20,6 +20,7 @@
 
 //QGIS
 #include <qgis.h>
+#include <qgsapplication.h>
 #include <qgisgui.h>
 #include <qgsrasterlayer.h>
 #include <qgsvectorlayer.h>
