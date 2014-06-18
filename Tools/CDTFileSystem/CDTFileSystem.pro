@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       = core
+QT       = core sql
 
 TARGET = CDTFileSystem
 TEMPLATE = lib
@@ -27,3 +27,6 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+#log4qt
+include(../log4qt/log4qt.pri)
