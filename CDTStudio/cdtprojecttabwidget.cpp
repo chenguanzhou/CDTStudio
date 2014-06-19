@@ -115,6 +115,8 @@ bool CDTProjectTabWidget::saveAsProject()
 
 bool CDTProjectTabWidget::closeTab(const int &index)
 {
+    if(index<0) return false;
+
     CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
 
     int ret = tabItem->maybeSave();
@@ -122,7 +124,7 @@ bool CDTProjectTabWidget::closeTab(const int &index)
         return true;
 
     this->removeTab(index);
-    delete (tabItem);
+    delete tabItem;
     return true;
 }
 

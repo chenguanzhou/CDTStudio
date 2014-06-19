@@ -3,6 +3,8 @@
 
 #include <QObject>
 class CDTProjectTreeItem;
+class CDTFileSystem;
+class CDTProject;
 class QStandardItem;
 class QgsMapLayer;
 class QgsMapCanvas;
@@ -20,6 +22,8 @@ public:
     QgsMapLayer *canvasLayer()const;
     QgsMapCanvas *canvas()const;
     inline QUuid id()const{return uuid;}
+    CDTProject *rootProject()const;
+    CDTFileSystem* fileSystem()const;
 
 signals:
     void appendLayers(QList<QgsMapLayer*> layer);

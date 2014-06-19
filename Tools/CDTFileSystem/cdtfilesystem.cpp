@@ -1,5 +1,11 @@
 #include "cdtfilesystem.h"
 #include <QtCore>
+#include <gdal_priv.h>
+#include <ogrsf_frmts.h>
+#include <ogr_api.h>
+#include "quazip.h"
+#include "quazipfile.h"
+#include "log4qt/basicconfigurator.h"
 
 class CDTFileInfo
 {
@@ -49,14 +55,18 @@ CDTFileSystem::CDTFileSystem(QObject *parent)
     : QObject(parent),
       pData(new CDTFileSystemPrivate)
 {    
-
+    Log4Qt::BasicConfigurator::configure();
 }
 
 CDTFileSystem::~CDTFileSystem()
 {
     foreach (QString id, pData->files.keys()) {
         CDTFileInfo info = pData->files.value(id);
-        QFile(info.path).remove();
+        qDebug()<<info.path;
+        if (QFile(info.path).remove()==false)
+            logger()->warn("Remove file:%1 failed!",info.path);
+        else
+            logger()->info("Remove file:%1 succeded!",info.path);
     }
     delete pData;
 }
@@ -92,6 +102,71 @@ bool CDTFileSystem::getFile(QString id, QString &filePath)
     return true;
 }
 
+bool CDTFileSystem::GDALGetRasterVSIZipFile(const QString &srcPath, const QString &zipPath,bool deleteSrcFile)
+{
+    GDALAllRegister();
+    GDALDataset *poDS = (GDALDataset *)GDALOpen(srcPath.toUtf8().constData(),GA_ReadOnly);
+    if (poDS==NULL)
+        return false;
+
+    QuaZip zip(zipPath);
+    zip.open(QuaZip::mdCreate);
+    QuaZipFile outFile(&zip);
+
+    char **fileList = poDS->GetFileList();
+    GDALClose(poDS);
+
+    int count = CSLCount(fileList);
+    for(int i=0;i<count;++i)
+    {
+        QFileInfo fileInfo(QString::fromUtf8(fileList[i]));
+        QFile inFile(srcPath);
+        inFile.open(QFile::ReadOnly);
+        outFile.open(QIODevice::WriteOnly, QuaZipNewInfo(fileInfo.fileName(), fileInfo.filePath()));
+        outFile.write(inFile.readAll());
+        inFile.close();
+        if (deleteSrcFile) inFile.remove();
+        outFile.close();
+    }
+
+    CSLDestroy(fileList);
+    return true;
+}
+
+bool CDTFileSystem::GDALGetShapefileVSIZipFile(const QString &srcPath, const QString &zipPath,bool deleteSrcFile)
+{    
+    OGRRegisterAll();
+    QFileInfo info(srcPath);
+    if (info.completeSuffix() != "shp")
+        return false;
+
+    QStringList suffixs;
+    suffixs<<".shp"<<".shx"<<".dbf"<<".sbn"<<".sbx"<<".prj"<<".idm"<<".ind"<<".qix"<<".cpg";
+    for (auto iter = suffixs.begin();iter!= suffixs.end();++iter)
+        (*iter) = info.completeBaseName() + *iter;
+    qDebug()<<suffixs;
+
+    QDir dir = info.dir();
+    QStringList files = dir.entryList(suffixs,QDir::Files);
+    qDebug()<<files;
+
+    QuaZip zip(zipPath);
+    zip.open(QuaZip::mdCreate);
+    QuaZipFile outFile(&zip);
+    foreach (QString file, files)
+    {
+        file = dir.absolutePath()+"/"+file;
+        QFileInfo fileInfo(file);
+        QFile inFile(file);
+        inFile.open(QFile::ReadOnly);
+        outFile.open(QIODevice::WriteOnly, QuaZipNewInfo(fileInfo.fileName(), fileInfo.filePath()));
+        outFile.write(inFile.readAll());        
+        inFile.close();
+        if (deleteSrcFile) inFile.remove();
+        outFile.close();
+    }
+    return true;
+}
 
 QDataStream &operator<<(QDataStream &out, const CDTFileSystem &files)
 {

@@ -1,5 +1,8 @@
 #include <QString>
 #include <QtTest>
+#include <gdal_priv.h>
+#include <ogrsf_frmts.h>
+#include <ogr_api.h>
 #include "cdtfilesystem.h"
 
 class FileSystem : public QObject
@@ -7,18 +10,18 @@ class FileSystem : public QObject
     Q_OBJECT
 
 public:
-    FileSystem();
-
+    FileSystem();    
 private slots:
     void initTestCase();
 
-//Tests
+    //Tests
     void testRegister_data();
     void testRegister();
     void testIO();
+    void testVSIRaster();
+    void testVSIShapefile();
 
     void cleanupTestCase();
-
 private:
     CDTFileSystem *fileSystem;
 };
@@ -36,6 +39,7 @@ void FileSystem::initTestCase()
     QString path = QDir::tempPath()+"/"+"FileSystem.txt";
     QFile file(path);
     file.open(QFile::WriteOnly);
+    file.seek(0);
     QTextStream stream(&file);
     stream<<data;
     file.close();
@@ -121,9 +125,51 @@ void FileSystem::testIO()
     }
 }
 
+void FileSystem::testVSIRaster()
+{
+    GDALAllRegister();
+    GDALDriver *poDriver = (GDALDriver *)GDALGetDriverByName("GTiff");
+    QVERIFY(poDriver);
+    GDALDataset *poSrcDS = poDriver->Create("FileSystem.tif",200,200,3,GDT_Byte,NULL);
+    QVERIFY(poSrcDS);
+    GDALClose(poSrcDS);
+    CDTFileSystem::GDALGetRasterVSIZipFile("FileSystem.tif","FileSystem.zip");
+    QFile("FileSystem.tif").remove();
+    QFile("FileSystem.zip").remove();
+}
+
+void FileSystem::testVSIShapefile()
+{
+    OGRRegisterAll();
+    OGRSFDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->
+            GetDriverByName("ESRI Shapefile" );
+    QVERIFY(poDriver);
+    poDriver->DeleteDataSource("FileSystem.shp");
+    OGRDataSource* poDS = poDriver->CreateDataSource("FileSystem.shp",NULL);
+    QVERIFY(poDS);
+    OGRLayer* layer = poDS->CreateLayer("point",NULL,wkbPolygon);
+    QVERIFY(layer);
+    OGRFeature *feature = OGRFeature::CreateFeature(layer->GetLayerDefn());
+    OGRPolygon polygon;
+    OGRLinearRing ring;
+    ring.addPoint(0,0);
+    ring.addPoint(0,1);
+    ring.addPoint(1,1);
+    ring.addPoint(1,0);
+    polygon.addRing(&ring);
+    feature->SetGeometry(&polygon);
+    layer->CreateFeature(feature);
+    OGRFeature::DestroyFeature( feature );
+    OGRDataSource::DestroyDataSource( poDS );
+
+    CDTFileSystem::GDALGetShapefileVSIZipFile("FileSystem.shp","FileSystem.zip");
+
+}
+
 void FileSystem::cleanupTestCase()
 {
     if (fileSystem) delete fileSystem;
+    QFile("store.dat").remove();
 }
 
 QTEST_APPLESS_MAIN(FileSystem)

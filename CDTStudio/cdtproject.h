@@ -1,14 +1,11 @@
 #ifndef CDTPROJECT_H
 #define CDTPROJECT_H
 
-#include <QtCore>
-#include <QVector>
-#include <QStandardItemModel>
-#include "cdtimagelayer.h"
-#include "cdtprojecttreemodel.h"
-#include <QAction>
 #include "cdtbaseobject.h"
-#include "qgsmapcanvas.h"
+
+class QAction;
+class CDTImageLayer;
+class CDTFileSystem;
 
 class CDTProject: public CDTBaseObject
 {
@@ -20,6 +17,7 @@ public:
     friend QDataStream &operator <<(QDataStream &out,const CDTProject &project);
     friend QDataStream &operator >>(QDataStream &in, CDTProject &project);
     friend class CDTProjectTreeModel;
+    friend class CDTBaseObject;
     friend class CDTSegmentationLayer;
 
     void addImageLayer(CDTImageLayer *image);
@@ -40,6 +38,7 @@ public slots:
 private:
     bool    isFileExsit;
     QVector<CDTImageLayer *> images;
+    CDTFileSystem* fileSystem;
 
     QAction* actionAddImage;
     QAction* removeAllImages;

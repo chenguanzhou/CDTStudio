@@ -2,14 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QToolButton>
 #include "recentfilesupervisor.h"
 #include "log4qt/logger.h"
 
 namespace Ui {
 class MainWindow;
 }
-
+class QToolButton;
 class QModelIndex;
 class QTreeView;
 class CDTSampleDockWidget;

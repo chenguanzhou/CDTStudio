@@ -10,6 +10,7 @@
 #include "cdtvariantconverter.h"
 #include "mainwindow.h"
 #include "qtcolorpicker.h"
+#include "cdtfilesystem.h"
 
 
 QDataStream &operator<<(QDataStream &out, const SampleElement &sample)
@@ -298,10 +299,12 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
                                                  CDTDatabaseConnInfo url,
                                                  const QColor &color)
 {
-    QgsVectorLayer *newLayer = new QgsVectorLayer(/*QFileInfo(shpPath).absolutePath()*/shpPath,QFileInfo(shpPath).completeBaseName(),"ogr");
+    QString tempShpPath;
+    this->fileSystem()->getFile(shpPath,tempShpPath);
+    QgsVectorLayer *newLayer = new QgsVectorLayer(/*shpPath*/tempShpPath,QFileInfo(/*shpPath*/tempShpPath).completeBaseName(),"ogr");
     if (!newLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+shpPath+tr(" failed!"));
+        QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+tempShpPath+tr(" failed!"));
         delete newLayer;
         return;
     }

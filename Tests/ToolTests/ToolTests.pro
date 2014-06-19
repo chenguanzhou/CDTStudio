@@ -17,6 +17,16 @@ INCLUDEPATH += \
 
 LIBS += -L../../lib -lCDTFileSystem
 
+unix {
+    LIBS += -lgdal
+    INCLUDEPATH += /usr/include/gdal \
+    /usr/local/include/gdal
+}
+!unix{
+    include(../../Tools/Config/win.pri)
+    LIBS += -lgdal_i
+}
+
 SOURCES += tst_filesystem.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 

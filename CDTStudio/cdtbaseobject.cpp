@@ -1,8 +1,8 @@
 #include "cdtbaseobject.h"
-#include <QtCore>
+#include "stable.h"
 #include "cdtprojecttreeitem.h"
-#include <qgsmaplayer.h>
-#include <qgsmapcanvas.h>
+#include "cdtfilesystem.h"
+#include "cdtproject.h"
 
 CDTBaseObject::CDTBaseObject(QUuid uuid, QObject *parent) :
     QObject(parent),
@@ -33,6 +33,19 @@ QgsMapLayer *CDTBaseObject::canvasLayer() const
 QgsMapCanvas *CDTBaseObject::canvas() const
 {
     return mapCanvas;
+}
+
+CDTProject *CDTBaseObject::rootProject() const
+{
+    QObject *obj = (QObject *)this;
+    while (obj->parent())
+        obj = obj->parent();
+    return (CDTProject *)obj;
+}
+
+CDTFileSystem *CDTBaseObject::fileSystem() const
+{
+    return rootProject()->fileSystem;
 }
 
 void CDTBaseObject::setMapCanvas(QgsMapCanvas *canvas)

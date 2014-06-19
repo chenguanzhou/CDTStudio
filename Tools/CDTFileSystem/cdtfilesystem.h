@@ -26,6 +26,9 @@ public:
 
     bool getFile(QString id,QString& filePath);
 
+    static bool GDALGetRasterVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
+    static bool GDALGetShapefileVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
+
 private:
     CDTFileSystemPrivate* pData;
 };

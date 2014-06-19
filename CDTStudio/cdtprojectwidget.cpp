@@ -1,17 +1,16 @@
 #include "cdtprojectwidget.h"
 #include "cdtprojecttabwidget.h"
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QVBoxLayout>
 #include "cdtbaseobject.h"
-#include <QToolBar>
-#include <qgsapplication.h>
-#include <qgsmaptoolzoom.h>
-#include <qgsmaptoolpan.h>
-#include <qgsmaplayer.h>
-#include <qgsmaplayerregistry.h>
-#include <qgsvectorlayer.h>
-#include <qgsvectordataprovider.h>
+#include "stable.h"
+#include "cdtprojecttreeitem.h"
+
+//#include <qgsapplication.h>
+//#include <qgsmaptoolzoom.h>
+//#include <qgsmaptoolpan.h>
+//#include <qgsmaplayer.h>
+//#include <qgsmaplayerregistry.h>
+//#include <qgsvectorlayer.h>
+//#include <qgsvectordataprovider.h>
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
@@ -38,6 +37,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 
 CDTProjectWidget::~CDTProjectWidget()
 {
+    QgsMapLayerRegistry::instance()->removeAllMapLayers();
     if(project) delete project;
     file.close();
 }

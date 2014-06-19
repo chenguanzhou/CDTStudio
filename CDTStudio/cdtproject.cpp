@@ -1,14 +1,16 @@
 #include "cdtproject.h"
 #include "dialognewimage.h"
-#include <QInputDialog>
-#include <QMenu>
-
+#include "stable.h"
+#include "cdtprojecttreeitem.h"
+#include "cdtimagelayer.h"
+#include "cdtfilesystem.h"
 
 CDTProject::CDTProject(QUuid uuid, QObject *parent):
     CDTBaseObject(uuid,parent),
     actionAddImage(new QAction(QIcon(":/Icon/add.png"),tr("Add Image"),this)),
     removeAllImages(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All images"),this)),
-    actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Project"),this))
+    actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Project"),this)),
+    fileSystem(new CDTFileSystem)
 {
     keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);
     valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
@@ -27,6 +29,8 @@ CDTProject::~CDTProject()
     ret = query.exec("delete from project where id = '"+uuid.toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
+
+    if (fileSystem) delete fileSystem;
 }
 
 void CDTProject::addImageLayer()
@@ -128,11 +132,12 @@ void CDTProject::rename()
 
 QDataStream &operator <<(QDataStream &out,const CDTProject &project)
 {
-    out<<project.id()<<project.name();
+    out<<project.id()<<project.name()<<*(project.fileSystem);
     out<<project.images.size();
     foreach (CDTImageLayer* image, project.images) {
         out<<*image;
     }
+
 
     return out;
 }
@@ -140,7 +145,7 @@ QDataStream &operator <<(QDataStream &out,const CDTProject &project)
 QDataStream &operator >>(QDataStream &in, CDTProject &project)
 {
     QString name;
-    in>>project.uuid>>name;
+    in>>project.uuid>>name>>*(project.fileSystem);
     project.setName(name);
 
     project.insertToTable(name);
@@ -154,5 +159,6 @@ QDataStream &operator >>(QDataStream &in, CDTProject &project)
         project.keyItem->appendRow(image->standardItems());
         project.images.push_back(image);
     }    
+
     return in;
 }

@@ -172,7 +172,7 @@ CDTImageLayer *CDTImageLayer::getLayer(const QUuid &id)
 
 void CDTImageLayer::addSegmentation()
 {
-    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->path());
+    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->path(),this->fileSystem());
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
         CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this->path(),this);

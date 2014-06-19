@@ -3,11 +3,14 @@
 
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
-//#include "cdttrainingsamplesform.h"
 #include "cdtattributedockwidget.h"
-#include <qgsmaplayer.h>
 #include "dialogconsole.h"
 #include "stable.h"
+#include "cdtsampledockwidget.h"
+#include "cdtprojecttreeitem.h"
+#include "cdtimagelayer.h"
+#include "cdtsegmentationlayer.h"
+#include "cdtclassification.h"
 
 MainWindow* MainWindow::mainWindow = NULL;
 bool MainWindow::isLocked = false;
@@ -67,7 +70,7 @@ void MainWindow::initDockWidgets()
     dockWidgetAttributes->hide();
 
     dockWidgetSample = new CDTSampleDockWidget(this);
-    this->addDockWidget(Qt::RightDockWidgetArea, dockWidgetSample);
+    this->addDockWidget(Qt::RightDockWidgetArea, (QDockWidget*)dockWidgetSample);
     dockWidgetSample->raise();
     dockWidgetSample->hide();
 }

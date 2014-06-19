@@ -77,14 +77,16 @@ INCLUDEPATH += \
     ../Tools/CDTDialogs \
     ../Tools/QPropertyEditor \
     ../Tools/CDTHistogramPlot \
-    ../Tools/QtColorPicker
+    ../Tools/QtColorPicker\
+    ../Tools/CDTFileSystem
 
 
 DEPENDPATH += \
     ../Tools/CDTDialogs \
     ../Tools/QPropertyEditor \
     ../Tools/CDTHistogramPlot \
-    ../Tools/QtColorPicker
+    ../Tools/QtColorPicker\
+    ../Tools/CDTFileSystem
 
 #Libraries
 unix{
@@ -93,8 +95,8 @@ LIBS += -lgdal -lgomp
 
 INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
-INCLUDEPATH += /usr/include/qgis \
-/usr/local/include/qgis \
+/usr/include/qgis \
+/usr/local/include/qgis
 
 DEFINES += CORE_EXPORT=
 DEFINES += GUI_EXPORT=
@@ -104,7 +106,7 @@ include(../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
-LIBS += -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
+LIBS += -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker -lCDTFileSystem\
  -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 #log4qt

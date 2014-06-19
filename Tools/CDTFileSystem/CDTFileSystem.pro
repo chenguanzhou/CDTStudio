@@ -26,7 +26,17 @@ DLLDESTDIR = ../../bin
 unix {
     target.path = /usr/lib
     INSTALLS += target
+    LIBS += -lgdal
+    INCLUDEPATH += /usr/include/gdal \
+    /usr/local/include/gdal
 }
-
+!unix{
+    include(../../Tools/Config/win.pri)
+    LIBS += -lgdal_i
+}
 #log4qt
 include(../log4qt/log4qt.pri)
+
+#quazip
+INCLUDEPATH += ../quazip
+LIBS += -L../../lib -lquazip

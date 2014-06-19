@@ -33,6 +33,8 @@
 #include <qgsmapcanvas.h>
 #include <qgsrasterlayer.h>
 #include <qgsmaplayerregistry.h>
+#include <qgsmaptoolzoom.h>
+#include <qgsmaptoolpan.h>
 
 //Log4Qt
 #include "log4qt/logger.h"
