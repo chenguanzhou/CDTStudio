@@ -3,7 +3,6 @@
 
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
-#include "cdtattributedockwidget.h"
 #include "dialogconsole.h"
 #include "stable.h"
 #include "cdtsampledockwidget.h"

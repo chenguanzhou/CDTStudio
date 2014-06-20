@@ -1,7 +1,10 @@
 #include "cdtimagelayer.h"
-#include "dialognewsegmentation.h"
-#include "cdtproject.h"
 #include "stable.h"
+#include "cdtprojecttreeitem.h"
+#include "cdtproject.h"
+#include "cdtsegmentationlayer.h"
+#include "dialognewsegmentation.h"
+#include "dialogdbconnection.h"
 
 QList<CDTImageLayer *> CDTImageLayer::layers;
 

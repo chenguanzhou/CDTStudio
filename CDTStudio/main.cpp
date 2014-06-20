@@ -1,13 +1,11 @@
 #include "mainwindow.h"
 #include "cdtapplication.h"
 
-//TODO  File system
 //TODO  Some QButtonGroup
 //TODO  Project tree Checkbox
 //TODO  Translation
 //TODO  CDTBaseObject more independent
 //TODO  Recent file
-//TODO  Log System
 //TODO  Comment
 //TODO  Unit Test(Auto)
 //TODO  ProgressBar Manager

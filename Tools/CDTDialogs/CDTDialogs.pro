@@ -19,12 +19,13 @@ SOURCES +=  dialogdbconnection.cpp\
     dialognewimage.cpp \
     dialogconsole.cpp \
 
-HEADERS += ../../Interfaces/cdtsegmentationInterface.h \
+HEADERS += \
     cdtdialogs_global.h \
     dialogdbconnection.h \
     dialognewproject.h \
     dialognewimage.h \
     dialogconsole.h \
+    ../../Interfaces/cdtsegmentationinterface.h
 
 FORMS    += dialogdbconnection.ui\
     dialognewproject.ui \

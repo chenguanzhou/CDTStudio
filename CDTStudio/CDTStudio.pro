@@ -25,7 +25,6 @@ SOURCES += main.cpp\
     cdtclassification.cpp \
     cdtprojecttabwidget.cpp \
     cdtprojectwidget.cpp \
-    cdtprojecttreemodel.cpp \
     cdtprojecttreeitem.cpp \    
     cdtbaseobject.cpp \
     recentfilesupervisor.cpp \    
@@ -47,7 +46,6 @@ HEADERS  += \
     cdtclassification.h \
     cdtprojecttabwidget.h \
     cdtprojectwidget.h \
-    cdtprojecttreemodel.h \
     cdtprojecttreeitem.h \    
     cdtbaseobject.h \
     cdtpluginloader.h \

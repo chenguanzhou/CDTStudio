@@ -5,6 +5,7 @@
 #include "cdtimagelayer.h"
 #include "mainwindow.h"
 #include "cdtprojectwidget.h"
+#include "cdtsegmentationlayer.h"
 
 QDataStream &operator <<(QDataStream &out,const CategoryInformation &categoryInformation)
 {

@@ -1,12 +1,7 @@
 #include "cdtprojecttabwidget.h"
+#include "stable.h"
 #include "dialognewproject.h"
-#include <QFileDialog>
-#include <QDataStream>
-#include <QFileInfo>
-#include <QList>
-#include <QMessageBox>
-#include <QSettings>
-#include <QVariant>
+
 
 CDTProjectTabWidget::CDTProjectTabWidget(QWidget *parent) :
     QTabWidget(parent)

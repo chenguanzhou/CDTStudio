@@ -5,6 +5,7 @@
 #include "cdtsegmentationlayer.h"
 #include "cdtattributesinterface.h"
 #include "cdtclassifierinterface.h"
+#include "dialogdbconnection.h"
 
 extern QList<CDTAttributesInterface *>     attributesPlugins;
 extern QList<CDTClassifierInterface *>     classifierPlugins;

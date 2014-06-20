@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include "cdtproject.h"
-#include "cdtprojecttreemodel.h"
 #include "mainwindow.h"
 #include <QPoint>
 #include <QModelIndex>

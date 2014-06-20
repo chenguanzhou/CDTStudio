@@ -2,7 +2,6 @@
 #define CDTMAPTOOLSELECTTRAININGSAMPLES_H
 
 #include <qgsmaptool.h>
-#include "cdtsegmentationlayer.h"
 
 class QgsRubberBand;
 class CDTMapToolSelectTrainingSamples : public QgsMapTool

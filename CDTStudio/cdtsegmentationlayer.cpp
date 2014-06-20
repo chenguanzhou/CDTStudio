@@ -1,17 +1,16 @@
-//#include "cdtclassification.h"
 #include "cdtsegmentationlayer.h"
-#include "cdtimagelayer.h"
+#include "stable.h"
 #include "cdtproject.h"
+#include "cdtimagelayer.h"
+#include "cdtclassification.h"
 #include "cdtattributesdockwidget.h"
 #include "cdtmaptoolselecttrainingsamples.h"
-#include "stable.h"
-#include "dialogdbconnection.h"
 #include "wizardnewclassification.h"
 #include "cdtvariantconverter.h"
 #include "mainwindow.h"
 #include "qtcolorpicker.h"
 #include "cdtfilesystem.h"
-
+#include "cdtprojecttreeitem.h"
 
 QDataStream &operator<<(QDataStream &out, const SampleElement &sample)
 {
@@ -197,6 +196,20 @@ QString CDTSegmentationLayer::markfilePath() const
     query.exec("select markfilePath from segmentationlayer where id ='" + this->id().toString() +"'");
     query.next();
     return query.value(0).toString();
+}
+
+QString CDTSegmentationLayer::shapefileTempPath() const
+{
+    QString temp;
+    fileSystem()->getFile(shapefilePath(),temp);
+    return temp;
+}
+
+QString CDTSegmentationLayer::markfileTempPath() const
+{
+    QString temp;
+    fileSystem()->getFile(markfilePath(),temp);
+    return temp;
 }
 
 QString CDTSegmentationLayer::method() const

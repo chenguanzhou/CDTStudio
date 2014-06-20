@@ -1,7 +1,8 @@
 #ifndef CDTAPPLICATION_H
 #define CDTAPPLICATION_H
 
-#include "stable.h"
+#include "QtGlobal"
+#include "qgsapplication.h"
 
 class CDTApplication : public QgsApplication
 {

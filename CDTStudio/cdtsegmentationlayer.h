@@ -2,15 +2,15 @@
 #define CDTSEGMENTATIONLAYER_H
 
 #include "cdtbaseobject.h"
-#include "cdtattributedockwidget.h"
+#include "dialogdbconnection.h"
 
-class CDTDatabaseConnInfo;
+class QWidgetAction;
+class QColor;
+class QgsFeatureRendererV2;
 class CDTClassification;
 class CDTMapToolSelectTrainingSamples;
 class CDTTrainingSamplesForm;
 class CDTProjectTreeItem;
-class QgsFeatureRendererV2;
-class QWidgetAction;
 
 class SampleElement
 {
@@ -39,6 +39,8 @@ public:
     QString name()const;
     QString shapefilePath() const;
     QString markfilePath() const;
+    QString shapefileTempPath() const;
+    QString markfileTempPath() const;
     QString method()const;
     CDTDatabaseConnInfo databaseURL() const;
     QColor  color()const;

@@ -2,14 +2,14 @@
 #define CDTATTRIBUTEDOCKWIDGET_H
 
 #include <QDockWidget>
-#include <QWidget>
-#include <QtSql>
 #include "dialogdbconnection.h"
-#include <QPainter>
 
 class QToolBar;
 class QMenuBar;
+class QPainter;
+class QWidget;
 class CDTSegmentationLayer;
+
 
 namespace Ui {
 class CDTAttributeDockWidget;

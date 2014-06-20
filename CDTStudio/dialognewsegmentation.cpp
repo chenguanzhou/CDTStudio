@@ -2,6 +2,7 @@
 #include "ui_dialognewsegmentation.h"
 #include "stable.h"
 #include "cdtfilesystem.h"
+#include "cdtsegmentationinterface.h"
 
 extern QList<CDTSegmentationInterface *> segmentationPlugins;
 

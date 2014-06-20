@@ -1,12 +1,11 @@
 #ifndef CDTCLASSIFICATION_H
 #define CDTCLASSIFICATION_H
 
-#include <QtCore>
-#include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
 
 class QAction;
 class QgsFeatureRendererV2;
+class CDTProjectTreeItem;
 
 class CDTClassification:public CDTBaseObject
 {

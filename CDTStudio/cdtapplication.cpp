@@ -1,7 +1,8 @@
 #include "cdtapplication.h"
+#include "stable.h"
 #include <stxxl.h>
 #include "cdtpluginloader.h"
-#include "cdtsegmentationInterface.h"
+#include "cdtsegmentationinterface.h"
 #include "cdtattributesinterface.h"
 #include "cdtclassifierinterface.h"
 

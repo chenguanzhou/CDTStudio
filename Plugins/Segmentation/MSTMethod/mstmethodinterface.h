@@ -2,7 +2,7 @@
 #define MSTMETHODINTERFACE_H
 
 //#include "../../../Interfaces/cdtsegmentationInterface.h"
-#include "cdtsegmentationInterface.h"
+#include "cdtsegmentationinterface.h"
 class MSTMethodPrivate;
 class MSTMethodInterface:public CDTSegmentationInterface
 {

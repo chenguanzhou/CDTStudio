@@ -1,13 +1,12 @@
 #ifndef CDTIMAGELAYER_H
 #define CDTIMAGELAYER_H
 
-#include <QtCore>
-#include <QAction>
-#include "cdtsegmentationlayer.h"
-#include "cdtclassification.h"
-#include "cdtprojecttreeitem.h"
 #include "cdtbaseobject.h"
 #include "cdtsampledockwidget.h"
+
+class QAction;
+class CDTProjectTreeItem;
+class CDTSegmentationLayer;
 
 class CDTImageLayer:public CDTBaseObject
 {
@@ -47,8 +46,6 @@ public slots:
     void onActionCategoryInformation();
 
 private:        
-//    QString m_path;
-//    QString m_name;
     QVector<CDTSegmentationLayer *> segmentations;
 
     QAction* addSegmentationLayer;

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "recentfilesupervisor.h"
+#include "cdtattributedockwidget.h"
 #include "log4qt/logger.h"
 
 namespace Ui {
@@ -12,7 +13,6 @@ class QToolButton;
 class QModelIndex;
 class QTreeView;
 class CDTSampleDockWidget;
-class CDTAttributeDockWidget;
 class DialogConsole;
 class CDTProjectWidget;
 class QgsMapCanvas;

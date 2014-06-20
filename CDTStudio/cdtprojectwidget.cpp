@@ -4,14 +4,6 @@
 #include "stable.h"
 #include "cdtprojecttreeitem.h"
 
-//#include <qgsapplication.h>
-//#include <qgsmaptoolzoom.h>
-//#include <qgsmaptoolpan.h>
-//#include <qgsmaplayer.h>
-//#include <qgsmaplayerregistry.h>
-//#include <qgsvectorlayer.h>
-//#include <qgsvectordataprovider.h>
-
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
     project(NULL),
@@ -37,7 +29,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 
 CDTProjectWidget::~CDTProjectWidget()
 {
-    QgsMapLayerRegistry::instance()->removeAllMapLayers();
+    project->removeAllImageLayers();
     if(project) delete project;
     file.close();
 }

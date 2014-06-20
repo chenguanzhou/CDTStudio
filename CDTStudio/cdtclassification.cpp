@@ -1,11 +1,7 @@
 #include "cdtclassification.h"
 #include "cdtsegmentationlayer.h"
 #include "stable.h"
-#include <qgsvectorlayer.h>
-#include <qgsmaplayerregistry.h>
-#include <qgssinglesymbolrendererv2.h>
-#include <qgsfillsymbollayerv2.h>
-#include <qgscategorizedsymbolrendererv2.h>
+#include "cdtprojecttreeitem.h"
 #include "cdtvariantconverter.h"
 
 CDTClassification::CDTClassification(QUuid uuid, QObject* parent)

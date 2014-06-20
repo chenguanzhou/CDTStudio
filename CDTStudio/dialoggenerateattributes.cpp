@@ -1,11 +1,9 @@
 #include "dialoggenerateattributes.h"
 #include "ui_dialoggenerateattributes.h"
 
+#include "cdtfilesystem.h"
 #include "cdtattributesinterface.h"
 #include "cdtattributegenerator.h"
-#include <QListWidget>
-#include <QMessageBox>
-#include <QtCore>
 #include "cdtsegmentationlayer.h"
 
 extern QList<CDTAttributesInterface *>     attributesPlugins;
@@ -152,16 +150,17 @@ void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
     }
     CDTSegmentationLayer* segmentationLayer =
             CDTSegmentationLayer::getLayer(segID);
+
     CDTAttributeGenerator* attributeGenerator = new CDTAttributeGenerator(
                 segmentationLayer->imagePath(),
-                segmentationLayer->markfilePath(),
-                segmentationLayer->shapefilePath(),
+                segmentationLayer->markfileTempPath(),
+                segmentationLayer->shapefileTempPath(),
                 QSqlDatabase::database("attribute"),
                 attributes,
                 this);
     qDebug()<<segmentationLayer->imagePath();
-    qDebug()<<segmentationLayer->markfilePath();
-    qDebug()<<segmentationLayer->shapefilePath();
+    qDebug()<<segmentationLayer->markfileTempPath();
+    qDebug()<<segmentationLayer->shapefileTempPath();
 
     if(!attributeGenerator->isValid())
     {
