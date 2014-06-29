@@ -42,6 +42,7 @@ void CDTProjectTreeItem::initFont()
         font.setBold(true);
         font.setPointSize(font.pointSize()+2);
         break;
+    case EXTRACTION_ROOT:
     case SEGMENTION_ROOT:
         font.setBold(true);
         font.setPointSize(font.pointSize()+1);

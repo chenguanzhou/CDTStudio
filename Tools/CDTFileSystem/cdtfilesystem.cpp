@@ -13,8 +13,9 @@ public:
     CDTFileInfo(
             QString pre = QString(),
             QString suf = QString(),
-            QString filePath = QString())
-        :prifix(pre),suffix(suf),path(filePath) {}
+            QString filePath = QString(),
+            QStringList affaffiliated = QStringList())
+        :prifix(pre),suffix(suf),path(filePath),affiliatedFiles(affaffiliated) {}
 
     friend class CDTFileSystem;
     friend QDataStream &operator<<(QDataStream &out, const CDTFileInfo &fileInfo);
@@ -28,17 +29,18 @@ private:
     QString prifix;
     QString suffix;
     QString path;
+    QStringList affiliatedFiles;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTFileInfo &fileInfo)
 {
-    out<<fileInfo.prifix<<fileInfo.suffix<<fileInfo.path;
+    out<<fileInfo.prifix<<fileInfo.suffix<<fileInfo.path<<fileInfo.affiliatedFiles;
     return out;
 }
 
 QDataStream &operator>>(QDataStream &in, CDTFileInfo &fileInfo)
 {
-    in>>fileInfo.prifix>>fileInfo.suffix>>fileInfo.path;
+    in>>fileInfo.prifix>>fileInfo.suffix>>fileInfo.path>>fileInfo.affiliatedFiles;
     return in;
 }
 
@@ -62,20 +64,25 @@ CDTFileSystem::~CDTFileSystem()
 {
     foreach (QString id, pData->files.keys()) {
         CDTFileInfo info = pData->files.value(id);
-        qDebug()<<info.path;
-        if (QFile(info.path).remove()==false)
-            logger()->warn("Remove file:%1 failed!",info.path);
-        else
-            logger()->info("Remove file:%1 succeded!",info.path);
+        QStringList fileToDelete;
+        fileToDelete<<info.path;
+        fileToDelete.append(info.affiliatedFiles);
+        foreach (QString path, fileToDelete) {
+            if (QFile(path).remove()==false)
+                logger()->warn("Remove file:%1 failed!",path);
+            else
+                logger()->info("Remove file:%1 succeded!",path);
+        }
+        QDir::temp().rmdir(id);
     }
     delete pData;
 }
 
-bool CDTFileSystem::registerFile(
-        QString id,
+bool CDTFileSystem::registerFile(QString id,
         const QString &filePath,
         QString prefix,
-        QString suffix)
+        QString suffix,
+        QStringList affiliatedFiles)
 {
     if (pData->files.contains(id))
     {
@@ -87,7 +94,7 @@ bool CDTFileSystem::registerFile(
         logger()->error("File:%1 was invalid!",filePath);
         return false;
     }
-    pData->files.insert(id,CDTFileInfo(prefix,suffix,filePath));
+    pData->files.insert(id,CDTFileInfo(prefix,suffix,filePath,affiliatedFiles));
     return true;
 }
 
@@ -99,6 +106,18 @@ bool CDTFileSystem::getFile(QString id, QString &filePath)
         return false;
     }
     filePath = pData->files.value(id).fullPath();
+    return true;
+}
+
+bool CDTFileSystem::getFile(QString id, QString &filePath, QStringList &affiliatedFiles)
+{
+    if (pData->files.contains(id)==false)
+    {
+        logger()->error("FileID:%1 was not exist in file system!",id);
+        return false;
+    }
+    filePath = pData->files.value(id).fullPath();
+    affiliatedFiles = pData->files.value(id).affiliatedFiles;
     return true;
 }
 
@@ -144,11 +163,9 @@ bool CDTFileSystem::GDALGetShapefileVSIZipFile(const QString &srcPath, const QSt
     suffixs<<".shp"<<".shx"<<".dbf"<<".sbn"<<".sbx"<<".prj"<<".idm"<<".ind"<<".qix"<<".cpg";
     for (auto iter = suffixs.begin();iter!= suffixs.end();++iter)
         (*iter) = info.completeBaseName() + *iter;
-    qDebug()<<suffixs;
 
     QDir dir = info.dir();
     QStringList files = dir.entryList(suffixs,QDir::Files);
-    qDebug()<<files;
 
     QuaZip zip(zipPath);
     zip.open(QuaZip::mdCreate);
@@ -168,47 +185,54 @@ bool CDTFileSystem::GDALGetShapefileVSIZipFile(const QString &srcPath, const QSt
     return true;
 }
 
+QStringList CDTFileSystem::GetShapefileAffaliated(const QString &srcPath)
+{
+    OGRRegisterAll();
+    QFileInfo info(srcPath);
+    if (info.completeSuffix() != "shp")
+        return QStringList();
+
+    QStringList suffixs;
+    suffixs<<".shx"<<".dbf"<<".sbn"<<".sbx"<<".prj"<<".idm"<<".ind"<<".qix"<<".cpg";
+    for (auto iter = suffixs.begin();iter!= suffixs.end();++iter)
+        (*iter) = info.completeBaseName() + *iter;
+    QDir dir = info.dir();
+    QStringList files = dir.entryList(suffixs,QDir::Files);
+    for(auto iter = files.begin() ; iter!=files.end();++iter)
+        *iter = dir.absoluteFilePath(*iter);
+    return files;
+}
+
 QDataStream &operator<<(QDataStream &out, const CDTFileSystem &files)
 {
-    out<<files.pData->files;
-
-//    QMap<QUuid,QByteArray> filesData;
-//    foreach (QUuid id, files.pData->files.keys()) {
-//        CDTFileInfo info = files.pData->files.value(id);
-//        QFile file(info.path);
-//        if (!file.exists())
-//        {
-//            files.logger()->warn("File:%1 is not exist!",info.path);
-//            continue;
-//        }
-//        if (!file.open(QFile::ReadOnly))
-//        {
-//            files.logger()->warn("Failed to open file:%1!",info.path);
-//            continue;
-//        }
-//        filesData.insert(id,file.readAll());
-//    }
-//    out<<filesData;
+    out<<files.pData->files;    
 
     foreach (QString id, files.pData->files.keys()) {
-        CDTFileInfo info = files.pData->files.value(id);
-        QFile file(info.path);
+        QStringList list;
+        CDTFileInfo info = files.pData->files.value(id);        
+        list<<info.path;
+        foreach (QString affFilePath, info.affiliatedFiles) {
+            list<<affFilePath;
+        }
 
-        out<<id;
-        if (!file.exists())
-        {
-            files.logger()->warn("File:%1 is not exist!",info.path);
-            out<<QByteArray();
-            continue;
+        foreach (QString path, list) {
+            QFile file(path);
+            if (!file.exists())
+            {
+                files.logger()->warn("File:%1 is not exist!",path);
+                out<<QByteArray();
+                continue;
+            }
+            if (!file.open(QFile::ReadOnly))
+            {
+                files.logger()->warn("Failed to open file:%1!",path);
+                out<<QByteArray();
+                continue;
+            }
+            out<<file.readAll();
         }
-        if (!file.open(QFile::ReadOnly))
-        {
-            files.logger()->warn("Failed to open file:%1!",info.path);
-            out<<QByteArray();
-            continue;
-        }
-        out<<file.readAll();
     }
+
     return out;
 }
 
@@ -216,19 +240,35 @@ QDataStream &operator>>(QDataStream &in, CDTFileSystem &files)
 {
     in>>files.pData->files;
 
-    for (int i=0;i<files.pData->files.size();++i)
-    {
-        QString id;
-        QByteArray data;
-        in>>id>>data;
+    foreach (QString id, files.pData->files.keys()) {
+        QStringList list;
         CDTFileInfo info = files.pData->files.value(id);
-        QString filePath = QDir::tempPath()+"/"+id+"."+QFileInfo(info.path).completeSuffix();
-        QFile file(filePath);
-        file.open(QFile::WriteOnly);
-        file.write(data);
+        QDir dir(QDir::temp());
+        dir.mkdir(id);
+        dir.cd(id);
 
-        info.path = filePath;
+        info.path = dir.absolutePath()+"/"+QFileInfo(info.path).fileName();
+        list<<info.path;
+
+        QStringList newAffList;
+        foreach (QString affFilePath, info.affiliatedFiles) {
+            QString filePath = dir.absolutePath()+"/"+QFileInfo(affFilePath).fileName();
+            newAffList << filePath;
+            list<<filePath;
+        }
+
+        info.affiliatedFiles = newAffList;
         files.pData->files.insert(id,info);
+
+        foreach (QString path, list) {
+            QByteArray data;
+            in>>data;
+            QFile file(path);
+            file.open(QFile::WriteOnly);
+            file.write(data);
+        }
+
+
     }
     return in;
 }

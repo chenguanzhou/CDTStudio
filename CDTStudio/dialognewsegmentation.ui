@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Create a new segmentation</string>
+   <string>New Segmentation Layer</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -145,7 +145,7 @@
   <customwidget>
    <class>QtColorPicker</class>
    <extends>QPushButton</extends>
-   <header>qtcolorpicker.h</header>
+   <header location="global">qtcolorpicker.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

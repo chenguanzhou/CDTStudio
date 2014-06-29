@@ -97,6 +97,21 @@ bool CDTApplication::initDatabase()
     }
 
     ///  Create segmentation layer table(id text,name text,shapefilePath text,markfilePath text,imageID text).
+    ret = query.exec("CREATE TABLE extractionlayer"
+                     "(id text NOT NULL, "
+                     "name text NOT NULL,"
+                     "shapefilePath text NOT NULL,"
+                     "color blob,"
+                     "imageID text NOT NULL,"
+                     "Primary Key(id) )");
+    if (ret == false)
+    {
+        QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table extractionlayer failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table extractionlayer failed!\nerror msg:%1",query.lastError().text());
+        return false;
+    }
+
+    ///  Create segmentation layer table(id text,name text,shapefilePath text,markfilePath text,imageID text).
     ret = query.exec("CREATE TABLE segmentationlayer"
                      "(id text NOT NULL, "
                      "name text NOT NULL,"

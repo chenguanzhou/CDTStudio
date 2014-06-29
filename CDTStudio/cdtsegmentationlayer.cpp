@@ -27,9 +27,8 @@ QDataStream &operator>>(QDataStream &in, SampleElement &sample)
 
 QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
 
-CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject *parent)
+CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     : CDTBaseObject(uuid,parent),
-      m_imagePath(imagePath),
       addClassifications(new QAction(QIcon(":/Icon/add.png"),tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Segmentation"),this)),
       actionRemoveAllClassifications(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Classifications"),this)),
@@ -243,7 +242,7 @@ QColor CDTSegmentationLayer::color() const
 
 QString CDTSegmentationLayer::imagePath() const
 {
-    return m_imagePath;
+    return ((CDTImageLayer*)parent())->path();
 }
 
 void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
@@ -323,12 +322,15 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     }
 
     if (mapCanvasLayer)
+    {
+        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
         delete mapCanvasLayer;
+    }
     mapCanvasLayer = newLayer;
 
     keyItem->setText(name);
     shapefileItem->setText(shpPath);
-    markfileItem->setText(mkPath);    
+    markfileItem->setText(mkPath);
 
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
     keyItem->setMapLayer(mapCanvasLayer);
@@ -431,7 +433,7 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
     query.exec("select * from segmentationlayer where id ='" + segmentation.id().toString() +"'");
     query.next();
 
-    out <<segmentation.uuid         //id
+    out <<segmentation.id()         //id
        <<query.value(1).toString() //name
       <<query.value(2).toString() //shapfile
      <<query.value(3).toString() //markfile

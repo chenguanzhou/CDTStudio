@@ -17,7 +17,6 @@ DialogNewSegmentation::DialogNewSegmentation(
 {
     ui->setupUi(this);
     loadPlugins();
-//    loadHistoryPaths();
 
     markfileTempPath  = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".tif";
     shapefileTempPath = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".shp";
@@ -31,7 +30,6 @@ DialogNewSegmentation::DialogNewSegmentation(
 
 DialogNewSegmentation::~DialogNewSegmentation()
 {
-//    saveHistoryPaths();
     delete ui;
 }
 
@@ -42,13 +40,11 @@ QString DialogNewSegmentation::name() const
 
 QString DialogNewSegmentation::markfilePath() const
 {
-//    return ui->comboBoxMarkfile->currentText();
     return markfileID;
 }
 
 QString DialogNewSegmentation::shapefilePath() const
 {
-//    return ui->comboBoxShapefile->currentText();
     return shapefileID;
 }
 
@@ -67,86 +63,10 @@ QVariantMap DialogNewSegmentation::params() const
     return segmentationParams;
 }
 
-
-
-//void DialogNewSegmentation::saveHistoryPaths()
-//{
-//    QStringList markfilePathList;
-//    for (int i=0;i<ui->comboBoxMarkfile->count();++i)
-//        markfilePathList<<ui->comboBoxMarkfile->itemText(i);
-
-//    QStringList shapefilePathList;
-//    for (int i=0;i<ui->comboBoxShapefile->count();++i)
-//        shapefilePathList<<ui->comboBoxShapefile->itemText(i);
-
-//    QSettings setting("WHU","CDTStudio");
-//    setting.beginGroup("Project");
-//    setting.setValue("MarkfilePathLists",markfilePathList);
-//    setting.setValue("ShapefilePathLists",shapefilePathList);
-//    setting.endGroup();
-//}
-
-//void DialogNewSegmentation::loadHistoryPaths()
-//{
-//    QSettings setting("WHU","CDTStudio");
-//    setting.beginGroup("Project");
-//    QStringList markfilePathList = setting.value("MarkfilePathLists").toStringList();
-//    QStringList shapefilePathList = setting.value("ShapefilePathLists").toStringList();
-//    setting.endGroup();
-
-//    foreach (QString path, markfilePathList) {
-//        ui->comboBoxMarkfile->addItem(path);
-//    }
-
-//    foreach (QString path, shapefilePathList) {
-//        ui->comboBoxShapefile->addItem(path);
-//    }
-//}
-
 void DialogNewSegmentation::on_comboBox_currentIndexChanged(int index)
 {    
     ui->propertyWidget->setObject(segmentationPlugins[index]);
 }
-
-//void DialogNewSegmentation::on_pushButtonMarkfile_clicked()
-//{
-//    QString markfilePath = QFileDialog::getSaveFileName(this,tr("Markfile Path"),QFileInfo(inputImagePath).absolutePath(),"*.tif");
-//    if(markfilePath.isEmpty())
-//        return;
-
-//    for (int i=0;i<ui->comboBoxMarkfile->count();++i)
-//    {
-//        QString path = ui->comboBoxMarkfile->itemText(i);
-//        if (path == markfilePath)
-//        {
-//            ui->comboBoxMarkfile->removeItem(i);
-//            break;
-//        }
-//    }
-
-//    ui->comboBoxMarkfile->insertItem(0,markfilePath);
-//    ui->comboBoxMarkfile->setCurrentIndex(0);
-//}
-
-//void DialogNewSegmentation::on_pushButtonShapefile_clicked()
-//{
-//    QString shapefilePath = QFileDialog::getSaveFileName(this,tr("ShapefilePath Path"),QFileInfo(inputImagePath).absolutePath(),"*.shp");
-//    if(shapefilePath.isEmpty())
-//        return;
-
-//    for (int i=0;i<ui->comboBoxShapefile->count();++i)
-//    {
-//        QString path = ui->comboBoxShapefile->itemText(i);
-//        if (path == shapefilePath)
-//        {
-//            ui->comboBoxShapefile->removeItem(i);
-//            break;
-//        }
-//    }
-
-//    ui->comboBoxShapefile->insertItem(0,shapefilePath);
-//    ui->comboBoxShapefile->setCurrentIndex(0);
-//}
 
 void DialogNewSegmentation::loadPlugins()
 {
@@ -156,35 +76,19 @@ void DialogNewSegmentation::loadPlugins()
     }
 }
 
-//void DialogNewSegmentation::on_comboBoxMarkfile_currentIndexChanged(const QString &arg1)
-//{
-//    int currentIndex = ui->comboBox->currentIndex();
-//    if (currentIndex<segmentationPlugins.size())
-//        segmentationPlugins[currentIndex]->setMarkfilePath(arg1);
-//}
-
-//void DialogNewSegmentation::on_comboBoxShapefile_currentIndexChanged(const QString &arg1)
-//{
-//    int currentIndex = ui->comboBox->currentIndex();
-//    if (currentIndex<segmentationPlugins.size())
-//        segmentationPlugins[currentIndex]->setShapefilePath(arg1);
-//}
-
 void DialogNewSegmentation::onFinished()
 {
     disconnect(sender(),SIGNAL(finished()),this,SLOT(onFinished()));
 
-    markfileID = QUuid::createUuid().toString();
-    shapefileID= QUuid::createUuid().toString();
+    markfileID  = QUuid::createUuid().toString();
+    shapefileID = QUuid::createUuid().toString();
 
     QString pathMarkZip = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".zip";
-    QString pathShapeZip = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".zip";
-
     CDTFileSystem::GDALGetRasterVSIZipFile(markfileTempPath,pathMarkZip,true);
-    CDTFileSystem::GDALGetShapefileVSIZipFile(shapefileTempPath,pathShapeZip,true);
 
+    fileSystem->registerFile(shapefileID,shapefileTempPath,QString(),QString()
+                             ,CDTFileSystem::GetShapefileAffaliated(shapefileTempPath));
     fileSystem->registerFile(markfileID,pathMarkZip,"/vsizip/","/"+QFileInfo(markfileTempPath).fileName());
-    fileSystem->registerFile(shapefileID,pathShapeZip,"/vsizip/","/"+QFileInfo(shapefileTempPath).fileName());
 
     ui->buttonBox->setStandardButtons(ui->buttonBox->standardButtons()|QDialogButtonBox::Ok);
     ui->labelProgress->hide();
@@ -204,8 +108,6 @@ void DialogNewSegmentation::on_pushButtonStart_clicked()
     CDTSegmentationInterface *interface = segmentationPlugins[ui->comboBox->currentIndex()];
     interface->setMarkfilePath(markfileTempPath);
     interface->setShapefilePath(shapefileTempPath);
-//    interface->setMarkfilePath(ui->comboBoxMarkfile->currentText());
-//    interface->setShapefilePath(ui->comboBoxShapefile->currentText());
 
     connect(interface,SIGNAL(finished()),this,SLOT(onFinished()));
     interface->startSegmentation(ui->progressBar,ui->labelProgress);

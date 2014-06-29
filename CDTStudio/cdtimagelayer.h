@@ -6,6 +6,7 @@
 
 class QAction;
 class CDTProjectTreeItem;
+class CDTExtractionLayer;
 class CDTSegmentationLayer;
 
 class CDTImageLayer:public CDTBaseObject
@@ -25,9 +26,7 @@ public:
     void setCategoryInfo(const CDTCategoryInformationList& info);
     QString path()const;
     QString name()const;
-    int bandCount()const;
-
-    void addSegmentation(CDTSegmentationLayer* segmentation);
+    int bandCount()const;    
 
     static QList<CDTImageLayer *> getLayers();
     static CDTImageLayer *getLayer(const QUuid& id);
@@ -36,26 +35,36 @@ signals:
     void imageLayerChanged();
     void removeImageLayer(CDTImageLayer*);
 
-public slots:    
-    void onContextMenuRequest(QWidget *parent);
-    void addSegmentation();
+public slots:        
+    void addExtraction();
+    void addSegmentation();    
     void remove();
+    void removeExtraction(CDTExtractionLayer*);
+    void removeAllExtractionLayers();
     void removeSegmentation(CDTSegmentationLayer*);
     void removeAllSegmentationLayers();
     void rename();
-    void onActionCategoryInformation();
+    void onContextMenuRequest(QWidget *parent);
 
 private:        
+    void addExtraction(CDTExtractionLayer* extraction);
+    void addSegmentation(CDTSegmentationLayer* segmentation);
+
+private:
+    QVector<CDTExtractionLayer *>   extractions;
     QVector<CDTSegmentationLayer *> segmentations;
 
-    QAction* addSegmentationLayer;
-    QAction* removeImage;
-    QAction* removeAllSegmentations;
-    QAction* actionRename;
-    QAction* actionCategoryInformation;
+    QAction *actionAddExtractionLayer;
+    QAction *actionAddSegmentationLayer;
+    QAction *removeImage;
+    QAction *actionRemoveAllExtractions;
+    QAction *actionRemoveAllSegmentations;
 
-    CDTProjectTreeItem* segmentationsroot;
-    CDTTrainingSamplesForm* trainingForm;
+    QAction *actionRename;
+
+    CDTProjectTreeItem *segmentationsRoot;
+    CDTProjectTreeItem *extractionRoot;
+    CDTTrainingSamplesForm *trainingForm;
 
     static QList<CDTImageLayer *> layers;
 };

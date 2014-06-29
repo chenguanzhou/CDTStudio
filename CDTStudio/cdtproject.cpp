@@ -50,6 +50,7 @@ void CDTProject::removeImageLayer(CDTImageLayer* image)
     int index = images.indexOf(image);
     if (index>=0)
     {
+        image->removeAllExtractionLayers();
         image->removeAllSegmentationLayers();
         QStandardItem* keyItem = image->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());

@@ -18,17 +18,18 @@ public:
     friend QDataStream CDTFILESYSTEM_EXPORT &operator<<(QDataStream &out, const CDTFileSystem &files);
     friend QDataStream CDTFILESYSTEM_EXPORT &operator>>(QDataStream &in, CDTFileSystem &files);
 
-    bool registerFile(
-            QString id,
+    bool registerFile(QString id,
             const QString &filePath,
             QString prefix = QString(),
-            QString suffix = QString());
+            QString suffix = QString(),
+            QStringList affiliatedFiles = QStringList());
 
     bool getFile(QString id,QString& filePath);
+    bool getFile(QString id,QString& filePath,QStringList &affiliatedFiles);
 
     static bool GDALGetRasterVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
     static bool GDALGetShapefileVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
-
+    static QStringList GetShapefileAffaliated(const QString &srcPath);
 private:
     CDTFileSystemPrivate* pData;
 };

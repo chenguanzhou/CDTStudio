@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     cdtattributedockwidget.cpp \
     cdtsampledockwidget.cpp \
     wizardnewclassification.cpp \
-    cdtapplication.cpp
+    cdtapplication.cpp \
+    cdtextractionlayer.cpp \
+    dialognewextraction.cpp
 
 
 HEADERS  += \    
@@ -59,7 +61,9 @@ HEADERS  += \
     cdtsampledockwidget.h \
     wizardnewclassification.h \
     cdtvariantconverter.h \
-    cdtapplication.h
+    cdtapplication.h \
+    cdtextractionlayer.h \
+    dialognewextraction.h
 
 
 FORMS    += \
@@ -68,7 +72,8 @@ FORMS    += \
     dialoggenerateattributes.ui \    
     cdtattributedockwidget.ui \
     cdtsampledockwidget.ui \
-    wizardnewclassification.ui
+    wizardnewclassification.ui \
+    dialognewextraction.ui
 
 INCLUDEPATH += \
     ../Interfaces \

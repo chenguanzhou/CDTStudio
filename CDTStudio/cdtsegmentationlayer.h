@@ -30,7 +30,7 @@ class CDTSegmentationLayer:public CDTBaseObject
     Q_PROPERTY(QString method READ method)
 
 public:
-    explicit CDTSegmentationLayer(QUuid uuid, QString imagePath,QObject *parent = 0);
+    explicit CDTSegmentationLayer(QUuid uuid, QObject *parent = 0);
     ~CDTSegmentationLayer();
 
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);

@@ -2,7 +2,9 @@
 #include "stable.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtproject.h"
+#include "cdtextractionlayer.h"
 #include "cdtsegmentationlayer.h"
+#include "dialognewextraction.h"
 #include "dialognewsegmentation.h"
 #include "dialogdbconnection.h"
 
@@ -10,27 +12,33 @@ QList<CDTImageLayer *> CDTImageLayer::layers;
 
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     : CDTBaseObject(uuid,parent),
-      addSegmentationLayer(new QAction(QIcon(":/Icon/add.png"),tr("Add Segmentation"),this)),
+      actionAddExtractionLayer(new QAction(QIcon(":/Icon/add.png"),tr("Add Extraction"),this)),
+      actionAddSegmentationLayer(new QAction(QIcon(":/Icon/add.png"),tr("Add Segmentation"),this)),
       removeImage(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Image"),this)),
-      removeAllSegmentations(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Segmentations"),this)),
+      actionRemoveAllExtractions(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Extractions"),this)),
+      actionRemoveAllSegmentations(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Segmentations"),this)),
       actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Image"),this)),
-      actionCategoryInformation(new QAction(tr("Category Information"),this)),
       trainingForm(NULL)
 {
-    keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,QString(),this);
-    valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
-    segmentationsroot = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,CDTProjectTreeItem::GROUP,tr("segmentations"),this);
-    keyItem->appendRow(segmentationsroot);
+    keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,QString(),this);
+    valueItem
+            = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+    extractionRoot
+            = new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION_ROOT,CDTProjectTreeItem::GROUP,tr("extractions"),this);
+    segmentationsRoot
+            = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,CDTProjectTreeItem::GROUP,tr("segmentations"),this);
+    keyItem->appendRow(extractionRoot);
+    keyItem->appendRow(segmentationsRoot);
 
     layers.push_back(this);
 
-    connect(addSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
+    connect(actionAddSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
+    connect(actionAddExtractionLayer,SIGNAL(triggered()),this,SLOT(addExtraction()));
     connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
     connect(this,SIGNAL(imageLayerChanged()),(CDTProject*)(this->parent()),SIGNAL(projectChanged()));
-    connect(removeAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
+    connect(actionRemoveAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
     connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
-    connect(actionCategoryInformation,SIGNAL(triggered()),this,SLOT(onActionCategoryInformation()));
 }
 
 CDTImageLayer::~CDTImageLayer()
@@ -153,12 +161,6 @@ int CDTImageLayer::bandCount() const
     return layer->bandCount();
 }
 
-void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
-{
-    segmentations.push_back(segmentation);
-    emit imageLayerChanged();
-}
-
 QList<CDTImageLayer *> CDTImageLayer::getLayers()
 {
     return layers;
@@ -173,16 +175,30 @@ CDTImageLayer *CDTImageLayer::getLayer(const QUuid &id)
     return NULL;
 }
 
+void CDTImageLayer::addExtraction()
+{
+    DialogNewExtraction *dlg = new DialogNewExtraction(this->path(),this->fileSystem());
+    if(dlg->exec()==DialogNewExtraction::Accepted)
+    {
+        CDTExtractionLayer *extraction = new CDTExtractionLayer(QUuid::createUuid(),this);
+        extraction->initLayer(dlg->name(),dlg->fileID(),dlg->color());
+        extractionRoot->appendRow(extraction->standardItems());
+        addExtraction(extraction);
+    }
+
+    delete dlg;
+}
+
 void CDTImageLayer::addSegmentation()
 {
     DialogNewSegmentation* dlg = new DialogNewSegmentation(this->path(),this->fileSystem());
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
-        CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this->path(),this);
+        CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this);
         segmentation->initSegmentationLayer(
                     dlg->name(),dlg->shapefilePath(),dlg->markfilePath(),
                     dlg->method(),dlg->params(),CDTDatabaseConnInfo(),dlg->borderColor());
-        segmentationsroot->appendRow(segmentation->standardItems());
+        segmentationsRoot->appendRow(segmentation->standardItems());
         addSegmentation(segmentation);
     }
     delete dlg;
@@ -192,6 +208,32 @@ void CDTImageLayer::remove()
 {
     emit removeLayer(QList<QgsMapLayer*>()<<mapCanvasLayer);
     emit removeImageLayer(this);
+}
+
+void CDTImageLayer::removeExtraction(CDTExtractionLayer *ext)
+{
+    int index = extractions.indexOf(ext);
+    if (index>=0)
+    {
+        QStandardItem* keyItem = ext->standardItems()[0];
+        keyItem->parent()->removeRow(keyItem->index().row());
+        extractions.remove(index);
+        emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
+        delete ext;
+        emit imageLayerChanged();
+    }
+}
+
+void CDTImageLayer::removeAllExtractionLayers()
+{
+    foreach (CDTExtractionLayer* ext, extractions) {
+        QStandardItem* keyItem = ext->standardItems()[0];
+        keyItem->parent()->removeRow(keyItem->index().row());
+        emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
+        delete ext;
+    }
+    extractions.clear();
+    emit imageLayerChanged();
 }
 
 void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
@@ -232,31 +274,47 @@ void CDTImageLayer::rename()
     }
 }
 
-void CDTImageLayer::onActionCategoryInformation()
-{
-
-}
-
 void CDTImageLayer::onContextMenuRequest(QWidget *parent)
-{    
+{
     QMenu *menu =new QMenu(parent);
 
-    menu->addAction(addSegmentationLayer);
     menu->addAction(removeImage);
-    menu->addAction(removeAllSegmentations);
+    menu->addSeparator();
+    menu->addAction(actionAddSegmentationLayer);
+    menu->addAction(actionRemoveAllSegmentations);
+    menu->addSeparator();
+    menu->addAction(actionAddExtractionLayer);
+    menu->addAction(actionRemoveAllExtractions);
     menu->addSeparator();
     menu->addAction(actionRename);
-    menu->addSeparator();
-    menu->addAction(actionCategoryInformation);
 
     menu->exec(QCursor::pos());
 }
 
+void CDTImageLayer::addExtraction(CDTExtractionLayer *extraction)
+{
+    extractions.push_back(extraction);
+    emit imageLayerChanged();
+}
+
+
+void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
+{
+    segmentations.push_back(segmentation);
+    emit imageLayerChanged();
+}
+
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
 {
-    out<<image.uuid<<image.path()<<image.name()<<image.segmentations.size();
+    out<<image.uuid<<image.path()<<image.name();
+
+    out<<image.segmentations.size();
     for (int i=0;i<image.segmentations.size();++i)
         out<<*(image.segmentations[i]);
+
+    out<<image.extractions.size();
+    for (int i=0;i<image.extractions.size();++i)
+        out<<*(image.extractions[i]);
 
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -288,11 +346,21 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
     in>>count;
     for (int i=0;i<count;++i)
     {
-        CDTSegmentationLayer* segmentation = new CDTSegmentationLayer(QUuid(),image.path(),&image);
+        CDTSegmentationLayer* segmentation = new CDTSegmentationLayer(QUuid(),&image);
         in>>(*segmentation);
-        image.segmentationsroot->appendRow(segmentation->standardItems());
+        image.segmentationsRoot->appendRow(segmentation->standardItems());
         image.segmentations.push_back(segmentation);
     }
+
+    in>>count;
+    for (int i=0;i<count;++i)
+    {
+        CDTExtractionLayer* extraction = new CDTExtractionLayer(QUuid(),&image);
+        in>>(*extraction);
+        image.extractionRoot->appendRow(extraction->standardItems());
+        image.extractions.push_back(extraction);
+    }
+
     CDTCategoryInformationList info;
     in>>info;
     image.setCategoryInfo(info);

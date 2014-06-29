@@ -10,7 +10,8 @@ class FileSystem : public QObject
     Q_OBJECT
 
 public:
-    FileSystem();    
+    FileSystem();
+
 private slots:
     void initTestCase();
 
@@ -20,6 +21,7 @@ private slots:
     void testIO();
     void testVSIRaster();
     void testVSIShapefile();
+    void testAffiliatedFiles();
 
     void cleanupTestCase();
 private:
@@ -133,9 +135,7 @@ void FileSystem::testVSIRaster()
     GDALDataset *poSrcDS = poDriver->Create("FileSystem.tif",200,200,3,GDT_Byte,NULL);
     QVERIFY(poSrcDS);
     GDALClose(poSrcDS);
-    CDTFileSystem::GDALGetRasterVSIZipFile("FileSystem.tif","FileSystem.zip");
-    QFile("FileSystem.tif").remove();
-    QFile("FileSystem.zip").remove();
+    QVERIFY(CDTFileSystem::GDALGetRasterVSIZipFile("FileSystem.tif","FileSystem.zip",true));
 }
 
 void FileSystem::testVSIShapefile()
@@ -162,8 +162,54 @@ void FileSystem::testVSIShapefile()
     OGRFeature::DestroyFeature( feature );
     OGRDataSource::DestroyDataSource( poDS );
 
-    CDTFileSystem::GDALGetShapefileVSIZipFile("FileSystem.shp","FileSystem.zip");
+    QVERIFY(CDTFileSystem::GDALGetShapefileVSIZipFile("FileSystem.shp","FileSystem.zip",true));
+}
 
+void FileSystem::testAffiliatedFiles()
+{
+    QFile file("main.dat");
+    file.open(QFile::WriteOnly);
+    QTextStream testStream(&file);
+    testStream<<"main";
+    file.close();
+
+    QStringList affList = QStringList()<<"aff1.dat"<<"aff2.dat";
+    foreach (QString path, affList) {
+        QFile file(path);
+        file.open(QFile::WriteOnly);
+        QTextStream stream(&file);
+        stream<<"affaliate";
+        file.close();
+    }
+
+    CDTFileSystem *fileSystem = new CDTFileSystem();
+    QString id = QUuid::createUuid().toString();
+    fileSystem->registerFile(id,"main.dat",QString(),QString(),affList);
+
+    QTemporaryFile store;
+    store.open();
+    QDataStream stream(&store);
+    stream<<*fileSystem;
+    store.flush();
+    store.seek(0);
+    delete fileSystem;
+
+    stream.setDevice(&store);
+    fileSystem = new CDTFileSystem();
+    stream>>*fileSystem;
+    store.close();
+
+    QString newPath;
+    QStringList newList;
+    fileSystem->getFile(id,newPath,newList);
+
+    file.setFileName(newPath);
+    file.open(QFile::ReadOnly);
+    testStream.setDevice(&file);
+    QString text;
+    testStream>>text;
+    QVERIFY(QString("main")==text);
+    file.close();
 }
 
 void FileSystem::cleanupTestCase()
