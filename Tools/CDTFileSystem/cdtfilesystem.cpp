@@ -121,6 +121,26 @@ bool CDTFileSystem::getFile(QString id, QString &filePath, QStringList &affiliat
     return true;
 }
 
+void CDTFileSystem::removeFile(QString id, bool deleteFiles)
+{
+    if (!pData->files.contains(id))
+        return;
+    CDTFileInfo info = pData->files.value(id);
+    pData->files.remove(id);
+    if (!deleteFiles)
+        return;
+
+
+    QStringList list;
+    list<<info.path;
+    foreach (QString affFilePath, info.affiliatedFiles) {
+        list<<affFilePath;
+    }
+    foreach (QString path, list) {
+        qDebug()<<QFile(path).remove();
+    }
+}
+
 bool CDTFileSystem::GDALGetRasterVSIZipFile(const QString &srcPath, const QString &zipPath,bool deleteSrcFile)
 {
     GDALAllRegister();
@@ -209,7 +229,7 @@ QDataStream &operator<<(QDataStream &out, const CDTFileSystem &files)
 
     foreach (QString id, files.pData->files.keys()) {
         QStringList list;
-        CDTFileInfo info = files.pData->files.value(id);        
+        CDTFileInfo info = files.pData->files.value(id);
         list<<info.path;
         foreach (QString affFilePath, info.affiliatedFiles) {
             list<<affFilePath;

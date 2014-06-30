@@ -27,6 +27,8 @@ public:
     bool getFile(QString id,QString& filePath);
     bool getFile(QString id,QString& filePath,QStringList &affiliatedFiles);
 
+    void removeFile(QString id,bool deleteFiles = true);
+
     static bool GDALGetRasterVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
     static bool GDALGetShapefileVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
     static QStringList GetShapefileAffaliated(const QString &srcPath);

@@ -4,6 +4,7 @@
 #include "cdtproject.h"
 #include "cdtextractionlayer.h"
 #include "cdtsegmentationlayer.h"
+#include "cdtfilesystem.h"
 #include "dialognewextraction.h"
 #include "dialognewsegmentation.h"
 #include "dialogdbconnection.h"
@@ -223,17 +224,19 @@ void CDTImageLayer::removeExtraction(CDTExtractionLayer *ext)
         keyItem->parent()->removeRow(keyItem->index().row());
         extractions.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
-        delete ext;
+        fileSystem()->removeFile(ext->shapefilePath());
+//        delete ext;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         emit imageLayerChanged();
     }
 }
 
 void CDTImageLayer::removeAllExtractionLayers()
 {
-    foreach (CDTExtractionLayer* ext, extractions) {
+    foreach (CDTExtractionLayer* ext, extractions) {        
         QStandardItem* keyItem = ext->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());
         emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
+        fileSystem()->removeFile(ext->shapefilePath());
         delete ext;
     }
     extractions.clear();
@@ -244,22 +247,26 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
 {
     int index = segmentations.indexOf(sgmt);
     if (index>=0)
-    {
+    {        
         QStandardItem* keyItem = sgmt->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());
         segmentations.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<sgmt->canvasLayer());
-        delete sgmt;
+        fileSystem()->removeFile(sgmt->shapefilePath());
+        fileSystem()->removeFile(sgmt->markfilePath());
+//        delete sgmt; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         emit imageLayerChanged();
     }
 }
 
 void CDTImageLayer::removeAllSegmentationLayers()
 {
-    foreach (CDTSegmentationLayer* sgmt, segmentations) {
+    foreach (CDTSegmentationLayer* sgmt, segmentations) {        
         QStandardItem* keyItem = sgmt->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());
         emit removeLayer(QList<QgsMapLayer*>()<<sgmt->canvasLayer());
+        fileSystem()->removeFile(sgmt->shapefilePath());
+        fileSystem()->removeFile(sgmt->markfilePath());
         delete sgmt;
     }
     segmentations.clear();
