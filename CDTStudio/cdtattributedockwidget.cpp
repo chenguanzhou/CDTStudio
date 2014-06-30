@@ -110,7 +110,6 @@ void CDTAttributeDockWidget::onActionEditDataSourceTriggered()
     DialogDBConnection dlg(_dbConnInfo);
     if (dlg.exec()==QDialog::Accepted)
     {
-        qDebug()<<dlg.dbConnectInfo().dbName;
         if (dlg.dbConnectInfo() == _dbConnInfo)
             return;
         _segmentationLayer->setDatabaseURL(dlg.dbConnectInfo());
@@ -147,7 +146,6 @@ void CDTAttributeDockWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
     }
     else
     {
-        qDebug()<<"Open database "<<connInfo.dbType<<connInfo.dbName<<"suceed";
         updateTable();
     }
 }

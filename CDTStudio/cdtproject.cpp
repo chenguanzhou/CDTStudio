@@ -78,8 +78,6 @@ void CDTProject::insertToTable(QString name)
 {
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("insert into project values(?,?)");
-    qDebug()<<id();
-    qDebug()<<id();
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.exec();

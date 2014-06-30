@@ -24,12 +24,11 @@ QDataStream &operator>>(QDataStream &in, SampleElement &sample)
     return in;
 }
 
-
 QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
 
 CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     : CDTBaseObject(uuid,parent),
-      addClassifications(new QAction(QIcon(":/Icon/add.png"),tr("Add Classification"),this)),
+      actionAddClassifications(new QAction(QIcon(":/Icon/add.png"),tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Segmentation"),this)),
       actionRemoveAllClassifications(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Classifications"),this)),
       actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Segmentation"),this)),
@@ -63,15 +62,14 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
     connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
 
-    connect(addClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
     connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
+    connect(actionAddClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),this,SLOT(removeAllClassifications()));
     connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
 }
 
 CDTSegmentationLayer::~CDTSegmentationLayer()
-{
-    layers.removeAll(this);
+{    
     if (id().isNull())
         return;
 
@@ -80,6 +78,8 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
     ret = query.exec("delete from segmentationlayer where id = '"+uuid.toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
+
+    layers.removeAll(this);
 }
 
 void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
@@ -92,12 +92,13 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
 
     QMenu *menu =new QMenu(parent);
     menu->addAction(actionChangeBorderColor);
-    menu->addSeparator();
-    menu->addAction(addClassifications);
-    menu->addAction(actionRemoveSegmentation);
-    menu->addAction(actionRemoveAllClassifications);    
-    menu->addSeparator();
     menu->addAction(actionRename);
+    menu->addSeparator();
+    menu->addAction(actionRemoveSegmentation);
+    menu->addSeparator();
+    menu->addAction(actionAddClassifications);
+    menu->addAction(actionRemoveAllClassifications);    
+    menu->addSeparator();    
     menu->exec(QCursor::pos());
 
     actionChangeBorderColor->releaseWidget(borderColorPicker);
@@ -300,7 +301,7 @@ void CDTSegmentationLayer::setBorderColor(const QColor &clr)
 
     setOriginRenderer();
     this->mapCanvas->refresh();
-    emit nameChanged();
+    emit segmentationChanged();
 }
 
 void CDTSegmentationLayer::initSegmentationLayer(const QString &name,

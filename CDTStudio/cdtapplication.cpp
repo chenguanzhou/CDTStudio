@@ -73,8 +73,6 @@ bool CDTApplication::initDatabase()
         return false;
     }
 
-//    qDebug()<<subscribeToNotification("QPSQL");
-
     QSqlQuery query(db);
     bool ret ;
 

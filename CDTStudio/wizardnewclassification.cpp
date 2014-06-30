@@ -120,13 +120,11 @@ void dataNormalize(cv::Mat& data,QString method)
 
 void pcaTransform(cv::Mat& data,int pcaParam)
 {
-    qDebug()<<"data.cols:"<<data.cols;
     if (pcaParam>0 && pcaParam<=data.cols)
     {
         cv::PCA pca(data,cv::Mat(),CV_PCA_DATA_AS_ROW,pcaParam);
         data = pca.project(data);
     }
-    qDebug()<<"data.cols:"<<data.cols;
 }
 
 WizardNewClassification::WizardNewClassification(QUuid segmentationID, QWidget *parent) :

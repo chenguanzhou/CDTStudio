@@ -46,12 +46,11 @@ public:
     QColor  color()const;
     QString imagePath()const;
 
-
     void setRenderer(QgsFeatureRendererV2 *r);
     void setOriginRenderer();
 
     static QList<CDTSegmentationLayer *> getLayers();
-    static CDTSegmentationLayer * getLayer(QUuid uuid);
+    static CDTSegmentationLayer * getLayer(QUuid id);
 
 signals:
     void methodParamsChanged();
@@ -63,7 +62,6 @@ public slots:
     void onContextMenuRequest(QWidget *parent);
     void rename();
     void remove();
-
 
     void addClassification();
     void removeClassification(CDTClassification *);
@@ -88,14 +86,13 @@ private:
     void saveSamplesToStruct(QMap<QString,QString> &sample_id_name,QList<SampleElement> &samples) const;
 
 private:
-    QString m_imagePath;
     QVector<CDTClassification *> classifications;
 
-    QAction *addClassifications;
+    QWidgetAction *actionChangeBorderColor;
     QAction *actionRemoveSegmentation;
+    QAction *actionAddClassifications;
     QAction *actionRemoveAllClassifications;
     QAction *actionRename;
-    QWidgetAction *actionChangeBorderColor;
 
     CDTProjectTreeItem* shapefileItem;
     CDTProjectTreeItem* markfileItem;

@@ -14,7 +14,7 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     : CDTBaseObject(uuid,parent),
       actionAddExtractionLayer(new QAction(QIcon(":/Icon/add.png"),tr("Add Extraction"),this)),
       actionAddSegmentationLayer(new QAction(QIcon(":/Icon/add.png"),tr("Add Segmentation"),this)),
-      removeImage(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Image"),this)),
+      actionRemoveImage(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Image"),this)),
       actionRemoveAllExtractions(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Extractions"),this)),
       actionRemoveAllSegmentations(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Segmentations"),this)),
       actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Image"),this)),
@@ -32,13 +32,17 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
 
     layers.push_back(this);
 
-    connect(actionAddSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
-    connect(actionAddExtractionLayer,SIGNAL(triggered()),this,SLOT(addExtraction()));
-    connect(removeImage,SIGNAL(triggered()),this,SLOT(remove()));
+
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
     connect(this,SIGNAL(imageLayerChanged()),(CDTProject*)(this->parent()),SIGNAL(projectChanged()));
-    connect(actionRemoveAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
+
     connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
+    connect(actionRemoveImage,SIGNAL(triggered()),this,SLOT(remove()));
+    connect(actionAddSegmentationLayer,SIGNAL(triggered()),this,SLOT(addSegmentation()));
+    connect(actionRemoveAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
+    connect(actionAddExtractionLayer,SIGNAL(triggered()),this,SLOT(addExtraction()));
+    connect(actionRemoveAllExtractions,SIGNAL(triggered()),this,SLOT(removeAllExtractionLayers()));
+
 }
 
 CDTImageLayer::~CDTImageLayer()
@@ -211,7 +215,7 @@ void CDTImageLayer::remove()
 }
 
 void CDTImageLayer::removeExtraction(CDTExtractionLayer *ext)
-{
+{    
     int index = extractions.indexOf(ext);
     if (index>=0)
     {
@@ -278,15 +282,14 @@ void CDTImageLayer::onContextMenuRequest(QWidget *parent)
 {
     QMenu *menu =new QMenu(parent);
 
-    menu->addAction(removeImage);
-    menu->addSeparator();
-    menu->addAction(actionAddSegmentationLayer);
-    menu->addAction(actionRemoveAllSegmentations);
+    menu->addAction(actionRename);
+    menu->addAction(actionRemoveImage);
     menu->addSeparator();
     menu->addAction(actionAddExtractionLayer);
     menu->addAction(actionRemoveAllExtractions);
     menu->addSeparator();
-    menu->addAction(actionRename);
+    menu->addAction(actionAddSegmentationLayer);
+    menu->addAction(actionRemoveAllSegmentations);
 
     menu->exec(QCursor::pos());
 }

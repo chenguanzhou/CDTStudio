@@ -54,13 +54,12 @@ private:
     QVector<CDTExtractionLayer *>   extractions;
     QVector<CDTSegmentationLayer *> segmentations;
 
-    QAction *actionAddExtractionLayer;
-    QAction *actionAddSegmentationLayer;
-    QAction *removeImage;
-    QAction *actionRemoveAllExtractions;
-    QAction *actionRemoveAllSegmentations;
-
     QAction *actionRename;
+    QAction *actionRemoveImage;
+    QAction *actionAddExtractionLayer;    
+    QAction *actionRemoveAllExtractions;
+    QAction *actionAddSegmentationLayer;
+    QAction *actionRemoveAllSegmentations;
 
     CDTProjectTreeItem *segmentationsRoot;
     CDTProjectTreeItem *extractionRoot;

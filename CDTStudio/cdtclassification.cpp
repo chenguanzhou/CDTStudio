@@ -149,7 +149,6 @@ QgsFeatureRendererV2 *CDTClassification::renderer()
         QColor clr = query.value(0).value<QColor>();
         colorList.insert(clsInfo.value(categoryID).toInt(),clr);
     }
-    qDebug()<<"11:"<<colorList;
 
     QgsCategoryList categoryList;
     for(int i=0;i<data.size();++i)
