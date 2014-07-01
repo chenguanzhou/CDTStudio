@@ -61,6 +61,7 @@ signals:
 public slots:
     void onContextMenuRequest(QWidget *parent);
     void rename();
+    void exportShapefile();
     void remove();
 
     void addClassification();
@@ -90,6 +91,7 @@ private:
 
     QWidgetAction *actionChangeBorderColor;
     QAction *actionRemoveSegmentation;
+    QAction *actionExportShapefile;
     QAction *actionAddClassifications;
     QAction *actionRemoveAllClassifications;
     QAction *actionRename;

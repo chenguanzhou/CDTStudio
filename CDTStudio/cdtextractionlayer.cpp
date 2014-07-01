@@ -12,6 +12,7 @@ CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
     actionChangeColor(new QWidgetAction(this)),
     actionRemoveExtraction(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Extraction"),this)),
     actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename"),this)),
+    actionExportShapefile(new QAction(QIcon(":/Icon/export.png"),tr("Export Shapefile"),this)),
     actionStartEdit(new QAction(tr("Start Edit"),this)),
     actionRollBack(new QAction(tr("Roll Back"),this)),
     actionSave(new QAction(tr("Save"),this)),
@@ -30,6 +31,7 @@ CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
 
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
     connect(actionRemoveExtraction,SIGNAL(triggered()),SLOT(remove()));
+    connect(actionExportShapefile,SIGNAL(triggered()),SLOT(exportShapefile()));
 
     setEditState(LOCKED);
 }
@@ -109,6 +111,7 @@ void CDTExtractionLayer::onContextMenuRequest(QWidget *parent)
     QMenu *menu =new QMenu(parent);
     menu->addAction(actionChangeColor);
     menu->addAction(actionRename);
+    menu->addAction(actionExportShapefile);
     menu->addSeparator();
     menu->addAction(actionRemoveExtraction);
     menu->addSeparator();
@@ -197,6 +200,12 @@ void CDTExtractionLayer::rename()
 void CDTExtractionLayer::remove()
 {
     emit removeExtraction(this);
+}
+
+void CDTExtractionLayer::exportShapefile()
+{
+    QString id = shapefilePath();
+    fileSystem()->exportFiles(id);
 }
 
 void CDTExtractionLayer::setEditState(CDTExtractionLayer::EDITSTATE state)

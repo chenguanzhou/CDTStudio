@@ -41,6 +41,7 @@ public slots:
             const QColor &color);
     void rename();
     void remove();
+    void exportShapefile();
     void setEditState(EDITSTATE state);
 
 private slots:
@@ -59,6 +60,7 @@ private:
     QWidgetAction *actionChangeColor;
     QAction *actionRemoveExtraction;
     QAction *actionRename;
+    QAction *actionExportShapefile;
 
     QAction *actionStartEdit;
     QAction *actionRollBack;

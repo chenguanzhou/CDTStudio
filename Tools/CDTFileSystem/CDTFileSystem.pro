@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       = core sql
+QT       = core gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = CDTFileSystem
 TEMPLATE = lib
@@ -13,10 +14,12 @@ INCLUDEPATH += ../../Interfaces
 DEFINES += CDTFILESYSTEM_LIBRARY
 
 SOURCES += \
-    cdtfilesystem.cpp
+    cdtfilesystem.cpp \
+    cdtfileinfo.cpp
 
 HEADERS += cdtfilesystem_global.h \
-    cdtfilesystem.h
+    cdtfilesystem.h \
+    cdtfileinfo.h
 
 FORMS    +=
 
@@ -39,4 +42,5 @@ include(../log4qt/log4qt.pri)
 
 #quazip
 INCLUDEPATH += ../quazip
+DEPENDPATH += ../quazip
 LIBS += -L../../lib -lquazip

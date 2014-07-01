@@ -16,6 +16,16 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     setApplicationName("CDTStudio");
     setApplicationVersion("v0.1");
 
+    QStringList env = QProcess::systemEnvironment();
+    foreach (QString path, env) {
+        if(path.startsWith("QGIS_LOG_FILE=",Qt::CaseInsensitive))
+        {
+            QString filePath = path.remove("QGIS_LOG_FILE=");
+            qDebug()<<path;
+            QFile(filePath).remove();
+        }
+    }
+
     QgsApplication::setPluginPath(QDir::currentPath()+"/Plugins");
     QgsApplication::initQgis();
 

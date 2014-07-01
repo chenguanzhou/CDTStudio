@@ -135,7 +135,7 @@ void FileSystem::testVSIRaster()
     GDALDataset *poSrcDS = poDriver->Create("FileSystem.tif",200,200,3,GDT_Byte,NULL);
     QVERIFY(poSrcDS);
     GDALClose(poSrcDS);
-    QVERIFY(CDTFileSystem::GDALGetRasterVSIZipFile("FileSystem.tif","FileSystem.zip",true));
+    QVERIFY(CDTFileSystem::getRasterVSIZipFile("FileSystem.tif","FileSystem.zip",true));
 }
 
 void FileSystem::testVSIShapefile()
@@ -162,7 +162,7 @@ void FileSystem::testVSIShapefile()
     OGRFeature::DestroyFeature( feature );
     OGRDataSource::DestroyDataSource( poDS );
 
-    QVERIFY(CDTFileSystem::GDALGetShapefileVSIZipFile("FileSystem.shp","FileSystem.zip",true));
+    QVERIFY(CDTFileSystem::getShapefileVSIZipFile("FileSystem.shp","FileSystem.zip",true));
 }
 
 void FileSystem::testAffiliatedFiles()

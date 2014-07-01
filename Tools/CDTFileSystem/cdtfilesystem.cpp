@@ -1,48 +1,14 @@
 #include "cdtfilesystem.h"
 #include <QtCore>
+#include <QMessageBox>
+#include <QFileDialog>
 #include <gdal_priv.h>
 #include <ogrsf_frmts.h>
 #include <ogr_api.h>
 #include "quazip.h"
 #include "quazipfile.h"
 #include "log4qt/basicconfigurator.h"
-
-class CDTFileInfo
-{
-public:
-    CDTFileInfo(
-            QString pre = QString(),
-            QString suf = QString(),
-            QString filePath = QString(),
-            QStringList affaffiliated = QStringList())
-        :prifix(pre),suffix(suf),path(filePath),affiliatedFiles(affaffiliated) {}
-
-    friend class CDTFileSystem;
-    friend QDataStream &operator<<(QDataStream &out, const CDTFileInfo &fileInfo);
-    friend QDataStream &operator>>(QDataStream &in, CDTFileInfo &fileInfo);
-
-    friend QDataStream &operator<<(QDataStream &out, const CDTFileSystem &files);
-    friend QDataStream &operator>>(QDataStream &in, CDTFileSystem &files);
-
-    QString fullPath()const{return prifix+path+suffix;}
-private:
-    QString prifix;
-    QString suffix;
-    QString path;
-    QStringList affiliatedFiles;
-};
-
-QDataStream &operator<<(QDataStream &out, const CDTFileInfo &fileInfo)
-{
-    out<<fileInfo.prifix<<fileInfo.suffix<<fileInfo.path<<fileInfo.affiliatedFiles;
-    return out;
-}
-
-QDataStream &operator>>(QDataStream &in, CDTFileInfo &fileInfo)
-{
-    in>>fileInfo.prifix>>fileInfo.suffix>>fileInfo.path>>fileInfo.affiliatedFiles;
-    return in;
-}
+#include "cdtfileinfo.h"
 
 class CDTFileSystemPrivate
 {
@@ -79,10 +45,10 @@ CDTFileSystem::~CDTFileSystem()
 }
 
 bool CDTFileSystem::registerFile(QString id,
-        const QString &filePath,
-        QString prefix,
-        QString suffix,
-        QStringList affiliatedFiles)
+                                 const QString &filePath,
+                                 QString prefix,
+                                 QString suffix,
+                                 QStringList affiliatedFiles)
 {
     if (pData->files.contains(id))
     {
@@ -137,11 +103,39 @@ void CDTFileSystem::removeFile(QString id, bool deleteFiles)
         list<<affFilePath;
     }
     foreach (QString path, list) {
-        qDebug()<<QFile(path).remove();
+        QFile(path).remove();
     }
 }
 
-bool CDTFileSystem::GDALGetRasterVSIZipFile(const QString &srcPath, const QString &zipPath,bool deleteSrcFile)
+bool CDTFileSystem::exportFiles(QString id)
+{
+    if (!pData->files.contains(id))
+    {
+        QMessageBox::warning(NULL,tr("Warning"),tr("File not exist!"));
+        return false;
+    }
+
+    CDTFileInfo info = pData->files.value(id);
+    QStringList list;
+    list<<info.path<<info.affiliatedFiles;
+
+
+    QString dir = QFileDialog::getExistingDirectory(NULL,tr("Choose a directory to export"));
+    foreach (QString filePath, list) {
+        QString newPath = dir + "/" + QFileInfo(filePath).fileName();
+        if (QFile::copy(filePath,newPath)==false)
+        {
+            QMessageBox::warning(NULL,tr("Warning"),tr("Copy file from %1 to %2 failed!")
+                                 .arg(filePath).arg(newPath));
+            return false;
+        }
+    }
+
+    QMessageBox::information(NULL,tr("Completed"),tr("Export file completed!"));
+    return true;
+}
+
+bool CDTFileSystem::getRasterVSIZipFile(const QString &srcPath, const QString &zipPath,bool deleteSrcFile)
 {
     GDALAllRegister();
     GDALDataset *poDS = (GDALDataset *)GDALOpen(srcPath.toUtf8().constData(),GA_ReadOnly);
@@ -172,7 +166,7 @@ bool CDTFileSystem::GDALGetRasterVSIZipFile(const QString &srcPath, const QStrin
     return true;
 }
 
-bool CDTFileSystem::GDALGetShapefileVSIZipFile(const QString &srcPath, const QString &zipPath,bool deleteSrcFile)
+bool CDTFileSystem::getShapefileVSIZipFile(const QString &srcPath, const QString &zipPath,bool deleteSrcFile)
 {    
     OGRRegisterAll();
     QFileInfo info(srcPath);
@@ -197,7 +191,7 @@ bool CDTFileSystem::GDALGetShapefileVSIZipFile(const QString &srcPath, const QSt
         QFile inFile(file);
         inFile.open(QFile::ReadOnly);
         outFile.open(QIODevice::WriteOnly, QuaZipNewInfo(fileInfo.fileName(), fileInfo.filePath()));
-        outFile.write(inFile.readAll());        
+        outFile.write(inFile.readAll());
         inFile.close();
         if (deleteSrcFile) inFile.remove();
         outFile.close();
@@ -205,7 +199,7 @@ bool CDTFileSystem::GDALGetShapefileVSIZipFile(const QString &srcPath, const QSt
     return true;
 }
 
-QStringList CDTFileSystem::GetShapefileAffaliated(const QString &srcPath)
+QStringList CDTFileSystem::getShapefileAffaliated(const QString &srcPath)
 {
     OGRRegisterAll();
     QFileInfo info(srcPath);
@@ -225,7 +219,7 @@ QStringList CDTFileSystem::GetShapefileAffaliated(const QString &srcPath)
 
 QDataStream &operator<<(QDataStream &out, const CDTFileSystem &files)
 {
-    out<<files.pData->files;    
+    out<<files.pData->files;
 
     foreach (QString id, files.pData->files.keys()) {
         QStringList list;

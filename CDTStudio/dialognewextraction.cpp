@@ -63,5 +63,5 @@ void DialogNewExtraction::onAccepted()
 
     shapefileID = QUuid::createUuid().toString();
     fileSystem->registerFile(shapefileID,shapefileTempPath,QString(),QString()
-                             ,CDTFileSystem::GetShapefileAffaliated(shapefileTempPath));
+                             ,CDTFileSystem::getShapefileAffaliated(shapefileTempPath));
 }

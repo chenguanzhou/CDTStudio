@@ -30,6 +30,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     : CDTBaseObject(uuid,parent),
       actionAddClassifications(new QAction(QIcon(":/Icon/add.png"),tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Segmentation"),this)),
+      actionExportShapefile(new QAction(QIcon(":/Icon/export.png"),tr("Export Shapefile"),this)),
       actionRemoveAllClassifications(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Classifications"),this)),
       actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Segmentation"),this)),
       actionChangeBorderColor(new QWidgetAction(this))
@@ -62,10 +63,11 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
     connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
 
-    connect(actionRemoveSegmentation,SIGNAL(triggered()),this,SLOT(remove()));
-    connect(actionAddClassifications,SIGNAL(triggered()),this,SLOT(addClassification()));
-    connect(actionRemoveAllClassifications,SIGNAL(triggered()),this,SLOT(removeAllClassifications()));
-    connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
+    connect(actionRemoveSegmentation,SIGNAL(triggered()),SLOT(remove()));
+    connect(actionAddClassifications,SIGNAL(triggered()),SLOT(addClassification()));
+    connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));
+    connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
+    connect(actionExportShapefile,SIGNAL(triggered()),SLOT(exportShapefile()));
 }
 
 CDTSegmentationLayer::~CDTSegmentationLayer()
@@ -93,6 +95,7 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     QMenu *menu =new QMenu(parent);
     menu->addAction(actionChangeBorderColor);
     menu->addAction(actionRename);
+    menu->addAction(actionExportShapefile);
     menu->addSeparator();
     menu->addAction(actionRemoveSegmentation);
     menu->addSeparator();
@@ -114,6 +117,12 @@ void CDTSegmentationLayer::rename()
                 this->name(), &ok);
     if (ok && !text.isEmpty())
         setName(text);
+}
+
+void CDTSegmentationLayer::exportShapefile()
+{
+    QString id = shapefilePath();
+    fileSystem()->exportFiles(id);
 }
 
 void CDTSegmentationLayer::addClassification()

@@ -84,10 +84,10 @@ void DialogNewSegmentation::onFinished()
     shapefileID = QUuid::createUuid().toString();
 
     QString pathMarkZip = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".zip";
-    CDTFileSystem::GDALGetRasterVSIZipFile(markfileTempPath,pathMarkZip,true);
+    CDTFileSystem::getRasterVSIZipFile(markfileTempPath,pathMarkZip,true);
 
     fileSystem->registerFile(shapefileID,shapefileTempPath,QString(),QString()
-                             ,CDTFileSystem::GetShapefileAffaliated(shapefileTempPath));
+                             ,CDTFileSystem::getShapefileAffaliated(shapefileTempPath));
     fileSystem->registerFile(markfileID,pathMarkZip,"/vsizip/","/"+QFileInfo(markfileTempPath).fileName());
 
     ui->buttonBox->setStandardButtons(ui->buttonBox->standardButtons()|QDialogButtonBox::Ok);
