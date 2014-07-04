@@ -6,6 +6,7 @@
 #include "dialogconsole.h"
 #include "stable.h"
 #include "cdtsampledockwidget.h"
+#include "cdtextractiondockwidget.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
@@ -70,6 +71,11 @@ void MainWindow::initDockWidgets()
 
     dockWidgetSample = new CDTSampleDockWidget(this);
     this->addDockWidget(Qt::RightDockWidgetArea, (QDockWidget*)dockWidgetSample);
+    dockWidgetSample->raise();
+    dockWidgetSample->hide();
+
+    dockWidgetExtraction = new CDTExtractionDockWidget(this);
+    this->addDockWidget(Qt::NoDockWidgetArea, (QDockWidget*)dockWidgetExtraction);
     dockWidgetSample->raise();
     dockWidgetSample->hide();
 }

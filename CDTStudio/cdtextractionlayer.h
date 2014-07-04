@@ -10,7 +10,6 @@ class QWidgetAction;
 class CDTExtractionLayer : public CDTBaseObject
 {
     Q_OBJECT
-    Q_PROPERTY(EDITSTATE editState READ editState WRITE setEditState NOTIFY editStateChanged)
 
 public:
     enum EDITSTATE{
@@ -42,19 +41,29 @@ public slots:
     void rename();
     void remove();
     void exportShapefile();
-    void setEditState(EDITSTATE state);
 
 private slots:
-    void onEditStateChanged();
+    void setEditState(EDITSTATE state);
+    void setGeometryModified(bool modified);
+
+    void onActionStartEdit();
+    void onActionRollBack();
+    void onActionSave();
+    void onActionStop();
+
+private:
+    void start();
+    void rollback();
+    void save();
+    void stop();
 
 signals:
     void nameChanged();
     void extractionChanged();
-    void editStateChanged();
     void removeExtraction(CDTExtractionLayer*);
 
 private:
-    bool isGeometryChanged;
+    bool isGeometryModified;
     EDITSTATE currentEditState;
 
     QWidgetAction *actionChangeColor;

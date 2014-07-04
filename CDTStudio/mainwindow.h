@@ -13,6 +13,7 @@ class QToolButton;
 class QModelIndex;
 class QTreeView;
 class CDTSampleDockWidget;
+class CDTExtractionDockWidget;
 class DialogConsole;
 class CDTProjectWidget;
 class QgsMapCanvas;
@@ -62,8 +63,10 @@ protected:
 
 private:
     Ui::MainWindow *ui;
-    CDTAttributeDockWidget *dockWidgetAttributes;
-    CDTSampleDockWidget *dockWidgetSample;
+    CDTAttributeDockWidget  *dockWidgetAttributes;
+    CDTSampleDockWidget     *dockWidgetSample;
+    CDTExtractionDockWidget *dockWidgetExtraction;
+
     RecentFileSupervisor *supervisor;
     int recentFileCount;
     QToolButton* recentFileToolButton;

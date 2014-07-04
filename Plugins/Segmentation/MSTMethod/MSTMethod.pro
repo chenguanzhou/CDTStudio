@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core
 
 TARGET = MSTMethod
 TEMPLATE = lib
@@ -19,7 +19,7 @@ SOURCES += \
     graphkruskal.cpp
 
 HEADERS +=\
-    ../../../Interfaces/cdtsegmentationInterface.h \
+    ../../../Interfaces/cdtsegmentationinterface.h \
     ../../../CDTStudio/cdtbasethread.h \
     mstmethodinterface.h \
     polygonizer.h\
@@ -36,10 +36,6 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
-
-FORMS +=
-
-
 
 unix{
 LIBS += -lgdal
