@@ -32,12 +32,13 @@ private:
     void initDockWidgets();
 
 public:
-    static MainWindow   *getMainWindow();
-    static QTreeView    *getProjectTreeView();
-    static CDTSampleDockWidget   *getSampleDockWidget();
-    static CDTAttributeDockWidget *getAttributesDockWidget();
-    static CDTProjectWidget *getCurrentProjectWidget();
-    static QgsMapCanvas *getCurrentMapCanvas();
+    static MainWindow               *getMainWindow();
+    static QTreeView                *getProjectTreeView();
+    static CDTSampleDockWidget      *getSampleDockWidget();
+    static CDTAttributeDockWidget   *getAttributesDockWidget();
+    static CDTExtractionDockWidget  *getExtractionDockWidget();
+    static CDTProjectWidget         *getCurrentProjectWidget();
+    static QgsMapCanvas             *getCurrentMapCanvas();
 
     static bool setActiveImage(QUuid uuid);
     static bool setActiveSegmentation(QUuid uuid);

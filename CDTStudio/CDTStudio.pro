@@ -43,14 +43,14 @@ SOURCES += main.cpp\
 
 HEADERS  += \    
     mainwindow.h \
+    cdtbaseobject.h \
     cdtproject.h \
     cdtimagelayer.h \
     cdtsegmentationlayer.h \
     cdtclassification.h \
     cdtprojecttabwidget.h \
     cdtprojectwidget.h \
-    cdtprojecttreeitem.h \    
-    cdtbaseobject.h \
+    cdtprojecttreeitem.h \
     cdtpluginloader.h \
     recentfilesupervisor.h \
     cdtattributegenerator.h \
@@ -65,8 +65,8 @@ HEADERS  += \
     cdtapplication.h \
     cdtextractionlayer.h \
     dialognewextraction.h \
-    cdtextractiondockwidget.h
-
+    cdtextractiondockwidget.h \
+    ../Interfaces/cdtextractioninterface.h
 
 FORMS    += \
     mainwindow.ui \

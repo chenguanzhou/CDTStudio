@@ -5,10 +5,12 @@
 #include "cdtsegmentationinterface.h"
 #include "cdtattributesinterface.h"
 #include "cdtclassifierinterface.h"
+#include "cdtextractioninterface.h"
 
 QList<CDTSegmentationInterface *>   segmentationPlugins;
 QList<CDTAttributesInterface *>     attributesPlugins;
 QList<CDTClassifierInterface *>     classifierPlugins;
+QList<CDTExtractionInterface *>     extractionPlugins;
 
 CDTApplication::CDTApplication(int & argc, char ** argv) :
     QgsApplication(argc, argv,true)
@@ -39,6 +41,9 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     segmentationPlugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();
     attributesPlugins   = CDTPluginLoader<CDTAttributesInterface>::getPlugins();
     classifierPlugins   = CDTPluginLoader<CDTClassifierInterface>::getPlugins();
+    extractionPlugins   = CDTPluginLoader<CDTExtractionInterface>::getPlugins();
+    qDebug()<<"segmentationPlugins:"<<segmentationPlugins.size();
+    qDebug()<<"extractionPlugins:"<<extractionPlugins.size();
 }
 
 CDTApplication::~CDTApplication()

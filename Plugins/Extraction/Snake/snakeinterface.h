@@ -6,17 +6,18 @@
 class SnakeInterface : public CDTExtractionInterface
 {
     Q_OBJECT
+#if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTExtractionInterface" FILE "Snake.json")
+#else
+    Q_INTERFACES(CDTExtractionInterface)
+#endif // QT_VERSION >= 0x050000
 public:
-    SnakeInterface(QUuid extravtionLayerID,QObject *parent = 0);
+    SnakeInterface(QObject *parent = 0);
 
     QString methodName()    const;
     QString description()   const;
 
-//public slots:
-    void start();
-    void rollback();
-    void save();
-    void stop();
+    QgsMapTool *mapTool(QgsMapCanvas* canvas,QString imagePath,QgsVectorLayer *vectorLayer);
 };
 
 #endif // SNAKEINTERFACE_H

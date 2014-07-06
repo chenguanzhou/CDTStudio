@@ -3,27 +3,22 @@
 
 #include <QtCore>
 #include <qgsmaptool.h>
+class QgsVectorLayer;
 
 class CDTExtractionInterface:public QObject
 {
     Q_OBJECT
 public:
-    explicit CDTExtractionInterface(QUuid extravtionLayerID,QObject* parent = 0)
-        :layerID(extravtionLayerID),QObject(parent)
+    explicit CDTExtractionInterface(QObject* parent = 0)
+        :QObject(parent)
     {}
 
     virtual QString methodName()    const = 0;
     virtual QString description()   const = 0;
 
 public slots:
-    virtual void start()    = 0;
-    virtual void rollback() = 0;
-    virtual void save()     = 0;
-    virtual void stop()     = 0;
-
-protected:
-    QUuid layerID;
+    virtual QgsMapTool* mapTool(QgsMapCanvas* canvas,QString imagePath,QgsVectorLayer *vectorLayer) = 0;
 };
 
-
+Q_DECLARE_INTERFACE(CDTExtractionInterface,"cn.edu.WHU.CDTStudio.CDTExtractionInterface/1.0")
 #endif // CDTEXTRACTIONINTERFACE_H

@@ -59,7 +59,7 @@
     <item>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="QToolButton" name="toolButton">
+       <widget class="QToolButton" name="toolButtonStart">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -72,7 +72,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QToolButton" name="toolButton_2">
+       <widget class="QToolButton" name="toolButtonRollback">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -85,7 +85,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QToolButton" name="toolButton_3">
+       <widget class="QToolButton" name="toolButtonSave">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -98,7 +98,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QToolButton" name="toolButton_4">
+       <widget class="QToolButton" name="toolButtonStop">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
           <horstretch>0</horstretch>

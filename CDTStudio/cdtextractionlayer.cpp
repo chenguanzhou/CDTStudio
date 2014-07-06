@@ -12,13 +12,7 @@ CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
     actionChangeColor(new QWidgetAction(this)),
     actionRemoveExtraction(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Extraction"),this)),
     actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename"),this)),
-    actionExportShapefile(new QAction(QIcon(":/Icon/export.png"),tr("Export Shapefile"),this)),
-    actionStartEdit(new QAction(tr("Start Edit"),this)),
-    actionRollBack(new QAction(tr("Roll Back"),this)),
-    actionSave(new QAction(tr("Save"),this)),
-    actionStop(new QAction(tr("Stop"),this)),
-    currentEditState(LOCKED),
-    isGeometryModified(false)
+    actionExportShapefile(new QAction(QIcon(":/Icon/export.png"),tr("Export Shapefile"),this))
 {
     layers.push_back(this);
 
@@ -32,12 +26,6 @@ CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
     connect(actionRemoveExtraction,SIGNAL(triggered()),SLOT(remove()));
     connect(actionExportShapefile,SIGNAL(triggered()),SLOT(exportShapefile()));
-    connect(actionStartEdit,SIGNAL(triggered()),SLOT(onActionStartEdit()));
-    connect(actionRollBack,SIGNAL(triggered()),SLOT(onActionRollBack()));
-    connect(actionSave,SIGNAL(triggered()),SLOT(onActionSave()));
-    connect(actionStop,SIGNAL(triggered()),SLOT(onActionStop()));
-
-    setEditState(LOCKED);
 }
 
 CDTExtractionLayer::~CDTExtractionLayer()
@@ -85,11 +73,6 @@ QString CDTExtractionLayer::imagePath() const
     return ((CDTImageLayer*)parent())->path();
 }
 
-CDTExtractionLayer::EDITSTATE CDTExtractionLayer::editState() const
-{
-    return currentEditState;
-}
-
 QList<CDTExtractionLayer *> CDTExtractionLayer::getLayers()
 {
     return layers;
@@ -118,11 +101,11 @@ void CDTExtractionLayer::onContextMenuRequest(QWidget *parent)
     menu->addAction(actionExportShapefile);
     menu->addSeparator();
     menu->addAction(actionRemoveExtraction);
-    menu->addSeparator();
-    menu->addAction(actionStartEdit);
-    menu->addAction(actionRollBack);
-    menu->addAction(actionSave);
-    menu->addAction(actionStop);
+//    menu->addSeparator();
+//    menu->addAction(actionStartEdit);
+//    menu->addAction(actionRollBack);
+//    menu->addAction(actionSave);
+//    menu->addAction(actionStop);
     menu->exec(QCursor::pos());
 
     actionChangeColor->releaseWidget(borderColorPicker);
@@ -210,120 +193,6 @@ void CDTExtractionLayer::exportShapefile()
 {
     QString id = shapefilePath();
     fileSystem()->exportFiles(id);
-}
-
-void CDTExtractionLayer::setEditState(CDTExtractionLayer::EDITSTATE state)
-{
-    currentEditState = state;
-
-    bool isLocked = currentEditState!=EDITING;
-    actionStartEdit->setEnabled(isLocked);
-    actionRollBack->setEnabled(!isLocked);
-    actionSave->setEnabled(!isLocked);
-    actionStop->setEnabled(!isLocked);
-}
-
-void CDTExtractionLayer::setGeometryModified(bool modified)
-{
-    isGeometryModified = modified;
-
-    actionRollBack->setEnabled(modified);
-    actionSave->setEnabled(modified);
-}
-
-void CDTExtractionLayer::onActionStartEdit()
-{
-    start();
-}
-
-void CDTExtractionLayer::onActionRollBack()
-{
-    if (isGeometryModified)
-    {
-        QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(NULL, tr("Extraction"),
-                                   tr("The extraction layer has been modified.\n"
-                                      "Do you want to roolback your changes without save?"),
-                                   QMessageBox::Reset | QMessageBox::Cancel);
-        if (ret == QMessageBox::Reset)
-        {
-            ///RollBack changes......
-            ///
-            rollback();
-        }
-    }
-}
-
-void CDTExtractionLayer::onActionSave()
-{
-    save();
-}
-
-void CDTExtractionLayer::onActionStop()
-{
-    if (isGeometryModified)
-    {
-        QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(NULL, tr("Extraction"),
-                                   tr("The extraction layer has been modified.\n"
-                                      "Do you want to save your changes or ignore changes before stopping editing?"),
-                                   QMessageBox::Save | QMessageBox::Ignore| QMessageBox::Cancel);
-        if (ret == QMessageBox::Save)
-        {
-            save();
-            stop();
-        }
-        else if (ret == QMessageBox::Ignore)
-        {
-            stop();
-        }
-        else
-            return;
-    }
-    else stop();
-}
-
-void CDTExtractionLayer::start()
-{
-    if (currentEditState == EDITING)
-        return;
-    setEditState(EDITING);
-    setGeometryModified(false);
-    ///start
-    ///
-    qDebug()<<"start";
-}
-
-void CDTExtractionLayer::rollback()
-{
-    if (currentEditState == LOCKED)
-        return;
-    if (isGeometryModified == false)
-        return;
-    ///rollback
-    ///
-    setGeometryModified(false);
-    qDebug()<<"rollback";
-}
-
-void CDTExtractionLayer::save()
-{
-    if (currentEditState == LOCKED)
-        return;
-    ///save
-    ///
-    setGeometryModified(false);
-    qDebug()<<"save";
-}
-
-void CDTExtractionLayer::stop()
-{
-    if (currentEditState == LOCKED)
-        return;
-    /// stop
-    ///
-    setEditState(LOCKED);
-    qDebug()<<"stop";
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTExtractionLayer &extraction)

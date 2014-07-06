@@ -1,4 +1,4 @@
-QT       += core
+QT       += core gui xml
 
 TARGET = Snake
 TEMPLATE = lib
@@ -26,12 +26,16 @@ include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
+LIBS += -lqgis_core -lqgis_gui
+
 HEADERS += \
     ../../../Interfaces/cdtextractioninterface.h \
     StatisticSnake.h \
     snakeinterface.h\
+    cdtsnakemaptool.h
 
 
 SOURCES += \
     StatisticSnake.cpp \
-    snakeinterface.cpp
+    snakeinterface.cpp \
+    cdtsnakemaptool.cpp

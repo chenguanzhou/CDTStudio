@@ -9,6 +9,7 @@
 #include "cdtextractiondockwidget.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtimagelayer.h"
+#include "cdtextractionlayer.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtclassification.h"
 
@@ -100,6 +101,11 @@ CDTAttributeDockWidget *MainWindow::getAttributesDockWidget()
     return mainWindow->dockWidgetAttributes;
 }
 
+CDTExtractionDockWidget *MainWindow::getExtractionDockWidget()
+{
+    return mainWindow->dockWidgetExtraction;
+}
+
 CDTProjectWidget *MainWindow::getCurrentProjectWidget()
 {
     return (CDTProjectWidget *)(mainWindow->ui->tabWidgetProject->currentWidget());
@@ -168,7 +174,16 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     if (item==NULL)    return;
 
     int type = item->getType();
-    if (type == CDTProjectTreeItem::SEGMENTION)
+    if (type == CDTProjectTreeItem::EXTRACTION)
+    {
+        CDTExtractionLayer* extractionLayer = (CDTExtractionLayer*)(item->correspondingObject());
+        if (extractionLayer != NULL)
+        {
+            dockWidgetExtraction->show();
+            dockWidgetExtraction->setExtractionLayer(extractionLayer->id());
+        }
+    }
+    else if (type == CDTProjectTreeItem::SEGMENTION)
     {
         CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(item->correspondingObject());
         if (segmentationLayer != NULL)
@@ -188,7 +203,7 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
             getCurrentMapCanvas()->refresh();
         }
     }
-    if (type == CDTProjectTreeItem::CLASSIFICATION)
+    else if (type == CDTProjectTreeItem::CLASSIFICATION)
     {
         CDTClassification* classificationLayer = (CDTClassification*)(item->correspondingObject());
         if (classificationLayer != NULL)

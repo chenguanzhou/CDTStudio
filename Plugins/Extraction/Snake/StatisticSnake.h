@@ -21,18 +21,18 @@ public:
 	CStatisticSnake();
 	~CStatisticSnake();
 
-	std::vector<VERTEX2D> m_seedArray; ////////////ÊäÈëÊ±ÎªÖÖ×Ó½ÚµãÁ´±í£¬¼ÆËãÍê±ÏºóÎªÊä³ö½á¹û////////////
+	std::vector<VERTEX2D> m_seedArray; ////////////è¾“å…¥æ—¶ä¸ºç§å­èŠ‚ç‚¹é“¾è¡¨ï¼Œè®¡ç®—å®Œæ¯•åä¸ºè¾“å‡ºç»“æœ////////////
 
 public:
     void Initialize(uchar *pBMPData, int w, int h, int wb,const std::vector<VERTEX2D> &pointVec);
 	bool GetStatisticSnake();
 
 private:
-    uchar* m_pBMPData;///////////ÊäÈëÕû¸öÓ°Ïñ
+    uchar* m_pBMPData;///////////è¾“å…¥æ•´ä¸ªå½±åƒ
 	bool* m_pShapeImage;
-	int m_BMPWidth;/////////////Õû¸öÓ°Ïñ¿í
-	int m_BMPHeight;////////////Õû¸öÓ°Ïñ¸ß
-	int m_BMPWidthBytes;////////Õû¸öÓ°ÏñµÄÃ¿ĞĞÎ»Êı
+	int m_BMPWidth;/////////////æ•´ä¸ªå½±åƒå®½
+	int m_BMPHeight;////////////æ•´ä¸ªå½±åƒé«˜
+	int m_BMPWidthBytes;////////æ•´ä¸ªå½±åƒçš„æ¯è¡Œä½æ•°
 
 	VERTEX2D m_statistic_start;
 	int m_statistic_w;
