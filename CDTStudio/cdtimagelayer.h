@@ -18,7 +18,6 @@ public:
 
     friend QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image);
     friend QDataStream &operator>>(QDataStream &in, CDTImageLayer &image);
-    friend class CDTTrainingSamplesForm;
     friend class CDTSegmentationLayer;
 
     void setName(const QString& name);
@@ -63,7 +62,6 @@ private:
 
     CDTProjectTreeItem *segmentationsRoot;
     CDTProjectTreeItem *extractionRoot;
-    CDTTrainingSamplesForm *trainingForm;
 
     static QList<CDTImageLayer *> layers;
 };

@@ -11,9 +11,12 @@ DLLDESTDIR = ../../bin
 # Input
 include(quazip.pri)
 
-win32 {
+unix{
+    LIBS += -lz
+}
+!unix {
     DEFINES += NOMINMAX
     include(../Config/win.pri)
+    LIBS += -lzlib
 }
 
-LIBS += -lzlib

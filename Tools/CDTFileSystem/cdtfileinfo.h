@@ -2,6 +2,8 @@
 #define CDTFILEINFO_H
 #include <QtCore>
 
+class CDTFileSystem;
+
 class CDTFileInfo
 {
 public:

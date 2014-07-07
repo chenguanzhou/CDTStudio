@@ -20,6 +20,11 @@ LIBS += -lgdal
 QMAKE_CXXFLAGS += -std=c++0x
 INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
+/usr/include/qgis \
+/usr/local/include/qgis
+
+DEFINES += CORE_EXPORT=
+DEFINES += GUI_EXPORT=
 }
 !unix{
 include(../../../Tools/Config/win.pri)

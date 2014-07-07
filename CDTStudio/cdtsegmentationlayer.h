@@ -9,7 +9,6 @@ class QColor;
 class QgsFeatureRendererV2;
 class CDTClassification;
 class CDTMapToolSelectTrainingSamples;
-class CDTTrainingSamplesForm;
 class CDTProjectTreeItem;
 
 class SampleElement

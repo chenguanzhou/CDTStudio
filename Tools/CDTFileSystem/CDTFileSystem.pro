@@ -27,6 +27,7 @@ DESTDIR = ../../lib
 DLLDESTDIR = ../../bin
 
 unix {
+    QMAKE_CXXFLAGS += -std=c++0x
     target.path = /usr/lib
     INSTALLS += target
     LIBS += -lgdal

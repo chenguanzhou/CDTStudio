@@ -18,8 +18,7 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
       actionRemoveImage(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Image"),this)),
       actionRemoveAllExtractions(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Extractions"),this)),
       actionRemoveAllSegmentations(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Segmentations"),this)),
-      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Image"),this)),
-      trainingForm(NULL)
+      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Image"),this))
 {
     keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,QString(),this);
     valueItem
