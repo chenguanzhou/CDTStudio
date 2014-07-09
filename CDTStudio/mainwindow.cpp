@@ -76,9 +76,11 @@ void MainWindow::initDockWidgets()
     dockWidgetSample->hide();
 
     dockWidgetExtraction = new CDTExtractionDockWidget(this);
-    this->addDockWidget(Qt::NoDockWidgetArea, (QDockWidget*)dockWidgetExtraction);
-    dockWidgetSample->raise();
-    dockWidgetSample->hide();
+    dockWidgetExtraction->setAllowedAreas(Qt::RightDockWidgetArea|Qt::LeftDockWidgetArea);
+    this->addDockWidget(Qt::RightDockWidgetArea, (QDockWidget*)dockWidgetExtraction);
+    dockWidgetExtraction->setEnabled(false);
+    dockWidgetExtraction->raise();
+    dockWidgetExtraction->hide();
 }
 
 MainWindow *MainWindow::getMainWindow()
@@ -179,6 +181,7 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         CDTExtractionLayer* extractionLayer = (CDTExtractionLayer*)(item->correspondingObject());
         if (extractionLayer != NULL)
         {
+            dockWidgetExtraction->setEnabled(true);
             dockWidgetExtraction->show();
             dockWidgetExtraction->setExtractionLayer(extractionLayer->id());
         }

@@ -28,9 +28,10 @@ public slots:
     void setExtractionLayer(QString id);
     void updateDescription(int currentIndex);
 
-public slots:
     void setEditState(EDITSTATE state);
     void setGeometryModified(bool modified);
+
+    void onFeatureChanged();
 
     void onActionStartEdit();
     void onActionRollBack();

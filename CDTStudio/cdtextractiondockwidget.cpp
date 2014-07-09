@@ -2,6 +2,7 @@
 #include "ui_cdtextractiondockwidget.h"
 #include "cdtextractioninterface.h"
 #include "cdtextractionlayer.h"
+#include <qgsvectordataprovider.h>
 #include "stable.h"
 
 extern QList<CDTExtractionInterface *> extractionPlugins;
@@ -88,8 +89,13 @@ void CDTExtractionDockWidget::setExtractionLayer(QString id)
     ui->comboBoxExtraction->setCurrentIndex(index);
     currentExtractionID = id;
     CDTExtractionLayer *vecLayer = CDTExtractionLayer::getLayer(id);
+
+    if (vectorLayer)
+        disconnect(vectorLayer,SIGNAL(featureAdded(QgsFeatureId)),this,SLOT(onFeatureChanged()));
+
     vectorLayer = (QgsVectorLayer*)(vecLayer->canvasLayer());
     mapCanvas   = vecLayer->canvas();
+    connect(vectorLayer,SIGNAL(featureAdded(QgsFeatureId)),SLOT(onFeatureChanged()));
 }
 
 void CDTExtractionDockWidget::updateDescription(int currentIndex)
@@ -116,6 +122,12 @@ void CDTExtractionDockWidget::setGeometryModified(bool modified)
     actionSave->setEnabled(modified);
 }
 
+void CDTExtractionDockWidget::onFeatureChanged()
+{
+    qDebug()<<"Changed";
+    setGeometryModified(true);
+}
+
 void CDTExtractionDockWidget::onActionStartEdit()
 {
     if (currentExtractionID.isNull() || ui->comboBoxMethod->count()==0)
@@ -137,6 +149,7 @@ void CDTExtractionDockWidget::onActionRollBack()
             ///RollBack changes......
             ///
             rollback();
+            vectorLayer->startEditing();
         }
     }
 }
@@ -144,6 +157,7 @@ void CDTExtractionDockWidget::onActionRollBack()
 void CDTExtractionDockWidget::onActionSave()
 {
     save();
+    vectorLayer->startEditing();
 }
 
 void CDTExtractionDockWidget::onActionStop()
@@ -162,6 +176,7 @@ void CDTExtractionDockWidget::onActionStop()
         }
         else if (ret == QMessageBox::Ignore)
         {
+            rollback();
             stop();
         }
         else
@@ -178,6 +193,7 @@ void CDTExtractionDockWidget::start()
     lastMapTool = mapCanvas->mapTool();
     currentMapTool = extractionPlugins[ui->comboBoxMethod->currentIndex()]->mapTool(mapCanvas,currentImagePath,vectorLayer);
     mapCanvas->setMapTool(currentMapTool);
+    vectorLayer->startEditing();
 
     setEditState(EDITING);
     setGeometryModified(false);
@@ -192,9 +208,11 @@ void CDTExtractionDockWidget::rollback()
     if (currentEditState == LOCKED)
         return;
     if (isGeometryModified == false)
-        return;
+        return;    
     ///rollback
     ///
+    vectorLayer->rollBack();
+
     setGeometryModified(false);
     qDebug()<<"rollback";
 }
@@ -205,6 +223,7 @@ void CDTExtractionDockWidget::save()
         return;
     ///save
     ///
+    vectorLayer->commitChanges();
     setGeometryModified(false);
     qDebug()<<"save";
 }
@@ -215,7 +234,7 @@ void CDTExtractionDockWidget::stop()
         return;
     /// stop
     ///
-
+    vectorLayer->commitChanges();
     mapCanvas->setMapTool(lastMapTool);
     if (currentMapTool)
         delete currentMapTool;

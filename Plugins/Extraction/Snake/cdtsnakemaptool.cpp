@@ -3,6 +3,8 @@
 #include <qgsgeometry.h>
 #include <qgsrubberband.h>
 #include <qgsmapcanvas.h>
+#include <qgsvectorlayer.h>
+#include <qgsvectordataprovider.h>
 #include <qgis.h>
 #include <QMouseEvent>
 #include <gdal_priv.h>
@@ -166,13 +168,14 @@ void CDTSnakeMapTool::canvasPressEvent( QMouseEvent * e )
             delete polygonGeom;
 
             QgsPolygon snakePolygon = snake(polygon,imagePath);
-
-            QgsRubberBand *newRubber = new QgsRubberBand( mCanvas, QGis::Polygon );
-            newRubber->setColor(Qt::blue);
             QgsGeometry* newPolygonGeom = QgsGeometry::fromPolygon(snakePolygon);
-            newRubber->addGeometry(newPolygonGeom,NULL);
-            //    QgsMapToolSelectUtils::setSelectFeatures( mCanvas, polygonGeom, e );
-
+            QgsFeature f(vectorLayer->pendingFields(),0);
+            f.setGeometry(newPolygonGeom);
+//            vectorLayer->dataProvider()->addFeatures(QgsFeatureList()<<f);
+            vectorLayer->beginEditCommand( "snake" );
+            qDebug()<<vectorLayer->addFeature(f);
+            vectorLayer->endEditCommand();
+            canvas()->refresh();
         }
         mRubberBand->reset( QGis::Polygon );
         delete mRubberBand;
