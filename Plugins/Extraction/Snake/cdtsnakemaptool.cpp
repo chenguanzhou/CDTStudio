@@ -171,7 +171,6 @@ void CDTSnakeMapTool::canvasPressEvent( QMouseEvent * e )
             QgsGeometry* newPolygonGeom = QgsGeometry::fromPolygon(snakePolygon);
             QgsFeature f(vectorLayer->pendingFields(),0);
             f.setGeometry(newPolygonGeom);
-//            vectorLayer->dataProvider()->addFeatures(QgsFeatureList()<<f);
             vectorLayer->beginEditCommand( "snake" );
             qDebug()<<vectorLayer->addFeature(f);
             vectorLayer->endEditCommand();

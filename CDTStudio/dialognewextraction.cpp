@@ -54,10 +54,18 @@ void DialogNewExtraction::onAccepted()
     OGRDataSource* poDS = poDriver->CreateDataSource(shapefileTempPath.toUtf8().constData(),NULL);
     Q_ASSERT(poDS);
     OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
-    poDS->CreateLayer("extraction",reference,wkbPolygon,NULL);
-    reference->Release();
+    OGRLayer *layer = poDS->CreateLayer("extraction",reference,wkbPolygon,NULL);
+    Q_ASSERT(layer);
+    OGRFieldDefn oField( "id", OFTInteger );
+    oField.SetWidth(10);
+    if( layer->CreateField( &oField ) != OGRERR_NONE )
+    {
+        qWarning()<< "Creating Name field failed.\n" ;
+        return;
+    }
 
     OGRDataSource::DestroyDataSource(poDS);
+    reference->Release();
     GDALClose(poImageDS);
     OGRCleanupAll();
 

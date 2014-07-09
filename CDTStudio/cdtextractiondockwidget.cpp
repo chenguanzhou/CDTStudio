@@ -193,7 +193,7 @@ void CDTExtractionDockWidget::start()
     lastMapTool = mapCanvas->mapTool();
     currentMapTool = extractionPlugins[ui->comboBoxMethod->currentIndex()]->mapTool(mapCanvas,currentImagePath,vectorLayer);
     mapCanvas->setMapTool(currentMapTool);
-    vectorLayer->startEditing();
+    qDebug()<<vectorLayer->startEditing();
 
     setEditState(EDITING);
     setGeometryModified(false);
