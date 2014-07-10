@@ -10,11 +10,11 @@ extern QList<CDTExtractionInterface *> extractionPlugins;
 
 CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
     QDockWidget(parent),
-    modelExtractions(new QSqlQueryModel(this)),
-    actionStartEdit (new QAction(tr("Start Edit"),this)),
-    actionRollBack  (new QAction(tr("Roll Back"),this)),
-    actionSave      (new QAction(tr("Save"),this)),
-    actionStop      (new QAction(tr("Stop"),this)),
+    modelExtractions    (new QSqlQueryModel(this)),
+    actionStartEdit     (new QAction(tr("Start Edit"),this)),
+    actionRollBack      (new QAction(tr("Rollback"),this)),
+    actionSave          (new QAction(tr("Save"),this)),
+    actionStop          (new QAction(tr("Stop"),this)),
     currentEditState    (LOCKED),
     isGeometryModified  (false),
     vectorLayer (NULL),
@@ -142,6 +142,8 @@ void CDTExtractionDockWidget::onActionStartEdit()
     if (currentExtractionID.isNull() || ui->comboBoxMethod->count()==0)
         return;
     start();
+    ui->comboBoxExtraction->setEnabled(false);
+    ui->comboBoxMethod->setEnabled(false);
 }
 
 void CDTExtractionDockWidget::onActionRollBack()
@@ -192,6 +194,8 @@ void CDTExtractionDockWidget::onActionStop()
             return;
     }
     else stop();
+    ui->comboBoxExtraction->setEnabled(true);
+    ui->comboBoxMethod->setEnabled(true);
 }
 
 

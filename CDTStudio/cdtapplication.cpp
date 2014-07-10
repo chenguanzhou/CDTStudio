@@ -115,6 +115,8 @@ bool CDTApplication::initDatabase()
                      "name text NOT NULL,"
                      "shapefilePath text NOT NULL,"
                      "color blob,"
+                     "borderColor blob,"
+                     "opacity double,"
                      "imageID text NOT NULL,"
                      "Primary Key(id) )");
     if (ret == false)

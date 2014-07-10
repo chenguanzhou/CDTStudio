@@ -185,7 +185,7 @@ void CDTImageLayer::addExtraction()
     if(dlg->exec()==DialogNewExtraction::Accepted)
     {
         CDTExtractionLayer *extraction = new CDTExtractionLayer(QUuid::createUuid(),this);
-        extraction->initLayer(dlg->name(),dlg->fileID(),dlg->color());
+        extraction->initLayer(dlg->name(),dlg->fileID(),dlg->color(),dlg->borderColor(),dlg->opacity());
         extractionRoot->appendRow(extraction->standardItems());
         addExtraction(extraction);
     }

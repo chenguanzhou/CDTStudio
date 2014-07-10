@@ -9,7 +9,7 @@ QList<CDTExtractionLayer *> CDTExtractionLayer::layers;
 
 CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
     CDTBaseObject(uuid,parent),
-    actionChangeColor(new QWidgetAction(this)),
+    actionChangeParams(new QWidgetAction(this)),
     actionRemoveExtraction(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Extraction"),this)),
     actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename"),this)),
     actionExportShapefile(new QAction(QIcon(":/Icon/export.png"),tr("Export Shapefile"),this))
@@ -68,9 +68,48 @@ QColor CDTExtractionLayer::color() const
     return query.value(0).value<QColor>();
 }
 
+QColor CDTExtractionLayer::borderColor() const
+{
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select borderColor from extractionlayer where id ='" + this->id().toString() +"'");
+    query.next();
+    qDebug()<<query.value(0);
+    return query.value(0).value<QColor>();
+}
+
+double CDTExtractionLayer::opacity() const
+{
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select opacity from extractionlayer where id ='" + this->id().toString() +"'");
+    query.next();
+    qDebug()<<query.value(0);
+    return query.value(0).toDouble();
+}
+
 QString CDTExtractionLayer::imagePath() const
 {
     return ((CDTImageLayer*)parent())->path();
+}
+
+void CDTExtractionLayer::setRenderer(QgsFeatureRendererV2 *r)
+{
+    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
+    if (p!=NULL)
+    {
+        p->setRendererV2(r);
+    }
+}
+
+void CDTExtractionLayer::setOriginRenderer()
+{
+    QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+    symbolLayer->setColor(color());
+    symbolLayer->setBorderColor(borderColor());
+    QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
+    QgsSingleSymbolRendererV2* singleSymbolRenderer = new QgsSingleSymbolRendererV2(fillSymbol);
+    this->setRenderer(singleSymbolRenderer);
 }
 
 QList<CDTExtractionLayer *> CDTExtractionLayer::getLayers()
@@ -89,27 +128,39 @@ CDTExtractionLayer *CDTExtractionLayer::getLayer(QUuid id)
 
 void CDTExtractionLayer::onContextMenuRequest(QWidget *parent)
 {
-    QtColorPicker *borderColorPicker = new QtColorPicker();
+    QWidget* menuWidget = new QWidget(NULL);
+    QFormLayout* layout = new QFormLayout(menuWidget);
+    menuWidget->setLayout(layout);
+
+    QtColorPicker *colorPicker = new QtColorPicker(menuWidget);
+    colorPicker->setStandardColors();
+    colorPicker->setCurrentColor(color());
+    connect(colorPicker,SIGNAL(colorChanged(QColor)),SLOT(setColor(QColor)));
+
+    QtColorPicker *borderColorPicker = new QtColorPicker(menuWidget);
     borderColorPicker->setStandardColors();
-    borderColorPicker->setCurrentColor(color());
+    borderColorPicker->setCurrentColor(borderColor());
     connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
-    actionChangeColor->setDefaultWidget(borderColorPicker);
+
+    layout->addRow(tr("Color"),colorPicker);
+    layout->addRow(tr("Border Color"),borderColorPicker);
+    actionChangeParams->setDefaultWidget(menuWidget);
 
     QMenu *menu =new QMenu(parent);
-    menu->addAction(actionChangeColor);
+    menu->addAction(actionChangeParams);
     menu->addAction(actionRename);
     menu->addAction(actionExportShapefile);
     menu->addSeparator();
     menu->addAction(actionRemoveExtraction);
-//    menu->addSeparator();
-//    menu->addAction(actionStartEdit);
-//    menu->addAction(actionRollBack);
-//    menu->addAction(actionSave);
-//    menu->addAction(actionStop);
+    //    menu->addSeparator();
+    //    menu->addAction(actionStartEdit);
+    //    menu->addAction(actionRollBack);
+    //    menu->addAction(actionSave);
+    //    menu->addAction(actionStop);
     menu->exec(QCursor::pos());
 
-    actionChangeColor->releaseWidget(borderColorPicker);
-    delete borderColorPicker;
+    actionChangeParams->releaseWidget(menuWidget);
+    delete menuWidget;
 }
 
 void CDTExtractionLayer::setName(const QString &name)
@@ -124,11 +175,37 @@ void CDTExtractionLayer::setName(const QString &name)
     emit nameChanged();
 }
 
-void CDTExtractionLayer::setBorderColor(const QColor &clr)
+void CDTExtractionLayer::setColor(const QColor &clr)
 {
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("UPDATE extractionlayer set color = ? where id =?");
     query.bindValue(0,clr);
+    query.bindValue(1,this->id().toString());
+    query.exec();
+
+    setOriginRenderer();
+    this->mapCanvas->refresh();
+    emit extractionChanged();
+}
+
+void CDTExtractionLayer::setBorderColor(const QColor &clr)
+{
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("UPDATE extractionlayer set bordercolor = ? where id =?");
+    query.bindValue(0,clr);
+    query.bindValue(1,this->id().toString());
+    query.exec();
+
+    setOriginRenderer();
+    this->mapCanvas->refresh();
+    emit extractionChanged();
+}
+
+void CDTExtractionLayer::setOpacity(const double &val)
+{
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("UPDATE extractionlayer set Opacity = ? where id =?");
+    query.bindValue(0,val);
     query.bindValue(1,this->id().toString());
     query.exec();
 
@@ -137,7 +214,13 @@ void CDTExtractionLayer::setBorderColor(const QColor &clr)
     emit extractionChanged();
 }
 
-void CDTExtractionLayer::initLayer(const QString &name, const QString &shpPath, const QColor &color)
+void CDTExtractionLayer::setOpacity(const int &val)
+{
+    setOpacity(val/100.);
+}
+
+void CDTExtractionLayer::initLayer(const QString &name, const QString &shpPath,
+                                   const QColor &color, const QColor &borderColor, double opacity)
 {
     QString tempShpPath;
     this->fileSystem()->getFile(shpPath,tempShpPath);
@@ -162,11 +245,13 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpPath, 
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
-    ret = query.prepare("insert into extractionlayer VALUES(?,?,?,?,?)");
+    ret = query.prepare("insert into extractionlayer VALUES(?,?,?,?,?,?,?)");
     query.addBindValue(uuid.toString());
     query.addBindValue(name);
     query.addBindValue(shpPath);
     query.addBindValue(color);
+    query.addBindValue(borderColor);
+    query.addBindValue(opacity);
     query.addBindValue(((CDTImageLayer*)parent())->id().toString());
     ret = query.exec();
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
@@ -201,10 +286,12 @@ QDataStream &operator<<(QDataStream &out, const CDTExtractionLayer &extraction)
     query.exec("select * from extractionlayer where id ='" + extraction.id().toString() +"'");
     query.next();
 
-    out<<extraction.id()            //id
-      <<query.value(1).toString()   //name
-     <<query.value(2).toString()    //shapefile
-    <<query.value(3);               //color
+    out<<extraction.id()//id
+      <<query.value(1).toString()       //name
+     <<query.value(2).toString()        //shapefile
+    <<query.value(3).value<QColor>()    //color
+    <<query.value(4).value<QColor>()    //border color
+    <<query.value(5).toDouble();        //opacity
 
     return out;
 }
@@ -215,10 +302,11 @@ QDataStream &operator>>(QDataStream &in, CDTExtractionLayer &extraction)
     in>>extraction.uuid;
     QString name,shp;
     in>>name>>shp;
-    QVariant temp;
-    in>>temp;
-    QColor color = temp.value<QColor>();
+    QColor color,borderColor;
+    in>>color>>borderColor;
+    double opacity;
+    in>>opacity;
 
-    extraction.initLayer(name,shp,color);
+    extraction.initLayer(name,shp,color,borderColor,opacity);
     return in;
 }

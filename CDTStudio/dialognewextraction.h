@@ -20,9 +20,11 @@ public:
     );
     ~DialogNewExtraction();
 
-    QString name()const;
-    QColor color()const;
-    QString fileID() const;
+    QString name()          const;
+    QColor  color()         const;
+    QColor  borderColor()   const;
+    double  opacity()       const;
+    QString fileID()        const;
 
 private slots:
     void onAccepted();

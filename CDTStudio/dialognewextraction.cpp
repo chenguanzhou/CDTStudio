@@ -15,6 +15,7 @@ DialogNewExtraction::DialogNewExtraction(
     ui->setupUi(this);
     shapefileTempPath = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".shp";
     ui->colorPicker->setStandardColors();
+    ui->borderColorPicker->setStandardColors();
 
     connect(this,SIGNAL(accepted()),SLOT(onAccepted()));
 }
@@ -33,6 +34,16 @@ QString DialogNewExtraction::name() const
 QColor DialogNewExtraction::color() const
 {
     return ui->colorPicker->currentColor();
+}
+
+QColor DialogNewExtraction::borderColor() const
+{
+    return ui->borderColorPicker->currentColor();
+}
+
+double DialogNewExtraction::opacity() const
+{
+    return ui->doubleSpinBoxOpacity->value();
 }
 
 QString DialogNewExtraction::fileID() const

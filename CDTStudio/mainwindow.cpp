@@ -184,6 +184,8 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
             dockWidgetExtraction->setEnabled(true);
             dockWidgetExtraction->show();
             dockWidgetExtraction->setExtractionLayer(extractionLayer->id());
+
+            extractionLayer->setOriginRenderer();
         }
     }
     else if (type == CDTProjectTreeItem::SEGMENTION)
