@@ -83,12 +83,14 @@ void DialogNewSegmentation::onFinished()
     markfileID  = QUuid::createUuid().toString();
     shapefileID = QUuid::createUuid().toString();
 
-    QString pathMarkZip = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".zip";
-    CDTFileSystem::getRasterVSIZipFile(markfileTempPath,pathMarkZip,true);
+//    QString pathMarkZip = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".zip";
+//    CDTFileSystem::getRasterVSIZipFile(markfileTempPath,pathMarkZip,true);
 
-    fileSystem->registerFile(shapefileID,shapefileTempPath,QString(),QString()
-                             ,CDTFileSystem::getShapefileAffaliated(shapefileTempPath));
-    fileSystem->registerFile(markfileID,pathMarkZip,"/vsizip/","/"+QFileInfo(markfileTempPath).fileName());
+    fileSystem->registerFile(shapefileID,shapefileTempPath,QString(),QString(),
+                             CDTFileSystem::getShapefileAffaliated(shapefileTempPath));
+    fileSystem->registerFile(markfileID,markfileTempPath,QString(),QString(),
+                             CDTFileSystem::getRasterAffaliated(markfileTempPath));
+    qDebug()<<CDTFileSystem::getRasterAffaliated(markfileTempPath);
 
     ui->buttonBox->setStandardButtons(ui->buttonBox->standardButtons()|QDialogButtonBox::Ok);
     ui->labelProgress->hide();

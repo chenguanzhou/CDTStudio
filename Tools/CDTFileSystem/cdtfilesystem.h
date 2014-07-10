@@ -30,9 +30,10 @@ public:
     void removeFile(QString id,bool deleteFiles = true);
     bool exportFiles(QString id);
 
-    static bool getRasterVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
-    static bool getShapefileVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
+//    static bool getRasterVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
+//    static bool getShapefileVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
     static QStringList getShapefileAffaliated(const QString &srcPath);
+    static QStringList getRasterAffaliated(const QString &srcPath);
 private:
     CDTFileSystemPrivate* pData;
 };

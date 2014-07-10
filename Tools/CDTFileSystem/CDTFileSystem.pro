@@ -39,11 +39,7 @@ unix {
     LIBS += -lgdal_i
 }
 #log4qt
-INCLUDEPATH += ../log4qt
+INCLUDEPATH += ../
 DEPENDPATH += ../log4qt
 LIBS += -L../../lib -llog4qt
 
-#quazip
-INCLUDEPATH += ../quazip
-DEPENDPATH += ../quazip
-LIBS += -L../../lib -lquazip

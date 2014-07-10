@@ -11,7 +11,6 @@
 //TODO  ProgressBar Manager
 //TODO  ORM
 //TODO  Classification Assessment
-//TODO  Remove quazip
 //TODO  Opacity for layers
 
 //BUG   Same name

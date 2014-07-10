@@ -86,7 +86,7 @@ INCLUDEPATH += \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
     ../Tools/QgsWidgets\
-    ../Tools/log4qt
+    ../Tools
 
 
 DEPENDPATH += \

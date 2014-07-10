@@ -7,5 +7,4 @@ SUBDIRS += \
     CDTHistogramPlot\
     QtColorPicker\
     QgsWidgets\
-    log4qt\
-    quazip
+    log4qt

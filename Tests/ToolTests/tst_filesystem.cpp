@@ -19,8 +19,6 @@ private slots:
     void testRegister_data();
     void testRegister();
     void testIO();
-    void testVSIRaster();
-    void testVSIShapefile();
     void testAffiliatedFiles();
 
     void cleanupTestCase();
@@ -125,44 +123,6 @@ void FileSystem::testIO()
         QCOMPARE(stream.readAll(),QString("I love GIS"));
         textFile.close();
     }
-}
-
-void FileSystem::testVSIRaster()
-{
-    GDALAllRegister();
-    GDALDriver *poDriver = (GDALDriver *)GDALGetDriverByName("GTiff");
-    QVERIFY(poDriver);
-    GDALDataset *poSrcDS = poDriver->Create("FileSystem.tif",200,200,3,GDT_Byte,NULL);
-    QVERIFY(poSrcDS);
-    GDALClose(poSrcDS);
-    QVERIFY(CDTFileSystem::getRasterVSIZipFile("FileSystem.tif","FileSystem.zip",true));
-}
-
-void FileSystem::testVSIShapefile()
-{
-    OGRRegisterAll();
-    OGRSFDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->
-            GetDriverByName("ESRI Shapefile" );
-    QVERIFY(poDriver);
-    poDriver->DeleteDataSource("FileSystem.shp");
-    OGRDataSource* poDS = poDriver->CreateDataSource("FileSystem.shp",NULL);
-    QVERIFY(poDS);
-    OGRLayer* layer = poDS->CreateLayer("point",NULL,wkbPolygon);
-    QVERIFY(layer);
-    OGRFeature *feature = OGRFeature::CreateFeature(layer->GetLayerDefn());
-    OGRPolygon polygon;
-    OGRLinearRing ring;
-    ring.addPoint(0,0);
-    ring.addPoint(0,1);
-    ring.addPoint(1,1);
-    ring.addPoint(1,0);
-    polygon.addRing(&ring);
-    feature->SetGeometry(&polygon);
-    layer->CreateFeature(feature);
-    OGRFeature::DestroyFeature( feature );
-    OGRDataSource::DestroyDataSource( poDS );
-
-    QVERIFY(CDTFileSystem::getShapefileVSIZipFile("FileSystem.shp","FileSystem.zip",true));
 }
 
 void FileSystem::testAffiliatedFiles()
