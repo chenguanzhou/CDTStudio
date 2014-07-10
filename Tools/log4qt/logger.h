@@ -40,6 +40,8 @@
 #include <QtCore/QAtomicPointer>
 #include <QtCore/QList>
 #include <QtCore/QReadWriteLock>
+
+#include "log4qt_global.h"
 #include "log4qt/helpers/logerror.h"
 #include "log4qt/helpers/classlogger.h"
 #include "log4qt/helpers/logobjectptr.h"
@@ -220,7 +222,7 @@ namespace Log4Qt
 	 *
 	 * \note All the functions declared in this class are thread-safe.
 	 */
-	class Logger : public QObject
+    class LOG4QT_EXPORT Logger : public QObject
 	{
 	    Q_OBJECT
 

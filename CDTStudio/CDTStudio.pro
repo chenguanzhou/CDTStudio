@@ -85,7 +85,8 @@ INCLUDEPATH += \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
-    ../Tools/QgsWidgets
+    ../Tools/QgsWidgets\
+    ../Tools/log4qt
 
 
 DEPENDPATH += \
@@ -94,7 +95,8 @@ DEPENDPATH += \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
-    ../Tools/QgsWidgets
+    ../Tools/QgsWidgets\
+    ../Tools/log4qt
 
 #Libraries
 unix{
@@ -115,11 +117,8 @@ LIBS += -lgdal_i
 }
 
 LIBS +=     -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot\
-            -lQtColorPicker -lCDTFileSystem -lQgsWidgets\
+            -lQtColorPicker -lCDTFileSystem -lQgsWidgets -llog4qt\
             -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
-
-#log4qt
-include(../Tools/log4qt/log4qt.pri)
 
 #opencv
 include(../Tools/Config/link2opencv.pri)

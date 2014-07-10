@@ -31,4 +31,7 @@ SOURCES += tst_filesystem.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 #log4qt
-include(../../Tools/log4qt/log4qt.pri)
+INCLUDEPATH += ../../Tools/log4qt
+DEPENDPATH += ../../Tools/log4qt
+LIBS += -L../../lib -llog4qt
+

@@ -32,6 +32,7 @@
 
 
 #include <QtCore/Qt>
+#include "log4qt_global.h"
 #include "log4qt/log4qt.h"
 
 
@@ -50,7 +51,7 @@ namespace Log4Qt
 	 * 
 	 * \note All the functions declared in this class are thread-safe.
 	 */
-	class BasicConfigurator
+    class LOG4QT_EXPORT BasicConfigurator
 	{
 	private:
 	    BasicConfigurator(); // Not implemented

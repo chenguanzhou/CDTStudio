@@ -10,10 +10,8 @@
 //TODO  Unit Test(Auto)
 //TODO  ProgressBar Manager
 //TODO  ORM
-//TODO  Semi-auto segmentation
 //TODO  Classification Assessment
 //TODO  Remove quazip
-//TODO  Make log4qt danamic library
 //TODO  Opacity for layers
 
 //BUG   Same name
