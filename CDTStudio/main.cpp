@@ -12,8 +12,14 @@
 //TODO  ORM
 //TODO  Semi-auto segmentation
 //TODO  Classification Assessment
+//TODO  Remove quazip
+//TODO  Make log4qt danamic library
 
 //BUG   Same name
+//BUG   Color for extraction
+//BUG   Opacity for extraction layer
+//BUG   Disable some buttons when editing extraction
+//BUG   Delete layer dump
 
 int main(int argc, char *argv[])
 {

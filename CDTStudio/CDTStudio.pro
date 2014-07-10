@@ -38,8 +38,7 @@ SOURCES += main.cpp\
     cdtapplication.cpp \
     cdtextractionlayer.cpp \
     dialognewextraction.cpp \
-    cdtextractiondockwidget.cpp \
-    qgsundowidget.cpp
+    cdtextractiondockwidget.cpp
 
 
 HEADERS  += \    
@@ -67,8 +66,7 @@ HEADERS  += \
     cdtextractionlayer.h \
     dialognewextraction.h \
     cdtextractiondockwidget.h \
-    ../Interfaces/cdtextractioninterface.h \
-    qgsundowidget.h
+    ../Interfaces/cdtextractioninterface.h
 
 FORMS    += \
     mainwindow.ui \
@@ -86,7 +84,8 @@ INCLUDEPATH += \
     ../Tools/QPropertyEditor \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
-    ../Tools/CDTFileSystem
+    ../Tools/CDTFileSystem\
+    ../Tools/QgsWidgets
 
 
 DEPENDPATH += \
@@ -94,7 +93,8 @@ DEPENDPATH += \
     ../Tools/QPropertyEditor \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
-    ../Tools/CDTFileSystem
+    ../Tools/CDTFileSystem\
+    ../Tools/QgsWidgets
 
 #Libraries
 unix{
@@ -114,8 +114,9 @@ include(../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
-LIBS += -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker -lCDTFileSystem\
- -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
+LIBS +=     -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot\
+            -lQtColorPicker -lCDTFileSystem -lQgsWidgets\
+            -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 #log4qt
 include(../Tools/log4qt/log4qt.pri)

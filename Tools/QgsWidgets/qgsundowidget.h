@@ -26,6 +26,7 @@
 #include <QtGui/QWidget>
 #include <QUndoView>
 #include <QUndoStack>
+#include "qgswidgets_global.h"
 
 class QgsMapCanvas;
 class QgsMapLayer;
@@ -33,7 +34,7 @@ class QgsMapLayer;
 /**
  * Class that handles undo display fo undo commands
  */
-class QgsUndoWidget : public QDockWidget
+class QGSWIDGETS_EXPORT QgsUndoWidget : public QDockWidget
 {
     Q_OBJECT
   public:

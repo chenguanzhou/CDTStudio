@@ -96,16 +96,16 @@ void QgsUndoWidget::indexChanged( int curIndx )
   // when individually redoing, differentiate between last redo and a new command added to stack
   bool lastRedo = ( mPreviousIndex == ( mPreviousCount - 1 ) && mPreviousCount == curCount && !canRedo );
 
-  if ( offset != 0 )
-  {
-    QgsDebugMsg( QString( "curIndx : %1" ).arg( curIndx ) );
-    QgsDebugMsg( QString( "offset  : %1" ).arg( offset ) );
-    QgsDebugMsg( QString( "curCount: %1" ).arg( curCount ) );
-    if ( lastRedo )
-    {
-      QgsDebugMsg( QString( "lastRedo: true" ) );
-    }
-  }
+//  if ( offset != 0 )
+//  {
+//    QgsDebugMsg( QString( "curIndx : %1" ).arg( curIndx ) );
+//    QgsDebugMsg( QString( "offset  : %1" ).arg( offset ) );
+//    QgsDebugMsg( QString( "curCount: %1" ).arg( curCount ) );
+//    if ( lastRedo )
+//    {
+//      QgsDebugMsg( QString( "lastRedo: true" ) );
+//    }
+//  }
 
   // avoid canvas redraws when only new command was added to stack (i.e. no user undo/redo action)
   // or when user has clicked back in QUndoView history then added a new command to the stack
@@ -113,7 +113,7 @@ void QgsUndoWidget::indexChanged( int curIndx )
   {
     if ( mMapCanvas )
     {
-      QgsDebugMsg( QString( "trigger redraw" ) );
+//      QgsDebugMsg( QString( "trigger redraw" ) );
       mMapCanvas->refresh();
     }
   }
