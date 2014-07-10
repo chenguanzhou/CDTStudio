@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     cdtapplication.cpp \
     cdtextractionlayer.cpp \
     dialognewextraction.cpp \
-    cdtextractiondockwidget.cpp
+    cdtextractiondockwidget.cpp \
+    qgsundowidget.cpp
 
 
 HEADERS  += \    
@@ -66,7 +67,8 @@ HEADERS  += \
     cdtextractionlayer.h \
     dialognewextraction.h \
     cdtextractiondockwidget.h \
-    ../Interfaces/cdtextractioninterface.h
+    ../Interfaces/cdtextractioninterface.h \
+    qgsundowidget.h
 
 FORMS    += \
     mainwindow.ui \

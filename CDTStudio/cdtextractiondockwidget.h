@@ -10,6 +10,7 @@ class QSqlQueryModel;
 class QgsVectorLayer;
 class QgsMapCanvas;
 class QgsMapTool;
+class QgsUndoWidget;
 
 class CDTExtractionDockWidget : public QDockWidget
 {
@@ -58,6 +59,7 @@ private:
     QgsMapCanvas    *mapCanvas;
     QgsMapTool      *lastMapTool;
     QgsMapTool      *currentMapTool;
+    QgsUndoWidget   *undoWidget;
 
     QAction         *actionStartEdit;
     QAction         *actionRollBack;

@@ -4,6 +4,7 @@
 #include "cdtextractionlayer.h"
 #include <qgsvectordataprovider.h>
 #include "stable.h"
+#include <qgsundowidget.h>
 
 extern QList<CDTExtractionInterface *> extractionPlugins;
 
@@ -19,6 +20,7 @@ CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
     vectorLayer (NULL),
     mapCanvas   (NULL),
     lastMapTool (NULL),
+    undoWidget  (NULL),
     ui(new Ui::CDTExtractionDockWidget)
 {
     ui->setupUi(this);
@@ -96,6 +98,13 @@ void CDTExtractionDockWidget::setExtractionLayer(QString id)
     vectorLayer = (QgsVectorLayer*)(vecLayer->canvasLayer());
     mapCanvas   = vecLayer->canvas();
     connect(vectorLayer,SIGNAL(featureAdded(QgsFeatureId)),SLOT(onFeatureChanged()));
+
+    if (undoWidget)
+        delete undoWidget;
+    undoWidget = new QgsUndoWidget( this, mapCanvas );
+    undoWidget->layerChanged(vectorLayer);
+    ui->verticalLayout->addWidget(undoWidget);
+    undoWidget->show();
 }
 
 void CDTExtractionDockWidget::updateDescription(int currentIndex)
@@ -194,6 +203,8 @@ void CDTExtractionDockWidget::start()
     currentMapTool = extractionPlugins[ui->comboBoxMethod->currentIndex()]->mapTool(mapCanvas,currentImagePath,vectorLayer);
     mapCanvas->setMapTool(currentMapTool);
     qDebug()<<vectorLayer->startEditing();
+    mapCanvas->refresh();
+
 
     setEditState(EDITING);
     setGeometryModified(false);
