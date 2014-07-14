@@ -102,6 +102,7 @@ void CDTExtractionDockWidget::setExtractionLayer(QString id)
     if (undoWidget)
         delete undoWidget;
     undoWidget = new QgsUndoWidget( this, mapCanvas );
+    undoWidget->setFeatures(NoDockWidgetFeatures);
     undoWidget->layerChanged(vectorLayer);
     ui->verticalLayout->addWidget(undoWidget);
     undoWidget->show();
