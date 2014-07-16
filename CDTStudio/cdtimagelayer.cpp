@@ -13,12 +13,12 @@ QList<CDTImageLayer *> CDTImageLayer::layers;
 
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     : CDTBaseObject(uuid,parent),
-      actionAddExtractionLayer(new QAction(QIcon(":/Icon/add.png"),tr("Add Extraction"),this)),
-      actionAddSegmentationLayer(new QAction(QIcon(":/Icon/add.png"),tr("Add Segmentation"),this)),
-      actionRemoveImage(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Image"),this)),
-      actionRemoveAllExtractions(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Extractions"),this)),
-      actionRemoveAllSegmentations(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Segmentations"),this)),
-      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Image"),this))
+      actionAddExtractionLayer(new QAction(QIcon(":/Icon/Add.png"),tr("Add Extraction"),this)),
+      actionAddSegmentationLayer(new QAction(QIcon(":/Icon/Add.png"),tr("Add Segmentation"),this)),
+      actionRemoveImage(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Image"),this)),
+      actionRemoveAllExtractions(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Extractions"),this)),
+      actionRemoveAllSegmentations(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Segmentations"),this)),
+      actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Image"),this))
 {
     keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,QString(),this);
     valueItem

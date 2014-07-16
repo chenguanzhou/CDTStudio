@@ -145,7 +145,7 @@
   <action name="action_New">
    <property name="icon">
     <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/New_file.png</normaloff>:/Icon/New_file.png</iconset>
+     <normaloff>:/Icon/New.png</normaloff>:/Icon/New.png</iconset>
    </property>
    <property name="text">
     <string>&amp;New</string>
@@ -157,7 +157,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/open.png</normaloff>:/Icon/open.png</iconset>
+     <normaloff>:/Icon/Open.png</normaloff>:/Icon/Open.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -166,7 +166,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/save.png</normaloff>:/Icon/save.png</iconset>
+     <normaloff>:/Icon/Save.png</normaloff>:/Icon/Save.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
@@ -175,7 +175,7 @@
   <action name="actionSave_All">
    <property name="icon">
     <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/save_all.png</normaloff>:/Icon/save_all.png</iconset>
+     <normaloff>:/Icon/SaveAll.png</normaloff>:/Icon/SaveAll.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Save All</string>
@@ -184,7 +184,7 @@
   <action name="action_Save_As">
    <property name="icon">
     <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/save_as.png</normaloff>:/Icon/save_as.png</iconset>
+     <normaloff>:/Icon/SaveAs.png</normaloff>:/Icon/SaveAs.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Save As</string>

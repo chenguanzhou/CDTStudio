@@ -1,26 +1,25 @@
 <RCC>
     <qresource prefix="/">
-        <file>Icon/New_file.png</file>
-        <file>Icon/open.png</file>
-        <file>Icon/save.png</file>
-        <file>Icon/save_all.png</file>
-        <file>Icon/save_as.png</file>
-        <file>Icon/remove.png</file>
-        <file>Icon/add.png</file>
-        <file>Icon/recentfile.png</file>
-        <file>Icon/rename.png</file>
         <file>Icon/mActionPan.svg</file>
         <file>Icon/mActionZoomFullExtent.svg</file>
         <file>Icon/mActionZoomIn.svg</file>
         <file>Icon/mActionZoomOut.svg</file>
-        <file>Icon/minus.png</file>
-        <file>Icon/plus.png</file>
-        <file>Icon/commit.png</file>
-        <file>Icon/edit.png</file>
-        <file>Icon/revert.png</file>
-        <file>Icon/refresh.png</file>
-        <file>Icon/sample.png</file>
         <file>Trans/zh_CN.qm</file>
-        <file>Icon/export.png</file>
+        <file>Icon/Edit.png</file>
+        <file>Icon/Export.png</file>
+        <file>Icon/Layers.png</file>
+        <file>Icon/Minus.png</file>
+        <file>Icon/New.png</file>
+        <file>Icon/Ok.png</file>
+        <file>Icon/Open.png</file>
+        <file>Icon/Add.png</file>
+        <file>Icon/RecentFiles.png</file>
+        <file>Icon/Remove.png</file>
+        <file>Icon/Save.png</file>
+        <file>Icon/SaveAll.png</file>
+        <file>Icon/SaveAs.png</file>
+        <file>Icon/Undo.png</file>
+        <file>Icon/Refresh.png</file>
+        <file>Icon/Rename.png</file>
     </qresource>
 </RCC>

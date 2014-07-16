@@ -10,9 +10,9 @@ QList<CDTExtractionLayer *> CDTExtractionLayer::layers;
 CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
     CDTBaseObject(uuid,parent),
     actionChangeParams(new QWidgetAction(this)),
-    actionRemoveExtraction(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Extraction"),this)),
-    actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename"),this)),
-    actionExportShapefile(new QAction(QIcon(":/Icon/export.png"),tr("Export Shapefile"),this))
+    actionRemoveExtraction(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Extraction"),this)),
+    actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this)),
+    actionExportShapefile(new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this))
 {
     layers.push_back(this);
 

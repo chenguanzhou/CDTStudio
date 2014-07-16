@@ -7,9 +7,9 @@
 
 CDTProject::CDTProject(QUuid uuid, QObject *parent):
     CDTBaseObject(uuid,parent),
-    actionAddImage(new QAction(QIcon(":/Icon/add.png"),tr("Add Image"),this)),
-    removeAllImages(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All images"),this)),
-    actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Project"),this)),
+    actionAddImage(new QAction(QIcon(":/Icon/Add.png"),tr("Add Image"),this)),
+    removeAllImages(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All images"),this)),
+    actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Project"),this)),
     fileSystem(new CDTFileSystem)
 {
     keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);

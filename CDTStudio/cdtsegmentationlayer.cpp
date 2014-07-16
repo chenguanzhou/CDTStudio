@@ -28,11 +28,11 @@ QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
 
 CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     : CDTBaseObject(uuid,parent),
-      actionAddClassifications(new QAction(QIcon(":/Icon/add.png"),tr("Add Classification"),this)),
-      actionRemoveSegmentation(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Segmentation"),this)),
-      actionExportShapefile(new QAction(QIcon(":/Icon/export.png"),tr("Export Shapefile"),this)),
-      actionRemoveAllClassifications(new QAction(QIcon(":/Icon/remove.png"),tr("Remove All Classifications"),this)),
-      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Segmentation"),this)),
+      actionAddClassifications(new QAction(QIcon(":/Icon/Add.png"),tr("Add Classification"),this)),
+      actionRemoveSegmentation(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Segmentation"),this)),
+      actionExportShapefile(new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this)),
+      actionRemoveAllClassifications(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Classifications"),this)),
+      actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Segmentation"),this)),
       actionChangeBorderColor(new QWidgetAction(this))
 {
     layers.push_back(this);

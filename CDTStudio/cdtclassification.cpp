@@ -6,8 +6,8 @@
 
 CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
     :CDTBaseObject(uuid,parent),
-      actionRemoveClassification(new QAction(QIcon(":/Icon/remove.png"),tr("Remove Classification"),this)),
-      actionRename(new QAction(QIcon(":/Icon/rename.png"),tr("Rename Classification"),this))
+      actionRemoveClassification(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this)),
+      actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this))
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
