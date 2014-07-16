@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mainWindow = this;
 
     recentFileToolButton->setText(tr("&Recent"));
-    recentFileToolButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    recentFileToolButton->setToolButtonStyle(ui->mainToolBar->toolButtonStyle());
     recentFileToolButton->setIcon(QIcon(":/Icon/RecentFiles.png"));
     recentFileToolButton->setPopupMode(QToolButton::InstantPopup);
     ui->mainToolBar->addWidget(recentFileToolButton);

@@ -231,10 +231,10 @@ QToolBar *CDTProjectWidget::initToolBar()
     QToolBar* toolBar = new QToolBar(tr("Navigate"),this);
     toolBar->setIconSize(QSize(16,16));
 
-    actionZoomOut  = new QAction(QIcon(":/Icon/mActionZoomOut.svg"),tr("Zoom Out"),this);
-    actionZoomIn   = new QAction(QIcon(":/Icon/mActionZoomIn.svg"),tr("Zoom In"),this);
-    actionPan      = new QAction(QIcon(":/Icon/mActionPan.svg"),tr("Pan"),this);
-    actionFullExtent = new QAction(QIcon(":/Icon/mActionZoomFullExtent.svg"),tr("Full Extent"),this);
+    actionZoomOut  = new QAction(QIcon(":/Icon/ZoomOut.png"),tr("Zoom Out"),this);
+    actionZoomIn   = new QAction(QIcon(":/Icon/ZoomIn.png"),tr("Zoom In"),this);
+    actionPan      = new QAction(QIcon(":/Icon/Pan.png"),tr("Pan"),this);
+    actionFullExtent = new QAction(QIcon(":/Icon/FullExtent.png"),tr("Full Extent"),this);
 //    QAction* hehe = new QAction(tr("Hehe"),this);
 
     actionZoomOut->setCheckable(true);

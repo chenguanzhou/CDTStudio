@@ -56,6 +56,10 @@
      <property name="title">
       <string>&amp;Recent</string>
      </property>
+     <property name="icon">
+      <iconset resource="../resource.qrc">
+       <normaloff>:/Icon/RecentFiles.png</normaloff>:/Icon/RecentFiles.png</iconset>
+     </property>
     </widget>
     <addaction name="action_New"/>
     <addaction name="actionOpen"/>
@@ -73,12 +77,12 @@
    </property>
    <property name="iconSize">
     <size>
-     <width>32</width>
-     <height>32</height>
+     <width>16</width>
+     <height>16</height>
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>

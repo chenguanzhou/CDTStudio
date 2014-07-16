@@ -1,9 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>Icon/mActionPan.svg</file>
-        <file>Icon/mActionZoomFullExtent.svg</file>
-        <file>Icon/mActionZoomIn.svg</file>
-        <file>Icon/mActionZoomOut.svg</file>
         <file>Trans/zh_CN.qm</file>
         <file>Icon/Edit.png</file>
         <file>Icon/Export.png</file>
@@ -21,5 +17,9 @@
         <file>Icon/Undo.png</file>
         <file>Icon/Refresh.png</file>
         <file>Icon/Rename.png</file>
+        <file>Icon/FullExtent.png</file>
+        <file>Icon/Pan.png</file>
+        <file>Icon/ZoomIn.png</file>
+        <file>Icon/ZoomOut.png</file>
     </qresource>
 </RCC>
