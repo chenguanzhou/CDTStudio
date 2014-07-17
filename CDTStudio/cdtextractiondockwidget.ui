@@ -66,12 +66,18 @@
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonIconOnly</enum>
         </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QToolButton" name="toolButtonRollback">
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonIconOnly</enum>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -80,12 +86,18 @@
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonIconOnly</enum>
         </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QToolButton" name="toolButtonStop">
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonIconOnly</enum>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

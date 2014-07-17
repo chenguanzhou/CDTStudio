@@ -81,7 +81,7 @@ QDockWidget::close-button:hover, QDockWidget::float-button:hover {
 }
 QTabBar::tab {
 	color: #000000;
-	background: #FFFFFF;
+	background: #EEEEF2;
 }
 
 QTabBar::tab:selected{

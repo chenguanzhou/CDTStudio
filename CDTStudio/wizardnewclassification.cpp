@@ -380,6 +380,21 @@ void WizardNewClassification::startClassification()
     finished = true;
 }
 
+int WizardNewClassification::nextId() const
+{
+    switch (currentId()) {
+    case 0:
+        return 1;
+    case 1:
+        if (ui->checkBoxAssessment->isChecked())
+            return 2;
+        else
+            return -1;
+    case 2:
+        return -1;
+    }
+}
+
 void WizardNewClassification::onSegmentationChanged(int index)
 {
     QSqlQueryModel *modelSegmentation = (QSqlQueryModel *)(ui->comboBoxInput->model());

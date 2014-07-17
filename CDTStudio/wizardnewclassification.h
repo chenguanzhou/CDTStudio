@@ -18,23 +18,24 @@ public:
     explicit WizardNewClassification(QUuid segmentationID,QWidget *parent = 0);
     ~WizardNewClassification();
 
-    bool isValid()const;
+    bool    isValid()const;
 
 private:
-    void initClassifiers();
-    void updateFeatures(QString segID);
+    void    initClassifiers();
+    void    updateFeatures(QString segID);
     static QStringList attributeNames();
-    bool validateCurrentPage();
-    void startClassification();
+    bool    validateCurrentPage();
+    void    startClassification();
+    int     nextId() const;
 
 
 private slots:
-    void onSegmentationChanged(int index);
-    void onClassifierChanged(int index);
-    void onCurrentPageChanged(int pageID);
-    void onButtonClicked(int buttonID);
-    void updateSelectedFeature();
-    void updateHistogram();
+    void    onSegmentationChanged(int index);
+    void    onClassifierChanged(int index);
+    void    onCurrentPageChanged(int pageID);
+    void    onButtonClicked(int buttonID);
+    void    updateSelectedFeature();
+    void    updateHistogram();
 
 public:
     //Export
