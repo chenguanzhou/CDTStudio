@@ -13,6 +13,92 @@
   <property name="windowTitle">
    <string>CDTStudio</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWondow{
+	background-color: #EEEEF2;	
+}
+QMenuBar{
+	border-color: #EEEEF2;	
+	padding: 2px;
+	spacing: 2px;
+}
+QMenuBar::item {	
+	background: #EEEEF2;	
+	spacing: 3px; /* spacing between menu bar items */
+    padding: 1px 4px;     
+}
+QMenuBar::item:selected { /* when selected using mouse or keyboard */
+	background-color: rgb(201, 222, 245);
+	border-top:1px solid #CCCEDB;
+	border-left:1px solid #CCCEDB;
+	border-right:1px solid #CCCEDB;
+ }
+QMenuBar::item:pressed {
+     background: #F6F6F6;
+ }
+QMenu{
+	background: #F6F6F6;
+	padding: 2px;
+	border-bottom:1px solid #CCCEDB;
+	border-left:1px solid #CCCEDB;
+	border-right:1px solid #CCCEDB;
+}
+QMenu::item:selected { /* when selected using mouse or keyboard */    
+	color: rgb(0, 0, 0);
+	background-color: rgb(201, 222, 245);
+ }
+QMenu::item:pressed {
+     background: #F6F6F6;
+ }
+QToolBar{
+	border-color: #EEEEF2;
+	spacing: 2px;
+	padding: 3px;
+}
+
+QToolButton:hover {
+	border:none;
+	background: rgb(201, 222, 245);
+}
+
+QToolButton:pressed {
+    background: #FFFFFF;
+}
+
+QDockWidget::title{
+	border-top: 3px solid #9B9FB9;
+	background-color:#EEEEF2;
+	padding: 5px;
+}
+QDockWidget {		
+    titlebar-close-icon: url(:/Icon/Remove.png);
+    titlebar-normal-icon: url(:/Icon/Maximize.png);
+	background:#EEEEF2;
+	border: 1px solid #ff0000;
+}
+QDockWidget::close-button:hover, QDockWidget::float-button:hover {
+     background: #F7F7F9;
+}
+QTabBar::tab {
+	color: #000000;
+	background: #FFFFFF;
+}
+
+QTabBar::tab:selected{
+	color: #FFFFFF;
+	background: #007ACC;
+}
+
+QTabBar::tab:hover{	
+	color: #FFFFFF;
+     background: #1C97EA;
+ }
+
+QTabWidget::pane {
+	border:1px solid #007ACC;
+    border-top-width:3px ;
+}</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="leftMargin">
@@ -45,7 +131,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -75,6 +161,12 @@
    <property name="windowTitle">
     <string>Normal</string>
    </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
    <property name="iconSize">
     <size>
      <width>16</width>
@@ -83,6 +175,9 @@
    </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -96,7 +191,6 @@
    <addaction name="actionSave_All"/>
    <addaction name="action_Save_As"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidgetProject">
    <property name="windowTitle">
     <string>Project</string>
@@ -136,16 +230,17 @@
         <bool>true</bool>
        </property>
        <property name="headerHidden">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <attribute name="headerVisible">
-        <bool>true</bool>
+        <bool>false</bool>
        </attribute>
       </widget>
      </item>
     </layout>
    </widget>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="action_New">
    <property name="icon">
     <iconset resource="../resource.qrc">
@@ -217,6 +312,7 @@
   <tabstop>treeViewProject</tabstop>
  </tabstops>
  <resources>
+  <include location="../resource.qrc"/>
   <include location="../resource.qrc"/>
  </resources>
  <connections/>

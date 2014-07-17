@@ -6,9 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>184</width>
-    <height>247</height>
+    <width>193</width>
+    <height>253</height>
    </rect>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <property name="allowedAreas">
    <set>Qt::NoDockWidgetArea</set>
@@ -57,58 +60,47 @@
      </layout>
     </item>
     <item>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
        <widget class="QToolButton" name="toolButtonStart">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Start</string>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonIconOnly</enum>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item>
        <widget class="QToolButton" name="toolButtonRollback">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Rollback</string>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonIconOnly</enum>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item>
        <widget class="QToolButton" name="toolButtonSave">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Save</string>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonIconOnly</enum>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item>
        <widget class="QToolButton" name="toolButtonStop">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Stop</string>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonIconOnly</enum>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </item>
@@ -123,6 +115,19 @@
        </item>
       </layout>
      </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>

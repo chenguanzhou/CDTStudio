@@ -21,5 +21,11 @@
         <file>Icon/Pan.png</file>
         <file>Icon/ZoomIn.png</file>
         <file>Icon/ZoomOut.png</file>
+        <file>Icon/Maximize.png</file>
+        <file>Icon/AddProperty.png</file>
+        <file>Icon/DataSource.png</file>
+        <file>Icon/Start.png</file>
+        <file>Icon/Stop.png</file>
+        <file>Icon/Redo.png</file>
     </qresource>
 </RCC>

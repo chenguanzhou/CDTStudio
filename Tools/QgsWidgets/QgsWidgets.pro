@@ -25,6 +25,8 @@ LIBS += -lqgis_core -lqgis_gui
 SOURCES += \
     qgsundowidget.cpp
 
-HEADERS=    \
+HEADERS=\
     qgswidgets_global.h \
     qgsundowidget.h
+
+RESOURCES += ../../resource.qrc

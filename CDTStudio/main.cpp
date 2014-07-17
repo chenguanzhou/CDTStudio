@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
                                            ":/Trans/" + QLocale::system().name()+".qm");
 
 
+
     MainWindow w;
     w.show();
 

@@ -181,13 +181,13 @@ void QgsUndoWidget::setupUi( QDockWidget *UndoWidget )
 
   undoButton = new QPushButton( dockWidgetContents );
   undoButton->setObjectName( QString::fromUtf8( "undoButton" ) );
-  undoButton->setIcon( QgsApplication::getThemeIcon( "mActionUndo.png" ) );
+  undoButton->setIcon( QIcon(":/Icon/Undo.png") );
 
   gridLayout->addWidget( undoButton, 1, 0, 1, 1 );
 
   redoButton = new QPushButton( dockWidgetContents );
   redoButton->setObjectName( QString::fromUtf8( "redoButton" ) );
-  redoButton->setIcon( QgsApplication::getThemeIcon( "mActionRedo.png" ) );
+  redoButton->setIcon( QIcon(":/Icon/Redo.png") );
 
   gridLayout->addWidget( redoButton, 1, 1, 1, 1 );
 

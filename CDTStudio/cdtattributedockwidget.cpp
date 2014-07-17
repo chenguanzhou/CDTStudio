@@ -18,16 +18,17 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     setWindowTitle(tr("Attributes Manager"));
     setAllowedAreas(Qt::TopDockWidgetArea|Qt::BottomDockWidgetArea);
 
-    QMenuBar *menuBar = new QMenuBar(this);
-    QAction *actionEditDataSource = new QAction(tr("Edit Data Source"),menuBar);
+    QToolBar *toolBar = new QToolBar(this);
+    toolBar->setIconSize(QSize(24,24));
+    QAction *actionEditDataSource = new QAction(QIcon(":/Icon/DataSource.png"),tr("Edit Data Source"),toolBar);
     connect(actionEditDataSource,SIGNAL(triggered()),this,SLOT(onActionEditDataSourceTriggered()));
-    menuBar->addAction(actionEditDataSource);
+    toolBar->addAction(actionEditDataSource);
 
-    QAction *actionGenerateAttributes = new QAction(tr("Generate Attributes"),menuBar);
+    QAction *actionGenerateAttributes = new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),toolBar);
     connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
-    menuBar->addAction(actionGenerateAttributes);
+    toolBar->addAction(actionGenerateAttributes);
 
-    ui->horizontalLayout->setMenuBar(menuBar);
+    ui->horizontalLayout->setMenuBar(toolBar);
     connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),SLOT(onDatabaseChanged(CDTDatabaseConnInfo)));
 
     QSettings settings("WHU","CDTStudio");

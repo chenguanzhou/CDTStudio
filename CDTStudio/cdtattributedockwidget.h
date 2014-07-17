@@ -67,7 +67,6 @@ private:
     static QStringList attributeNames();
 private:
     Ui::CDTAttributeDockWidget *ui;
-    QMenuBar *_menuBar;
     CDTDatabaseConnInfo _dbConnInfo;
     CDTSegmentationLayer* _segmentationLayer;
 };
