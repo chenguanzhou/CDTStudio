@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>770</width>
-    <height>374</height>
+    <height>378</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -150,6 +150,12 @@
    </layout>
   </widget>
   <widget class="QWizardPage" name="wizardPage2">
+   <property name="title">
+    <string>Configurate Classifier</string>
+   </property>
+   <property name="subTitle">
+    <string>Configurate the param of classifier and classification</string>
+   </property>
    <attribute name="pageId">
     <string notr="true">1</string>
    </attribute>
@@ -336,91 +342,20 @@
    </layout>
   </widget>
   <widget class="QWizardPage" name="wizardPage3">
+   <property name="title">
+    <string>Acurracy assessment</string>
+   </property>
+   <property name="subTitle">
+    <string>Acurracy assessment</string>
+   </property>
    <attribute name="pageId">
     <string notr="true">2</string>
    </attribute>
-   <layout class="QHBoxLayout" name="horizontalLayout_6">
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QGroupBox" name="groupBox">
-        <property name="title">
-         <string>Confusion matrix</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QTableView" name="tableView"/>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="groupBox_3">
-        <property name="title">
-         <string>Accuracy</string>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <item>
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Overall accuracy</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEditOverallAccuracy">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Kappa</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEditKappa">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
-      <item>
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>Export</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="CDTClassifierAssessmentForm" name="assessmentForm" native="true"/>
     </item>
    </layout>
-   <zorder>overallAccuracyLabel</zorder>
-   <zorder>groupBox</zorder>
-   <zorder>groupBox_3</zorder>
-   <zorder>verticalLayoutWidget</zorder>
   </widget>
  </widget>
  <customwidgets>
@@ -434,6 +369,12 @@
    <class>QPropertyEditorWidget</class>
    <extends>QTreeView</extends>
    <header>QPropertyEditorWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CDTClassifierAssessmentForm</class>
+   <extends>QWidget</extends>
+   <header location="global">cdtclassifierassessmentform.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

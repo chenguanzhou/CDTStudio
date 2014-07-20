@@ -33,6 +33,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="movable">
+        <bool>true</bool>
+       </property>
       </widget>
       <widget class="CDTHistogramPlot" name="qwtPlot">
        <property name="sizePolicy">

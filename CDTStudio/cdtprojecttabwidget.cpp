@@ -106,6 +106,7 @@ bool CDTProjectTabWidget::saveAsProject()
         emit menuRecentChanged(fileName);
         ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
     }
+    return true;
 }
 
 bool CDTProjectTabWidget::closeTab(const int &index)

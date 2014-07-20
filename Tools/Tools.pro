@@ -7,4 +7,5 @@ SUBDIRS += \
     CDTHistogramPlot\
     QtColorPicker\
     QgsWidgets\
-    log4qt
+    log4qt \
+    CDTClassifierAssessmentWidget

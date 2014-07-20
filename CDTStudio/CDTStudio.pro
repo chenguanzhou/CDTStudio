@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     cdtapplication.cpp \
     cdtextractionlayer.cpp \
     dialognewextraction.cpp \
-    cdtextractiondockwidget.cpp
+    cdtextractiondockwidget.cpp \
+    cdtclassificationhelper.cpp
 
 
 HEADERS  += \    
@@ -66,7 +67,8 @@ HEADERS  += \
     cdtextractionlayer.h \
     dialognewextraction.h \
     cdtextractiondockwidget.h \
-    ../Interfaces/cdtextractioninterface.h
+    ../Interfaces/cdtextractioninterface.h \
+    cdtclassificationhelper.h
 
 FORMS    += \
     mainwindow.ui \
@@ -86,7 +88,8 @@ INCLUDEPATH += \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
     ../Tools/QgsWidgets\
-    ../Tools
+    ../Tools\
+    ../Tools/CDTClassifierAssessmentWidget
 
 
 DEPENDPATH += \
@@ -96,7 +99,8 @@ DEPENDPATH += \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
     ../Tools/QgsWidgets\
-    ../Tools/log4qt
+    ../Tools/log4qt\
+    ../Tools/CDTClassifierAssessmentWidget
 
 #Libraries
 unix{
@@ -106,7 +110,7 @@ LIBS += -lgdal -lgomp
 INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 /usr/include/qgis \
-/usr/local/include/qgis
+/usr/local/include/qgisS
 
 DEFINES += CORE_EXPORT=
 DEFINES += GUI_EXPORT=
@@ -116,8 +120,8 @@ include(../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
-LIBS +=     -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot\
-            -lQtColorPicker -lCDTFileSystem -lQgsWidgets -llog4qt\
+LIBS +=     -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
+             -lCDTFileSystem -lQgsWidgets -llog4qt -lCDTClassifierAssessmentWidget\
             -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 #opencv

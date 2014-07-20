@@ -35,7 +35,7 @@ unix {
     /usr/local/include/gdal
 }
 !unix{
-    include(../../Tools/Config/win.pri)
+    include(../Config/win.pri)
     LIBS += -lgdal_i
 }
 #log4qt

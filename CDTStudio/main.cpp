@@ -12,6 +12,8 @@
 //TODO  ORM
 //TODO  Classification Assessment
 //TODO  Opacity for layers
+//TODO  Attribute Widget Closable
+//TODO  Background Color
 
 //BUG   Same name
 //BUG   Delete layer dump

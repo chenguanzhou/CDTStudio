@@ -6,126 +6,10 @@
 #include "cdtattributesinterface.h"
 #include "cdtclassifierinterface.h"
 #include "dialogdbconnection.h"
+#include "cdtclassifierassessmentform.h"
 
 extern QList<CDTAttributesInterface *>     attributesPlugins;
 extern QList<CDTClassifierInterface *>     classifierPlugins;
-
-//Data transform function
-void dataNormalize(cv::Mat& data,QString method)
-{
-    int nRows = data.rows;
-    int nCols = data.cols;
-
-    if (method==QString("linear"))
-    {
-        //linear
-        for (int j = 0; j < nCols; ++j)
-        {
-            float minVal = data.at<float>(0, j);
-            float maxVal = data.at<float>(0, j);
-            float temp;
-            for (int i = 0; i < nRows; ++i)
-            {
-                temp = data.at<float>(i, j);
-                if (temp < minVal)
-                    minVal = temp;
-                if(temp > maxVal)
-                    maxVal = temp;
-            }
-
-            temp = maxVal - minVal;
-            for (int i = 0; i < nRows; ++i)
-            {
-                data.at<float>(i, j) = (data.at<float>(i, j) - minVal)/temp;
-            }
-        }
-    }
-    else if (method==QString("stddev"))
-    {
-        //stddev
-        for (int j = 0; j < nCols; ++j)
-        {
-            float meanVal = 0;
-            float sigmaVal = 0;
-            for (int i =0; i < nRows; ++i)
-            {
-                meanVal += data.at<float>(i, j);
-            }
-            meanVal /= nRows;
-
-            for (int i = 0; i < nRows; ++i)
-            {
-                float temp = data.at<float>(i, j) - meanVal;
-                sigmaVal += temp * temp;
-            }
-            sigmaVal = sqrt(sigmaVal/(nRows - 1));
-
-            //normalize
-            for (int i = 0; i < nRows; ++i)
-            {
-                float temp = ((data.at<float>(i, j) - meanVal)/(3*sigmaVal)+1.)/2.;
-                if (temp < 0) temp = 0;
-                if (temp > 1) temp = 1;
-                data.at<float>(i,j) = temp;
-            }
-        }
-    }
-    else if (method==QString("calculas"))
-    {
-        //calculas
-        for (int j = 0; j < nCols; ++j)
-        {
-            std::vector< std::pair<float, int> > temp_feature;
-            for (int i = 0; i < nRows; ++i)
-            {
-                temp_feature.push_back(std::make_pair(data.at<float>(i, j),i));
-            }
-            std::sort(temp_feature.begin(), temp_feature.end());
-
-
-            float sumVal = 0;
-            for (int i = 0; i < nRows; ++i)
-            {
-                sumVal += temp_feature[i].first;
-            }
-
-            float sum_temp = 0;
-            for (int i = 0; i < nRows; ++i)
-            {
-                sum_temp += temp_feature[i].first;
-                data.at<float>(temp_feature[i].second, j) = sum_temp/sumVal;
-            }
-        }
-    }
-    else if (method==QString("rank"))
-    {
-        //rank
-        for (int j = 0; j < nCols; ++j)
-        {
-            std::vector< std::pair<float, int> > temp_feature;
-            for (int i = 0; i < nRows; ++i)
-            {
-                temp_feature.push_back(std::make_pair(data.at<float>(i, j), i));
-            }
-            std::sort(temp_feature.begin(), temp_feature.end());
-
-            for (int i = 0; i < nRows; ++i)
-            {
-                data.at<float>(temp_feature[i].second, j) = (float)i/(nRows - 1);
-                //                qDebug()<<mat.at<float>(temp_feature[i].second, j);
-            }
-        }
-    }
-}
-
-void pcaTransform(cv::Mat& data,int pcaParam)
-{
-    if (pcaParam>0 && pcaParam<=data.cols)
-    {
-        cv::PCA pca(data,cv::Mat(),CV_PCA_DATA_AS_ROW,pcaParam);
-        data = pca.project(data);
-    }
-}
 
 WizardNewClassification::WizardNewClassification(QUuid segmentationID, QWidget *parent) :
     QWizard(parent),
@@ -227,15 +111,6 @@ void WizardNewClassification::updateFeatures(QString segID)
     updateSelectedFeature();
 }
 
-QStringList WizardNewClassification::attributeNames()
-{
-    QStringList list;
-    foreach (CDTAttributesInterface *interface, attributesPlugins) {
-        list<<interface->tableName();
-    }
-    return list;
-}
-
 bool WizardNewClassification::validateCurrentPage()
 {
     if (currentId()==1)
@@ -261,18 +136,14 @@ void WizardNewClassification::startClassification()
     QString transformMethod = ui->comboBoxNormalize->currentText();
     bool isPCA = ui->checkBoxPCA->isChecked();
     int pca = ui->spinBoxPCA->value();
-
-    QSqlQueryModel *modelSegmentation = (QSqlQueryModel *)(ui->comboBoxInput->model());
-    QString segmentationID = modelSegmentation->data(modelSegmentation->index(ui->comboBoxInput->currentIndex(),1)).toString();
-    QString sampleID = modelSample->data(modelSample->index(ui->comboBoxSample->currentIndex(),1)).toString();
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.exec(QString("select imageID from segmentationlayer where id ='%1'").arg(segmentationID));
-    query.next();
-    QString imageID = query.value(0).toString();
+
+    QString sampleID = modelSample->data(modelSample->index(ui->comboBoxSample->currentIndex(),1)).toString();
+    QString trainingSampleID = modelSample->data(modelSample->index(ui->comboBoxAssessment->currentIndex(),1)).toString();
 
     //Samples
     categoryID_Index.clear();
-    query.exec(QString("select id from category where imageid ='%1'").arg(imageID));
+    query.exec(QString("select id from category where imageid ='%1'").arg(imageID()));
     int index = 0;
     while(query.next())
     {
@@ -290,11 +161,18 @@ void WizardNewClassification::startClassification()
         return ;
     }
 
-    QMap<int,QString> samples;//objID_catID
+    samples.clear();
     query.exec(QString("select objectid,categoryid from samples where sampleid ='%1'").arg(sampleID));
     while(query.next())
     {
         samples.insert(query.value(0).toInt(),query.value(1).toString());
+    }
+
+    testSamples.clear();
+    query.exec(QString("select objectid,categoryid from samples where sampleid ='%1'").arg(trainingSampleID));
+    while(query.next())
+    {
+        testSamples.insert(query.value(0).toInt(),query.value(1).toString());
     }
 
     //Data
@@ -333,7 +211,7 @@ void WizardNewClassification::startClassification()
     //Transform
     if (isTransform)
     {
-        dataNormalize(data,transformMethod);
+        CDTClassificationHelper::dataNormalize(data,transformMethod);
         normalizeMethod = transformMethod;
     }
     else
@@ -342,7 +220,7 @@ void WizardNewClassification::startClassification()
     //PCA
     if (isPCA)
     {
-        pcaTransform(data,pca);
+        CDTClassificationHelper::pcaTransform(data,pca);
         pcaParams = QString::number(pca);
     }
     else
@@ -380,6 +258,46 @@ void WizardNewClassification::startClassification()
     finished = true;
 }
 
+void WizardNewClassification::generateAssessmentResult()
+{
+    Q_ASSERT(finished);
+    CDTClassificationInformation info;
+    QSqlQuery query(QSqlDatabase::database("category"));
+
+    //general info
+    info.clsName = ui->lineEditOutputName->text();
+    info.classifierName = ui->comboBoxClassifier->currentText();
+    info.classifierParams = params;
+    info.categoryCount = categoryID_Index.size();
+    info.isNormalized = ui->checkBoxNormalize->isChecked();
+    info.pcaParams = ui->checkBoxPCA->isChecked()?ui->spinBoxPCA->value():0;
+    info.selectedFeatures = modelSelectedFeature->stringList();
+
+    //for confusion matrix
+    QMap<QString,QString> categoryID_Name;
+    query.exec(QString("select id,name from category where imageid ='%1'").arg(this->imageID()));
+    while(query.next())
+    {
+        categoryID_Name.insert(query.value(0).toString(),query.value(1).toString());
+    }
+
+
+    QMap<int,QString> index_CategoryName;
+    QMapIterator<QString, QVariant> i(categoryID_Index);
+    while (i.hasNext()) {
+        i.next();
+        index_CategoryName.insert(i.value().toInt(),categoryID_Name[i.key()]);
+    }
+
+    qDebug()<<index_CategoryName;
+    foreach (int objID, testSamples.keys()) {
+        QString clsIndex = testSamples.value(objID);
+        info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[objID].toInt()],categoryID_Name[clsIndex]));
+    }
+
+    ui->assessmentForm->setInfo(info);
+}
+
 int WizardNewClassification::nextId() const
 {
     switch (currentId()) {
@@ -393,6 +311,38 @@ int WizardNewClassification::nextId() const
     case 2:
         return -1;
     }
+}
+
+void WizardNewClassification::initializePage(int id )
+{
+    QWizard::initializePage(id);
+    if (id == 2)    //Assessment
+    {
+        generateAssessmentResult();
+    }
+}
+
+QString WizardNewClassification::segmentationID() const
+{
+    QSqlQueryModel *modelSegmentation = (QSqlQueryModel *)(ui->comboBoxInput->model());
+    return modelSegmentation->data(modelSegmentation->index(ui->comboBoxInput->currentIndex(),1)).toString();
+}
+
+QString WizardNewClassification::imageID() const
+{
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.exec(QString("select imageID from segmentationlayer where id ='%1'").arg(segmentationID()));
+    query.next();
+    return query.value(0).toString();
+}
+
+QStringList WizardNewClassification::attributeNames()
+{
+    QStringList list;
+    foreach (CDTAttributesInterface *interface, attributesPlugins) {
+        list<<interface->tableName();
+    }
+    return list;
 }
 
 void WizardNewClassification::onSegmentationChanged(int index)

@@ -59,10 +59,12 @@ QToolBar{
 QToolButton:hover {
 	border:none;
 	background: rgb(201, 222, 245);
+	border-radius: 3px;
 }
 
 QToolButton:pressed {
-    background: #FFFFFF;
+    background: #F6F6F6;
+	border-radius: 3px;
 }
 
 QDockWidget::title{
@@ -99,6 +101,12 @@ QTabWidget::pane {
     border-top-width:3px ;
 }</string>
   </property>
+  <property name="iconSize">
+   <size>
+    <width>16</width>
+    <height>16</height>
+   </size>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="leftMargin">
@@ -119,6 +127,9 @@ QTabWidget::pane {
        <enum>Qt::NoContextMenu</enum>
       </property>
       <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
        <bool>true</bool>
       </property>
      </widget>
@@ -166,12 +177,6 @@ QTabWidget::pane {
    </property>
    <property name="allowedAreas">
     <set>Qt::TopToolBarArea</set>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>16</width>
-     <height>16</height>
-    </size>
    </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonIconOnly</enum>
@@ -230,10 +235,10 @@ QTabWidget::pane {
         <bool>true</bool>
        </property>
        <property name="headerHidden">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <attribute name="headerVisible">
-        <bool>false</bool>
+        <bool>true</bool>
        </attribute>
       </widget>
      </item>

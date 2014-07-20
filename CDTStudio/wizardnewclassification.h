@@ -2,6 +2,7 @@
 #define WIZARDNEWCLASSIFICATION_H
 
 #include <QWizard>
+#include "cdtclassificationhelper.h"
 
 namespace Ui {
 class WizardNewClassification;
@@ -22,12 +23,17 @@ public:
 
 private:
     void    initClassifiers();
-    void    updateFeatures(QString segID);
-    static QStringList attributeNames();
+    void    updateFeatures(QString segID);    
     bool    validateCurrentPage();
     void    startClassification();
+    void    generateAssessmentResult();
     int     nextId() const;
+    void    initializePage(int id);
 
+    QString segmentationID() const;
+    QString imageID() const;
+
+    static QStringList attributeNames();
 
 private slots:
     void    onSegmentationChanged(int index);
@@ -43,7 +49,9 @@ public:
     QString method;
     QList<QVariant> label;//QList<int>
     QMap<QString,QVariant> categoryID_Index;//QMap<QString,int>
-    QMap<QString,QVariant> params;
+    QMap<int,QString> samples;//objID_catID
+    QMap<int,QString> testSamples;//objID_catID
+    QVariantMap params;
     QString normalizeMethod;
     QString pcaParams;
 
