@@ -279,8 +279,8 @@ void WizardNewClassification::generateAssessmentResult()
     while(query.next())
     {
         categoryID_Name.insert(query.value(0).toString(),query.value(1).toString());
+        info.categories.push_back(query.value(1).toString());
     }
-
 
     QMap<int,QString> index_CategoryName;
     QMapIterator<QString, QVariant> i(categoryID_Index);
@@ -289,7 +289,6 @@ void WizardNewClassification::generateAssessmentResult()
         index_CategoryName.insert(i.value().toInt(),categoryID_Name[i.key()]);
     }
 
-    qDebug()<<index_CategoryName;
     foreach (int objID, testSamples.keys()) {
         QString clsIndex = testSamples.value(objID);
         info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[objID].toInt()],categoryID_Name[clsIndex]));

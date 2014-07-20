@@ -4,6 +4,8 @@
 #if QT_VERSION >= 0x050000
 #include <QtWidgets>
 #endif
+#include <opencv2/core/core.hpp>
+#include <iostream>
 
 CDTClassifierAssessmentForm::CDTClassifierAssessmentForm(QWidget *parent) :
     QWidget(parent),
@@ -28,7 +30,7 @@ void CDTClassifierAssessmentForm::updateGeneralInfo(const CDTClassificationInfor
     ui->treeWidget->clear();
 
     QTreeWidgetItem *itemClsName = new QTreeWidgetItem(
-                ui->treeWidget,QStringList()<<tr("Classification Name")<<info.clsName);
+                ui->treeWidget,QStringList()<<tr("Name")<<info.clsName);
     QTreeWidgetItem *itemClsfier = new QTreeWidgetItem(
                 ui->treeWidget,QStringList()<<tr("Classifier")<<info.classifierName);
     QTreeWidgetItem *itemCateCount = new QTreeWidgetItem(
@@ -60,5 +62,72 @@ void CDTClassifierAssessmentForm::updateGeneralInfo(const CDTClassificationInfor
 
 void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationInformation &info)
 {
+    //Confusion Matrix
+    QStringList categories = info.categories;
+    QMap<QString,int> index;
+    for (int i=0;i<categories.size();++i)
+    {
+        index.insert(categories[i],i);
+    }
 
+    ui->tableWidget->clear();
+    ui->tableWidget->setColumnCount(categories.size()+1);
+    ui->tableWidget->setRowCount(categories.size()+1);
+    ui->tableWidget->setHorizontalHeaderLabels(QStringList()<<categories<<tr("Total"));
+    ui->tableWidget->setVerticalHeaderLabels(QStringList()<<categories<<tr("Total"));
+
+    cv::Mat matrixData = cv::Mat::zeros(categories.size()+1,categories.size()+1,CV_32S);
+    for (int i=0;i<info.confusionParams.size();++i)
+    {
+        QString result      = info.confusionParams[i].first;
+        QString testSample  = info.confusionParams[i].second;
+        int resultIndex     = index.value(result);
+        int testSampleIndex = index.value(testSample);
+        ++ matrixData.at<int>(resultIndex,testSampleIndex);
+    }
+
+
+    for(int i=0;i<categories.size();++i)
+    {
+        int sumRow=0,sumCol=0;
+        for(int j=0;j<categories.size();++j)
+        {
+            sumRow += matrixData.at<int>(i,j);
+            sumCol += matrixData.at<int>(j,i);
+        }
+        matrixData.at<int>(categories.size(),i) = sumCol;
+        matrixData.at<int>(i,categories.size()) = sumRow;
+    }
+
+    matrixData.at<int>(categories.size(),categories.size()) = info.confusionParams.size();
+
+    for(int i=0;i<matrixData.rows;++i)
+    {
+        for (int j=0;j<matrixData.cols;++j)
+        {
+            QTableWidgetItem *item = new QTableWidgetItem(QString::number(matrixData.at<int>(i,j)));
+            item->setTextAlignment(Qt::AlignCenter);
+            ui->tableWidget->setItem(i,j,item);
+        }
+    }
+    for(int i=0;i<categories.size();++i)
+    {
+        QTableWidgetItem *item = ui->tableWidget->item(i,i);
+        item->setTextColor(QColor(Qt::red));
+        QFont fnt = item->font();
+        fnt.setBold(true);
+        item->setFont(fnt);
+    }
+
+    ui->tableWidget->resizeColumnsToContents();
+    ui->tableWidget->resizeRowsToContents();
+
+    //Overall accuracy
+    int correctCount = 0;
+    for (int i=0;i<categories.size();++i)
+    {
+        correctCount += matrixData.at<int>(i,i);
+    }
+    double overall = correctCount*100/info.confusionParams.size();
+    ui->overallAcuraccyLineEdit->setText(QString::number(overall)+"%");
 }
