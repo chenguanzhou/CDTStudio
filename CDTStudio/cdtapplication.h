@@ -10,6 +10,8 @@ class CDTApplication : public QgsApplication
 public:
     explicit CDTApplication(int & argc, char ** argv);
     ~CDTApplication();
+
+    static QString getStyleSheet(QString styleName);
 signals:
 
 public slots:

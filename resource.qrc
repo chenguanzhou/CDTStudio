@@ -27,5 +27,6 @@
         <file>Icon/Start.png</file>
         <file>Icon/Stop.png</file>
         <file>Icon/Redo.png</file>
+        <file>StyleSheet/default.css</file>
     </qresource>
 </RCC>

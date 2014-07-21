@@ -130,4 +130,15 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
     }
     double overall = correctCount*100/info.confusionParams.size();
     ui->overallAcuraccyLineEdit->setText(QString::number(overall)+"%");
+
+    //Kappa
+    double Pa = overall/100.;
+    double Pe = 0;
+    for(int i=0;i<categories.size();++i)
+    {
+        Pe += matrixData.at<int>(categories.size(),i)*matrixData.at<int>(i,categories.size());
+    }
+    Pe /= (double)(info.confusionParams.size()*info.confusionParams.size());
+    double kappa = (Pa-Pe)/(1.-Pe);
+    ui->kappaLineEdit->setText(QString::number(kappa));
 }

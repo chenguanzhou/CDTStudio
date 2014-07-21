@@ -44,6 +44,8 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     extractionPlugins   = CDTPluginLoader<CDTExtractionInterface>::getPlugins();
     qDebug()<<"segmentationPlugins:"<<segmentationPlugins.size();
     qDebug()<<"extractionPlugins:"<<extractionPlugins.size();
+
+    this->setStyleSheet(getStyleSheet("default"));
 }
 
 CDTApplication::~CDTApplication()
@@ -55,6 +57,24 @@ CDTApplication::~CDTApplication()
     {
         QFile::remove(databaseName);
     }
+}
+
+QString CDTApplication::getStyleSheet(QString styleName)
+{
+    styleName = styleName.toLower();
+    QString styleSheet;
+    if (styleName == "default")
+    {
+        QFile file(":/StyleSheet/default.css");
+        if (file.open(QFile::ReadOnly))
+        {
+            QTextStream stream(&file);
+            styleSheet = stream.readAll();
+        }
+        file.close();
+    }
+    qDebug()<<styleSheet;
+    return styleSheet;
 }
 
 bool CDTApplication::initDatabase()

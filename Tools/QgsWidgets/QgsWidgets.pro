@@ -29,4 +29,5 @@ HEADERS=\
     qgswidgets_global.h \
     qgsundowidget.h
 
-RESOURCES += ../../resource.qrc
+RESOURCES += \
+    resource.qrc

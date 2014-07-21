@@ -3,13 +3,14 @@
 #include "cdtbaseobject.h"
 #include "stable.h"
 #include "cdtprojecttreeitem.h"
+#include "cdtapplication.h"
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
     project(NULL),
     treeModel(new QStandardItemModel(this)),
     isChanged(false),
-    mapCanvas(new QgsMapCanvas(this))
+    mapCanvas(new QgsMapCanvas(this,"mapCanvas"))
 {
     treeModel->setHorizontalHeaderLabels(QStringList()<<tr("Layer")<<tr("Value"));
     connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));    
@@ -17,7 +18,6 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
-    mapCanvas->setCanvasColor(QColor(255, 255, 255));
 
     vbox->addWidget(mapCanvas);
     this->setLayout(vbox);
