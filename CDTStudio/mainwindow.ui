@@ -72,6 +72,7 @@ QDockWidget::title{
 	background-color:#EEEEF2;
 	padding: 5px;
 }
+
 QDockWidget {		
     titlebar-close-icon: url(:/Icon/Remove.png);
     titlebar-normal-icon: url(:/Icon/Maximize.png);
@@ -99,6 +100,32 @@ QTabBar::tab:hover{
 QTabWidget::pane {
 	border:1px solid #007ACC;
     border-top-width:3px ;
+}
+
+QTreeView{
+	background: #F5F5F5;
+	border:none
+}
+
+QTreeView::item:selected:active{
+    background: #3399FF;
+}
+
+QTreeView::item:selected:!active {
+    background: #CCCEDB;
+}
+
+QHeaderView::section {
+    background-color:  #9B9FB9;
+    color: white;
+    padding-left: 2px;
+	border:1px solid #EEEEF2;
+}
+
+QFrame#qwtPlot {
+	border:1px solid #9B9FB9;
+    border-top-width:3px ;
+	padding: 3px
 }</string>
   </property>
   <property name="iconSize">

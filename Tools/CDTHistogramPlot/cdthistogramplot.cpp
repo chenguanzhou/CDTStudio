@@ -6,6 +6,7 @@
 #include <qwt_plot_magnifier.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_zoomer.h>
+#include <qwt_plot_layout.h>
 #include <qwt_picker_machine.h>
 #include <qwt_symbol.h>
 #include <QtSql>
@@ -24,6 +25,12 @@ CDTHistogramPlot::CDTHistogramPlot(QWidget *parent)
 {
     initTools();
     initHistogram();
+
+    QFrame *frame = (QFrame *)(this->canvas());
+    frame->setFrameStyle(QFrame::NoFrame);
+    QFont font("Courier");
+    this->setAxisFont(QwtPlot::xBottom,font);
+    this->setAxisFont(QwtPlot::yLeft,font);
 }
 
 CDTHistogramPlot::~CDTHistogramPlot()
@@ -60,7 +67,14 @@ void CDTHistogramPlot::replot()
 {
     if (updateHistogram())
     {
-        this->setTitle(QString("%1->%2").arg(pData->tableName).arg(pData->fieldName));
+        QwtText title;
+        title.setText(QString("%1: %2").arg(pData->tableName).arg(pData->fieldName));
+        QFont sansFont("Helvetica", 15);
+        sansFont.setBold(false);
+        title.setFont(sansFont);
+        title.setBorderRadius(4);
+        this->setTitle(title);
+
         setAxisAutoScale(QwtPlot::xBottom);
         setAxisAutoScale(QwtPlot::yLeft);
         QwtPlot::replot();
@@ -72,7 +86,7 @@ void CDTHistogramPlot::initHistogram()
     histogram->attach(this);
     histogram->setStyle(QwtPlotCurve::Lines);
     histogram->setPen(QPen(QColor(255,0,0),2));
-    histogram->setBrush(QBrush(QColor(255,0,0,127)));    
+    histogram->setBrush(QBrush(QColor(255,0,0,127)));
 
 
     this->setFrameStyle(QwtPlotCanvas::NoFrame);
@@ -83,8 +97,8 @@ void CDTHistogramPlot::initTools()
     plotPanner = new QwtPlotPanner( this->canvas() );
     magnifier = new QwtPlotMagnifier( this->canvas() );
     picker = new QwtPlotPicker( QwtPlot::xBottom, QwtPlot::yLeft,
-                                               QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn,
-                                               this->canvas() );
+                                QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn,
+                                this->canvas() );
 
     magnifier->setMouseButton( Qt::NoButton );
 
@@ -104,7 +118,7 @@ bool CDTHistogramPlot::updateHistogram()
     }
     QSqlQuery query(pData->db);
     ret = query.exec(QString("select min(%1),max(%1) from %2")
-               .arg(pData->fieldName).arg(pData->tableName));
+                     .arg(pData->fieldName).arg(pData->tableName));
     if (ret == false)
     {
         qDebug()<<"Query failed!";
@@ -120,7 +134,7 @@ bool CDTHistogramPlot::updateHistogram()
 
     QVector<int> counts(intervals,0);
     ret = query.exec(QString("select %1 from %2")
-               .arg(pData->fieldName).arg(pData->tableName));
+                     .arg(pData->fieldName).arg(pData->tableName));
     if (ret == false)
     {
         qDebug()<<"Query failed!";

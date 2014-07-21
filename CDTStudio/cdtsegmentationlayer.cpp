@@ -40,17 +40,6 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
     valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
 
-    shapefileItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
-    keyItem->appendRow(
-                QList<QStandardItem*>()
-                <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("Shapefile path"),this)
-                <<shapefileItem);
-
-    markfileItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
-    keyItem->appendRow(
-                QList<QStandardItem*>()
-                <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("Markfile path"),this)
-                <<markfileItem);
     paramRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
     paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
@@ -339,8 +328,6 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     mapCanvasLayer = newLayer;
 
     keyItem->setText(name);
-    shapefileItem->setText(shpPath);
-    markfileItem->setText(mkPath);
 
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
     keyItem->setMapLayer(mapCanvasLayer);

@@ -16,7 +16,6 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     ui->setupUi(this);
 
     setWindowTitle(tr("Attributes Manager"));
-    setAllowedAreas(Qt::TopDockWidgetArea|Qt::BottomDockWidgetArea);
 
     QToolBar *toolBar = new QToolBar(this);
     toolBar->setIconSize(QSize(24,24));

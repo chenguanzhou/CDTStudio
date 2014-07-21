@@ -95,8 +95,6 @@ private:
     QAction *actionRemoveAllClassifications;
     QAction *actionRename;
 
-    CDTProjectTreeItem* shapefileItem;
-    CDTProjectTreeItem* markfileItem;
     CDTProjectTreeItem* paramRootItem;
     CDTProjectTreeItem* paramRootValueItem;
     CDTProjectTreeItem* classificationRootItem;
