@@ -32,7 +32,7 @@ signals:
     void projectChanged();
 public slots:
     void onContextMenu(QPoint pt,QModelIndex index);
-    void setIsChanged();
+    void onProjectChanged();
     bool saveProject(QString &path);
 
     void onZoomOutTool(bool toggle);
@@ -48,7 +48,6 @@ private slots:
     void untoggledToolBar();
 //    void onHehe();
 private:
-    bool isChanged;
     CDTProject *project;
     QFile file;
     QStandardItemModel* treeModel;

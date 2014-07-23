@@ -9,15 +9,16 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
     project(NULL),
     treeModel(new QStandardItemModel(this)),
-    isChanged(false),
     mapCanvas(new QgsMapCanvas(this,"mapCanvas"))
 {
     treeModel->setHorizontalHeaderLabels(QStringList()<<tr("Layer")<<tr("Value"));
     connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));    
-    connect(this,SIGNAL(projectChanged()),this,SLOT(setIsChanged()));
+    connect(this,SIGNAL(projectChanged()),this,SLOT(onProjectChanged()));
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
+
+    mapCanvas->setCanvasColor(this->palette().color(this->backgroundRole()));
 
     vbox->addWidget(mapCanvas);
     this->setLayout(vbox);
@@ -82,7 +83,7 @@ bool CDTProjectWidget::readProject(const QString &filepath)
     createProject(QUuid());
     in>>*project;
     emit projectChanged();
-    isChanged = false;
+    setWindowModified(false);
 
     refreshMapCanvas();
     return true;
@@ -107,7 +108,7 @@ bool CDTProjectWidget::writeProject()
     file.write(compressedDat);
     file.flush();
     qDebug()<<"compressedFile:"<<file.size();
-    isChanged = false;
+    setWindowModified(false);
 
     return true;
 }
@@ -305,7 +306,7 @@ void CDTProjectWidget::untoggledToolBar()
 
 int CDTProjectWidget::maybeSave()
 {
-    if(isChanged)
+    if(isWindowModified())
     {
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(this, tr("Application"),
@@ -332,9 +333,9 @@ QToolBar *CDTProjectWidget::menuBar()
     return (QToolBar *)(this->layout()->menuBar());
 }
 
-void CDTProjectWidget::setIsChanged()
+void CDTProjectWidget::onProjectChanged()
 {
-    isChanged = true;
+    setWindowModified(true);
 }
 
 

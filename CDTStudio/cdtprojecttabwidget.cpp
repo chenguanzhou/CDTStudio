@@ -26,7 +26,6 @@ void CDTProjectTabWidget::createNewProject()
         projectWidget->createProject(QUuid::createUuid());
         projectWidget->project->insertToTable(dlg->projectName());
 
-
         if (projectWidget->openProjectFile(dlg->projectPath())==false)return;
         addTab(projectWidget,dlg->projectName());
         saveProject();
