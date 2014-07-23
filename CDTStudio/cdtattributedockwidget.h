@@ -1,7 +1,7 @@
 #ifndef CDTATTRIBUTEDOCKWIDGET_H
 #define CDTATTRIBUTEDOCKWIDGET_H
 
-#include <QDockWidget>
+#include "cdtdockwidget.h"
 #include "dialogdbconnection.h"
 
 class QToolBar;
@@ -38,7 +38,7 @@ public:
     }
 };
 
-class CDTAttributeDockWidget : public QDockWidget
+class CDTAttributeDockWidget : public CDTDockWidget
 {
     Q_OBJECT
 
@@ -51,9 +51,11 @@ public:
 signals:
     void databaseURLChanged(CDTDatabaseConnInfo);
 
-public slots:
-    void setDatabaseURL(CDTDatabaseConnInfo url);
-    void setSegmentationLayer(CDTSegmentationLayer *layer);
+public slots:    
+    void setCurrentLayer(CDTBaseObject* layer);
+    void onCurrentProjectClosed(CDTProject* project);
+
+    void setDatabaseURL(CDTDatabaseConnInfo url);    
     void updateTable();
     void clearTables();
     void clear();

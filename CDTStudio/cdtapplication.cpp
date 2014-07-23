@@ -73,7 +73,7 @@ QString CDTApplication::getStyleSheet(QString styleName)
         }
         file.close();
     }
-    qDebug()<<styleSheet;
+//    qDebug()<<styleSheet;
     return styleSheet;
 }
 

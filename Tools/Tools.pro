@@ -6,6 +6,5 @@ SUBDIRS += \
     CDTFileSystem\
     CDTHistogramPlot\
     QtColorPicker\
-    QgsWidgets\
     log4qt \
     CDTClassifierAssessmentWidget

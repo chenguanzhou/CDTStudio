@@ -26,6 +26,7 @@ public slots:
     void setTableName(const QString &name);
     void setFieldName(const QString &name);
     void replot();
+    void clear();
 
 private:
     void initHistogram();

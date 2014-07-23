@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>CDTExtractionDockWidget</class>
  <widget class="QDockWidget" name="CDTExtractionDockWidget">
+  <property name="enabled">
+   <bool>false</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -9,9 +12,6 @@
     <width>193</width>
     <height>253</height>
    </rect>
-  </property>
-  <property name="styleSheet">
-   <string notr="true"/>
   </property>
   <property name="allowedAreas">
    <set>Qt::NoDockWidgetArea</set>

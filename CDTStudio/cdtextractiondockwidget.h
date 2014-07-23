@@ -1,7 +1,7 @@
 #ifndef CDTEXTRACTIONDOCKWIDGET_H
 #define CDTEXTRACTIONDOCKWIDGET_H
 
-#include <QDockWidget>
+#include "cdtdockwidget.h"
 
 namespace Ui {
 class CDTExtractionDockWidget;
@@ -10,9 +10,9 @@ class QSqlQueryModel;
 class QgsVectorLayer;
 class QgsMapCanvas;
 class QgsMapTool;
-class QgsUndoWidget;
+class CDTUndoWidget;
 
-class CDTExtractionDockWidget : public QDockWidget
+class CDTExtractionDockWidget : public CDTDockWidget
 {
     Q_OBJECT
 
@@ -26,9 +26,11 @@ public:
     EDITSTATE editState()const;
 
 public slots:
-    void setExtractionLayer(QString id);
-    void updateDescription(int currentIndex);
+    void setCurrentLayer(CDTBaseObject* layer);
+    void onCurrentProjectClosed(CDTProject* project);
 
+
+    void updateDescription(int currentIndex);
     void setEditState(EDITSTATE state);
     void setGeometryModified(bool modified);
 
@@ -45,6 +47,8 @@ private:
     void save();
     void stop();
 
+    void setExtractionLayer(QString id);
+
 private:
     Ui::CDTExtractionDockWidget *ui;
     QSqlQueryModel*             modelExtractions;
@@ -59,7 +63,6 @@ private:
     QgsMapCanvas    *mapCanvas;
     QgsMapTool      *lastMapTool;
     QgsMapTool      *currentMapTool;
-    QgsUndoWidget   *undoWidget;
 
     QAction         *actionStartEdit;
     QAction         *actionRollBack;

@@ -2,13 +2,13 @@
 #define CDTBASEOBJECT_H
 
 #include <QObject>
+#include <QUuid>
 class CDTProjectTreeItem;
 class CDTFileSystem;
 class CDTProject;
 class QStandardItem;
 class QgsMapLayer;
 class QgsMapCanvas;
-struct QUuid;
 
 class CDTBaseObject : public QObject
 {

@@ -9,7 +9,7 @@
 extern QList<CDTAttributesInterface *>     attributesPlugins;
 
 CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
-    QDockWidget(parent),
+    CDTDockWidget(parent),
     ui(new Ui::CDTAttributeDockWidget),
     _segmentationLayer(NULL)
 {
@@ -48,27 +48,32 @@ CDTSegmentationLayer *CDTAttributeDockWidget::segmentationLayer() const
     return _segmentationLayer;
 }
 
-void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
-{
-    if (_dbConnInfo == url)return;
-    _dbConnInfo = url;
-    emit databaseURLChanged(url);
-}
-
-void CDTAttributeDockWidget::setSegmentationLayer(CDTSegmentationLayer *layer)
+void CDTAttributeDockWidget::setCurrentLayer(CDTBaseObject *layer)
 {
     if (_segmentationLayer == layer)
         return;
 
     if (_segmentationLayer)
     {
-        disconnect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));        
+        disconnect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
     }
 
-    _segmentationLayer = layer;
+    _segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer);
     connect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
     setDatabaseURL(_segmentationLayer->databaseURL());
-    ui->tabWidget->setEnabled(true);
+    this->setEnabled(true);
+}
+
+void CDTAttributeDockWidget::onCurrentProjectClosed(CDTProject *project)
+{
+
+}
+
+void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
+{
+    if (_dbConnInfo == url)return;
+    _dbConnInfo = url;
+    emit databaseURLChanged(url);
 }
 
 void CDTAttributeDockWidget::updateTable()
@@ -99,9 +104,10 @@ void CDTAttributeDockWidget::updateTable()
 
 void CDTAttributeDockWidget::clear()
 {
-    ui->tabWidget->setEnabled(false);
+    this->setEnabled(false);
     _dbConnInfo = CDTDatabaseConnInfo();
     clearTables();
+    ui->qwtPlot->clear();
     _segmentationLayer =NULL;
 }
 
@@ -185,4 +191,3 @@ void CDTAttributeDockWidget::clearTables()
         delete widget;
     }
 }
-

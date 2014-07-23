@@ -15,18 +15,18 @@
 #ifndef QGSUNDOWIDGET_H
 #define QGSUNDOWIDGET_H
 
-#include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QDockWidget>
-#include <QtGui/QGridLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QWidget>
+#include <QVariant>
+#include <QAction>
+#include <QApplication>
+#include <QButtonGroup>
+#include <QDockWidget>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QSpacerItem>
+#include <QWidget>
 #include <QUndoView>
 #include <QUndoStack>
-#include "qgswidgets_global.h"
+#include "cdtdockwidget.h"
 
 class QgsMapCanvas;
 class QgsMapLayer;
@@ -34,7 +34,7 @@ class QgsMapLayer;
 /**
  * Class that handles undo display fo undo commands
  */
-class QGSWIDGETS_EXPORT QgsUndoWidget : public QDockWidget
+class CDTUndoWidget : public CDTDockWidget
 {
     Q_OBJECT
   public:
@@ -45,55 +45,25 @@ class QGSWIDGETS_EXPORT QgsUndoWidget : public QDockWidget
     QPushButton *redoButton;
     QSpacerItem *spacerItem1;
 
-    QgsUndoWidget( QWidget * parent, QgsMapCanvas* mapCanvas );
+    CDTUndoWidget( QWidget * parent, QgsMapCanvas* mapCanvas );
     void setupUi( QDockWidget *UndoWidget );
     void retranslateUi( QDockWidget *UndoWidget );
 
-    /**
-     * Setting new undo stack for undo view
-     */
     void setUndoStack( QUndoStack * undoStack );
-
-    /**
-     * Handles destroying of stack when active layer is changed
-     */
     void destroyStack();
 
-    /**
-     * Access to dock's contents
-     * @note added in 1.9
-     */
     QWidget* dockContents() { return dockWidgetContents; }
 
   public slots:
-    /**
-     * Changes undo stack which is displayed by undo view
-     */
-    void layerChanged( QgsMapLayer * layer );
+    void setCurrentLayer(CDTBaseObject* layer);
+    void onCurrentProjectClosed(CDTProject* project);
 
-    /**
-     * Slot to handle undo changed signal
-     */
+    void setMapCanvas(QgsMapCanvas* mapCanvas);
+    void setMapLayer( QgsMapLayer * layer );
     void undoChanged( bool value );
-
-    /**
-     * Slot to handle redo changed signal
-     */
     void redoChanged( bool value );
-
-    /**
-     * Slot to handle index changed signal
-     */
     void indexChanged( int curIndx );
-
-    /**
-     * Undo operation called from button push
-     */
     void undo();
-
-    /**
-     * Redo operation called from button push
-     */
     void redo();
 
   signals:

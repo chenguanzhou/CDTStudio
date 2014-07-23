@@ -6,7 +6,7 @@
 CDTProjectTabWidget::CDTProjectTabWidget(QWidget *parent) :
     QTabWidget(parent)
 {
-    connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
+    connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));    
 }
 
 void CDTProjectTabWidget::createNewProject()
@@ -117,6 +117,8 @@ bool CDTProjectTabWidget::closeTab(const int &index)
     int ret = tabItem->maybeSave();
     if(ret == QMessageBox::Cancel  )
         return true;
+
+    emit beforeTabClosed(tabItem->project);
 
     this->removeTab(index);
     delete tabItem;

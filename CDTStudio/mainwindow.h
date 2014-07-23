@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "recentfilesupervisor.h"
 #include "cdtattributedockwidget.h"
+#include "cdtdockwidget.h"
 #include "log4qt/logger.h"
 
 namespace Ui {
@@ -14,6 +15,7 @@ class QModelIndex;
 class QTreeView;
 class CDTSampleDockWidget;
 class CDTExtractionDockWidget;
+class CDTUndoWidget;
 class DialogConsole;
 class CDTProjectWidget;
 class QgsMapCanvas;
@@ -31,20 +33,27 @@ public:
 private:
     void initDockWidgets();
 
+    /// onCurrentProjectChanged
+    /// onProjectClosed
+    /// onLayerChanged
+    void registerDocks(Qt::DockWidgetArea area, CDTDockWidget* dock);
+
 public:
     static MainWindow               *getMainWindow();
     static QTreeView                *getProjectTreeView();
     static CDTSampleDockWidget      *getSampleDockWidget();
     static CDTAttributeDockWidget   *getAttributesDockWidget();
     static CDTExtractionDockWidget  *getExtractionDockWidget();
+    static CDTUndoWidget            *getUndoWidget();
     static CDTProjectWidget         *getCurrentProjectWidget();
     static QgsMapCanvas             *getCurrentMapCanvas();
 
     static bool setActiveImage(QUuid uuid);
-    static bool setActiveSegmentation(QUuid uuid);
+    static bool setActiveSegmentation(QUuid uuid);    
 signals:
     void loadSetting();
     void updateSetting();
+    void beforeProjectClosed(CDTProject*);
 public slots:
     void onCurrentTabChanged(int i);
 
@@ -67,6 +76,7 @@ private:
     CDTAttributeDockWidget  *dockWidgetAttributes;
     CDTSampleDockWidget     *dockWidgetSample;
     CDTExtractionDockWidget *dockWidgetExtraction;
+    CDTUndoWidget           *dockWidgetUndo;
 
     RecentFileSupervisor *supervisor;
     int recentFileCount;

@@ -12,6 +12,7 @@
 #include "cdtextractionlayer.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtclassification.h"
+#include "cdtundowidget.h"
 
 MainWindow* MainWindow::mainWindow = NULL;
 bool MainWindow::isLocked = false;
@@ -30,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dialogConsole = new  DialogConsole(this);
     recentFileToolButton = new QToolButton(this);
     mainWindow = this;
+    connect(ui->tabWidgetProject,SIGNAL(beforeTabClosed(CDTProject*)),this,SIGNAL(beforeProjectClosed(CDTProject*)));
 
     recentFileToolButton->setText(tr("&Recent"));
     recentFileToolButton->setToolButtonStyle(ui->mainToolBar->toolButtonStyle());
@@ -75,13 +77,20 @@ void MainWindow::initDockWidgets()
     dockWidgetSample->raise();
     dockWidgetSample->hide();
 
+
     dockWidgetExtraction = new CDTExtractionDockWidget(this);
-    dockWidgetExtraction->setAllowedAreas(Qt::RightDockWidgetArea|Qt::LeftDockWidgetArea);
-    this->addDockWidget(Qt::RightDockWidgetArea, (QDockWidget*)dockWidgetExtraction);
-    dockWidgetExtraction->setEnabled(false);
-    dockWidgetExtraction->raise();
-    dockWidgetExtraction->hide();
+    registerDocks(Qt::RightDockWidgetArea,dockWidgetExtraction);
+    dockWidgetUndo = new CDTUndoWidget(this,NULL);
+    registerDocks(Qt::RightDockWidgetArea,dockWidgetUndo);
 }
+
+void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
+{
+    connect(this,SIGNAL(beforeProjectClosed(CDTProject*)),dock,SLOT(onCurrentProjectClosed(CDTProject*)));
+    this->addDockWidget(area, dock);
+    dock->raise();
+}
+
 
 MainWindow *MainWindow::getMainWindow()
 {
@@ -106,6 +115,11 @@ CDTAttributeDockWidget *MainWindow::getAttributesDockWidget()
 CDTExtractionDockWidget *MainWindow::getExtractionDockWidget()
 {
     return mainWindow->dockWidgetExtraction;
+}
+
+CDTUndoWidget *MainWindow::getUndoWidget()
+{
+    return mainWindow->dockWidgetUndo;
 }
 
 CDTProjectWidget *MainWindow::getCurrentProjectWidget()
@@ -181,9 +195,8 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         CDTExtractionLayer* extractionLayer = (CDTExtractionLayer*)(item->correspondingObject());
         if (extractionLayer != NULL)
         {
-            dockWidgetExtraction->setEnabled(true);
             dockWidgetExtraction->show();
-            dockWidgetExtraction->setExtractionLayer(extractionLayer->id());
+            dockWidgetExtraction->setCurrentLayer(extractionLayer);
 
             extractionLayer->setOriginRenderer();
         }
@@ -195,7 +208,8 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         {
             dockWidgetSample->setSegmentationID(segmentationLayer->id());
             dockWidgetSample->show();            
-            dockWidgetAttributes->setSegmentationLayer(segmentationLayer);
+            dockWidgetAttributes->setCurrentLayer(segmentationLayer);
+//            dockWidgetAttributes->setSegmentationLayer(segmentationLayer);
             dockWidgetAttributes->show();
 
             segmentationLayer->setOriginRenderer();

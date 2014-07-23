@@ -26,6 +26,8 @@ CDTHistogramPlot::CDTHistogramPlot(QWidget *parent)
     initTools();
     initHistogram();
 
+    histogram->setRenderHint(QwtPlotItem::RenderAntialiased, true);
+
     QFrame *frame = (QFrame *)(this->canvas());
     frame->setFrameStyle(QFrame::NoFrame);
     QFont font("Courier");
@@ -79,6 +81,13 @@ void CDTHistogramPlot::replot()
         setAxisAutoScale(QwtPlot::yLeft);
         QwtPlot::replot();
     }
+}
+
+void CDTHistogramPlot::clear()
+{
+    QVector<QPointF> datas;
+    histogram->setSamples(datas);
+    QwtPlot::replot();
 }
 
 void CDTHistogramPlot::initHistogram()

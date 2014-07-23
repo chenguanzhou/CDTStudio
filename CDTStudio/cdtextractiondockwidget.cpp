@@ -4,12 +4,13 @@
 #include "cdtextractionlayer.h"
 #include <qgsvectordataprovider.h>
 #include "stable.h"
-#include <qgsundowidget.h>
+#include "mainwindow.h"
+#include "cdtundowidget.h"
 
 extern QList<CDTExtractionInterface *> extractionPlugins;
 
 CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
-    QDockWidget(parent),
+    CDTDockWidget(parent),
     modelExtractions    (new QSqlQueryModel(this)),
     actionStartEdit     (new QAction(QIcon(":/Icon/Start.png"),tr("Start Edit"),this)),
     actionRollBack      (new QAction(QIcon(":/Icon/Undo.png"),tr("Rollback"),this)),
@@ -20,7 +21,6 @@ CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
     vectorLayer (NULL),
     mapCanvas   (NULL),
     lastMapTool (NULL),
-    undoWidget  (NULL),
     ui(new Ui::CDTExtractionDockWidget)
 {
     ui->setupUi(this);
@@ -61,51 +61,40 @@ CDTExtractionDockWidget::EDITSTATE CDTExtractionDockWidget::editState() const
     return currentEditState;
 }
 
-void CDTExtractionDockWidget::setExtractionLayer(QString id)
+void CDTExtractionDockWidget::setCurrentLayer(CDTBaseObject *layer)
 {
+    if (layer == NULL)
+    {
+        this->setEnabled(false);
+        return;
+    }
+    if (layer->id() == currentExtractionID)
+        return;
+
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("select name,imageID from extractionlayer where id = ?");
-    query.addBindValue(id);
-    query.exec();
-
-    if (query.next()==false)
-        return;
-
-    QString name = query.value(0).toString();
-    QString imageID = query.value(1).toString();
-
-    query.prepare("select path from imagelayer where id = ?");
-    query.addBindValue(imageID);
+    query.prepare("select * from extractionlayer where id = ?");
+    query.addBindValue(layer->id().toString());
     query.exec();
     if (query.next()==false)
+    {
+        this->setEnabled(false);
         return;
-    currentImagePath = query.value(0).toString();
+    }
 
+    this->setEnabled(true);
+    setExtractionLayer(layer->id());
+}
 
-    modelExtractions->setQuery(QString("select name,id from extractionlayer where imageID = '%1'" )
-                               .arg(imageID),QSqlDatabase::database("category"));
-
-    int index = ui->comboBoxExtraction->findText(name);
-    if (index <0)
-        return;
-    ui->comboBoxExtraction->setCurrentIndex(index);
-    currentExtractionID = id;
-    CDTExtractionLayer *vecLayer = CDTExtractionLayer::getLayer(id);
-
-    if (vectorLayer)
-        disconnect(vectorLayer,SIGNAL(featureAdded(QgsFeatureId)),this,SLOT(onFeatureChanged()));
-
-    vectorLayer = (QgsVectorLayer*)(vecLayer->canvasLayer());
-    mapCanvas   = vecLayer->canvas();
-    connect(vectorLayer,SIGNAL(featureAdded(QgsFeatureId)),SLOT(onFeatureChanged()));
-
-    if (undoWidget)
-        delete undoWidget;
-    undoWidget = new QgsUndoWidget( this, mapCanvas );
-    undoWidget->setFeatures(NoDockWidgetFeatures);
-    undoWidget->layerChanged(vectorLayer);
-    ui->verticalLayout->addWidget(undoWidget);
-    undoWidget->show();
+void CDTExtractionDockWidget::onCurrentProjectClosed(CDTProject *project)
+{
+    modelExtractions->clear();
+    vectorLayer = NULL;
+    mapCanvas   = NULL;
+    lastMapTool = NULL;
+    currentMapTool = NULL;
+    currentImagePath.clear();
+    currentExtractionID.clear();
+    this->setEnabled(false);
 }
 
 void CDTExtractionDockWidget::updateDescription(int currentIndex)
@@ -207,7 +196,7 @@ void CDTExtractionDockWidget::start()
     lastMapTool = mapCanvas->mapTool();
     currentMapTool = extractionPlugins[ui->comboBoxMethod->currentIndex()]->mapTool(mapCanvas,currentImagePath,vectorLayer);
     mapCanvas->setMapTool(currentMapTool);
-    qDebug()<<vectorLayer->startEditing();
+    vectorLayer->startEditing();
     mapCanvas->refresh();
 
 
@@ -257,4 +246,46 @@ void CDTExtractionDockWidget::stop()
 
     setEditState(LOCKED);
     qDebug()<<"stop";
+}
+
+void CDTExtractionDockWidget::setExtractionLayer(QString id)
+{
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("select name,imageID from extractionlayer where id = ?");
+    query.addBindValue(id);
+    query.exec();
+
+    if (query.next()==false)
+        return;
+
+    QString name = query.value(0).toString();
+    QString imageID = query.value(1).toString();
+
+    query.prepare("select path from imagelayer where id = ?");
+    query.addBindValue(imageID);
+    query.exec();
+    if (query.next()==false)
+        return;
+    currentImagePath = query.value(0).toString();
+
+
+    modelExtractions->setQuery(QString("select name,id from extractionlayer where imageID = '%1'" )
+                               .arg(imageID),QSqlDatabase::database("category"));
+
+    int index = ui->comboBoxExtraction->findText(name);
+    if (index <0)
+        return;
+    ui->comboBoxExtraction->setCurrentIndex(index);
+    currentExtractionID = id;
+    CDTExtractionLayer *extractionLayer = CDTExtractionLayer::getLayer(id);
+
+    if (vectorLayer)
+        disconnect(vectorLayer,SIGNAL(featureAdded(QgsFeatureId)),this,SLOT(onFeatureChanged()));
+
+    vectorLayer = (QgsVectorLayer*)(extractionLayer->canvasLayer());
+    connect(vectorLayer,SIGNAL(featureAdded(QgsFeatureId)),SLOT(onFeatureChanged()));
+    mapCanvas   = extractionLayer->canvas();
+
+    CDTUndoWidget *undoWidget = MainWindow::getUndoWidget();
+    undoWidget->setCurrentLayer(extractionLayer);
 }

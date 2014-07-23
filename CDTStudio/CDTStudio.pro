@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     cdtextractionlayer.cpp \
     dialognewextraction.cpp \
     cdtextractiondockwidget.cpp \
-    cdtclassificationhelper.cpp
+    cdtclassificationhelper.cpp \
+    cdtundowidget.cpp
 
 
 HEADERS  += \    
@@ -68,7 +69,9 @@ HEADERS  += \
     dialognewextraction.h \
     cdtextractiondockwidget.h \
     ../Interfaces/cdtextractioninterface.h \
-    cdtclassificationhelper.h
+    cdtclassificationhelper.h \
+    cdtdockwidget.h \
+    cdtundowidget.h
 
 FORMS    += \
     mainwindow.ui \
@@ -87,7 +90,6 @@ INCLUDEPATH += \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
-    ../Tools/QgsWidgets\
     ../Tools\
     ../Tools/CDTClassifierAssessmentWidget
 
@@ -98,7 +100,6 @@ DEPENDPATH += \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
-    ../Tools/QgsWidgets\
     ../Tools/log4qt\
     ../Tools/CDTClassifierAssessmentWidget
 
@@ -121,7 +122,7 @@ LIBS += -lgdal_i
 }
 
 LIBS +=     -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
-             -lCDTFileSystem -lQgsWidgets -llog4qt -lCDTClassifierAssessmentWidget\
+             -lCDTFileSystem -llog4qt -lCDTClassifierAssessmentWidget\
             -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 #opencv
