@@ -17,6 +17,10 @@
 #include "qgsmaplayer.h"
 #include "qgsmapcanvas.h"
 #include "qgsapplication.h"
+#include "cdtsegmentationlayer.h"
+#include "cdtimagelayer.h"
+#include "cdtextractionlayer.h"
+#include "cdtclassification.h"
 
 CDTUndoWidget::CDTUndoWidget( QWidget * parent, QgsMapCanvas * mapCanvas )
     : CDTDockWidget( parent )
@@ -80,6 +84,9 @@ void CDTUndoWidget::destroyStack()
 
 void CDTUndoWidget::setCurrentLayer(CDTBaseObject *layer)
 {
+    if (qobject_cast<CDTSegmentationLayer*>(layer) ||
+        qobject_cast<CDTExtractionLayer*>(layer) ||
+        qobject_cast<CDTClassification*>(layer) )
     setMapCanvas(layer->canvas());
     setMapLayer(layer->canvasLayer());
 }

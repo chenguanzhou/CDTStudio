@@ -166,19 +166,28 @@ void MainWindow::on_treeViewProject_customContextMenuRequested(const QPoint &pos
 void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
 {
     QStandardItemModel* model = (QStandardItemModel*)(ui->treeViewProject->model());
-    if (model==NULL)     return;
+    if (model==NULL)
+        return;
+
     CDTProjectTreeItem *item =(CDTProjectTreeItem*)(model->itemFromIndex(index));
-    if (item==NULL)    return;
+    if (item==NULL)
+        return;
+
+    if (item->correspondingObject() == NULL)
+        return;
+
+    foreach (CDTDockWidget *dock, docks) {
+        dock->setCurrentLayer(item->correspondingObject());
+    }
 
     int type = item->getType();
     if (type == CDTProjectTreeItem::EXTRACTION)
     {
-        CDTExtractionLayer* extractionLayer = (CDTExtractionLayer*)(item->correspondingObject());
+        CDTExtractionLayer* extractionLayer = qobject_cast<CDTExtractionLayer*>(item->correspondingObject());
         if (extractionLayer != NULL)
         {
-            dockWidgetExtraction->show();
-            dockWidgetExtraction->setCurrentLayer(extractionLayer);
-
+//            dockWidgetExtraction->show();
+//            dockWidgetExtraction->setCurrentLayer(extractionLayer);
             extractionLayer->setOriginRenderer();
         }
     }
@@ -187,13 +196,10 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         CDTSegmentationLayer* segmentationLayer = qobject_cast<CDTSegmentationLayer*>(item->correspondingObject());
         if (segmentationLayer != NULL)
         {
-//            dockWidgetSample->setSegmentationID(segmentationLayer->id());
-            dockWidgetSample->setCurrentLayer(segmentationLayer);
-
-            dockWidgetAttributes->setCurrentLayer(segmentationLayer);
+//            dockWidgetSample->setCurrentLayer(segmentationLayer);
+//            dockWidgetAttributes->setCurrentLayer(segmentationLayer);
 
             segmentationLayer->setOriginRenderer();
-
             if (segmentationLayer->canvasLayer()!=NULL)
             {
                 CDTProjectWidget* widget = (CDTProjectWidget*)ui->tabWidgetProject->currentWidget();
@@ -216,11 +222,11 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     else if (type == CDTProjectTreeItem::IMAGE_ROOT)
     {
         //TODO  set current layer?
-        CDTImageLayer* imageLayer = qobject_cast<CDTImageLayer*>(item->correspondingObject());
-        if (imageLayer != NULL)
-        {
-            dockWidgetSample->setCurrentLayer(imageLayer);
-        }
+//        CDTImageLayer* imageLayer = qobject_cast<CDTImageLayer*>(item->correspondingObject());
+//        if (imageLayer != NULL)
+//        {
+//            dockWidgetSample->setCurrentLayer(imageLayer);
+//        }
     }
 }
 

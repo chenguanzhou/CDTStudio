@@ -71,18 +71,12 @@ void CDTExtractionDockWidget::setCurrentLayer(CDTBaseObject *layer)
     if (layer->id() == currentExtractionID)
         return;
 
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("select * from extractionlayer where id = ?");
-    query.addBindValue(layer->id().toString());
-    query.exec();
-    if (query.next()==false)
+    CDTExtractionLayer *extLayer = qobject_cast<CDTExtractionLayer *>(layer);
+    if (extLayer)
     {
-        this->setEnabled(false);
-        return;
+        this->setEnabled(true);
+        setExtractionLayer(layer->id());
     }
-
-    this->setEnabled(true);
-    setExtractionLayer(layer->id());
 }
 
 void CDTExtractionDockWidget::onCurrentProjectClosed()
