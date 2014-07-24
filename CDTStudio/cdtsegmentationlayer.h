@@ -60,6 +60,7 @@ signals:
 public slots:
     void onContextMenuRequest(QWidget *parent);
     void rename();
+    void editDBInfo();
     void exportShapefile();
     void remove();
 
@@ -89,11 +90,13 @@ private:
     QVector<CDTClassification *> classifications;
 
     QWidgetAction *actionChangeBorderColor;
-    QAction *actionRemoveSegmentation;
+    QAction *actionRename;
+    QAction *actionEditDBInfo;
     QAction *actionExportShapefile;
+    QAction *actionRemoveSegmentation;    
     QAction *actionAddClassifications;
     QAction *actionRemoveAllClassifications;
-    QAction *actionRename;
+
 
     CDTProjectTreeItem* paramRootItem;
     CDTProjectTreeItem* paramRootValueItem;

@@ -12,20 +12,29 @@ DialogNewSegmentation::DialogNewSegmentation(
         QWidget *parent) :
     QDialog(parent),
     fileSystem(fileSys),
-    ui(new Ui::DialogNewSegmentation),
-    inputImagePath(inputImage)
+    inputImagePath(inputImage),
+    isFinished(false),
+    isDBTested(false),
+    ui(new Ui::DialogNewSegmentation)
 {
-    ui->setupUi(this);
-    loadPlugins();
+    ui->setupUi(this);    
 
     markfileTempPath  = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".tif";
     shapefileTempPath = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".shp";
 
+    updateButtonBoxStatus();
     ui->labelProgress->hide();
     ui->progressBar->hide();
     ui->frameTotal->adjustSize();
     ui->colorPicker->setStandardColors();
     this->adjustSize();
+
+    connect(ui->comboBox,SIGNAL(currentIndexChanged(int)),SLOT(setSegMethod(int)));
+    connect(ui->pushButtonStart,SIGNAL(clicked()),SLOT(startSegmentation()));
+    connect(ui->pushButtonDBInfo,SIGNAL(clicked()),SLOT(setDBConnectionInfo()));
+
+    //should connect before load plugins
+    loadPlugins();
 }
 
 DialogNewSegmentation::~DialogNewSegmentation()
@@ -38,14 +47,14 @@ QString DialogNewSegmentation::name() const
     return ui->lineEditName->text();
 }
 
-QString DialogNewSegmentation::markfilePath() const
+QString DialogNewSegmentation::markfileID() const
 {
-    return markfileID;
+    return mkID;
 }
 
-QString DialogNewSegmentation::shapefilePath() const
+QString DialogNewSegmentation::shapefileID() const
 {
-    return shapefileID;
+    return shpID;
 }
 
 QColor DialogNewSegmentation::borderColor() const
@@ -63,9 +72,25 @@ QVariantMap DialogNewSegmentation::params() const
     return segmentationParams;
 }
 
-void DialogNewSegmentation::on_comboBox_currentIndexChanged(int index)
+CDTDatabaseConnInfo DialogNewSegmentation::databaseConnInfo() const
+{
+    return dbConnInfo;
+}
+
+void DialogNewSegmentation::setSegMethod(int index)
 {    
     ui->propertyWidget->setObject(segmentationPlugins[index]);
+}
+
+void DialogNewSegmentation::setDBConnectionInfo()
+{
+    DialogDBConnection dlg(dbConnInfo);
+    if (dlg.exec()==QDialog::Accepted)
+    {
+        dbConnInfo = dlg.dbConnectInfo();
+        isDBTested = true;
+        updateButtonBoxStatus();
+    }
 }
 
 void DialogNewSegmentation::loadPlugins()
@@ -76,32 +101,7 @@ void DialogNewSegmentation::loadPlugins()
     }
 }
 
-void DialogNewSegmentation::onFinished()
-{
-    disconnect(sender(),SIGNAL(finished()),this,SLOT(onFinished()));
-
-    markfileID  = QUuid::createUuid().toString();
-    shapefileID = QUuid::createUuid().toString();
-
-//    QString pathMarkZip = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".zip";
-//    CDTFileSystem::getRasterVSIZipFile(markfileTempPath,pathMarkZip,true);
-
-    fileSystem->registerFile(shapefileID,shapefileTempPath,QString(),QString(),
-                             CDTFileSystem::getShapefileAffaliated(shapefileTempPath));
-    fileSystem->registerFile(markfileID,markfileTempPath,QString(),QString(),
-                             CDTFileSystem::getRasterAffaliated(markfileTempPath));
-    qDebug()<<CDTFileSystem::getRasterAffaliated(markfileTempPath);
-
-    ui->buttonBox->setStandardButtons(ui->buttonBox->standardButtons()|QDialogButtonBox::Ok);
-    ui->labelProgress->hide();
-    ui->progressBar->hide();
-    ui->frameTotal->adjustSize();
-    this->adjustSize();    
-    ui->frameTotal->setEnabled(true);
-    ui->pushButtonStart->setEnabled(true);
-}
-
-void DialogNewSegmentation::on_pushButtonStart_clicked()
+void DialogNewSegmentation::startSegmentation()
 {
     ui->progressBar->show();
     ui->labelProgress->show();
@@ -111,10 +111,38 @@ void DialogNewSegmentation::on_pushButtonStart_clicked()
     interface->setMarkfilePath(markfileTempPath);
     interface->setShapefilePath(shapefileTempPath);
 
-    connect(interface,SIGNAL(finished()),this,SLOT(onFinished()));
+    connect(interface,SIGNAL(finished()),this,SLOT(onSegFinished()));
     interface->startSegmentation(ui->progressBar,ui->labelProgress);
 
     segmentationParams = interface->params();
     ui->frameTotal->setEnabled(false);
     ui->pushButtonStart->setEnabled(false);
+}
+
+void DialogNewSegmentation::onSegFinished()
+{
+    disconnect(sender(),SIGNAL(finished()),this,SLOT(onSegFinished()));
+
+    mkID  = QUuid::createUuid().toString();
+    shpID = QUuid::createUuid().toString();
+
+    fileSystem->registerFile(shpID,shapefileTempPath,QString(),QString(),
+                             CDTFileSystem::getShapefileAffaliated(shapefileTempPath));
+    fileSystem->registerFile(mkID,markfileTempPath,QString(),QString(),
+                             CDTFileSystem::getRasterAffaliated(markfileTempPath));
+    qDebug()<<CDTFileSystem::getRasterAffaliated(markfileTempPath);
+
+    isFinished = true;
+    updateButtonBoxStatus();
+    ui->labelProgress->hide();
+    ui->progressBar->hide();
+    ui->frameTotal->adjustSize();
+    this->adjustSize();    
+    ui->frameTotal->setEnabled(true);
+    ui->pushButtonStart->setEnabled(true);
+}
+
+void DialogNewSegmentation::updateButtonBoxStatus()
+{
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isFinished&&isDBTested);
 }

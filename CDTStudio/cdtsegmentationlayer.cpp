@@ -33,6 +33,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
       actionExportShapefile(new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this)),
       actionRemoveAllClassifications(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Classifications"),this)),
       actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Segmentation"),this)),
+      actionEditDBInfo(new QAction(QIcon(":/Icon/DataSource.png"),tr("Edit Attribute DB Source"),this)),
       actionChangeBorderColor(new QWidgetAction(this))
 {
     layers.push_back(this);
@@ -52,11 +53,12 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
     connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
 
+    connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
+    connect(actionEditDBInfo,SIGNAL(triggered()),SLOT(editDBInfo()));
+    connect(actionExportShapefile,SIGNAL(triggered()),SLOT(exportShapefile()));
     connect(actionRemoveSegmentation,SIGNAL(triggered()),SLOT(remove()));
     connect(actionAddClassifications,SIGNAL(triggered()),SLOT(addClassification()));
-    connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));
-    connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
-    connect(actionExportShapefile,SIGNAL(triggered()),SLOT(exportShapefile()));
+    connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));    
 }
 
 CDTSegmentationLayer::~CDTSegmentationLayer()
@@ -84,6 +86,7 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     QMenu *menu =new QMenu(parent);
     menu->addAction(actionChangeBorderColor);
     menu->addAction(actionRename);
+    menu->addAction(actionEditDBInfo);
     menu->addAction(actionExportShapefile);
     menu->addSeparator();
     menu->addAction(actionRemoveSegmentation);
@@ -106,6 +109,18 @@ void CDTSegmentationLayer::rename()
                 this->name(), &ok);
     if (ok && !text.isEmpty())
         setName(text);
+}
+
+void CDTSegmentationLayer::editDBInfo()
+{
+    DialogDBConnection dlg(databaseURL());
+    if (dlg.exec()==QDialog::Accepted)
+    {
+        if (dlg.dbConnectInfo() == databaseURL())
+            return;
+        //TODO  update AttributDockWidget
+        setDatabaseURL(dlg.dbConnectInfo());
+    }
 }
 
 void CDTSegmentationLayer::exportShapefile()

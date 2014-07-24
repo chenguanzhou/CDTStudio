@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QMap>
+#include "dialogdbconnection.h"
 
 namespace Ui {
 class DialogNewSegmentation;
@@ -22,16 +23,19 @@ public:
     ~DialogNewSegmentation();
 
     QString name() const;
-    QString markfilePath() const;
-    QString shapefilePath() const;
+    QString markfileID() const;
+    QString shapefileID() const;
     QColor  borderColor() const;
     QString method() const;
     QVariantMap params() const;
+    CDTDatabaseConnInfo databaseConnInfo()const;
 
 private slots:
-    void on_comboBox_currentIndexChanged(int index);
-    void onFinished();
-    void on_pushButtonStart_clicked();
+    void setSegMethod(int index);
+    void setDBConnectionInfo();
+    void startSegmentation();
+    void onSegFinished();
+    void updateButtonBoxStatus();
 
 private:
     Ui::DialogNewSegmentation *ui;
@@ -41,8 +45,12 @@ private:
 
     QString markfileTempPath;
     QString shapefileTempPath;
-    QString markfileID;
-    QString shapefileID;
+    QString mkID;
+    QString shpID;
+    CDTDatabaseConnInfo dbConnInfo;
+
+    bool isFinished;
+    bool isDBTested;
 
     void loadPlugins();
 };

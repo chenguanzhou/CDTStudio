@@ -48,9 +48,6 @@ public:
 
     CDTSegmentationLayer *segmentationLayer()const;
 
-signals:
-    void databaseURLChanged(CDTDatabaseConnInfo);
-
 public slots:    
     void setCurrentLayer(CDTBaseObject* layer);
     void onCurrentProjectClosed();
@@ -61,9 +58,7 @@ public slots:
     void clear();
 
 private slots:
-    void onActionEditDataSourceTriggered();
     void onActionGenerateAttributesTriggered();
-    void onDatabaseChanged(CDTDatabaseConnInfo connInfo);
     void onItemClicked(QModelIndex index);
 private:
     static QStringList attributeNames();

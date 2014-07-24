@@ -19,16 +19,11 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
 
     QToolBar *toolBar = new QToolBar(this);
     toolBar->setIconSize(QSize(24,24));
-    QAction *actionEditDataSource = new QAction(QIcon(":/Icon/DataSource.png"),tr("Edit Data Source"),toolBar);
-    connect(actionEditDataSource,SIGNAL(triggered()),this,SLOT(onActionEditDataSourceTriggered()));
-    toolBar->addAction(actionEditDataSource);
+    ui->horizontalLayout->setMenuBar(toolBar);
 
     QAction *actionGenerateAttributes = new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),toolBar);
     connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
     toolBar->addAction(actionGenerateAttributes);
-
-    ui->horizontalLayout->setMenuBar(toolBar);
-    connect(this,SIGNAL(databaseURLChanged(CDTDatabaseConnInfo)),SLOT(onDatabaseChanged(CDTDatabaseConnInfo)));
 
     QSettings settings("WHU","CDTStudio");
     ui->splitter->restoreGeometry(settings.value("CDTAttributeDockWidget/geometry").toByteArray());
@@ -54,15 +49,13 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseObject *layer)
         return;
 
     //TODO  Process other layer type;
+    //TODO  compare _dbConnInfo for whether change
 
     _segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer);
     if (_segmentationLayer)
     {
         setDatabaseURL(_segmentationLayer->databaseURL());
-        this->setEnabled(true);
     }
-
-
 }
 
 void CDTAttributeDockWidget::onCurrentProjectClosed()
@@ -74,13 +67,28 @@ void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
 {
     if (_dbConnInfo == url)return;
     _dbConnInfo = url;
-    emit databaseURLChanged(url);
+    clearTables();
+    updateTable();
+    this->setEnabled(true);
 }
 
 void CDTAttributeDockWidget::updateTable()
-{   
+{       
+    QSqlDatabase db = QSqlDatabase::addDatabase(_dbConnInfo.dbType,"attribute");
+    db.setDatabaseName(_dbConnInfo.dbName);
+    db.setHostName(_dbConnInfo.hostName);
+    db.setPort(_dbConnInfo.port);
+
+    if (!db.open(_dbConnInfo.username, _dbConnInfo.password)) {
+        QSqlError err = db.lastError();
+        db = QSqlDatabase();
+        QSqlDatabase::removeDatabase("attribute");
+        QMessageBox::critical(this,tr("Error"),tr("Open database failed!\n information:")+err.text());
+        return;
+    }
+
     QStringList attributes = attributeNames();
-    QStringList originalTables = QSqlDatabase::database("attribute").tables();
+    QStringList originalTables = db.tables();
     QStringList tableNames;
     foreach (QString name, originalTables) {
         if (attributes.contains(name))
@@ -88,10 +96,11 @@ void CDTAttributeDockWidget::updateTable()
     }
     foreach (QString tableName, tableNames) {
         QTableView* widget = new QTableView(ui->tabWidget);
-        QSqlTableModel* model = new QSqlTableModel(widget,QSqlDatabase::database("attribute"));
+        QSqlTableModel* model = new QSqlTableModel(widget,db);
         model->setTable(tableName);
         model->select();
         widget->setModel(model);
+        widget->setSelectionMode(QTableView::SingleSelection);
         widget->resizeColumnsToContents();
         widget->resizeRowsToContents();
         widget->setEditTriggers(QTableView::NoEditTriggers);
@@ -112,18 +121,6 @@ void CDTAttributeDockWidget::clear()
     _segmentationLayer =NULL;
 }
 
-void CDTAttributeDockWidget::onActionEditDataSourceTriggered()
-{
-    DialogDBConnection dlg(_dbConnInfo);
-    if (dlg.exec()==QDialog::Accepted)
-    {
-        if (dlg.dbConnectInfo() == _dbConnInfo)
-            return;
-        _segmentationLayer->setDatabaseURL(dlg.dbConnectInfo());
-        setDatabaseURL(dlg.dbConnectInfo());
-    }
-}
-
 void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
 {
     clearTables();
@@ -131,30 +128,6 @@ void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
     DialogGenerateAttributes dlg(segmentationLayer()->id(),layer->bandCount());
     dlg.exec();
     updateTable();
-}
-
-void CDTAttributeDockWidget::onDatabaseChanged(CDTDatabaseConnInfo connInfo)
-{
-    clearTables();
-    if (connInfo.isNull())
-        return;
-
-    _dbConnInfo = connInfo;
-    QSqlDatabase db = QSqlDatabase::addDatabase(connInfo.dbType,"attribute");
-    db.setDatabaseName(connInfo.dbName);
-    db.setHostName(connInfo.hostName);
-    db.setPort(connInfo.port);
-
-    if (!db.open(connInfo.username, connInfo.password)) {
-        QSqlError err = db.lastError();
-        db = QSqlDatabase();
-        QSqlDatabase::removeDatabase("attribute");
-        QMessageBox::critical(this,tr("Error"),tr("Open database failed!\n information:")+err.text());
-    }
-    else
-    {
-        updateTable();
-    }
 }
 
 void CDTAttributeDockWidget::onItemClicked(QModelIndex index)

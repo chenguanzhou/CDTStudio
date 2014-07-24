@@ -12,6 +12,9 @@
 //TODO  ORM
 //TODO  Opacity for layers
 //TODO  Attribute Widget Closable
+//TODO  MulriThread for reading db
+//TODO  Layers property and actions(QPropertyEditor)
+//TODO  Cross cursor when edit qgsmancanvas
 
 //BUG   Same name
 
