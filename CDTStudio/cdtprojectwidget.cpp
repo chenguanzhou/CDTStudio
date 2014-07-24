@@ -35,12 +35,12 @@ CDTProjectWidget::~CDTProjectWidget()
     file.close();
 }
 
-void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
+void CDTProjectWidget::onContextMenu(QPoint , QModelIndex index)
 {
     CDTProjectTreeItem *item =(CDTProjectTreeItem*)treeModel->itemFromIndex(index);
     if(item ==NULL)
         return;
-    int type = item->getType();
+//    int type = item->getType();
 
 
     CDTBaseObject* correspondingObject = item->correspondingObject();

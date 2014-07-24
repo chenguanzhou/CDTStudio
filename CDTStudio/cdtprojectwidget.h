@@ -31,7 +31,7 @@ public:
 signals:
     void projectChanged();
 public slots:
-    void onContextMenu(QPoint pt,QModelIndex index);
+    void onContextMenu(QPoint, QModelIndex index);
     void onProjectChanged();
     bool saveProject(QString &path);
 

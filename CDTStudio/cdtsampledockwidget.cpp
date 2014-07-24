@@ -20,7 +20,7 @@ QDataStream &operator >>(QDataStream &in, CategoryInformation &categoryInformati
 }
 
 CDTSampleDockWidget::CDTSampleDockWidget(QWidget *parent) :
-    QDockWidget(parent),
+    CDTDockWidget(parent),
     ui(new Ui::CDTSampleDockWidget),
     categoryModel(new QSqlRelationalTableModel(this,QSqlDatabase::database("category"))),
     sampleModel(new QSqlQueryModel(this)),
@@ -92,9 +92,11 @@ void CDTSampleDockWidget::updateListView()
     int index = ui->comboBox->currentIndex();
     if (index<0) return;
 
-    QSqlQueryModel * model = (QSqlQueryModel *)(ui->comboBox->model());
-    QString segmentationID = model->data(model->index(index,1)).toString();
+    QSqlQueryModel * model = qobject_cast<QSqlQueryModel*>(ui->comboBox->model());
+    if (model == NULL)
+        return;
 
+    QString segmentationID = model->data(model->index(index,1)).toString();
     sampleModel->setQuery("select name,id from sample_segmentation where segmentationid='"+segmentationID+"'",QSqlDatabase::database("category"));
     if (sampleModel->rowCount()>0)
         ui->listView->setCurrentIndex(sampleModel->index(0,0));
@@ -102,11 +104,26 @@ void CDTSampleDockWidget::updateListView()
 
 void CDTSampleDockWidget::clear()
 {
-    sampleModel->setQuery("select NULL");
+    sampleModel->clear();
     categoryModel->clear();
+    ui->comboBox->clear();
+
+    QList<CDTImageLayer*> layers = CDTImageLayer::getLayers();
+    foreach (CDTImageLayer* layer, layers) {
+        if (layer) disconnect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                              layer,SIGNAL(imageLayerChanged()));
+        if (layer) disconnect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
+                              layer,SIGNAL(imageLayerChanged()));
+        if (layer) disconnect(categoryModel,SIGNAL(beforeDelete(int)),
+                              layer,SIGNAL(imageLayerChanged()));
+    }
 
     imageLayerID = QUuid();
-    if (currentMapTool) delete currentMapTool;
+    if (currentMapTool)
+    {
+        delete currentMapTool;
+        currentMapTool = NULL;
+    }
 }
 
 void CDTSampleDockWidget::setImageID(QUuid uuid)
@@ -115,32 +132,17 @@ void CDTSampleDockWidget::setImageID(QUuid uuid)
         return;
     imageLayerID = uuid;
 
-    QList<CDTImageLayer*> layers = CDTImageLayer::getLayers();
-    foreach (CDTImageLayer* layer, layers) {
-        if (layer->id()==uuid)
-        {
-            connect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                    layer,SIGNAL(imageLayerChanged()));
-            connect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
-                    layer,SIGNAL(imageLayerChanged()));
-            connect(categoryModel,SIGNAL(beforeDelete(int)),
-                    layer,SIGNAL(imageLayerChanged()));
-            connect(layer,SIGNAL(destroyed()),SLOT(clear()));
-        }
-        else
-        {
-            disconnect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                       layer,SIGNAL(imageLayerChanged()));
-            disconnect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
-                       layer,SIGNAL(imageLayerChanged()));
-            disconnect(categoryModel,SIGNAL(beforeDelete(int)),
-                       layer,SIGNAL(imageLayerChanged()));
-            disconnect(layer,SIGNAL(destroyed()),this,SLOT(clear()));
-        }
-    }
+    CDTImageLayer* layer = CDTImageLayer::getLayer(imageLayerID);
+
+    connect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            layer,SIGNAL(imageLayerChanged()));
+    connect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
+            layer,SIGNAL(imageLayerChanged()));
+    connect(categoryModel,SIGNAL(beforeDelete(int)),
+            layer,SIGNAL(imageLayerChanged()));
 
     ui->toolButtonEditSample->setChecked(false);
-    updateComboBox();
+//    updateComboBox();
     updateTable();
 }
 
@@ -150,13 +152,16 @@ void CDTSampleDockWidget::setSegmentationID(QUuid uuid)
     QSqlQuery query(db);
     bool ret = query.exec("select imageID,name from segmentationlayer where id  = '"+ uuid +"'");
     if (!ret)
+    {
         qDebug()<<query.lastError().text();
+        return;
+    }
     query.next();
     QString imageID = query.value(0).toString();
     setImageID(imageID);
+    updateComboBox();
     QString segName = query.value(1).toString();
     ui->comboBox->setCurrentIndex(ui->comboBox->findText(segName));
-
 }
 
 bool CDTSampleDockWidget::isValid()
@@ -184,6 +189,44 @@ QUuid CDTSampleDockWidget::currentCategoryID()
     if (id.isNull())
         return QUuid();
     return QUuid(id);
+}
+
+void CDTSampleDockWidget::setCurrentLayer(CDTBaseObject *layer)
+{
+    clear();
+    if (layer == NULL)
+    {
+        this->setEnabled(false);
+        return;
+    }
+
+    if (layer->id()==imageLayerID)
+    {
+        qDebug()<<"same imageLayerID";
+        return;
+    }
+
+    CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer);
+    if (segLayer)
+    {
+        setSegmentationID(layer->id());
+        this->setEnabled(true);
+        return;
+    }
+
+    CDTImageLayer *imgLayer = qobject_cast<CDTImageLayer*>(layer);
+    if (imgLayer)
+    {
+        setImageID(layer->id());
+        this->setEnabled(true);
+        return;
+    }
+}
+
+void CDTSampleDockWidget::onCurrentProjectClosed()
+{
+    clear();
+    this->setEnabled(false);
 }
 
 void CDTSampleDockWidget::on_actionInsert_triggered()
@@ -230,7 +273,7 @@ void CDTSampleDockWidget::on_actionSubmit_triggered()
     ui->tableView->resizeRowsToContents();
 }
 
-void CDTSampleDockWidget::onPrimeInsert(int row, QSqlRecord &record)
+void CDTSampleDockWidget::onPrimeInsert(int , QSqlRecord &record)
 {
     record.setValue(0,QUuid::createUuid().toString());
     record.setValue(1,tr("New Class"));
@@ -255,13 +298,6 @@ void CDTSampleDockWidget::on_actionEdit_triggered(bool checked)
         ui->tableView->setEditTriggers(QTableView::DoubleClicked|QTableView::AnyKeyPressed);
     else
         ui->tableView->setEditTriggers(QTableView::NoEditTriggers);
-}
-
-
-
-void CDTSampleDockWidget::on_toolButtonRefresh_clicked()
-{
-    updateComboBox();
 }
 
 void CDTSampleDockWidget::on_comboBox_currentIndexChanged(int index)
@@ -347,7 +383,6 @@ void CDTSampleDockWidget::on_listView_clicked(const QModelIndex &index)
     {
         QString sampleid   = sampleModel->data(sampleModel->index(index.row(),1)).toString();
         currentMapTool->setSampleID(sampleid);
-
     }
 }
 

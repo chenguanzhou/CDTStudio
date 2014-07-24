@@ -53,20 +53,22 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseObject *layer)
     if (_segmentationLayer == layer)
         return;
 
-    if (_segmentationLayer)
-    {
-        disconnect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
-    }
+    //TODO  Process other layer type;
+
+//    if (_segmentationLayer)
+//    {
+//        disconnect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
+//    }
 
     _segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer);
-    connect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
+//    connect(_segmentationLayer,SIGNAL(destroyed()),this,SLOT(clear()));
     setDatabaseURL(_segmentationLayer->databaseURL());
     this->setEnabled(true);
 }
 
-void CDTAttributeDockWidget::onCurrentProjectClosed(CDTProject *project)
+void CDTAttributeDockWidget::onCurrentProjectClosed()
 {
-
+    clear();
 }
 
 void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)

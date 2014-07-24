@@ -56,7 +56,7 @@ class CDTUndoWidget : public CDTDockWidget
 
   public slots:
     void setCurrentLayer(CDTBaseObject* layer);
-    void onCurrentProjectClosed(CDTProject* project);
+    void onCurrentProjectClosed();
 
     void setMapCanvas(QgsMapCanvas* mapCanvas);
     void setMapLayer( QgsMapLayer * layer );

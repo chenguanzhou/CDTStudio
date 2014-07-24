@@ -85,7 +85,7 @@ void CDTExtractionDockWidget::setCurrentLayer(CDTBaseObject *layer)
     setExtractionLayer(layer->id());
 }
 
-void CDTExtractionDockWidget::onCurrentProjectClosed(CDTProject *project)
+void CDTExtractionDockWidget::onCurrentProjectClosed()
 {
     modelExtractions->clear();
     vectorLayer = NULL;
@@ -97,7 +97,7 @@ void CDTExtractionDockWidget::onCurrentProjectClosed(CDTProject *project)
     this->setEnabled(false);
 }
 
-void CDTExtractionDockWidget::updateDescription(int currentIndex)
+void CDTExtractionDockWidget::updateDescription(int )
 {
     ui->textBrowser->setText(description.value(ui->comboBoxMethod->currentText()));
 }

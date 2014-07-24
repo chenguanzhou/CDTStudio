@@ -48,8 +48,6 @@ public:
     static CDTProjectWidget         *getCurrentProjectWidget();
     static QgsMapCanvas             *getCurrentMapCanvas();
 
-    static bool setActiveImage(QUuid uuid);
-    static bool setActiveSegmentation(QUuid uuid);    
 signals:
     void loadSetting();
     void updateSetting();
@@ -84,6 +82,7 @@ private:
     QStringList recentFilePaths;
     DialogConsole* dialogConsole;
 
+    QList<CDTDockWidget*> docks;
     static MainWindow* mainWindow;
     static bool isLocked;
 };

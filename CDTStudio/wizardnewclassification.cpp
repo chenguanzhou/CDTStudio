@@ -309,7 +309,9 @@ int WizardNewClassification::nextId() const
             return -1;
     case 2:
         return -1;
-    }
+    default://Never used!!
+        return -1;
+    }    
 }
 
 void WizardNewClassification::initializePage(int id )
@@ -410,7 +412,7 @@ void WizardNewClassification::updateHistogram()
     QString plotName = modelSelectedFeature->stringList().at(index);
     QStringList temp = plotName.split("->");
 
-    bool isOrigin = ui->radioButtonOriginal->isChecked();
+//    bool isOrigin = ui->radioButtonOriginal->isChecked();
 
     ui->qwtPlot->setDatabase(QSqlDatabase::database("cls"));
     ui->qwtPlot->setTableName(temp[0]);

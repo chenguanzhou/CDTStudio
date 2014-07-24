@@ -13,9 +13,10 @@ public:
 
 signals:
 
+    //TODO  Add Lock
 public slots:
     virtual void setCurrentLayer(CDTBaseObject* layer) = 0;
-    virtual void onCurrentProjectClosed(CDTProject* project) = 0;
+    virtual void onCurrentProjectClosed() = 0;
 };
 
 #endif // CDTDOCKWIDGET_H

@@ -8,6 +8,7 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_layout.h>
 #include <qwt_picker_machine.h>
+#include <qwt_scale_widget.h>
 #include <qwt_symbol.h>
 #include <QtSql>
 
@@ -87,6 +88,7 @@ void CDTHistogramPlot::clear()
 {
     QVector<QPointF> datas;
     histogram->setSamples(datas);
+    this->setTitle(QString::null);
     QwtPlot::replot();
 }
 

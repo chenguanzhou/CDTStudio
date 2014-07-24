@@ -57,8 +57,6 @@ void CDTUndoWidget::setUndoStack( QUndoStack* undoStack )
     setWidget( dockWidgetContents );
     connect( mUndoStack, SIGNAL( canUndoChanged( bool ) ), this, SLOT( undoChanged( bool ) ) );
     connect( mUndoStack, SIGNAL( canRedoChanged( bool ) ), this, SLOT( redoChanged( bool ) ) );
-
-    // gets triggered also when a new command is added to stack, and twice when clicking a command in QUndoView
     connect( mUndoStack, SIGNAL( indexChanged( int ) ), this, SLOT( indexChanged( int ) ) );
 
     undoButton->setDisabled( !mUndoStack->canUndo() );
@@ -69,7 +67,6 @@ void CDTUndoWidget::destroyStack()
 {
     if ( mUndoStack != NULL )
     {
-        // do not clear undo stack here, just null pointer
         mUndoStack = NULL;
     }
     if ( mUndoView != NULL )
@@ -83,12 +80,11 @@ void CDTUndoWidget::destroyStack()
 
 void CDTUndoWidget::setCurrentLayer(CDTBaseObject *layer)
 {
-    qDebug()<<"setCurrentLayer";
     setMapCanvas(layer->canvas());
     setMapLayer(layer->canvasLayer());
 }
 
-void CDTUndoWidget::onCurrentProjectClosed(CDTProject *project)
+void CDTUndoWidget::onCurrentProjectClosed()
 {
     destroyStack();
 }

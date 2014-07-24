@@ -53,7 +53,7 @@ signals:
 
 public slots:    
     void setCurrentLayer(CDTBaseObject* layer);
-    void onCurrentProjectClosed(CDTProject* project);
+    void onCurrentProjectClosed();
 
     void setDatabaseURL(CDTDatabaseConnInfo url);    
     void updateTable();

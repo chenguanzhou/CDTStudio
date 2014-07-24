@@ -67,28 +67,26 @@ MainWindow::~MainWindow()
 
 void MainWindow::initDockWidgets()
 {
-    dockWidgetAttributes = new CDTAttributeDockWidget(this);
-    this->addDockWidget(Qt::BottomDockWidgetArea, dockWidgetAttributes);
-    dockWidgetAttributes->raise();
-    dockWidgetAttributes->hide();
-
     dockWidgetSample = new CDTSampleDockWidget(this);
-    this->addDockWidget(Qt::RightDockWidgetArea, (QDockWidget*)dockWidgetSample);
-    dockWidgetSample->raise();
-    dockWidgetSample->hide();
+    registerDocks(Qt::RightDockWidgetArea,dockWidgetSample);
 
+    dockWidgetAttributes = new CDTAttributeDockWidget(this);
+    registerDocks(Qt::BottomDockWidgetArea,dockWidgetAttributes);
 
     dockWidgetExtraction = new CDTExtractionDockWidget(this);
     registerDocks(Qt::RightDockWidgetArea,dockWidgetExtraction);
+
     dockWidgetUndo = new CDTUndoWidget(this,NULL);
-    registerDocks(Qt::RightDockWidgetArea,dockWidgetUndo);
+    registerDocks(Qt::BottomDockWidgetArea,dockWidgetUndo);
 }
 
 void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
 {
-    connect(this,SIGNAL(beforeProjectClosed(CDTProject*)),dock,SLOT(onCurrentProjectClosed(CDTProject*)));
+    connect(this,SIGNAL(beforeProjectClosed(CDTProject*)),dock,SLOT(onCurrentProjectClosed()));
+    connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),dock,SLOT(onCurrentProjectClosed()));
     this->addDockWidget(area, dock);
     dock->raise();
+    docks.push_back(dock);
 }
 
 
@@ -134,30 +132,13 @@ QgsMapCanvas *MainWindow::getCurrentMapCanvas()
     return projectWidget->mapCanvas;
 }
 
-bool MainWindow::setActiveImage(QUuid uuid)
-{
-    if (isLocked)
-    {
-        qWarning()<<tr("It's locked!");
-        return false;
-    }
-
-    getSampleDockWidget()->setImageID(uuid);
-//    ui->dockWidgetAttributes->show();
-//    ui->dockWidgetTrainingSample->show();
-    return true;
-}
-
-bool MainWindow::setActiveSegmentation(QUuid uuid)
-{
-//    ui->dockWidgetAttributes->show();
-//    ui->dockWidgetTrainingSample->show();
-    return true;
-}
-
 void MainWindow::onCurrentTabChanged(int i)
 {
-    if(i==-1)   return ;    
+    if(i<0)
+    {
+        ui->treeViewProject->setModel(NULL);
+        return ;
+    }
 
     CDTProjectWidget* projectWidget = (CDTProjectWidget*)(ui->tabWidgetProject->currentWidget());
     ui->treeViewProject->setModel(projectWidget->treeModel);
@@ -203,14 +184,13 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     }
     else if (type == CDTProjectTreeItem::SEGMENTION)
     {
-        CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(item->correspondingObject());
+        CDTSegmentationLayer* segmentationLayer = qobject_cast<CDTSegmentationLayer*>(item->correspondingObject());
         if (segmentationLayer != NULL)
         {
-            dockWidgetSample->setSegmentationID(segmentationLayer->id());
-            dockWidgetSample->show();            
+//            dockWidgetSample->setSegmentationID(segmentationLayer->id());
+            dockWidgetSample->setCurrentLayer(segmentationLayer);
+
             dockWidgetAttributes->setCurrentLayer(segmentationLayer);
-//            dockWidgetAttributes->setSegmentationLayer(segmentationLayer);
-            dockWidgetAttributes->show();
 
             segmentationLayer->setOriginRenderer();
 
@@ -224,7 +204,7 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     }
     else if (type == CDTProjectTreeItem::CLASSIFICATION)
     {
-        CDTClassification* classificationLayer = (CDTClassification*)(item->correspondingObject());
+        CDTClassification* classificationLayer = qobject_cast<CDTClassification*>(item->correspondingObject());
         if (classificationLayer != NULL)
         {
             CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());
@@ -235,12 +215,11 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     }
     else if (type == CDTProjectTreeItem::IMAGE_ROOT)
     {
-        //set current layer?
-        CDTImageLayer* imageLayer = (CDTImageLayer*)(item->correspondingObject());
+        //TODO  set current layer?
+        CDTImageLayer* imageLayer = qobject_cast<CDTImageLayer*>(item->correspondingObject());
         if (imageLayer != NULL)
         {
-            dockWidgetSample->show();
-            dockWidgetSample->setImageID(imageLayer->id());
+            dockWidgetSample->setCurrentLayer(imageLayer);
         }
     }
 }

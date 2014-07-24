@@ -27,10 +27,10 @@ public:
 
 public slots:
     void setCurrentLayer(CDTBaseObject* layer);
-    void onCurrentProjectClosed(CDTProject* project);
+    void onCurrentProjectClosed();
 
 
-    void updateDescription(int currentIndex);
+    void updateDescription(int);
     void setEditState(EDITSTATE state);
     void setGeometryModified(bool modified);
 

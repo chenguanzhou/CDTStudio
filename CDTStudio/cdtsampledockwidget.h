@@ -1,7 +1,8 @@
 #ifndef CDTSAMPLEDOCKWIDGET_H
 #define CDTSAMPLEDOCKWIDGET_H
 
-#include <QDockWidget>
+#include "cdtdockwidget.h"
+#include <QItemDelegate>
 #include <QColorDialog>
 
 namespace Ui {
@@ -49,8 +50,8 @@ public:
         painter->drawRect(option.rect);
     }
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                          const QModelIndex &index) const
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &,
+                          const QModelIndex &) const
     {
         QColorDialog *dlg = new QColorDialog(parent);
         return dlg;
@@ -68,8 +69,8 @@ public:
         model->setData(index,dlg->currentColor()) ;
     }
     void updateEditorGeometry(QWidget * editor,
-                              const QStyleOptionViewItem & option,
-                              const QModelIndex & index) const
+                              const QStyleOptionViewItem & ,
+                              const QModelIndex & ) const
     {
         QRect scr = QApplication::desktop()->screenGeometry();
         editor->move( scr.center() - editor->mapToGlobal( editor->rect().center()) );
@@ -90,7 +91,7 @@ public:
     }
 };*/
 
-class CDTSampleDockWidget : public QDockWidget
+class CDTSampleDockWidget : public CDTDockWidget
 {
     Q_OBJECT
 
@@ -98,16 +99,17 @@ public:
     explicit CDTSampleDockWidget(QWidget *parent = 0);
     ~CDTSampleDockWidget();
 
-    void setImageID(QUuid uuid);
-    void setSegmentationID(QUuid uuid);
     bool isValid();
     QUuid currentCategoryID();
 
-signals:
-    void segmentationChanged();
-    void imageChanged();
+private:
+    void setImageID(QUuid uuid);
+    void setSegmentationID(QUuid uuid);
 
 public slots:
+    void setCurrentLayer(CDTBaseObject* layer);
+    void onCurrentProjectClosed();
+
     void updateTable();
     void updateComboBox();
     void updateListView();
@@ -119,18 +121,16 @@ private slots:
     void on_actionRemove_All_triggered();
     void on_actionRevert_triggered();
     void on_actionSubmit_triggered();
-    void onPrimeInsert(int row,QSqlRecord& record);
+    void onPrimeInsert(int, QSqlRecord& record);
     void on_actionEdit_triggered(bool checked);
 
     void on_comboBox_currentIndexChanged(int index);
-    void on_toolButtonRefresh_clicked();
     void on_toolButtonEditSample_toggled(bool checked);
     void on_toolButtonSampleRename_clicked();
     void on_toolButtonNewSample_clicked();
     void on_toolButtonRemoveSelected_clicked();
     void on_listView_clicked(const QModelIndex &index);
     void on_groupBoxSamples_toggled(bool toggled);
-
 
 private:
     Ui::CDTSampleDockWidget *ui;
