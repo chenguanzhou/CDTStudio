@@ -60,6 +60,8 @@ CDTImageLayer::~CDTImageLayer()
 
 void CDTImageLayer::setName(const QString &name)
 {
+    if (this->name() == name)
+        return;
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("UPDATE imageLayer set name = ? where id =?");
     query.bindValue(0,name);
@@ -223,7 +225,7 @@ void CDTImageLayer::removeExtraction(CDTExtractionLayer *ext)
         keyItem->parent()->removeRow(keyItem->index().row());
         extractions.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
-        fileSystem()->removeFile(ext->shapefilePath());
+        fileSystem()->removeFile(ext->shapefileID());
 //        delete ext;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         emit imageLayerChanged();
     }
@@ -235,7 +237,7 @@ void CDTImageLayer::removeAllExtractionLayers()
         QStandardItem* keyItem = ext->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());
         emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
-        fileSystem()->removeFile(ext->shapefilePath());
+        fileSystem()->removeFile(ext->shapefileID());
         delete ext;
     }
     extractions.clear();

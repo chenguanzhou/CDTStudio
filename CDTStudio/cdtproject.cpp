@@ -96,6 +96,9 @@ QString CDTProject::name() const
 
 void CDTProject::setName(const QString &name)
 {
+    if (this->name() == name)
+        return;
+
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("UPDATE project set name = ? where id =?");
     query.bindValue(0,name);

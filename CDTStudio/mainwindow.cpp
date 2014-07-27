@@ -13,6 +13,7 @@
 #include "cdtsegmentationlayer.h"
 #include "cdtclassification.h"
 #include "cdtundowidget.h"
+#include "cdtlayerinfowidget.h"
 
 MainWindow* MainWindow::mainWindow = NULL;
 bool MainWindow::isLocked = false;
@@ -78,6 +79,10 @@ void MainWindow::initDockWidgets()
 
     dockWidgetUndo = new CDTUndoWidget(this,NULL);
     registerDocks(Qt::BottomDockWidgetArea,dockWidgetUndo);
+
+    dockWidgetLayerInfo = new CDTLayerInfoWidget(this);
+    dockWidgetLayerInfo->setObjectName("dockWidgetLayerInfo");
+    registerDocks(Qt::LeftDockWidgetArea,dockWidgetLayerInfo);
 }
 
 void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
@@ -118,6 +123,11 @@ CDTExtractionDockWidget *MainWindow::getExtractionDockWidget()
 CDTUndoWidget *MainWindow::getUndoWidget()
 {
     return mainWindow->dockWidgetUndo;
+}
+
+CDTLayerInfoWidget *MainWindow::getLayerInfoWidget()
+{
+    return mainWindow->dockWidgetLayerInfo;
 }
 
 CDTProjectWidget *MainWindow::getCurrentProjectWidget()

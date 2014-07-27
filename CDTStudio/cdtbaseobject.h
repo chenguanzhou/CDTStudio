@@ -19,11 +19,11 @@ public:
 
     virtual void onContextMenuRequest(QWidget *parent) = 0;
     QList<QStandardItem *> standardItems()const;
-    QgsMapLayer *canvasLayer()const;
-    QgsMapCanvas *canvas()const;
-    inline QUuid id()const{return uuid;}
-    CDTProject *rootProject()const;
-    CDTFileSystem* fileSystem()const;
+    QgsMapLayer     *canvasLayer()const;
+    QgsMapCanvas    *canvas()const;
+    inline QUuid    id()const{return uuid;}
+    CDTProject      *rootProject()const;
+    CDTFileSystem   *fileSystem()const;
 
 signals:
     void appendLayers(QList<QgsMapLayer*> layer);
@@ -31,11 +31,11 @@ signals:
 public slots:
     void setMapCanvas(QgsMapCanvas* canvas);
 protected:
-    QUuid   uuid;
-    CDTProjectTreeItem* keyItem;
-    CDTProjectTreeItem* valueItem;
-    QgsMapLayer * mapCanvasLayer;
-    QgsMapCanvas* mapCanvas;
+    QUuid               uuid;
+    CDTProjectTreeItem  *keyItem;
+    CDTProjectTreeItem  *valueItem;
+    QgsMapLayer         *mapCanvasLayer;
+    QgsMapCanvas        *mapCanvas;
 };
 
 #endif // CDTBASEOBJECT_H

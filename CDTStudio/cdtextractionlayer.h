@@ -10,7 +10,11 @@ class QgsFeatureRendererV2;
 
 class CDTExtractionLayer : public CDTBaseObject
 {
-    Q_OBJECT
+    Q_OBJECT    
+    Q_CLASSINFO("CDTExtractionLayer","Extraction")
+    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
+    Q_PROPERTY(QColor Color READ color WRITE setColor DESIGNABLE true USER true)
+    Q_PROPERTY(QColor Border_Color READ borderColor WRITE setBorderColor DESIGNABLE true USER true)
 
 public:    
     explicit CDTExtractionLayer(QUuid uuid,QObject *parent);
@@ -20,11 +24,11 @@ public:
     friend QDataStream &operator>>(QDataStream &in, CDTExtractionLayer &extraction);
 
     QString     name()          const;
-    QString     shapefilePath() const;
+    QString     shapefileID()   const;
     QColor      color()         const;
     QColor      borderColor()   const;
     double      opacity()       const;
-    QString     imagePath()     const;
+//    QString     imagePath()     const;
 
     void setRenderer(QgsFeatureRendererV2 *r);
     void setOriginRenderer();
@@ -40,7 +44,7 @@ public slots:
     void    setOpacity(const double &val) ;
     void    setOpacity(const int &val);
     void    initLayer(const QString& name,
-            const QString &shpPath,
+            const QString &shpID,
             const QColor &color,
             const QColor &borderColor,
             double opacity);

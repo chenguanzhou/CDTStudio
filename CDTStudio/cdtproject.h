@@ -10,6 +10,8 @@ class CDTFileSystem;
 class CDTProject: public CDTBaseObject
 {
     Q_OBJECT
+    Q_CLASSINFO("CDTProject",tr("Project"))
+    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
 public:
     explicit CDTProject(QUuid uuid,QObject *parent = 0);
     ~CDTProject();
@@ -19,6 +21,7 @@ public:
     friend class CDTProjectTreeModel;
     friend class CDTBaseObject;
     friend class CDTSegmentationLayer;
+
 
     void addImageLayer(CDTImageLayer *image);
     void insertToTable(QString name);

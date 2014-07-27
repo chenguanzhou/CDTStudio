@@ -12,6 +12,9 @@ class CDTSegmentationLayer;
 class CDTImageLayer:public CDTBaseObject
 {
     Q_OBJECT
+    Q_CLASSINFO("CDTImageLayer","Image")
+    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
+    Q_PROPERTY(QString Source READ path DESIGNABLE true USER true)
 public:
     explicit CDTImageLayer(QUuid uuid, QObject *parent = 0);
     ~CDTImageLayer();

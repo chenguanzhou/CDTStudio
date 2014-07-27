@@ -10,6 +10,10 @@ class CDTProjectTreeItem;
 class CDTClassification:public CDTBaseObject
 {
     Q_OBJECT   
+    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
+    Q_PROPERTY(QString Method READ method  DESIGNABLE true USER true)
+    Q_PROPERTY(QString Normalization_Param READ normalizeMethod  DESIGNABLE true USER true)
+    Q_PROPERTY(QString PCA_Param READ pcaParams  DESIGNABLE true USER true)
 public:
     explicit CDTClassification(QUuid uuid,QObject* parent=0);
     ~CDTClassification();
@@ -27,10 +31,9 @@ public:
 
     QgsFeatureRendererV2* renderer();
 
-    void initClassificationLayer(
-            const QString &name,
+    void initClassificationLayer(const QString &name,
             const QString &methodName,
-            const QMap<QString, QVariant> &param,
+            const QMap<QString, QVariant> &params,
             const QList<QVariant> &data,
             const QMap<QString, QVariant> &clsInfo,
             const QString &normalizeMethod,

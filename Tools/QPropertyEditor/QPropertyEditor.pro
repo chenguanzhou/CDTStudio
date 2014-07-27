@@ -20,6 +20,10 @@ HEADERS=    \
             QVariantDelegate.h \
             EnumProperty.h
 
+LIBS += -L../../lib -lQtColorPicker
+INCLUDEPATH += ../QtColorPicker
+DEPENDPATH += ../QtColorPicker
+
 DESTDIR = ../../lib
 DLLDESTDIR = ../../bin
 DEFINES += QPROPERTYEDITOR_LIBRARY

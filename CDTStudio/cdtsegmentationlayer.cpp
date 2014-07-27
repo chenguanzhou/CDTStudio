@@ -79,7 +79,7 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
 {    
     QtColorPicker *borderColorPicker = new QtColorPicker();
     borderColorPicker->setStandardColors();
-    borderColorPicker->setCurrentColor(color());
+    borderColorPicker->setCurrentColor(borderColor());
     connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
     actionChangeBorderColor->setDefaultWidget(borderColorPicker);
 
@@ -244,11 +244,11 @@ CDTDatabaseConnInfo CDTSegmentationLayer::databaseURL() const
     return url;
 }
 
-QColor CDTSegmentationLayer::color() const
+QColor CDTSegmentationLayer::borderColor() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
-    query.exec("select color from segmentationlayer where id ='" + this->id().toString() +"'");
+    query.exec("select bordercolor from segmentationlayer where id ='" + this->id().toString() +"'");
     query.next();
     qDebug()<<query.value(0);
     return query.value(0).value<QColor>();
@@ -272,7 +272,7 @@ void CDTSegmentationLayer::setOriginRenderer()
 {
     QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
     symbolLayer->setColor(QColor(0,0,0,0));
-    symbolLayer->setBorderColor(color());
+    symbolLayer->setBorderColor(borderColor());
     QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
     QgsSingleSymbolRendererV2* singleSymbolRenderer = new QgsSingleSymbolRendererV2(fillSymbol);
     this->setRenderer(singleSymbolRenderer);
@@ -294,6 +294,8 @@ CDTSegmentationLayer *CDTSegmentationLayer::getLayer(QUuid id)
 
 void CDTSegmentationLayer::setName(const QString &name)
 {
+    if (this->name() == name)
+        return;
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("UPDATE segmentationlayer set name = ? where id =?");
     query.bindValue(0,name);
@@ -306,8 +308,10 @@ void CDTSegmentationLayer::setName(const QString &name)
 
 void CDTSegmentationLayer::setBorderColor(const QColor &clr)
 {
+    if (this->borderColor() == clr)
+        return;
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE segmentationlayer set color = ? where id =?");
+    query.prepare("UPDATE segmentationlayer set bordercolor = ? where id =?");
     query.bindValue(0,clr);
     query.bindValue(1,this->id().toString());
     query.exec();
@@ -373,6 +377,11 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     query.bindValue(7,color);
     query.bindValue(8,((CDTImageLayer*)parent())->id().toString());
     query.exec();
+
+    //dynamic properties
+    foreach (QString key, params.keys()) {
+        this->setProperty((QString("   ")+key).toLocal8Bit().constData(),params.value(key.toLocal8Bit().constData()));
+    }
 
     setOriginRenderer();
 

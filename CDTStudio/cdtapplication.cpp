@@ -155,7 +155,7 @@ bool CDTApplication::initDatabase()
                      "method text NOT NULL,"
                      "params blob,"
                      "dbUrl blob,"
-                     "color blob,"
+                     "bordercolor blob,"
                      "imageID text NOT NULL,"
                      "Primary Key(id) )");
     if (ret == false)

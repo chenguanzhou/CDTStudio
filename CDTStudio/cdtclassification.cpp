@@ -168,6 +168,8 @@ QgsFeatureRendererV2 *CDTClassification::renderer()
 
 void CDTClassification::setName(const QString &name)
 {
+    if (this->name()==name)
+        return;
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("UPDATE classificationlayer set name = ? where id =?");
     query.bindValue(0,name);
@@ -180,7 +182,7 @@ void CDTClassification::setName(const QString &name)
 void CDTClassification::initClassificationLayer(
         const QString &name,
         const QString &methodName,
-        const QMap<QString, QVariant> &param,
+        const QMap<QString, QVariant> &params,
         const QList<QVariant> &data,
         const QMap<QString, QVariant> &clsInfo,
         const QString &normalizeMethod,
@@ -190,9 +192,9 @@ void CDTClassification::initClassificationLayer(
 
     paramRootItem->removeRows(0,paramRootItem->rowCount());
     paramRootValueItem->setText(methodName);
-    QStringList keys = param.keys();
+    QStringList keys = params.keys();
     foreach (QString key, keys) {
-        QVariant value = param.value(key);
+        QVariant value = params.value(key);
         paramRootItem->appendRow(
                     QList<QStandardItem*>()
                     <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,key,this)
@@ -208,13 +210,18 @@ void CDTClassification::initClassificationLayer(
     query.addBindValue(id().toString());
     query.addBindValue(name);
     query.addBindValue(methodName);
-    query.addBindValue(dataToVariant(param));
+    query.addBindValue(dataToVariant(params));
     query.addBindValue(dataToVariant(data));
     query.addBindValue(dataToVariant(clsInfo));
     query.addBindValue(normalizeMethod);
     query.addBindValue(pcaParams);
     query.addBindValue(((CDTSegmentationLayer*)parent())->id().toString());
     query.exec();
+
+    //dynamic properties
+    foreach (QString key, params.keys()) {
+        this->setProperty((QString("   ")+key).toLocal8Bit().constData(),params.value(key.toLocal8Bit().constData()));
+    }
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTClassification &classification)

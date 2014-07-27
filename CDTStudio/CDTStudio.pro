@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     dialognewextraction.cpp \
     cdtextractiondockwidget.cpp \
     cdtclassificationhelper.cpp \
-    cdtundowidget.cpp
+    cdtundowidget.cpp \
+    cdtlayerinfowidget.cpp
 
 
 HEADERS  += \    
@@ -71,7 +72,8 @@ HEADERS  += \
     ../Interfaces/cdtextractioninterface.h \
     cdtclassificationhelper.h \
     cdtdockwidget.h \
-    cdtundowidget.h
+    cdtundowidget.h \
+    cdtlayerinfowidget.h
 
 FORMS    += \
     mainwindow.ui \

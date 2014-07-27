@@ -26,7 +26,10 @@ public:
 class CDTSegmentationLayer:public CDTBaseObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString method READ method)
+    Q_CLASSINFO("CDTSegmentationLayer","Segmentation")
+    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
+    Q_PROPERTY(QColor Border_Color READ borderColor WRITE setBorderColor DESIGNABLE true USER true)
+    Q_PROPERTY(QString Method READ method  DESIGNABLE true USER true)
 
 public:
     explicit CDTSegmentationLayer(QUuid uuid, QObject *parent = 0);
@@ -42,7 +45,7 @@ public:
     QString markfileTempPath() const;
     QString method()const;
     CDTDatabaseConnInfo databaseURL() const;
-    QColor  color()const;
+    QColor  borderColor()const;
     QString imagePath()const;
 
     void setRenderer(QgsFeatureRendererV2 *r);
@@ -76,7 +79,7 @@ public slots:
             const QString &method,
             const QVariantMap &params,
             CDTDatabaseConnInfo url,
-            const QColor &color);
+            const QColor &borderColor);
 
     void setDatabaseURL(CDTDatabaseConnInfo url);
 

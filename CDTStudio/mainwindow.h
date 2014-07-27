@@ -15,6 +15,7 @@ class QModelIndex;
 class QTreeView;
 class CDTSampleDockWidget;
 class CDTExtractionDockWidget;
+class CDTLayerInfoWidget;
 class CDTUndoWidget;
 class DialogConsole;
 class CDTProjectWidget;
@@ -45,6 +46,7 @@ public:
     static CDTAttributeDockWidget   *getAttributesDockWidget();
     static CDTExtractionDockWidget  *getExtractionDockWidget();
     static CDTUndoWidget            *getUndoWidget();
+    static CDTLayerInfoWidget       *getLayerInfoWidget();
     static CDTProjectWidget         *getCurrentProjectWidget();
     static QgsMapCanvas             *getCurrentMapCanvas();
 
@@ -75,6 +77,7 @@ private:
     CDTSampleDockWidget     *dockWidgetSample;
     CDTExtractionDockWidget *dockWidgetExtraction;
     CDTUndoWidget           *dockWidgetUndo;
+    CDTLayerInfoWidget      *dockWidgetLayerInfo;
 
     RecentFileSupervisor *supervisor;
     int recentFileCount;

@@ -219,6 +219,7 @@ void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
 
 void CDTProjectWidget::onItemChanged(QStandardItem *item)
 {
+    //layer visible
     CDTProjectTreeItem* treeItem = (CDTProjectTreeItem*)item;
     if (treeItem->mapLayer())
     {
