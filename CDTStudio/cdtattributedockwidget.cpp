@@ -28,6 +28,8 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     QSettings settings("WHU","CDTStudio");
     ui->splitter->restoreGeometry(settings.value("CDTAttributeDockWidget/geometry").toByteArray());
     ui->splitter->restoreState(settings.value("CDTAttributeDockWidget/windowState").toByteArray());
+
+    connect(ui->tabWidget,SIGNAL(currentChanged(int)),SLOT(onCurrentTabChanged(int)));
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()
@@ -51,6 +53,7 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseObject *layer)
     //TODO  Process other layer type;
     //TODO  compare _dbConnInfo for whether change
 
+    clear();
     _segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer);
     if (_segmentationLayer)
     {
@@ -98,11 +101,10 @@ void CDTAttributeDockWidget::updateTable()
         QTableView* widget = new QTableView(ui->tabWidget);
         QSqlTableModel* model = new QSqlTableModel(widget,db);
         model->setTable(tableName);
-        model->select();
+//        model->select();
+        model->setProperty("isSelected",false);
         widget->setModel(model);
-        widget->setSelectionMode(QTableView::SingleSelection);
-        widget->resizeColumnsToContents();
-        widget->resizeRowsToContents();
+        widget->setSelectionMode(QTableView::SingleSelection);        
         widget->setEditTriggers(QTableView::NoEditTriggers);
         widget->setItemDelegateForColumn(0,new CDTObjectIDDelegate(this));
         widget->verticalHeader()->hide();
@@ -128,6 +130,20 @@ void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
     DialogGenerateAttributes dlg(segmentationLayer()->id(),layer->bandCount());
     dlg.exec();
     updateTable();
+}
+
+void CDTAttributeDockWidget::onCurrentTabChanged(int index)
+{
+    if (index<0)
+        return;
+    QTableView* widget = static_cast<QTableView*>(ui->tabWidget->widget(index));
+    QSqlTableModel* model = static_cast<QSqlTableModel*>(widget->model());
+    if (model->property("isSelected").toBool()==true)
+        return;
+    model->select();
+    widget->resizeColumnsToContents();
+    widget->resizeRowsToContents();
+    model->setProperty("isSelected",true);
 }
 
 void CDTAttributeDockWidget::onItemClicked(QModelIndex index)

@@ -12,7 +12,6 @@
 //TODO  ORM
 //TODO  Opacity for layers
 //TODO  Attribute Widget Closable
-//TODO  MulriThread for reading db
 //TODO  Make accuracy assessment as a property of classification layer
 //TODO  Cross cursor when edit qgsmancanvas
 

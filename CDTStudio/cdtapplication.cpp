@@ -235,7 +235,7 @@ void CDTApplication::initStxxl()
 {
     QString stxxlFilePath = QDir::tempPath()+"\\cdtstudio_stxxl";
     stxxl::config * cfg = stxxl::config::get_instance();
-    stxxl::disk_config disk(stxxlFilePath.toLocal8Bit().constData(), 800 * 1024 * 1024, "wincall delete");
+    stxxl::disk_config disk(stxxlFilePath.toLocal8Bit().constData(), /*800 * 1024 * 1024*/0, "wincall delete");
     cfg->add_disk(disk);
     Log4Qt::Logger::rootLogger()->info("Stxxl file path is %1",stxxlFilePath);
 }

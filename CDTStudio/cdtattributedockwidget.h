@@ -59,6 +59,7 @@ public slots:
 
 private slots:
     void onActionGenerateAttributesTriggered();
+    void onCurrentTabChanged(int index);
     void onItemClicked(QModelIndex index);
 private:
     static QStringList attributeNames();

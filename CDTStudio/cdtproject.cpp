@@ -76,12 +76,12 @@ void CDTProject::addImageLayer(CDTImageLayer *image)
 
 void CDTProject::insertToTable(QString name)
 {
+    setName(name);
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("insert into project values(?,?)");
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
-    query.exec();
-    setName(name);
+    query.exec();    
 }
 
 QString CDTProject::name() const
