@@ -59,8 +59,10 @@ private:
 
     QString         currentImagePath;
     QString         currentExtractionID;
+
     QgsVectorLayer  *vectorLayer;
     QgsMapCanvas    *mapCanvas;
+    QCursor         lastCursor;
     QgsMapTool      *lastMapTool;
     QgsMapTool      *currentMapTool;
 

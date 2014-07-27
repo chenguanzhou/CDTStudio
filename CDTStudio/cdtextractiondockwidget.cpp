@@ -193,6 +193,8 @@ void CDTExtractionDockWidget::start()
     vectorLayer->startEditing();
     mapCanvas->refresh();
 
+    lastCursor = mapCanvas->cursor();
+    mapCanvas->setCursor(QCursor(Qt::CrossCursor));
 
     setEditState(EDITING);
     setGeometryModified(false);
@@ -237,6 +239,7 @@ void CDTExtractionDockWidget::stop()
     mapCanvas->setMapTool(lastMapTool);
     if (currentMapTool)
         delete currentMapTool;
+    mapCanvas->setCursor(lastCursor);
 
     setEditState(LOCKED);
     qDebug()<<"stop";

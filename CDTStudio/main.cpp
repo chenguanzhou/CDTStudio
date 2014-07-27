@@ -13,7 +13,7 @@
 //TODO  Opacity for layers
 //TODO  Attribute Widget Closable
 //TODO  Make accuracy assessment as a property of classification layer
-//TODO  Cross cursor when edit qgsmancanvas
+//TODO  Status Bar(Progress bar ; status )
 
 //BUG   Same name
 
