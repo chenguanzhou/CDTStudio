@@ -22,16 +22,20 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     recentFileToolButton(NULL),
-    supervisor(NULL),
-    dialogConsole(NULL)
+    supervisor(NULL)
 {        
     ui->setupUi(this);
-    initDockWidgets();
 
     supervisor = new RecentFileSupervisor(this);
-    dialogConsole = new  DialogConsole(this);
     recentFileToolButton = new QToolButton(this);
     mainWindow = this;
+
+    initActions();
+    initMenuBar();
+    initToolBar();
+    initDockWidgets();
+    initConsole();
+
     connect(ui->tabWidgetProject,SIGNAL(beforeTabClosed(CDTProject*)),this,SIGNAL(beforeProjectClosed(CDTProject*)));
 
     recentFileToolButton->setText(tr("&Recent"));
@@ -39,10 +43,6 @@ MainWindow::MainWindow(QWidget *parent) :
     recentFileToolButton->setIcon(QIcon(":/Icon/RecentFiles.png"));
     recentFileToolButton->setPopupMode(QToolButton::InstantPopup);
     ui->mainToolBar->addWidget(recentFileToolButton);
-
-    this->addAction(ui->actionConsole);
-    connect(ui->actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(show()));
-    connect(ui->actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(updateDatabases()));
 
     connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewProject,SLOT(expandAll()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
@@ -66,6 +66,60 @@ MainWindow::~MainWindow()
     logger()->info("MainWindow destruct");
 }
 
+void MainWindow::initActions()
+{
+    actionNew = new QAction(QIcon(":/Icon/New.png"),tr("&New"),this);
+    actionNew->setShortcut(QKeySequence::New);
+    actionNew->setStatusTip(tr("Create a new project"));
+    connect(actionNew,SIGNAL(triggered()),SLOT(onActionNew()));
+
+    actionOpen = new QAction(QIcon(":/Icon/Open.png"),tr("&Open"),this);
+    actionOpen->setShortcut(QKeySequence::Open);
+    actionOpen->setStatusTip(tr("Open one or more projects"));
+    connect(actionOpen,SIGNAL(triggered()),SLOT(onActionOpen()));
+
+    actionSave = new QAction(QIcon(":/Icon/Save.png"),tr("&Save"),this);
+    actionSave->setShortcut(QKeySequence::Save);
+    actionSave->setStatusTip(tr("Save current project"));
+    connect(actionSave,SIGNAL(triggered()),SLOT(onActionSave()));
+
+    actionSaveAll = new QAction(QIcon(":/Icon/SaveAll.png"),tr("Save A&ll"),this);
+    actionSaveAll->setShortcut(QKeySequence(Qt::CTRL+Qt::SHIFT+Qt::Key_S));
+    actionSaveAll->setStatusTip(tr("Save all existing projects"));
+    connect(actionSaveAll,SIGNAL(triggered()),SLOT(onActionSaveAll()));
+
+    actionSaveAs = new QAction(QIcon(":/Icon/SaveAs.png"),tr("Save &As"),this);
+    actionSaveAs->setShortcut(QKeySequence::SaveAs);
+    actionSaveAs->setStatusTip(tr("Save current project as"));
+    connect(actionSaveAs,SIGNAL(triggered()),SLOT(onActionSaveAs()));
+}
+
+void MainWindow::initMenuBar()
+{
+    menuFile = new QMenu(tr("&File"),this);
+    menuFile->addActions(QList<QAction*>()
+                         <<actionNew
+                         <<actionOpen
+                         <<actionSave
+                         <<actionSaveAll
+                         <<actionSaveAs);
+    menuFile->addSeparator();
+    menuRecent = new QMenu(tr("&Recent"),this);
+    menuRecent->setIcon(QIcon(":/Icon/RecentFiles.png"));
+    menuFile->addMenu(menuRecent);
+    menuBar()->addMenu(menuFile);
+}
+
+void MainWindow::initToolBar()
+{
+    ui->mainToolBar->addActions(QList<QAction*>()
+                                <<actionNew
+                                <<actionOpen
+                                <<actionSave
+                                <<actionSaveAll
+                                <<actionSaveAs);
+}
+
 void MainWindow::initDockWidgets()
 {
     dockWidgetSample = new CDTSampleDockWidget(this);
@@ -83,6 +137,16 @@ void MainWindow::initDockWidgets()
     dockWidgetLayerInfo = new CDTLayerInfoWidget(this);
     dockWidgetLayerInfo->setObjectName("dockWidgetLayerInfo");
     registerDocks(Qt::LeftDockWidgetArea,dockWidgetLayerInfo);
+}
+
+void MainWindow::initConsole()
+{
+    DialogConsole* dialogConsole = new  DialogConsole(this);
+    actionConsole = new QAction(tr("&Console"),this);
+    actionConsole->setShortcut(QKeySequence(Qt::Key_F12));
+    this->addAction(actionConsole);
+    connect(actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(show()));
+    connect(actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(updateDatabases()));
 }
 
 void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
@@ -157,10 +221,36 @@ void MainWindow::onCurrentTabChanged(int i)
     logger()->info("Current tab is changed to %1",ui->tabWidgetProject->tabText(i));
 }
 
-void MainWindow::on_action_New_triggered()
+void MainWindow::onActionNew()
 {
     logger()->info("Create a new project");
     ui->tabWidgetProject->createNewProject();
+}
+
+void MainWindow::onActionOpen()
+{
+    ui->tabWidgetProject->openProject();
+}
+
+void MainWindow::onActionSave()
+{
+    ui->tabWidgetProject->saveProject();
+}
+
+void MainWindow::onActionSaveAll()
+{
+    ui->tabWidgetProject->saveAllProject();
+}
+
+void MainWindow::onActionSaveAs()
+{
+    ui->tabWidgetProject->saveAsProject();
+}
+
+void MainWindow::onRecentFileTriggered()
+{
+    QAction* action = (QAction*)sender();
+    ui->tabWidgetProject->openProject(action->text());
 }
 
 void MainWindow::on_treeViewProject_customContextMenuRequested(const QPoint &pos)
@@ -196,8 +286,8 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         CDTExtractionLayer* extractionLayer = qobject_cast<CDTExtractionLayer*>(item->correspondingObject());
         if (extractionLayer != NULL)
         {
-//            dockWidgetExtraction->show();
-//            dockWidgetExtraction->setCurrentLayer(extractionLayer);
+            //            dockWidgetExtraction->show();
+            //            dockWidgetExtraction->setCurrentLayer(extractionLayer);
             extractionLayer->setOriginRenderer();
         }
     }
@@ -206,14 +296,14 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
         CDTSegmentationLayer* segmentationLayer = qobject_cast<CDTSegmentationLayer*>(item->correspondingObject());
         if (segmentationLayer != NULL)
         {
-//            dockWidgetSample->setCurrentLayer(segmentationLayer);
-//            dockWidgetAttributes->setCurrentLayer(segmentationLayer);
+            //            dockWidgetSample->setCurrentLayer(segmentationLayer);
+            //            dockWidgetAttributes->setCurrentLayer(segmentationLayer);
 
             segmentationLayer->setOriginRenderer();
             if (segmentationLayer->canvasLayer()!=NULL)
             {
                 CDTProjectWidget* widget = (CDTProjectWidget*)ui->tabWidgetProject->currentWidget();
-                widget->mapCanvas->setCurrentLayer(segmentationLayer->canvasLayer());                
+                widget->mapCanvas->setCurrentLayer(segmentationLayer->canvasLayer());
             }
             getCurrentMapCanvas()->refresh();
         }
@@ -232,38 +322,7 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     else if (type == CDTProjectTreeItem::IMAGE_ROOT)
     {
         //TODO  set current layer?
-//        CDTImageLayer* imageLayer = qobject_cast<CDTImageLayer*>(item->correspondingObject());
-//        if (imageLayer != NULL)
-//        {
-//            dockWidgetSample->setCurrentLayer(imageLayer);
-//        }
     }
-}
-
-void MainWindow::on_actionOpen_triggered()
-{
-    ui->tabWidgetProject->openProject();
-}
-
-void MainWindow::on_actionSave_triggered()
-{
-    ui->tabWidgetProject->saveProject();
-}
-
-void MainWindow::on_actionSave_All_triggered()
-{
-    ui->tabWidgetProject->saveAllProject();
-}
-
-void MainWindow::on_action_Save_As_triggered()
-{
-    ui->tabWidgetProject->saveAsProject();
-}
-
-void MainWindow::onRecentFileTriggered()
-{
-    QAction* action = (QAction*)sender();
-    ui->tabWidgetProject->openProject(action->text());
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

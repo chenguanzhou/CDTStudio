@@ -28,7 +28,7 @@ void RecentFileSupervisor::loadSetting()
         if(!path.isEmpty()&&info.exists())
         {
             QAction* recentFile = new QAction(path,this);
-            window->ui->menu_Recent->addAction(recentFile);
+            window->menuRecent->addAction(recentFile);
             window->recentFileToolButton->addAction(recentFile);
             connect(recentFile,SIGNAL(triggered()),window,SLOT(onRecentFileTriggered()));
         }
@@ -38,7 +38,7 @@ void RecentFileSupervisor::loadSetting()
 void RecentFileSupervisor::updateSetting()
 {
     window->recentFilePaths.clear();
-    foreach (QAction* action, window->ui->menu_Recent->actions()) {
+    foreach (QAction* action, window->menuRecent->actions()) {
         QString path = action->text();
         QFileInfo info(path);
         if(!path.isEmpty()&&info.exists())
@@ -55,28 +55,29 @@ void RecentFileSupervisor::updateSetting()
 
 void RecentFileSupervisor::updateMenuRecent(QString path)
 {
-    QList<QAction*> actions = window->ui->menu_Recent->actions();
+    QMenu *menuRecent = window->menuRecent;
+    QList<QAction*> actions = menuRecent->actions();
     for (int i =0;i< actions.size();++i)
     {
         if(QFileInfo(path) == QFileInfo(actions[i] ->text()))
         {
             if(i==0)
                 return;
-            window->ui->menu_Recent->removeAction(actions[i]);
+            menuRecent->removeAction(actions[i]);
             break;
         }
     }
     QAction* recentFile = new QAction(path,this);
-    window->ui->menu_Recent->insertAction(actions[0],recentFile);
+    menuRecent->insertAction(actions[0],recentFile);
     connect(recentFile,SIGNAL(triggered()),window,SLOT(onRecentFileTriggered()));
-    if((window->ui->menu_Recent->actions()).size() >window->recentFileCount)
+    if((menuRecent->actions()).size() >window->recentFileCount)
     {
-        for(int i =window->recentFileCount;i < (window->ui->menu_Recent->actions()).size();++i)
+        for(int i =window->recentFileCount;i < (menuRecent->actions()).size();++i)
         {
-            window->ui->menu_Recent->removeAction((window->ui->menu_Recent->actions())[i]);
+            menuRecent->removeAction((menuRecent->actions())[i]);
         }
     }
-    actions = window->ui->menu_Recent->actions();
+    actions = menuRecent->actions();
     while((window->recentFileToolButton->actions()).size()!=0)
         window->recentFileToolButton->removeAction(window->recentFileToolButton->actions()[0]);
     window->recentFileToolButton->addActions(actions);

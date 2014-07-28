@@ -32,11 +32,12 @@ public:
     ~MainWindow();       
 
 private:
+    void initActions();
+    void initMenuBar();
+    void initToolBar();
     void initDockWidgets();
+    void initConsole();
 
-    /// onCurrentProjectChanged
-    /// onProjectClosed
-    /// onLayerChanged
     void registerDocks(Qt::DockWidgetArea area, CDTDockWidget* dock);
 
 public:
@@ -58,14 +59,15 @@ public slots:
     void onCurrentTabChanged(int i);
 
 private slots:
-    void on_action_New_triggered();
-    void on_treeViewProject_customContextMenuRequested(const QPoint &pos);
-    void on_treeViewProject_clicked(const QModelIndex &index);
-    void on_actionOpen_triggered();
-    void on_actionSave_triggered();
-    void on_actionSave_All_triggered();
-    void on_action_Save_As_triggered();
+    void onActionNew();
+    void onActionOpen();
+    void onActionSave();
+    void onActionSaveAll();
+    void onActionSaveAs();
     void onRecentFileTriggered();
+
+    void on_treeViewProject_customContextMenuRequested(const QPoint &pos);
+    void on_treeViewProject_clicked(const QModelIndex &index);        
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -79,11 +81,21 @@ private:
     CDTUndoWidget           *dockWidgetUndo;
     CDTLayerInfoWidget      *dockWidgetLayerInfo;
 
+    QAction *actionNew;
+    QAction *actionOpen;
+    QAction *actionSave;
+    QAction *actionSaveAll;
+    QAction *actionSaveAs;
+    QAction *actionConsole;
+
+    QMenu *menuFile;
+    QMenu *menuRecent;
+
     RecentFileSupervisor *supervisor;
     int recentFileCount;
     QToolButton* recentFileToolButton;
     QStringList recentFilePaths;
-    DialogConsole* dialogConsole;
+//    DialogConsole* dialogConsole;
 
     QList<CDTDockWidget*> docks;
     static MainWindow* mainWindow;

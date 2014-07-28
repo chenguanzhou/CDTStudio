@@ -21,13 +21,13 @@ public:
     friend QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
     friend QDataStream &operator>>(QDataStream &in, CDTClassification &classification);
 
-    QString name()const;
-    QString method()const;    
-    QVariantMap params()const;
-    QVariantList data()const;
-    QVariantMap clsInfo()const;
-    QString normalizeMethod()const;
-    QString pcaParams()const;
+    QString         name()              const;
+    QString         method()            const;
+    QVariantMap     params()            const;
+    QVariantList    data()              const;
+    QVariantMap     clsInfo()           const;
+    QString         normalizeMethod()   const;
+    QString         pcaParams()         const;
 
     QgsFeatureRendererV2* renderer();
 
