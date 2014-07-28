@@ -51,7 +51,6 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseObject *layer)
         return;
 
     //TODO  Process other layer type;
-    //TODO  compare _dbConnInfo for whether change
 
     clear();
     _segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer);

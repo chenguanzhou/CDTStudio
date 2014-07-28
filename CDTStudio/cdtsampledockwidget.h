@@ -9,15 +9,17 @@ namespace Ui {
 class CDTSampleDockWidget;
 }
 
-class CDTImageLayer;
+struct QUuid;
+class QSqlRecord;
+class QColor;
+class QColorDialog;
 class QSqlRelationalTableModel;
 class QSqlQueryModel;
 class QgsMapTool;
-struct QUuid;
-class QSqlRecord;
+
+class CDTImageLayer;
 class CDTMapToolSelectTrainingSamples;
-class QColor;
-class QColorDialog;
+
 
 
 class CategoryInformation

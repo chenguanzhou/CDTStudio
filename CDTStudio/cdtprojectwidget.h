@@ -1,14 +1,14 @@
 #ifndef CDTPROJECTWIDGET_H
 #define CDTPROJECTWIDGET_H
 
-#include <QWidget>
-#include "cdtproject.h"
-#include "mainwindow.h"
 #include <QPoint>
 #include <QModelIndex>
 #include <QFile>
+#include <QWidget>
 #include <qgsmapcanvas.h>
 #include <qgsmaptool.h>
+#include "cdtproject.h"
+#include "mainwindow.h"
 
 class CDTProjectWidget : public QWidget
 {

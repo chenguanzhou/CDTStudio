@@ -8,12 +8,12 @@
 //TODO  Recent file
 //TODO  Comment
 //TODO  Unit Test(Auto)
-//TODO  ProgressBar Manager
 //TODO  ORM
 //TODO  Opacity for layers
 //TODO  Attribute Widget Closable
 //TODO  Make accuracy assessment as a property of classification layer
-//TODO  Status Bar(Progress bar ; status )
+//TODO  Scale Bar
+//TODO  Read & write project in another thread
 
 //BUG   Same name
 

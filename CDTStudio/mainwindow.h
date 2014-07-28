@@ -11,16 +11,20 @@ namespace Ui {
 class MainWindow;
 }
 class QToolButton;
+class QLineEdit;
 class QModelIndex;
 class QTreeView;
+
+struct QUuid;
+
+class QgsMapCanvas;
+
+class CDTProjectWidget;
 class CDTSampleDockWidget;
 class CDTExtractionDockWidget;
 class CDTLayerInfoWidget;
 class CDTUndoWidget;
 class DialogConsole;
-class CDTProjectWidget;
-class QgsMapCanvas;
-struct QUuid;
 
 class MainWindow : public QMainWindow
 {
@@ -35,10 +39,13 @@ private:
     void initActions();
     void initMenuBar();
     void initToolBar();
+    void initStatusBar();
     void initDockWidgets();
     void initConsole();
 
     void registerDocks(Qt::DockWidgetArea area, CDTDockWidget* dock);
+
+
 
 public:
     static MainWindow               *getMainWindow();
@@ -57,6 +64,8 @@ signals:
     void beforeProjectClosed(CDTProject*);
 public slots:
     void onCurrentTabChanged(int i);
+    void showMouseCoordinate(const QgsPoint & p);
+    void userCenter();
 
 private slots:
     void onActionNew();
@@ -67,7 +76,7 @@ private slots:
     void onRecentFileTriggered();
 
     void on_treeViewProject_customContextMenuRequested(const QPoint &pos);
-    void on_treeViewProject_clicked(const QModelIndex &index);        
+    void on_treeViewProject_clicked(const QModelIndex &index);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -91,11 +100,12 @@ private:
     QMenu *menuFile;
     QMenu *menuRecent;
 
+    QLineEdit *lineEditCoord;
+
     RecentFileSupervisor *supervisor;
     int recentFileCount;
     QToolButton* recentFileToolButton;
     QStringList recentFilePaths;
-//    DialogConsole* dialogConsole;
 
     QList<CDTDockWidget*> docks;
     static MainWindow* mainWindow;

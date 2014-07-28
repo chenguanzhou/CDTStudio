@@ -23,15 +23,14 @@ public:
     friend QDataStream &operator<<(QDataStream &out,const CDTExtractionLayer &extraction);
     friend QDataStream &operator>>(QDataStream &in, CDTExtractionLayer &extraction);
 
-    QString     name()          const;
-    QString     shapefileID()   const;
-    QColor      color()         const;
-    QColor      borderColor()   const;
-    double      opacity()       const;
-//    QString     imagePath()     const;
+    QString name()          const;
+    QString shapefileID()   const;
+    QColor  color()         const;
+    QColor  borderColor()   const;
+    double  opacity()       const;
 
-    void setRenderer(QgsFeatureRendererV2 *r);
-    void setOriginRenderer();
+    void    setRenderer(QgsFeatureRendererV2 *r);
+    void    setOriginRenderer();
 
     static QList<CDTExtractionLayer *>  getLayers();
     static CDTExtractionLayer *         getLayer(QUuid id);

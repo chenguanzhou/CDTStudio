@@ -64,7 +64,6 @@ QColor CDTExtractionLayer::color() const
     QSqlQuery query(db);
     query.exec("select color from extractionlayer where id ='" + this->id().toString() +"'");
     query.next();
-    qDebug()<<query.value(0);
     return query.value(0).value<QColor>();
 }
 
@@ -74,7 +73,6 @@ QColor CDTExtractionLayer::borderColor() const
     QSqlQuery query(db);
     query.exec("select borderColor from extractionlayer where id ='" + this->id().toString() +"'");
     query.next();
-//    qDebug()<<query.value(0);
     return query.value(0).value<QColor>();
 }
 
@@ -87,11 +85,6 @@ double CDTExtractionLayer::opacity() const
     qDebug()<<query.value(0);
     return query.value(0).toDouble();
 }
-
-//QString CDTExtractionLayer::imagePath() const
-//{
-//    return ((CDTImageLayer*)parent())->path();
-//}
 
 void CDTExtractionLayer::setRenderer(QgsFeatureRendererV2 *r)
 {

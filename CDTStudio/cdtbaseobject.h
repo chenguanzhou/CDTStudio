@@ -3,12 +3,12 @@
 
 #include <QObject>
 #include <QUuid>
-class CDTProjectTreeItem;
-class CDTFileSystem;
-class CDTProject;
 class QStandardItem;
 class QgsMapLayer;
 class QgsMapCanvas;
+class CDTProjectTreeItem;
+class CDTFileSystem;
+class CDTProject;
 
 class CDTBaseObject : public QObject
 {

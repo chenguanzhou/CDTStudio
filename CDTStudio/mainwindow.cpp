@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initActions();
     initMenuBar();
     initToolBar();
+    initStatusBar();
     initDockWidgets();
     initConsole();
 
@@ -118,6 +119,36 @@ void MainWindow::initToolBar()
                                 <<actionSave
                                 <<actionSaveAll
                                 <<actionSaveAs);
+}
+
+void MainWindow::initStatusBar()
+{
+    //Coordinates
+    QLabel *labelCoord = new QLabel( QString(), statusBar() );
+    labelCoord->setObjectName( "mCoordsLabel" );
+    labelCoord->setMinimumWidth( 10 );
+    labelCoord->setMaximumHeight( 20 );
+    labelCoord->setAlignment( Qt::AlignCenter );
+    labelCoord->setFrameStyle( QFrame::NoFrame );
+    labelCoord->setText( tr( "Coordinate:" ) );
+    labelCoord->setToolTip( tr( "Current map coordinate" ) );
+    statusBar()->addPermanentWidget( labelCoord, 0 );
+
+    lineEditCoord = new QLineEdit( QString(), statusBar() );
+    lineEditCoord->setObjectName( "mCoordsEdit" );
+    lineEditCoord->setMinimumWidth( 10 );
+    lineEditCoord->setMaximumWidth( 300 );
+    lineEditCoord->setMaximumHeight( 20 );
+    lineEditCoord->setAlignment( Qt::AlignCenter );
+    QRegExp coordValidator( "[+-]?\\d+\\.?\\d*\\s*,\\s*[+-]?\\d+\\.?\\d*" );
+    new QRegExpValidator( coordValidator, lineEditCoord );
+    lineEditCoord->setWhatsThis( tr( "Shows the map coordinates at the "
+                                     "current cursor position. The display is continuously updated "
+                                     "as the mouse is moved. It also allows editing to set the canvas "
+                                     "center to a given position. The format is lat,lon or east,north" ) );
+    lineEditCoord->setToolTip( tr( "Current map coordinate (lat,lon or east,north)" ) );
+    statusBar()->addPermanentWidget( lineEditCoord, 0 );
+    connect( lineEditCoord, SIGNAL( returnPressed() ), this, SLOT( userCenter() ) );
 }
 
 void MainWindow::initDockWidgets()
@@ -211,6 +242,7 @@ void MainWindow::onCurrentTabChanged(int i)
     if(i<0)
     {
         ui->treeViewProject->setModel(NULL);
+        lineEditCoord->setText(QString::null);
         return ;
     }
 
@@ -220,6 +252,52 @@ void MainWindow::onCurrentTabChanged(int i)
     ui->treeViewProject->resizeColumnToContents(0);
     logger()->info("Current tab is changed to %1",ui->tabWidgetProject->tabText(i));
 }
+
+void MainWindow::showMouseCoordinate(const QgsPoint &p)
+{
+    if (this->getCurrentMapCanvas()==NULL)
+        return;
+
+    lineEditCoord->setText( p.toString( ) );
+
+    if ( lineEditCoord->width() > lineEditCoord->minimumWidth() )
+    {
+        lineEditCoord->setMinimumWidth( lineEditCoord->width() );
+    }
+}
+
+void MainWindow::userCenter()
+{
+    QgsMapCanvas* mapCanvas = getCurrentMapCanvas();
+    if (!mapCanvas)
+        return;
+
+    QStringList parts = lineEditCoord->text().split( ',' );
+    if ( parts.size() != 2 )
+        return;
+
+    bool xOk;
+    double x = parts.at( 0 ).toDouble( &xOk );
+    if ( !xOk )
+        return;
+
+    bool yOk;
+    double y = parts.at( 1 ).toDouble( &yOk );
+    if ( !yOk )
+        return;
+
+
+    QgsRectangle r = mapCanvas->extent();
+
+    mapCanvas->setExtent(
+                QgsRectangle(
+                    x - r.width() / 2.0,  y - r.height() / 2.0,
+                    x + r.width() / 2.0, y + r.height() / 2.0
+                    )
+                );
+    mapCanvas->refresh();
+}
+
 
 void MainWindow::onActionNew()
 {
