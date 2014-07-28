@@ -14,10 +14,10 @@ class QToolButton;
 class QLineEdit;
 class QModelIndex;
 class QTreeView;
-
 struct QUuid;
 
 class QgsMapCanvas;
+class QgsScaleComboBox;
 
 class CDTProjectWidget;
 class CDTSampleDockWidget;
@@ -65,7 +65,9 @@ signals:
 public slots:
     void onCurrentTabChanged(int i);
     void showMouseCoordinate(const QgsPoint & p);
+    void showScale( double theScale );
     void userCenter();
+    void userScale();
 
 private slots:
     void onActionNew();
@@ -101,6 +103,7 @@ private:
     QMenu *menuRecent;
 
     QLineEdit *lineEditCoord;
+    QgsScaleComboBox *scaleEdit;
 
     RecentFileSupervisor *supervisor;
     int recentFileCount;

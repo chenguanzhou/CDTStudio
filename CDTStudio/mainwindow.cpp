@@ -1,10 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "qgsscalecombobox.h"
+#include "stable.h"
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
-#include "dialogconsole.h"
-#include "stable.h"
 #include "cdtsampledockwidget.h"
 #include "cdtextractiondockwidget.h"
 #include "cdtprojecttreeitem.h"
@@ -14,6 +14,7 @@
 #include "cdtclassification.h"
 #include "cdtundowidget.h"
 #include "cdtlayerinfowidget.h"
+#include "dialogconsole.h"
 
 MainWindow* MainWindow::mainWindow = NULL;
 bool MainWindow::isLocked = false;
@@ -135,7 +136,7 @@ void MainWindow::initStatusBar()
     statusBar()->addPermanentWidget( labelCoord, 0 );
 
     lineEditCoord = new QLineEdit( QString(), statusBar() );
-    lineEditCoord->setObjectName( "mCoordsEdit" );
+    lineEditCoord->setObjectName( "lineEditCoord" );
     lineEditCoord->setMinimumWidth( 10 );
     lineEditCoord->setMaximumWidth( 300 );
     lineEditCoord->setMaximumHeight( 20 );
@@ -149,6 +150,30 @@ void MainWindow::initStatusBar()
     lineEditCoord->setToolTip( tr( "Current map coordinate (lat,lon or east,north)" ) );
     statusBar()->addPermanentWidget( lineEditCoord, 0 );
     connect( lineEditCoord, SIGNAL( returnPressed() ), this, SLOT( userCenter() ) );
+
+    // add a label to show current scale
+    QLabel *scaleLabel = new QLabel( QString(), statusBar() );
+    scaleLabel->setObjectName( "scaleLabel" );
+    scaleLabel->setMinimumWidth( 10 );
+    scaleLabel->setMaximumHeight( 20 );
+    scaleLabel->setAlignment( Qt::AlignCenter );
+    scaleLabel->setFrameStyle( QFrame::NoFrame );
+    scaleLabel->setText( tr( "Scale:" ) );
+    scaleLabel->setToolTip( tr( "Current map scale" ) );
+    statusBar()->addPermanentWidget( scaleLabel, 0 );
+
+    scaleEdit = new QgsScaleComboBox( statusBar() );
+    scaleEdit->setObjectName( "scaleEdit" );
+    scaleEdit->setMinimumWidth( 10 );
+    scaleEdit->setMaximumWidth( 200 );
+    scaleEdit->setMaximumHeight( 20 );
+    scaleEdit->lineEdit()->setAlignment(Qt::AlignCenter);
+    scaleEdit->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    scaleEdit->setWhatsThis( tr( "Displays the current map scale" ) );
+    scaleEdit->setToolTip( tr( "Current map scale (formatted as x:y)" ) );
+
+    statusBar()->addPermanentWidget( scaleEdit, 0 );
+    connect( scaleEdit, SIGNAL( scaleChanged() ), this, SLOT( userScale() ) );
 }
 
 void MainWindow::initDockWidgets()
@@ -266,6 +291,16 @@ void MainWindow::showMouseCoordinate(const QgsPoint &p)
     }
 }
 
+void MainWindow::showScale(double theScale)
+{
+    scaleEdit->setScale( 1.0 / theScale );
+
+    if ( scaleEdit->width() > scaleEdit->minimumWidth() )
+    {
+        scaleEdit->setMinimumWidth( scaleEdit->width() );
+    }
+}
+
 void MainWindow::userCenter()
 {
     QgsMapCanvas* mapCanvas = getCurrentMapCanvas();
@@ -296,6 +331,15 @@ void MainWindow::userCenter()
                     )
                 );
     mapCanvas->refresh();
+}
+
+void MainWindow::userScale()
+{
+    QgsMapCanvas* mapCanvas = getCurrentMapCanvas();
+    if (!mapCanvas)
+        return;
+
+    mapCanvas->zoomScale( 1.0 / scaleEdit->scale() );
 }
 
 
