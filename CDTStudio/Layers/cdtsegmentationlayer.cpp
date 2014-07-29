@@ -3,7 +3,6 @@
 #include "cdtproject.h"
 #include "cdtimagelayer.h"
 #include "cdtclassification.h"
-#include "cdtattributesdockwidget.h"
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "wizardnewclassification.h"
 #include "cdtvariantconverter.h"
@@ -27,7 +26,7 @@ QDataStream &operator>>(QDataStream &in, SampleElement &sample)
 QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
 
 CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
-    : CDTBaseObject(uuid,parent),
+    : CDTBaseLayer(uuid,parent),
       actionAddClassifications(new QAction(QIcon(":/Icon/Add.png"),tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Segmentation"),this)),
       actionExportShapefile(new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this)),

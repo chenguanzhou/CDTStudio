@@ -6,7 +6,7 @@
 #include "cdtfilesystem.h"
 
 CDTProject::CDTProject(QUuid uuid, QObject *parent):
-    CDTBaseObject(uuid,parent),
+    CDTBaseLayer(uuid,parent),
     actionAddImage(new QAction(QIcon(":/Icon/Add.png"),tr("Add Image"),this)),
     removeAllImages(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All images"),this)),
     actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Project"),this)),
@@ -69,9 +69,11 @@ void CDTProject::removeAllImageLayers()
 }
 
 void CDTProject::addImageLayer(CDTImageLayer *image)
-{
+{    
     images.push_back(image);
     emit projectChanged();
+    if (images.size()==1)
+        mapCanvas->zoomToFullExtent();
 }
 
 void CDTProject::insertToTable(QString name)

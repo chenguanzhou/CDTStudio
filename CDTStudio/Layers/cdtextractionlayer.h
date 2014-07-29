@@ -1,14 +1,14 @@
 #ifndef CDTEXTRACTIONLAYER_H
 #define CDTEXTRACTIONLAYER_H
 
-#include "cdtbaseobject.h"
+#include "cdtbaselayer.h"
 
 class QColor;
 class QAction;
 class QWidgetAction;
 class QgsFeatureRendererV2;
 
-class CDTExtractionLayer : public CDTBaseObject
+class CDTExtractionLayer : public CDTBaseLayer
 {
     Q_OBJECT    
     Q_CLASSINFO("CDTExtractionLayer","Extraction")

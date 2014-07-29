@@ -1,13 +1,13 @@
 #ifndef CDTCLASSIFICATION_H
 #define CDTCLASSIFICATION_H
 
-#include "cdtbaseobject.h"
+#include "cdtbaselayer.h"
 
 class QAction;
 class QgsFeatureRendererV2;
 class CDTProjectTreeItem;
 
-class CDTClassification:public CDTBaseObject
+class CDTClassification:public CDTBaseLayer
 {
     Q_OBJECT   
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)

@@ -1,6 +1,6 @@
 #include "cdtprojecttreeitem.h"
 
-CDTProjectTreeItem::CDTProjectTreeItem(CDTItemType tp, LayerType ly, const QString &text, CDTBaseObject *crspdObject)
+CDTProjectTreeItem::CDTProjectTreeItem(CDTItemType tp, LayerType ly, const QString &text, CDTBaseLayer *crspdObject)
     :_itemType(tp),layerType(ly),corrObject(crspdObject),qgsMapLayer(NULL)
 {
     setText(text);

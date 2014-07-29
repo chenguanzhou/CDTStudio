@@ -61,7 +61,7 @@ CDTExtractionDockWidget::EDITSTATE CDTExtractionDockWidget::editState() const
     return currentEditState;
 }
 
-void CDTExtractionDockWidget::setCurrentLayer(CDTBaseObject *layer)
+void CDTExtractionDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     if (layer == NULL)
     {

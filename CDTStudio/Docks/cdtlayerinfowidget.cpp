@@ -15,7 +15,7 @@ CDTLayerInfoWidget::CDTLayerInfoWidget(QWidget *parent) :
     this->setWindowTitle(tr("Layer Infomation"));
 }
 
-void CDTLayerInfoWidget::setCurrentLayer(CDTBaseObject *layer)
+void CDTLayerInfoWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     propertyWidget->setObject(layer);
 }

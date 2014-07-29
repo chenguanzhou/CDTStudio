@@ -49,7 +49,7 @@ public:
     CDTSegmentationLayer *segmentationLayer()const;
 
 public slots:    
-    void setCurrentLayer(CDTBaseObject* layer);
+    void setCurrentLayer(CDTBaseLayer* layer);
     void onCurrentProjectClosed();
 
     void setDatabaseURL(CDTDatabaseConnInfo url);    

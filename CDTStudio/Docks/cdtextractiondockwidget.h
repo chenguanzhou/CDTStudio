@@ -26,7 +26,7 @@ public:
     EDITSTATE editState()const;
 
 public slots:
-    void setCurrentLayer(CDTBaseObject* layer);
+    void setCurrentLayer(CDTBaseLayer* layer);
     void onCurrentProjectClosed();
 
 

@@ -4,7 +4,7 @@
 //TODO  Some QButtonGroup
 //TODO  Project tree Checkbox
 //TODO  Translation
-//TODO  CDTBaseObject more independent
+//TODO  CDTBaseLayer more independent
 //TODO  Recent file
 //TODO  Comment
 //TODO  Unit Test(Auto)
@@ -12,7 +12,6 @@
 //TODO  Opacity for layers
 //TODO  Attribute Widget Closable
 //TODO  Make accuracy assessment as a property of classification layer
-//TODO  Scale Bar
 //TODO  Read & write project in another thread
 
 //BUG   Same name

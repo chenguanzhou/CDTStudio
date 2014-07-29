@@ -1,10 +1,10 @@
-#include "cdtbaseobject.h"
+#include "cdtbaselayer.h"
 #include "stable.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtfilesystem.h"
 #include "cdtproject.h"
 
-CDTBaseObject::CDTBaseObject(QUuid uuid, QObject *parent) :
+CDTBaseLayer::CDTBaseLayer(QUuid uuid, QObject *parent) :
     QObject(parent),
     mapCanvasLayer(NULL),
     mapCanvas(NULL)
@@ -12,30 +12,30 @@ CDTBaseObject::CDTBaseObject(QUuid uuid, QObject *parent) :
     this->uuid = uuid;
     if (parent) connect(this,SIGNAL(appendLayers(QList<QgsMapLayer*> )),parent,SIGNAL(appendLayers(QList<QgsMapLayer*>)));
     if (parent) connect(this,SIGNAL(removeLayer(QList<QgsMapLayer*> )),parent,SIGNAL(removeLayer(QList<QgsMapLayer*>)));
-    if (parent) mapCanvas = ((CDTBaseObject*)parent)->mapCanvas;
+    if (parent) mapCanvas = ((CDTBaseLayer*)parent)->mapCanvas;
 }
 
-CDTBaseObject::~CDTBaseObject()
+CDTBaseLayer::~CDTBaseLayer()
 {
 
 }
 
-QList<QStandardItem *> CDTBaseObject::standardItems() const
+QList<QStandardItem *> CDTBaseLayer::standardItems() const
 {
     return QList<QStandardItem *>()<<(QStandardItem *)keyItem<<(QStandardItem *)valueItem;
 }
 
-QgsMapLayer *CDTBaseObject::canvasLayer() const
+QgsMapLayer *CDTBaseLayer::canvasLayer() const
 {
     return mapCanvasLayer;
 }
 
-QgsMapCanvas *CDTBaseObject::canvas() const
+QgsMapCanvas *CDTBaseLayer::canvas() const
 {
     return mapCanvas;
 }
 
-CDTProject *CDTBaseObject::rootProject() const
+CDTProject *CDTBaseLayer::rootProject() const
 {
     QObject *obj = (QObject *)this;
     while (obj->parent())
@@ -43,12 +43,12 @@ CDTProject *CDTBaseObject::rootProject() const
     return (CDTProject *)obj;
 }
 
-CDTFileSystem *CDTBaseObject::fileSystem() const
+CDTFileSystem *CDTBaseLayer::fileSystem() const
 {
     return rootProject()->fileSystem;
 }
 
-void CDTBaseObject::setMapCanvas(QgsMapCanvas *canvas)
+void CDTBaseLayer::setMapCanvas(QgsMapCanvas *canvas)
 {
     mapCanvas = canvas;
 }

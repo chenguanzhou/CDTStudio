@@ -55,7 +55,7 @@ class CDTUndoWidget : public CDTDockWidget
     QWidget* dockContents() { return dockWidgetContents; }
 
   public slots:
-    void setCurrentLayer(CDTBaseObject* layer);
+    void setCurrentLayer(CDTBaseLayer* layer);
     void onCurrentProjectClosed();
 
     void setMapCanvas(QgsMapCanvas* mapCanvas);

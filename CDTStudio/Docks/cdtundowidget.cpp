@@ -82,7 +82,7 @@ void CDTUndoWidget::destroyStack()
     }
 }
 
-void CDTUndoWidget::setCurrentLayer(CDTBaseObject *layer)
+void CDTUndoWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     if (qobject_cast<CDTSegmentationLayer*>(layer) ||
         qobject_cast<CDTExtractionLayer*>(layer) ||

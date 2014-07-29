@@ -109,7 +109,7 @@ private:
     void setSegmentationID(QUuid uuid);
 
 public slots:
-    void setCurrentLayer(CDTBaseObject* layer);
+    void setCurrentLayer(CDTBaseLayer* layer);
     void onCurrentProjectClosed();
 
     void updateTable();

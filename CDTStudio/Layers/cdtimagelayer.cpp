@@ -12,7 +12,7 @@
 QList<CDTImageLayer *> CDTImageLayer::layers;
 
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
-    : CDTBaseObject(uuid,parent),
+    : CDTBaseLayer(uuid,parent),
       actionAddExtractionLayer(new QAction(QIcon(":/Icon/Add.png"),tr("Add Extraction"),this)),
       actionAddSegmentationLayer(new QAction(QIcon(":/Icon/Add.png"),tr("Add Segmentation"),this)),
       actionRemoveImage(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Image"),this)),

@@ -10,12 +10,12 @@ class CDTProjectTreeItem;
 class CDTFileSystem;
 class CDTProject;
 
-class CDTBaseObject : public QObject
+class CDTBaseLayer : public QObject
 {
     Q_OBJECT
 public:
-    explicit CDTBaseObject(QUuid uuid,QObject *parent = 0);
-    virtual ~CDTBaseObject();
+    explicit CDTBaseLayer(QUuid uuid,QObject *parent = 0);
+    virtual ~CDTBaseLayer();
 
     virtual void onContextMenuRequest(QWidget *parent) = 0;
     QList<QStandardItem *> standardItems()const;

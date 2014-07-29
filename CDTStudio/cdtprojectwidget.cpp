@@ -1,6 +1,6 @@
 #include "cdtprojectwidget.h"
 #include "cdtprojecttabwidget.h"
-#include "cdtbaseobject.h"
+#include "cdtbaselayer.h"
 #include "stable.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtapplication.h"
@@ -44,7 +44,7 @@ void CDTProjectWidget::onContextMenu(QPoint , QModelIndex index)
 //    int type = item->getType();
 
 
-    CDTBaseObject* correspondingObject = item->correspondingObject();
+    CDTBaseLayer* correspondingObject = item->correspondingObject();
     if (correspondingObject)
     {
         correspondingObject->onContextMenuRequest(this);
@@ -181,7 +181,7 @@ void CDTProjectWidget::appendLayers(QList<QgsMapLayer *> layers)
     foreach (QgsMapLayer *lyr, activeLayers) {
         layersVisible.insert(lyr,true);
     }
-    refreshMapCanvas();
+    refreshMapCanvas(false);
 }
 
 void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)

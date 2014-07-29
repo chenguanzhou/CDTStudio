@@ -8,7 +8,7 @@
 QList<CDTExtractionLayer *> CDTExtractionLayer::layers;
 
 CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
-    CDTBaseObject(uuid,parent),
+    CDTBaseLayer(uuid,parent),
     actionChangeParams(new QWidgetAction(this)),
     actionRemoveExtraction(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Extraction"),this)),
     actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this)),

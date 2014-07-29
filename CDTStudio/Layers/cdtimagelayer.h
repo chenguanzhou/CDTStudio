@@ -1,7 +1,7 @@
 #ifndef CDTIMAGELAYER_H
 #define CDTIMAGELAYER_H
 
-#include "cdtbaseobject.h"
+#include "cdtbaselayer.h"
 #include "cdtsampledockwidget.h"
 
 class QAction;
@@ -9,7 +9,7 @@ class CDTProjectTreeItem;
 class CDTExtractionLayer;
 class CDTSegmentationLayer;
 
-class CDTImageLayer:public CDTBaseObject
+class CDTImageLayer:public CDTBaseLayer
 {
     Q_OBJECT
     Q_CLASSINFO("CDTImageLayer","Image")

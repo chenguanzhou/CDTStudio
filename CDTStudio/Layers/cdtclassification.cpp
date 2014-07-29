@@ -5,7 +5,7 @@
 #include "cdtvariantconverter.h"
 
 CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
-    :CDTBaseObject(uuid,parent),
+    :CDTBaseLayer(uuid,parent),
       actionRemoveClassification(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this)),
       actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this))
 {

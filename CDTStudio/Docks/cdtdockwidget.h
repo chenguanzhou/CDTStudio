@@ -2,7 +2,7 @@
 #define CDTDOCKWIDGET_H
 
 #include <QDockWidget>
-#include "cdtbaseobject.h"
+#include "cdtbaselayer.h"
 #include "cdtproject.h"
 
 class CDTDockWidget : public QDockWidget
@@ -15,7 +15,7 @@ signals:
 
     //TODO  Add Lock
 public slots:
-    virtual void setCurrentLayer(CDTBaseObject* layer) = 0;
+    virtual void setCurrentLayer(CDTBaseLayer* layer) = 0;
     virtual void onCurrentProjectClosed() = 0;
 };
 

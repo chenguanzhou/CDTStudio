@@ -192,7 +192,7 @@ QUuid CDTSampleDockWidget::currentCategoryID()
     return QUuid(id);
 }
 
-void CDTSampleDockWidget::setCurrentLayer(CDTBaseObject *layer)
+void CDTSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     clear();
     if (layer == NULL)

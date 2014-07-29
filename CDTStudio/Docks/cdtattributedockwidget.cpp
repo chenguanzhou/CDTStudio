@@ -45,7 +45,7 @@ CDTSegmentationLayer *CDTAttributeDockWidget::segmentationLayer() const
     return _segmentationLayer;
 }
 
-void CDTAttributeDockWidget::setCurrentLayer(CDTBaseObject *layer)
+void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     if (_segmentationLayer == layer)
         return;

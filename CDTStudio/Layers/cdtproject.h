@@ -1,13 +1,13 @@
 #ifndef CDTPROJECT_H
 #define CDTPROJECT_H
 
-#include "cdtbaseobject.h"
+#include "cdtbaselayer.h"
 
 class QAction;
 class CDTImageLayer;
 class CDTFileSystem;
 
-class CDTProject: public CDTBaseObject
+class CDTProject: public CDTBaseLayer
 {
     Q_OBJECT
     Q_CLASSINFO("CDTProject",tr("Project"))
@@ -19,7 +19,7 @@ public:
     friend QDataStream &operator <<(QDataStream &out,const CDTProject &project);
     friend QDataStream &operator >>(QDataStream &in, CDTProject &project);
     friend class CDTProjectTreeModel;
-    friend class CDTBaseObject;
+    friend class CDTBaseLayer;
     friend class CDTSegmentationLayer;
 
 

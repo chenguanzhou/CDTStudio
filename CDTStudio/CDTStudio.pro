@@ -19,38 +19,17 @@ PRECOMPILED_HEADER = stable.h
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    cdtproject.cpp \
-    cdtimagelayer.cpp \
-    cdtsegmentationlayer.cpp \
-    cdtclassification.cpp \
     cdtprojecttabwidget.cpp \
     cdtprojectwidget.cpp \
-    cdtprojecttreeitem.cpp \    
-    cdtbaseobject.cpp \
+    cdtprojecttreeitem.cpp \
     recentfilesupervisor.cpp \    
     cdtattributegenerator.cpp \
-    cdtmaptoolselecttrainingsamples.cpp \
-    dialognewsegmentation.cpp\    
-    dialoggenerateattributes.cpp \    
-    cdtattributedockwidget.cpp \
-    cdtsampledockwidget.cpp \
-    wizardnewclassification.cpp \
     cdtapplication.cpp \
-    cdtextractionlayer.cpp \
-    dialognewextraction.cpp \
-    cdtextractiondockwidget.cpp \
-    cdtclassificationhelper.cpp \
-    cdtundowidget.cpp \
-    cdtlayerinfowidget.cpp
+    cdtclassificationhelper.cpp
 
 
 HEADERS  += \    
     mainwindow.h \
-    cdtbaseobject.h \
-    cdtproject.h \
-    cdtimagelayer.h \
-    cdtsegmentationlayer.h \
-    cdtclassification.h \
     cdtprojecttabwidget.h \
     cdtprojectwidget.h \
     cdtprojecttreeitem.h \
@@ -58,32 +37,17 @@ HEADERS  += \
     recentfilesupervisor.h \
     cdtattributegenerator.h \
     cdtbasethread.h \
-    cdtmaptoolselecttrainingsamples.h \
-    dialognewsegmentation.h \
-    dialoggenerateattributes.h \    
-    cdtattributedockwidget.h \
-    cdtsampledockwidget.h \
-    wizardnewclassification.h \
     cdtvariantconverter.h \
     cdtapplication.h \
-    cdtextractionlayer.h \
-    dialognewextraction.h \
-    cdtextractiondockwidget.h \
     ../Interfaces/cdtextractioninterface.h \
-    cdtclassificationhelper.h \
-    cdtdockwidget.h \
-    cdtundowidget.h \
-    cdtlayerinfowidget.h
+    cdtclassificationhelper.h
 
 FORMS    += \
     mainwindow.ui \
-    dialognewsegmentation.ui\
-    dialoggenerateattributes.ui \    
-    cdtattributedockwidget.ui \
-    cdtsampledockwidget.ui \
-    wizardnewclassification.ui \
-    dialognewextraction.ui \
-    cdtextractiondockwidget.ui
+
+include(Docks/Docks.pri)
+include(Dialogs/Dialogs.pri)
+include(Layers/Layers.pri)
 
 INCLUDEPATH += \
     ../Interfaces \
@@ -104,6 +68,7 @@ DEPENDPATH += \
     ../Tools/CDTFileSystem\
     ../Tools/log4qt\
     ../Tools/CDTClassifierAssessmentWidget
+
 
 #Libraries
 unix{

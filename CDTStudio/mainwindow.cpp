@@ -268,6 +268,7 @@ void MainWindow::onCurrentTabChanged(int i)
     {
         ui->treeViewProject->setModel(NULL);
         lineEditCoord->setText(QString::null);
+        scaleEdit->lineEdit()->setText(QString::null);
         return ;
     }
 
@@ -275,6 +276,12 @@ void MainWindow::onCurrentTabChanged(int i)
     ui->treeViewProject->setModel(projectWidget->treeModel);
     ui->treeViewProject->expandAll();
     ui->treeViewProject->resizeColumnToContents(0);
+    if (getCurrentMapCanvas())
+    {
+        getCurrentMapCanvas()->updateScale();
+        showScale(getCurrentMapCanvas()->scale());
+    }
+
     logger()->info("Current tab is changed to %1",ui->tabWidgetProject->tabText(i));
 }
 

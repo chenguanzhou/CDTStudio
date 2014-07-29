@@ -1,7 +1,7 @@
 #ifndef CDTSEGMENTATIONLAYER_H
 #define CDTSEGMENTATIONLAYER_H
 
-#include "cdtbaseobject.h"
+#include "cdtbaselayer.h"
 #include "dialogdbconnection.h"
 
 class QWidgetAction;
@@ -23,7 +23,7 @@ public:
     QUuid sampleID;
 };
 
-class CDTSegmentationLayer:public CDTBaseObject
+class CDTSegmentationLayer:public CDTBaseLayer
 {
     Q_OBJECT
     Q_CLASSINFO("CDTSegmentationLayer","Segmentation")
