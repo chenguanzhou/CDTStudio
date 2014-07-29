@@ -7,7 +7,7 @@
 class QWidgetAction;
 class QColor;
 class QgsFeatureRendererV2;
-class CDTClassification;
+class CDTClassificationLayer;
 class CDTMapToolSelectTrainingSamples;
 class CDTProjectTreeItem;
 
@@ -68,7 +68,7 @@ public slots:
     void remove();
 
     void addClassification();
-    void removeClassification(CDTClassification *);
+    void removeClassification(CDTClassificationLayer *);
     void removeAllClassifications();
 
     void setName(const QString& name);
@@ -85,12 +85,12 @@ public slots:
 
 private:
     QgsFeatureRendererV2 *renderer();
-    void addClassification(CDTClassification* classification);
+    void addClassification(CDTClassificationLayer* classification);
     void loadSamplesFromStruct(const QMap<QString,QString> &sample_id_name,const QList<SampleElement> &samples);
     void saveSamplesToStruct(QMap<QString,QString> &sample_id_name,QList<SampleElement> &samples) const;
 
 private:
-    QVector<CDTClassification *> classifications;
+    QVector<CDTClassificationLayer *> classifications;
 
     QWidgetAction *actionChangeBorderColor;
     QAction *actionRename;

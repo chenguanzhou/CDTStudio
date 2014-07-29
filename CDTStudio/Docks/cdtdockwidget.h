@@ -3,7 +3,7 @@
 
 #include <QDockWidget>
 #include "cdtbaselayer.h"
-#include "cdtproject.h"
+#include "cdtprojectlayer.h"
 
 class CDTDockWidget : public QDockWidget
 {

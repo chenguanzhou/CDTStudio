@@ -20,7 +20,7 @@
 #include "cdtsegmentationlayer.h"
 #include "cdtimagelayer.h"
 #include "cdtextractionlayer.h"
-#include "cdtclassification.h"
+#include "cdtclassificationlayer.h"
 
 CDTUndoWidget::CDTUndoWidget( QWidget * parent, QgsMapCanvas * mapCanvas )
     : CDTDockWidget( parent )
@@ -86,7 +86,7 @@ void CDTUndoWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     if (qobject_cast<CDTSegmentationLayer*>(layer) ||
         qobject_cast<CDTExtractionLayer*>(layer) ||
-        qobject_cast<CDTClassification*>(layer) )
+        qobject_cast<CDTClassificationLayer*>(layer) )
     setMapCanvas(layer->canvas());
     setMapLayer(layer->canvasLayer());
 }
@@ -174,7 +174,6 @@ void CDTUndoWidget::setupUi( QDockWidget *UndoWidget )
     if ( UndoWidget->objectName().isEmpty() )
         UndoWidget->setObjectName( QString::fromUtf8( "UndoWidget" ) );
     UndoWidget->resize( 200, 223 );
-    UndoWidget->setMinimumSize( QSize( 200, 220 ) );
     dockWidgetContents = new QWidget( UndoWidget );
     dockWidgetContents->setObjectName( QString::fromUtf8( "dockWidgetContents" ) );
     gridLayout = new QGridLayout( dockWidgetContents );

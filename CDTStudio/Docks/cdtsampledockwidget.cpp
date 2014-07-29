@@ -6,7 +6,7 @@
 #include "mainwindow.h"
 #include "cdtprojectwidget.h"
 #include "cdtsegmentationlayer.h"
-#include "cdtclassification.h"
+#include "cdtclassificationlayer.h"
 
 QDataStream &operator <<(QDataStream &out,const CategoryInformation &categoryInformation)
 {
@@ -223,7 +223,7 @@ void CDTSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
         return;
     }
 
-    CDTClassification *clsLayer = qobject_cast<CDTClassification*>(layer);
+    CDTClassificationLayer *clsLayer = qobject_cast<CDTClassificationLayer*>(layer);
     if (clsLayer)
     {
         if (clsLayer->parent() == NULL)

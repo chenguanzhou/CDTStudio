@@ -45,7 +45,7 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     qDebug()<<"segmentationPlugins:"<<segmentationPlugins.size();
     qDebug()<<"extractionPlugins:"<<extractionPlugins.size();
 
-    this->setStyleSheet(getStyleSheet("default"));
+    this->setStyleSheet(getStyleSheetByName("default"));
 }
 
 CDTApplication::~CDTApplication()
@@ -59,7 +59,7 @@ CDTApplication::~CDTApplication()
     }
 }
 
-QString CDTApplication::getStyleSheet(QString styleName)
+QString CDTApplication::getStyleSheetByName(QString styleName)
 {
     styleName = styleName.toLower();
     QString styleSheet;

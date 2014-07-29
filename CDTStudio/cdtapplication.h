@@ -11,7 +11,7 @@ public:
     explicit CDTApplication(int & argc, char ** argv);
     ~CDTApplication();
 
-    static QString getStyleSheet(QString styleName);
+    static QString getStyleSheetByName(QString styleName);
 signals:
 
 public slots:

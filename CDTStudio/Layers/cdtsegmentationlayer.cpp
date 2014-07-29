@@ -1,11 +1,12 @@
 #include "cdtsegmentationlayer.h"
 #include "stable.h"
-#include "cdtproject.h"
+#include "cdtprojectlayer.h"
 #include "cdtimagelayer.h"
-#include "cdtclassification.h"
+#include "cdtclassificationlayer.h"
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "wizardnewclassification.h"
 #include "cdtvariantconverter.h"
+#include "cdtattributedockwidget.h"
 #include "mainwindow.h"
 #include "qtcolorpicker.h"
 #include "cdtfilesystem.h"
@@ -137,7 +138,7 @@ void CDTSegmentationLayer::addClassification()
 
     if (ret == QWizard::Accepted || dlg.isValid())
     {
-        CDTClassification *classification = new CDTClassification(QUuid::createUuid(),this);
+        CDTClassificationLayer *classification = new CDTClassificationLayer(QUuid::createUuid(),this);
         classification->initClassificationLayer(
                     dlg.name,
                     dlg.method,
@@ -156,7 +157,7 @@ void CDTSegmentationLayer::remove()
     emit removeSegmentation(this);
 }
 
-void CDTSegmentationLayer::removeClassification(CDTClassification* clf)
+void CDTSegmentationLayer::removeClassification(CDTClassificationLayer* clf)
 {
     int index = classifications.indexOf(clf);
     if (index>=0)
@@ -172,7 +173,7 @@ void CDTSegmentationLayer::removeClassification(CDTClassification* clf)
 
 void CDTSegmentationLayer::removeAllClassifications()
 {
-    foreach (CDTClassification* clf, classifications) {
+    foreach (CDTClassificationLayer* clf, classifications) {
         QStandardItem* keyItem = clf->standardItems()[0];
         keyItem->parent()->removeRow(keyItem->index().row());
         emit removeLayer(QList<QgsMapLayer*>()<<clf->canvasLayer());
@@ -399,7 +400,7 @@ void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
     emit segmentationChanged();
 }
 
-void CDTSegmentationLayer::addClassification(CDTClassification *classification)
+void CDTSegmentationLayer::addClassification(CDTClassificationLayer *classification)
 {
     classifications.push_back(classification);
     emit segmentationChanged();
@@ -500,7 +501,7 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
     in>>count;
     for (int i=0;i<count;++i)
     {
-        CDTClassification* classification = new CDTClassification(QUuid(),&segmentation);
+        CDTClassificationLayer* classification = new CDTClassificationLayer(QUuid(),&segmentation);
         in>>*classification;
         segmentation.classificationRootItem->appendRow(classification->standardItems());
         segmentation.classifications.push_back(classification);

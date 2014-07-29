@@ -1,10 +1,10 @@
-#include "cdtclassification.h"
+#include "cdtclassificationlayer.h"
 #include "cdtsegmentationlayer.h"
 #include "stable.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtvariantconverter.h"
 
-CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
+CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
     :CDTBaseLayer(uuid,parent),
       actionRemoveClassification(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this)),
       actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this))
@@ -28,12 +28,12 @@ CDTClassification::CDTClassification(QUuid uuid, QObject* parent)
                 <<pcaItem);
 
     connect(this,SIGNAL(classificationLayerChanged()),this->parent(),SIGNAL(segmentationChanged()));
-    connect(this,SIGNAL(removeClassification(CDTClassification*)),this->parent(),SLOT(removeClassification(CDTClassification*)));
+    connect(this,SIGNAL(removeClassification(CDTClassificationLayer*)),this->parent(),SLOT(removeClassification(CDTClassificationLayer*)));
     connect(actionRemoveClassification,SIGNAL(triggered()),SLOT(remove()));
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
 }
 
-CDTClassification::~CDTClassification()
+CDTClassificationLayer::~CDTClassificationLayer()
 {
     if (id().isNull())
         return;
@@ -45,7 +45,7 @@ CDTClassification::~CDTClassification()
         qWarning()<<"prepare:"<<query.lastError().text();
 }
 
-void CDTClassification::onContextMenuRequest(QWidget *parent)
+void CDTClassificationLayer::onContextMenuRequest(QWidget *parent)
 {    
     QMenu *menu =new QMenu(parent);
     menu->addAction(actionRemoveClassification);
@@ -54,7 +54,7 @@ void CDTClassification::onContextMenuRequest(QWidget *parent)
     menu->exec(QCursor::pos());
 }
 
-void CDTClassification::rename()
+void CDTClassificationLayer::rename()
 {
     bool ok;
     QString text = QInputDialog::getText(
@@ -65,12 +65,12 @@ void CDTClassification::rename()
         setName(text);
 }
 
-void CDTClassification::remove()
+void CDTClassificationLayer::remove()
 {
     emit removeClassification(this);
 }
 
-QString CDTClassification::name() const
+QString CDTClassificationLayer::name() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -79,7 +79,7 @@ QString CDTClassification::name() const
     return query.value(0).toString();
 }
 
-QString CDTClassification::method() const
+QString CDTClassificationLayer::method() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -88,7 +88,7 @@ QString CDTClassification::method() const
     return query.value(0).toString();
 }
 
-QVariantMap CDTClassification::params() const
+QVariantMap CDTClassificationLayer::params() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -98,7 +98,7 @@ QVariantMap CDTClassification::params() const
     return variantToData<QVariantMap>(query.value(0));
 }
 
-QVariantList CDTClassification::data() const
+QVariantList CDTClassificationLayer::data() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -108,7 +108,7 @@ QVariantList CDTClassification::data() const
     return variantToData<QVariantList>(query.value(0));
 }
 
-QVariantMap CDTClassification::clsInfo() const
+QVariantMap CDTClassificationLayer::clsInfo() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -117,7 +117,7 @@ QVariantMap CDTClassification::clsInfo() const
     return variantToData<QVariantMap>(query.value(0));
 }
 
-QString CDTClassification::normalizeMethod() const
+QString CDTClassificationLayer::normalizeMethod() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -126,7 +126,7 @@ QString CDTClassification::normalizeMethod() const
     return query.value(0).toString();
 }
 
-QString CDTClassification::pcaParams() const
+QString CDTClassificationLayer::pcaParams() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -135,7 +135,7 @@ QString CDTClassification::pcaParams() const
     return query.value(0).toString();
 }
 
-QgsFeatureRendererV2 *CDTClassification::renderer()
+QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
 {
     QMap<QString,QVariant> clsInfo = this->clsInfo();
 
@@ -166,7 +166,7 @@ QgsFeatureRendererV2 *CDTClassification::renderer()
     return categorizedSymbolRenderer;
 }
 
-void CDTClassification::setName(const QString &name)
+void CDTClassificationLayer::setName(const QString &name)
 {
     if (this->name()==name)
         return;
@@ -179,7 +179,7 @@ void CDTClassification::setName(const QString &name)
     keyItem->setText(name);
 }
 
-void CDTClassification::initClassificationLayer(
+void CDTClassificationLayer::initClassificationLayer(
         const QString &name,
         const QString &methodName,
         const QMap<QString, QVariant> &params,
@@ -224,7 +224,7 @@ void CDTClassification::initClassificationLayer(
     }
 }
 
-QDataStream &operator<<(QDataStream &out, const CDTClassification &classification)
+QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification)
 {
     out<<classification.uuid
       <<classification.name()
@@ -238,7 +238,7 @@ QDataStream &operator<<(QDataStream &out, const CDTClassification &classificatio
 }
 
 
-QDataStream &operator>>(QDataStream &in, CDTClassification &classification)
+QDataStream &operator>>(QDataStream &in, CDTClassificationLayer &classification)
 {
     QString name;
     QString method;

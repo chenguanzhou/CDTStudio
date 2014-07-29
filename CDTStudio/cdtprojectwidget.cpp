@@ -283,7 +283,7 @@ bool CDTProjectWidget::openProjectFile(QString filepath)
 
 void CDTProjectWidget::createProject(QUuid id)
 {
-    project = new CDTProject(id);
+    project = new CDTProjectLayer(id);
     project->setMapCanvas( mapCanvas);
 
 

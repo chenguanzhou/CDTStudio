@@ -2,7 +2,7 @@
 #include "stable.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtfilesystem.h"
-#include "cdtproject.h"
+#include "cdtprojectlayer.h"
 
 CDTBaseLayer::CDTBaseLayer(QUuid uuid, QObject *parent) :
     QObject(parent),
@@ -35,12 +35,12 @@ QgsMapCanvas *CDTBaseLayer::canvas() const
     return mapCanvas;
 }
 
-CDTProject *CDTBaseLayer::rootProject() const
+CDTProjectLayer *CDTBaseLayer::rootProject() const
 {
     QObject *obj = (QObject *)this;
     while (obj->parent())
         obj = obj->parent();
-    return (CDTProject *)obj;
+    return (CDTProjectLayer *)obj;
 }
 
 CDTFileSystem *CDTBaseLayer::fileSystem() const

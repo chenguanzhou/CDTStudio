@@ -1,17 +1,17 @@
 HEADERS += \
     Layers/cdtbaselayer.h \
-    Layers/cdtclassification.h \
     Layers/cdtextractionlayer.h \
     Layers/cdtimagelayer.h \
-    Layers/cdtproject.h \
-    Layers/cdtsegmentationlayer.h
+    Layers/cdtsegmentationlayer.h \
+    Layers/cdtclassificationlayer.h \
+    Layers/cdtprojectlayer.h
 
 SOURCES += \
     Layers/cdtbaselayer.cpp \
-    Layers/cdtclassification.cpp \
     Layers/cdtextractionlayer.cpp \
     Layers/cdtimagelayer.cpp \
-    Layers/cdtproject.cpp \
-    Layers/cdtsegmentationlayer.cpp
+    Layers/cdtsegmentationlayer.cpp \
+    Layers/cdtclassificationlayer.cpp \
+    Layers/cdtprojectlayer.cpp
 
 INCLUDEPATH += $$PWD

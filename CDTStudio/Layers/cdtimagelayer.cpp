@@ -1,7 +1,7 @@
 #include "cdtimagelayer.h"
 #include "stable.h"
 #include "cdtprojecttreeitem.h"
-#include "cdtproject.h"
+#include "cdtprojectlayer.h"
 #include "cdtextractionlayer.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtfilesystem.h"
@@ -33,8 +33,8 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     layers.push_back(this);
 
 
-    connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProject*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
-    connect(this,SIGNAL(imageLayerChanged()),(CDTProject*)(this->parent()),SIGNAL(projectChanged()));
+    connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProjectLayer*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
+    connect(this,SIGNAL(imageLayerChanged()),(CDTProjectLayer*)(this->parent()),SIGNAL(projectChanged()));
 
     connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
     connect(actionRemoveImage,SIGNAL(triggered()),this,SLOT(remove()));
@@ -108,7 +108,7 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
     query.bindValue(0,uuid.toString());
     query.bindValue(1,name);
     query.bindValue(2,path);
-    query.bindValue(3,((CDTProject*)parent())->id().toString());
+    query.bindValue(3,((CDTProjectLayer*)parent())->id().toString());
     query.exec();
 
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);

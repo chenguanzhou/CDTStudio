@@ -3,15 +3,18 @@
 
 #include "qgsscalecombobox.h"
 #include "stable.h"
+
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
+#include "cdtattributedockwidget.h"
+#include "cdtdockwidget.h"
 #include "cdtsampledockwidget.h"
 #include "cdtextractiondockwidget.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtimagelayer.h"
 #include "cdtextractionlayer.h"
 #include "cdtsegmentationlayer.h"
-#include "cdtclassification.h"
+#include "cdtclassificationlayer.h"
 #include "cdtundowidget.h"
 #include "cdtlayerinfowidget.h"
 #include "dialogconsole.h"
@@ -38,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initDockWidgets();
     initConsole();
 
-    connect(ui->tabWidgetProject,SIGNAL(beforeTabClosed(CDTProject*)),this,SIGNAL(beforeProjectClosed(CDTProject*)));
+    connect(ui->tabWidgetProject,SIGNAL(beforeTabClosed(CDTProjectLayer*)),this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)));
 
     recentFileToolButton->setText(tr("&Recent"));
     recentFileToolButton->setToolButtonStyle(ui->mainToolBar->toolButtonStyle());
@@ -207,7 +210,7 @@ void MainWindow::initConsole()
 
 void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
 {
-    connect(this,SIGNAL(beforeProjectClosed(CDTProject*)),dock,SLOT(onCurrentProjectClosed()));
+    connect(this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)),dock,SLOT(onCurrentProjectClosed()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),dock,SLOT(onCurrentProjectClosed()));
     this->addDockWidget(area, dock);
     dock->raise();
@@ -439,7 +442,7 @@ void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
     }
     else if (type == CDTProjectTreeItem::CLASSIFICATION)
     {
-        CDTClassification* classificationLayer = qobject_cast<CDTClassification*>(item->correspondingObject());
+        CDTClassificationLayer* classificationLayer = qobject_cast<CDTClassificationLayer*>(item->correspondingObject());
         if (classificationLayer != NULL)
         {
             CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());

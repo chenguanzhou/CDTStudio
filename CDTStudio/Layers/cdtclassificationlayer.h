@@ -7,19 +7,20 @@ class QAction;
 class QgsFeatureRendererV2;
 class CDTProjectTreeItem;
 
-class CDTClassification:public CDTBaseLayer
+class CDTClassificationLayer:public CDTBaseLayer
 {
     Q_OBJECT   
+    Q_CLASSINFO("CDTClassificationLayer","Classification")
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
     Q_PROPERTY(QString Method READ method  DESIGNABLE true USER true)
     Q_PROPERTY(QString Normalization_Param READ normalizeMethod  DESIGNABLE true USER true)
     Q_PROPERTY(QString PCA_Param READ pcaParams  DESIGNABLE true USER true)
 public:
-    explicit CDTClassification(QUuid uuid,QObject* parent=0);
-    ~CDTClassification();
+    explicit CDTClassificationLayer(QUuid uuid,QObject* parent=0);
+    ~CDTClassificationLayer();
 
-    friend QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
-    friend QDataStream &operator>>(QDataStream &in, CDTClassification &classification);
+    friend QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification);
+    friend QDataStream &operator>>(QDataStream &in, CDTClassificationLayer &classification);
 
     QString         name()              const;
     QString         method()            const;
@@ -40,7 +41,7 @@ public:
             const QString &pcaParams);
 
 signals:
-    void removeClassification(CDTClassification*);
+    void removeClassification(CDTClassificationLayer*);
     void classificationLayerChanged();
 
 public slots:
@@ -61,7 +62,7 @@ private:
     CDTProjectTreeItem* pcaItem;
 };
 
-QDataStream &operator<<(QDataStream &out, const CDTClassification &classification);
-QDataStream &operator>>(QDataStream &in, CDTClassification &classification);
+QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification);
+QDataStream &operator>>(QDataStream &in, CDTClassificationLayer &classification);
 
 #endif // CDTCLASSIFICATION_H

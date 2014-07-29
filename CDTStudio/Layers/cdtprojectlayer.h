@@ -7,17 +7,17 @@ class QAction;
 class CDTImageLayer;
 class CDTFileSystem;
 
-class CDTProject: public CDTBaseLayer
+class CDTProjectLayer: public CDTBaseLayer
 {
     Q_OBJECT
-    Q_CLASSINFO("CDTProject",tr("Project"))
+    Q_CLASSINFO("CDTProjectLayer",tr("Project"))
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
 public:
-    explicit CDTProject(QUuid uuid,QObject *parent = 0);
-    ~CDTProject();
+    explicit CDTProjectLayer(QUuid uuid,QObject *parent = 0);
+    ~CDTProjectLayer();
 
-    friend QDataStream &operator <<(QDataStream &out,const CDTProject &project);
-    friend QDataStream &operator >>(QDataStream &in, CDTProject &project);
+    friend QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project);
+    friend QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project);
     friend class CDTProjectTreeModel;
     friend class CDTBaseLayer;
     friend class CDTSegmentationLayer;

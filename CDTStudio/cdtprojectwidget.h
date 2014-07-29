@@ -7,7 +7,7 @@
 #include <QWidget>
 #include <qgsmapcanvas.h>
 #include <qgsmaptool.h>
-#include "cdtproject.h"
+#include "cdtprojectlayer.h"
 #include "mainwindow.h"
 
 class CDTProjectWidget : public QWidget
@@ -48,7 +48,7 @@ private slots:
     void untoggledToolBar();
 //    void onHehe();
 private:
-    CDTProject *project;
+    CDTProjectLayer *project;
     QFile file;
     QStandardItemModel* treeModel;
 

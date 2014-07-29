@@ -1,11 +1,11 @@
-#include "cdtproject.h"
+#include "cdtprojectlayer.h"
 #include "dialognewimage.h"
 #include "stable.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtimagelayer.h"
 #include "cdtfilesystem.h"
 
-CDTProject::CDTProject(QUuid uuid, QObject *parent):
+CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     CDTBaseLayer(uuid,parent),
     actionAddImage(new QAction(QIcon(":/Icon/Add.png"),tr("Add Image"),this)),
     removeAllImages(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All images"),this)),
@@ -19,7 +19,7 @@ CDTProject::CDTProject(QUuid uuid, QObject *parent):
     connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
 }
 
-CDTProject::~CDTProject()
+CDTProjectLayer::~CDTProjectLayer()
 {
     if (id().isNull())
         return;
@@ -33,7 +33,7 @@ CDTProject::~CDTProject()
     if (fileSystem) delete fileSystem;
 }
 
-void CDTProject::addImageLayer()
+void CDTProjectLayer::addImageLayer()
 {
     DialogNewImage dlg;
     if(dlg.exec() == DialogNewImage::Accepted)
@@ -45,7 +45,7 @@ void CDTProject::addImageLayer()
     }
 }
 
-void CDTProject::removeImageLayer(CDTImageLayer* image)
+void CDTProjectLayer::removeImageLayer(CDTImageLayer* image)
 {
     int index = images.indexOf(image);
     if (index>=0)
@@ -61,14 +61,14 @@ void CDTProject::removeImageLayer(CDTImageLayer* image)
     }
 }
 
-void CDTProject::removeAllImageLayers()
+void CDTProjectLayer::removeAllImageLayers()
 {    
     foreach (CDTImageLayer* image, images) {
         removeImageLayer(image);
     }
 }
 
-void CDTProject::addImageLayer(CDTImageLayer *image)
+void CDTProjectLayer::addImageLayer(CDTImageLayer *image)
 {    
     images.push_back(image);
     emit projectChanged();
@@ -76,7 +76,7 @@ void CDTProject::addImageLayer(CDTImageLayer *image)
         mapCanvas->zoomToFullExtent();
 }
 
-void CDTProject::insertToTable(QString name)
+void CDTProjectLayer::insertToTable(QString name)
 {
     setName(name);
     QSqlQuery query(QSqlDatabase::database("category"));
@@ -86,7 +86,7 @@ void CDTProject::insertToTable(QString name)
     query.exec();    
 }
 
-QString CDTProject::name() const
+QString CDTProjectLayer::name() const
 {
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("select name from project where id = ?");
@@ -96,7 +96,7 @@ QString CDTProject::name() const
     return query.value(0).toString();
 }
 
-void CDTProject::setName(const QString &name)
+void CDTProjectLayer::setName(const QString &name)
 {
     if (this->name() == name)
         return;
@@ -111,7 +111,7 @@ void CDTProject::setName(const QString &name)
     emit projectChanged();
 }
 
-void CDTProject::onContextMenuRequest(QWidget* parent)
+void CDTProjectLayer::onContextMenuRequest(QWidget* parent)
 {    
     QMenu* menu =new QMenu(parent);
     menu->addAction(actionAddImage);
@@ -122,7 +122,7 @@ void CDTProject::onContextMenuRequest(QWidget* parent)
     menu->exec(QCursor::pos());
 }
 
-void CDTProject::rename()
+void CDTProjectLayer::rename()
 {
     bool ok;
     QString text = QInputDialog::getText(NULL, tr("Input Project Name"),
@@ -134,7 +134,7 @@ void CDTProject::rename()
     }
 }
 
-QDataStream &operator <<(QDataStream &out,const CDTProject &project)
+QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project)
 {
     out<<project.id()<<project.name()<<*(project.fileSystem);
     out<<project.images.size();
@@ -146,7 +146,7 @@ QDataStream &operator <<(QDataStream &out,const CDTProject &project)
     return out;
 }
 
-QDataStream &operator >>(QDataStream &in, CDTProject &project)
+QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
 {
     QString name;
     in>>project.uuid>>name>>*(project.fileSystem);

@@ -3,8 +3,6 @@
 
 #include <QMainWindow>
 #include "recentfilesupervisor.h"
-#include "cdtattributedockwidget.h"
-#include "cdtdockwidget.h"
 #include "log4qt/logger.h"
 
 namespace Ui {
@@ -19,11 +17,14 @@ struct QUuid;
 class QgsMapCanvas;
 class QgsScaleComboBox;
 
+class CDTDockWidget;
 class CDTProjectWidget;
 class CDTSampleDockWidget;
 class CDTExtractionDockWidget;
 class CDTLayerInfoWidget;
 class CDTUndoWidget;
+class CDTAttributeDockWidget;
+class CDTProjectLayer;
 class DialogConsole;
 
 class MainWindow : public QMainWindow
@@ -61,7 +62,7 @@ public:
 signals:
     void loadSetting();
     void updateSetting();
-    void beforeProjectClosed(CDTProject*);
+    void beforeProjectClosed(CDTProjectLayer*);
 public slots:
     void onCurrentTabChanged(int i);
     void showMouseCoordinate(const QgsPoint & p);

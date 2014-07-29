@@ -8,7 +8,7 @@ class QgsMapLayer;
 class QgsMapCanvas;
 class CDTProjectTreeItem;
 class CDTFileSystem;
-class CDTProject;
+class CDTProjectLayer;
 
 class CDTBaseLayer : public QObject
 {
@@ -22,7 +22,7 @@ public:
     QgsMapLayer     *canvasLayer()const;
     QgsMapCanvas    *canvas()const;
     inline QUuid    id()const{return uuid;}
-    CDTProject      *rootProject()const;
+    CDTProjectLayer      *rootProject()const;
     CDTFileSystem   *fileSystem()const;
 
 signals:
