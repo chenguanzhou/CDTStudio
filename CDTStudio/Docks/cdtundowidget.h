@@ -40,10 +40,10 @@ class CDTUndoWidget : public CDTDockWidget
   public:
     QWidget *dockWidgetContents;
     QGridLayout *gridLayout;
-    QSpacerItem *spacerItem;
+//    QSpacerItem *spacerItem;
     QPushButton *undoButton;
     QPushButton *redoButton;
-    QSpacerItem *spacerItem1;
+//    QSpacerItem *spacerItem1;
 
     CDTUndoWidget( QWidget * parent, QgsMapCanvas* mapCanvas );
     void setupUi( QDockWidget *UndoWidget );

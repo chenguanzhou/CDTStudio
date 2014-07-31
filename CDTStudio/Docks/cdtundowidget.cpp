@@ -35,7 +35,7 @@ CDTUndoWidget::CDTUndoWidget( QWidget * parent, QgsMapCanvas * mapCanvas )
     redoButton->setDisabled( true );
     mMapCanvas = mapCanvas;
     mUndoView = new QUndoView( dockWidgetContents );
-    gridLayout->addWidget( mUndoView, 0, 0, 1, 2 );
+    gridLayout->addWidget( mUndoView, 1, 0, 1, 2 );
     mUndoStack = NULL;
     mPreviousIndex = 0;
     mPreviousCount = 0;
@@ -57,7 +57,7 @@ void CDTUndoWidget::setUndoStack( QUndoStack* undoStack )
     mUndoView = new QUndoView( dockWidgetContents );
     mUndoView->setStack( undoStack );
     mUndoView->setObjectName( "undoView" );
-    gridLayout->addWidget( mUndoView, 0, 0, 1, 2 );
+    gridLayout->addWidget( mUndoView, 1, 0, 1, 2 );
     setWidget( dockWidgetContents );
     connect( mUndoStack, SIGNAL( canUndoChanged( bool ) ), this, SLOT( undoChanged( bool ) ) );
     connect( mUndoStack, SIGNAL( canRedoChanged( bool ) ), this, SLOT( redoChanged( bool ) ) );
@@ -78,7 +78,7 @@ void CDTUndoWidget::destroyStack()
         mUndoView->close();
         delete mUndoView;
         mUndoView = new QUndoView( dockWidgetContents );
-        gridLayout->addWidget( mUndoView, 0, 0, 1, 2 );
+        gridLayout->addWidget( mUndoView, 1, 0, 1, 2 );
     }
 }
 
@@ -179,25 +179,25 @@ void CDTUndoWidget::setupUi( QDockWidget *UndoWidget )
     gridLayout = new QGridLayout( dockWidgetContents );
     gridLayout->setObjectName( QString::fromUtf8( "gridLayout" ) );
     gridLayout->setContentsMargins( 0, 0, 0, 0 );
-    spacerItem = new QSpacerItem( 20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding );
+//    spacerItem = new QSpacerItem( 20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding );
 
-    gridLayout->addItem( spacerItem, 0, 0, 1, 1 );
+//    gridLayout->addItem( spacerItem, 0, 0, 1, 1 );
 
     undoButton = new QPushButton( dockWidgetContents );
     undoButton->setObjectName( QString::fromUtf8( "undoButton" ) );
     undoButton->setIcon( QIcon(":/Icon/Undo.png") );
 
-    gridLayout->addWidget( undoButton, 1, 0, 1, 1 );
+    gridLayout->addWidget( undoButton, 0, 0, 1, 1 );
 
     redoButton = new QPushButton( dockWidgetContents );
     redoButton->setObjectName( QString::fromUtf8( "redoButton" ) );
     redoButton->setIcon( QIcon(":/Icon/Redo.png") );
 
-    gridLayout->addWidget( redoButton, 1, 1, 1, 1 );
+    gridLayout->addWidget( redoButton, 0, 1, 1, 1 );
 
-    spacerItem1 = new QSpacerItem( 20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding );
+//    spacerItem1 = new QSpacerItem( 20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding );
 
-    gridLayout->addItem( spacerItem1, 0, 1, 1, 1 );
+//    gridLayout->addItem( spacerItem1, 0, 1, 1, 1 );
 
     UndoWidget->setWidget( dockWidgetContents );
 
