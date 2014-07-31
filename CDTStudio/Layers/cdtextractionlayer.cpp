@@ -17,7 +17,7 @@ CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
     layers.push_back(this);
 
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION,CDTProjectTreeItem::VECTOR,QString(),this);
-    valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+//    valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
 
     connect(this,SIGNAL(removeExtraction(CDTExtractionLayer*)),this->parent(),SLOT(removeExtraction(CDTExtractionLayer*)));
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(extractionChanged()));

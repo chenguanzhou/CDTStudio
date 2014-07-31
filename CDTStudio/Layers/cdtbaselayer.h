@@ -1,5 +1,5 @@
-#ifndef CDTBASEOBJECT_H
-#define CDTBASEOBJECT_H
+#ifndef CDTBASELAYER_H
+#define CDTBASELAYER_H
 
 #include <QObject>
 #include <QUuid>
@@ -18,7 +18,8 @@ public:
     virtual ~CDTBaseLayer();
 
     virtual void onContextMenuRequest(QWidget *parent) = 0;
-    QList<QStandardItem *> standardItems()const;
+//    QList<QStandardItem *> standardItems()const;
+    QStandardItem   *standardKeyItem()const;
     QgsMapLayer     *canvasLayer()const;
     QgsMapCanvas    *canvas()const;
     inline QUuid    id()const{return uuid;}
@@ -33,9 +34,9 @@ public slots:
 protected:
     QUuid               uuid;
     CDTProjectTreeItem  *keyItem;
-    CDTProjectTreeItem  *valueItem;
+//    CDTProjectTreeItem  *valueItem;
     QgsMapLayer         *mapCanvasLayer;
     QgsMapCanvas        *mapCanvas;
 };
 
-#endif // CDTBASEOBJECT_H
+#endif // CDTBASELAYER_H

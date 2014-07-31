@@ -101,8 +101,8 @@ private:
     QAction *actionRemoveAllClassifications;
 
 
-    CDTProjectTreeItem* paramRootItem;
-    CDTProjectTreeItem* paramRootValueItem;
+//    CDTProjectTreeItem* paramRootItem;
+//    CDTProjectTreeItem* paramRootValueItem;
     CDTProjectTreeItem* classificationRootItem;
 
     static QList<CDTSegmentationLayer *> layers;

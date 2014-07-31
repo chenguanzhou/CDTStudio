@@ -20,10 +20,15 @@ CDTBaseLayer::~CDTBaseLayer()
 
 }
 
-QList<QStandardItem *> CDTBaseLayer::standardItems() const
+QStandardItem *CDTBaseLayer::standardKeyItem() const
 {
-    return QList<QStandardItem *>()<<(QStandardItem *)keyItem<<(QStandardItem *)valueItem;
+    return keyItem;
 }
+
+//QList<QStandardItem *> CDTBaseLayer::standardItems() const
+//{
+//    return QList<QStandardItem *>()<<(QStandardItem *)keyItem<<(QStandardItem *)valueItem;
+//}
 
 QgsMapLayer *CDTBaseLayer::canvasLayer() const
 {

@@ -21,8 +21,8 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
       actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Image"),this))
 {
     keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,QString(),this);
-    valueItem
-            = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+//    valueItem
+//            = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     extractionRoot
             = new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION_ROOT,CDTProjectTreeItem::GROUP,tr("extractions"),this);
     segmentationsRoot
@@ -83,7 +83,8 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
     }
 
     keyItem->setText(name);
-    valueItem->setText(path);
+    keyItem->setToolTip(path);
+//    valueItem->setText(path);
     if (mapCanvasLayer)
         delete mapCanvasLayer;
     mapCanvasLayer = newCanvasLayer;
@@ -188,7 +189,8 @@ void CDTImageLayer::addExtraction()
     {
         CDTExtractionLayer *extraction = new CDTExtractionLayer(QUuid::createUuid(),this);
         extraction->initLayer(dlg->name(),dlg->fileID(),dlg->color(),dlg->borderColor(),dlg->opacity());
-        extractionRoot->appendRow(extraction->standardItems());
+//        extractionRoot->appendRow(extraction->standardItems());
+        extractionRoot->appendRow(extraction->standardKeyItem());
         addExtraction(extraction);
     }
 
@@ -204,7 +206,7 @@ void CDTImageLayer::addSegmentation()
         segmentation->initSegmentationLayer(
                     dlg->name(),dlg->shapefileID(),dlg->markfileID(),
                     dlg->method(),dlg->params(),dlg->databaseConnInfo(),dlg->borderColor());
-        segmentationsRoot->appendRow(segmentation->standardItems());
+        segmentationsRoot->appendRow(segmentation->standardKeyItem());
         addSegmentation(segmentation);
     }
     delete dlg;
@@ -221,7 +223,7 @@ void CDTImageLayer::removeExtraction(CDTExtractionLayer *ext)
     int index = extractions.indexOf(ext);
     if (index>=0)
     {
-        QStandardItem* keyItem = ext->standardItems()[0];
+        QStandardItem* keyItem = ext->standardKeyItem();
         keyItem->parent()->removeRow(keyItem->index().row());
         extractions.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
@@ -234,7 +236,7 @@ void CDTImageLayer::removeExtraction(CDTExtractionLayer *ext)
 void CDTImageLayer::removeAllExtractionLayers()
 {
     foreach (CDTExtractionLayer* ext, extractions) {        
-        QStandardItem* keyItem = ext->standardItems()[0];
+        QStandardItem* keyItem = ext->standardKeyItem();
         keyItem->parent()->removeRow(keyItem->index().row());
         emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
         fileSystem()->removeFile(ext->shapefileID());
@@ -249,7 +251,7 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
     int index = segmentations.indexOf(sgmt);
     if (index>=0)
     {        
-        QStandardItem* keyItem = sgmt->standardItems()[0];
+        QStandardItem* keyItem = sgmt->standardKeyItem();
         keyItem->parent()->removeRow(keyItem->index().row());
         segmentations.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<sgmt->canvasLayer());
@@ -263,7 +265,7 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
 void CDTImageLayer::removeAllSegmentationLayers()
 {
     foreach (CDTSegmentationLayer* sgmt, segmentations) {        
-        QStandardItem* keyItem = sgmt->standardItems()[0];
+        QStandardItem* keyItem = sgmt->standardKeyItem();
         keyItem->parent()->removeRow(keyItem->index().row());
         emit removeLayer(QList<QgsMapLayer*>()<<sgmt->canvasLayer());
         fileSystem()->removeFile(sgmt->shapefilePath());
@@ -359,7 +361,7 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
     {
         CDTSegmentationLayer* segmentation = new CDTSegmentationLayer(QUuid(),&image);
         in>>(*segmentation);
-        image.segmentationsRoot->appendRow(segmentation->standardItems());
+        image.segmentationsRoot->appendRow(segmentation->standardKeyItem());
         image.segmentations.push_back(segmentation);
     }
 
@@ -368,7 +370,7 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
     {
         CDTExtractionLayer* extraction = new CDTExtractionLayer(QUuid(),&image);
         in>>(*extraction);
-        image.extractionRoot->appendRow(extraction->standardItems());
+        image.extractionRoot->appendRow(extraction->standardKeyItem());
         image.extractions.push_back(extraction);
     }
 

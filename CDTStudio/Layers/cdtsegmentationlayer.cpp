@@ -39,11 +39,11 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     layers.push_back(this);
 
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
-    valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+//    valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
 
-    paramRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
-    paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
-    keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
+//    paramRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
+//    paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+//    keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
 
     classificationRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::EMPTY,tr("Classification"),this);
     keyItem->appendRow(classificationRootItem);    
@@ -147,7 +147,7 @@ void CDTSegmentationLayer::addClassification()
                     dlg.categoryID_Index,
                     dlg.normalizeMethod,
                     dlg.pcaParams);
-        classificationRootItem->appendRow(classification->standardItems());
+        classificationRootItem->appendRow(classification->standardKeyItem());
         addClassification(classification);
     }
 }
@@ -162,7 +162,7 @@ void CDTSegmentationLayer::removeClassification(CDTClassificationLayer* clf)
     int index = classifications.indexOf(clf);
     if (index>=0)
     {
-        QStandardItem* keyItem = clf->standardItems()[0];
+        QStandardItem* keyItem = clf->standardKeyItem();
         keyItem->parent()->removeRow(keyItem->index().row());
         classifications.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<clf->canvasLayer());
@@ -174,7 +174,7 @@ void CDTSegmentationLayer::removeClassification(CDTClassificationLayer* clf)
 void CDTSegmentationLayer::removeAllClassifications()
 {
     foreach (CDTClassificationLayer* clf, classifications) {
-        QStandardItem* keyItem = clf->standardItems()[0];
+        QStandardItem* keyItem = clf->standardKeyItem();
         keyItem->parent()->removeRow(keyItem->index().row());
         emit removeLayer(QList<QgsMapLayer*>()<<clf->canvasLayer());
         delete clf;
@@ -352,17 +352,17 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     keyItem->setMapLayer(mapCanvasLayer);
 
     //set method $ params
-    paramRootItem->removeRows(0,paramRootItem->rowCount());
-    paramRootValueItem->setText(method);
-    QStringList keys = params.keys();
-    foreach (QString key, keys) {
-        QVariant value = params.value(key);
-        paramRootItem->appendRow(
-                    QList<QStandardItem*>()
-                    <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,key,this)
-                    <<new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,value.toString(),this)
-                    );
-    }
+//    paramRootItem->removeRows(0,paramRootItem->rowCount());
+//    paramRootValueItem->setText(method);
+//    QStringList keys = params.keys();
+//    foreach (QString key, keys) {
+//        QVariant value = params.value(key);
+//        paramRootItem->appendRow(
+//                    QList<QStandardItem*>()
+//                    <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,key,this)
+//                    <<new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,value.toString(),this)
+//                    );
+//    }
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?,?,?,?,?)");
@@ -503,7 +503,7 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
     {
         CDTClassificationLayer* classification = new CDTClassificationLayer(QUuid(),&segmentation);
         in>>*classification;
-        segmentation.classificationRootItem->appendRow(classification->standardItems());
+        segmentation.classificationRootItem->appendRow(classification->standardKeyItem());
         segmentation.classifications.push_back(classification);
     }
     return in;

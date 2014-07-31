@@ -13,7 +13,7 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     fileSystem(new CDTFileSystem)
 {
     keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);
-    valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
+//    valueItem=new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     connect(actionAddImage,SIGNAL(triggered()),this,SLOT(addImageLayer()));
     connect(removeAllImages,SIGNAL(triggered()),this,SLOT(removeAllImageLayers()));
     connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
@@ -40,7 +40,8 @@ void CDTProjectLayer::addImageLayer()
     {
         CDTImageLayer *image = new CDTImageLayer(QUuid::createUuid(),this);
         image->setNameAndPath(dlg.imageName(),dlg.imagePath());
-        keyItem->appendRow(image->standardItems());
+//        keyItem->appendRow(image->standardItems());
+        keyItem->appendRow(image->standardKeyItem());
         addImageLayer(image);
     }
 }
@@ -52,7 +53,7 @@ void CDTProjectLayer::removeImageLayer(CDTImageLayer* image)
     {
         image->removeAllExtractionLayers();
         image->removeAllSegmentationLayers();
-        QStandardItem* keyItem = image->standardItems()[0];
+        QStandardItem* keyItem = image->standardKeyItem();
         keyItem->parent()->removeRow(keyItem->index().row());
         images.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<image->canvasLayer());
@@ -160,7 +161,7 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
     {
         CDTImageLayer* image = new CDTImageLayer(QUuid(),&project);
         in>>*image;
-        project.keyItem->appendRow(image->standardItems());
+        project.keyItem->appendRow(image->standardKeyItem());
         project.images.push_back(image);
     }    
 

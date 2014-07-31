@@ -11,7 +11,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     treeModel(new QStandardItemModel(this)),
     mapCanvas(new QgsMapCanvas(this,"mapCanvas"))
 {
-    treeModel->setHorizontalHeaderLabels(QStringList()<<tr("Layer")<<tr("Value"));
+//    treeModel->setHorizontalHeaderLabels(QStringList()<<tr("Layer")<<tr("Value"));
     connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));    
     connect(this,SIGNAL(projectChanged()),this,SLOT(onProjectChanged()));
     connect(mapCanvas,SIGNAL(xyCoordinates(QgsPoint)),MainWindow::getMainWindow(),SLOT(showMouseCoordinate(QgsPoint)));
@@ -291,7 +291,7 @@ void CDTProjectWidget::createProject(QUuid id)
     connect(project,SIGNAL(appendLayers(QList<QgsMapLayer*>)),this,SLOT(appendLayers(QList<QgsMapLayer*>)));
     connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
 
-    treeModel->appendRow(project->standardItems());
+    treeModel->appendRow(project->standardKeyItem());
 }
 
 void CDTProjectWidget::untoggledToolBar()

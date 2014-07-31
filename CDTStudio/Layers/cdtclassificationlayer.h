@@ -56,10 +56,10 @@ private:
     QAction* actionRemoveClassification;
     QAction *actionRename;
 
-    CDTProjectTreeItem* paramRootItem;
-    CDTProjectTreeItem* paramRootValueItem;
-    CDTProjectTreeItem* normalizeItem;
-    CDTProjectTreeItem* pcaItem;
+//    CDTProjectTreeItem* paramRootItem;
+//    CDTProjectTreeItem* paramRootValueItem;
+//    CDTProjectTreeItem* normalizeItem;
+//    CDTProjectTreeItem* pcaItem;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification);
