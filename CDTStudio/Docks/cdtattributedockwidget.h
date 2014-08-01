@@ -46,7 +46,7 @@ public:
     explicit CDTAttributeDockWidget(QWidget *parent = 0);
     ~CDTAttributeDockWidget();
 
-    CDTSegmentationLayer *segmentationLayer()const;
+    CDTSegmentationLayer *segmLayer()const;
 
 public slots:    
     void setCurrentLayer(CDTBaseLayer* layer);
@@ -65,8 +65,8 @@ private:
     static QStringList attributeNames();
 private:
     Ui::CDTAttributeDockWidget *ui;
-    CDTDatabaseConnInfo _dbConnInfo;
-    CDTSegmentationLayer* _segmentationLayer;
+    CDTDatabaseConnInfo     dbConnInfo;
+    CDTSegmentationLayer*   segmentationLayer;
 };
 
 #endif // CDTATTRIBUTEDOCKWIDGET_H

@@ -51,7 +51,6 @@ include(Layers/Layers.pri)
 
 INCLUDEPATH += \
     ../Interfaces \
-    ../Tools/CDTDialogs \
     ../Tools/QPropertyEditor \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
@@ -61,7 +60,6 @@ INCLUDEPATH += \
 
 
 DEPENDPATH += \
-    ../Tools/CDTDialogs \
     ../Tools/QPropertyEditor \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
@@ -88,7 +86,7 @@ include(../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
-LIBS +=     -L../lib -lCDTDialogs -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
+LIBS +=     -L../lib -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
              -lCDTFileSystem -llog4qt -lCDTClassifierAssessmentWidget\
             -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 

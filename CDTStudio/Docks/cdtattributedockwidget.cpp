@@ -11,7 +11,7 @@ extern QList<CDTAttributesInterface *>     attributesPlugins;
 CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
     ui(new Ui::CDTAttributeDockWidget),
-    _segmentationLayer(NULL)
+    segmentationLayer(NULL)
 {
     ui->setupUi(this);
 
@@ -40,23 +40,23 @@ CDTAttributeDockWidget::~CDTAttributeDockWidget()
     delete ui;
 }
 
-CDTSegmentationLayer *CDTAttributeDockWidget::segmentationLayer() const
+CDTSegmentationLayer *CDTAttributeDockWidget::segmLayer() const
 {
-    return _segmentationLayer;
+    return segmentationLayer;
 }
 
 void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
-    if (_segmentationLayer == layer)
+    if (segmentationLayer == layer)
         return;
 
     //TODO  Process other layer type;
 
     clear();
-    _segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer);
-    if (_segmentationLayer)
+    segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer);
+    if (segmentationLayer)
     {
-        setDatabaseURL(_segmentationLayer->databaseURL());
+        setDatabaseURL(segmentationLayer->databaseURL());
     }
 }
 
@@ -67,8 +67,8 @@ void CDTAttributeDockWidget::onCurrentProjectClosed()
 
 void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
 {
-    if (_dbConnInfo == url)return;
-    _dbConnInfo = url;
+    if (dbConnInfo == url)return;
+    dbConnInfo = url;
     clearTables();
     updateTable();
     this->setEnabled(true);
@@ -76,12 +76,12 @@ void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
 
 void CDTAttributeDockWidget::updateTable()
 {       
-    QSqlDatabase db = QSqlDatabase::addDatabase(_dbConnInfo.dbType,"attribute");
-    db.setDatabaseName(_dbConnInfo.dbName);
-    db.setHostName(_dbConnInfo.hostName);
-    db.setPort(_dbConnInfo.port);
+    QSqlDatabase db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"attribute");
+    db.setDatabaseName(dbConnInfo.dbName);
+    db.setHostName(dbConnInfo.hostName);
+    db.setPort(dbConnInfo.port);
 
-    if (!db.open(_dbConnInfo.username, _dbConnInfo.password)) {
+    if (!db.open(dbConnInfo.username, dbConnInfo.password)) {
         QSqlError err = db.lastError();
         db = QSqlDatabase();
         QSqlDatabase::removeDatabase("attribute");
@@ -116,17 +116,17 @@ void CDTAttributeDockWidget::updateTable()
 void CDTAttributeDockWidget::clear()
 {
     this->setEnabled(false);
-    _dbConnInfo = CDTDatabaseConnInfo();
+    dbConnInfo = CDTDatabaseConnInfo();
     clearTables();
     ui->qwtPlot->clear();
-    _segmentationLayer =NULL;
+    segmentationLayer =NULL;
 }
 
 void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
 {
     clearTables();
-    CDTImageLayer* layer = (CDTImageLayer*)(segmentationLayer()->parent());
-    DialogGenerateAttributes dlg(segmentationLayer()->id(),layer->bandCount());
+    CDTImageLayer* layer = (CDTImageLayer*)(segmLayer()->parent());
+    DialogGenerateAttributes dlg(segmLayer()->id(),layer->bandCount());
     dlg.exec();
     updateTable();
 }
