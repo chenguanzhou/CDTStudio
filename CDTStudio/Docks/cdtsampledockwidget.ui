@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>288</width>
+    <width>292</width>
     <height>540</height>
    </rect>
   </property>
@@ -136,7 +136,7 @@
                <string>Refresh</string>
               </property>
               <property name="icon">
-               <iconset resource="../resource.qrc">
+               <iconset resource="../../resource.qrc">
                 <normaloff>:/Icon/Refresh.png</normaloff>:/Icon/Refresh.png</iconset>
               </property>
              </widget>
@@ -157,7 +157,7 @@
                <string>Edit Samples</string>
               </property>
               <property name="icon">
-               <iconset resource="../resource.qrc">
+               <iconset resource="../../resource.qrc">
                 <normaloff>:/Icon/Edit.png</normaloff>:/Icon/Edit.png</iconset>
               </property>
               <property name="iconSize">
@@ -183,7 +183,7 @@
                <string>Rename</string>
               </property>
               <property name="icon">
-               <iconset resource="../resource.qrc">
+               <iconset resource="../../resource.qrc">
                 <normaloff>:/Icon/Rename.png</normaloff>:/Icon/Rename.png</iconset>
               </property>
               <property name="iconSize">
@@ -209,7 +209,7 @@
                <string>Insert New Sample</string>
               </property>
               <property name="icon">
-               <iconset resource="../resource.qrc">
+               <iconset resource="../../resource.qrc">
                 <normaloff>:/Icon/Add.png</normaloff>:/Icon/Add.png</iconset>
               </property>
               <property name="iconSize">
@@ -235,7 +235,7 @@
                <string>Remove Selected Sample</string>
               </property>
               <property name="icon">
-               <iconset resource="../resource.qrc">
+               <iconset resource="../../resource.qrc">
                 <normaloff>:/Icon/Minus.png</normaloff>:/Icon/Minus.png</iconset>
               </property>
               <property name="iconSize">
@@ -280,7 +280,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset resource="../../resource.qrc">
      <normaloff>:/Icon/Add.png</normaloff>:/Icon/Add.png</iconset>
    </property>
    <property name="text">
@@ -292,7 +292,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset resource="../../resource.qrc">
      <normaloff>:/Icon/Remove.png</normaloff>:/Icon/Remove.png</iconset>
    </property>
    <property name="text">
@@ -304,7 +304,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset resource="../../resource.qrc">
      <normaloff>:/Icon/Remove.png</normaloff>:/Icon/Remove.png</iconset>
    </property>
    <property name="text">
@@ -316,7 +316,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset resource="../../resource.qrc">
      <normaloff>:/Icon/Edit.png</normaloff>:/Icon/Edit.png</iconset>
    </property>
    <property name="text">
@@ -328,7 +328,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset resource="../../resource.qrc">
      <normaloff>:/Icon/Undo.png</normaloff>:/Icon/Undo.png</iconset>
    </property>
    <property name="text">
@@ -340,7 +340,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resource.qrc">
+    <iconset resource="../../resource.qrc">
      <normaloff>:/Icon/Ok.png</normaloff>:/Icon/Ok.png</iconset>
    </property>
    <property name="text">
@@ -352,7 +352,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../resource.qrc"/>
+  <include location="../../resource.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -19,6 +19,10 @@
 #include "cdtlayerinfowidget.h"
 #include "dialogconsole.h"
 
+#ifdef Q_OS_WIN
+#include "Windows.h"
+#endif
+
 MainWindow* MainWindow::mainWindow = NULL;
 bool MainWindow::isLocked = false;
 
@@ -34,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     recentFileToolButton = new QToolButton(this);
     mainWindow = this;
 
+    initIconSize();
     initActions();
     initMenuBar();
     initToolBar();
@@ -69,6 +74,20 @@ MainWindow::~MainWindow()
     emit updateSetting();
     delete ui;
     logger()->info("MainWindow destruct");
+}
+
+void MainWindow::initIconSize()
+{
+    int dpiX = 96;
+    int dpiY = 96;
+#ifdef Q_OS_WIN
+    dpiX = GetDeviceCaps(this->getDC(),LOGPIXELSX);
+    dpiY = GetDeviceCaps(this->getDC(),LOGPIXELSY);
+
+#endif
+    iconSize = QSize(dpiX*16/96,dpiY*16/96);
+
+    ui->mainToolBar->setIconSize(iconSize);
 }
 
 void MainWindow::initActions()
@@ -263,6 +282,11 @@ QgsMapCanvas *MainWindow::getCurrentMapCanvas()
     CDTProjectWidget *projectWidget = getCurrentProjectWidget();
     if (projectWidget == NULL) return NULL;
     return projectWidget->mapCanvas;
+}
+
+QSize MainWindow::getIconSize()
+{
+    return mainWindow->iconSize;
 }
 
 void MainWindow::onCurrentTabChanged(int i)

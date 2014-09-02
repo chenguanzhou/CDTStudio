@@ -32,7 +32,7 @@ CDTSampleDockWidget::CDTSampleDockWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     QToolBar* toolBar = new QToolBar(this);
-    toolBar->setIconSize(QSize(16,16));
+    toolBar->setIconSize(MainWindow::getIconSize());
     toolBar->addActions(QList<QAction*>()
                         <<ui->actionEdit<<ui->actionRevert<<ui->actionSubmit);
     toolBar->addSeparator();
@@ -49,6 +49,12 @@ CDTSampleDockWidget::CDTSampleDockWidget(QWidget *parent) :
     connect(categoryModel,SIGNAL(primeInsert(int,QSqlRecord&)),SLOT(onPrimeInsert(int,QSqlRecord&)));
 
     ui->listView->setModel(sampleModel);
+
+    ui->toolButtonRefresh->setIconSize(MainWindow::getIconSize());
+    ui->toolButtonEditSample->setIconSize(MainWindow::getIconSize());
+    ui->toolButtonNewSample->setIconSize(MainWindow::getIconSize());
+    ui->toolButtonRemoveSelected->setIconSize(MainWindow::getIconSize());
+    ui->toolButtonSampleRename->setIconSize(MainWindow::getIconSize());
 }
 
 CDTSampleDockWidget::~CDTSampleDockWidget()

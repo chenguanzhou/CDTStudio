@@ -43,6 +43,11 @@ CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
     ui->toolButtonSave->    setDefaultAction(actionSave);
     ui->toolButtonStop->    setDefaultAction(actionStop);
 
+    ui->toolButtonStart->setIconSize(MainWindow::getIconSize());
+    ui->toolButtonRollback->setIconSize(MainWindow::getIconSize());
+    ui->toolButtonSave->setIconSize(MainWindow::getIconSize());
+    ui->toolButtonStop->setIconSize(MainWindow::getIconSize());
+
     foreach (CDTExtractionInterface* plugin, extractionPlugins) {
         description.insert(plugin->methodName(),plugin->description());
         ui->comboBoxMethod->addItem(plugin->methodName());

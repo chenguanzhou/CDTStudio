@@ -83,7 +83,7 @@ DEFINES += GUI_EXPORT=
 }
 !unix{
 include(../Tools/Config/win.pri)
-LIBS += -lgdal_i
+LIBS += -lgdal_i -lgdi32
 }
 
 LIBS +=     -L../lib -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\

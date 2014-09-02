@@ -21,6 +21,7 @@
 #include "cdtimagelayer.h"
 #include "cdtextractionlayer.h"
 #include "cdtclassificationlayer.h"
+#include "mainwindow.h"
 
 CDTUndoWidget::CDTUndoWidget( QWidget * parent, QgsMapCanvas * mapCanvas )
     : CDTDockWidget( parent )
@@ -187,6 +188,7 @@ void CDTUndoWidget::setupUi( QDockWidget *UndoWidget )
     undoButton->setObjectName( QString::fromUtf8( "undoButton" ) );
     undoButton->setIcon( QIcon(":/Icon/Undo.png") );
     undoButton->setFlat(true);
+    undoButton->setIconSize(MainWindow::getIconSize());
 
     gridLayout->addWidget( undoButton, 0, 0, 1, 1 );
 
@@ -194,6 +196,7 @@ void CDTUndoWidget::setupUi( QDockWidget *UndoWidget )
     redoButton->setObjectName( QString::fromUtf8( "redoButton" ) );
     redoButton->setIcon( QIcon(":/Icon/Redo.png") );
     redoButton->setFlat(true);
+    redoButton->setIconSize(MainWindow::getIconSize());
 
     gridLayout->addWidget( redoButton, 0, 1, 1, 1 );
 

@@ -5,6 +5,7 @@
 #include "cdtsegmentationlayer.h"
 #include "dialoggenerateattributes.h"
 #include "cdtattributesinterface.h"
+#include "mainwindow.h"
 
 extern QList<CDTAttributesInterface *>     attributesPlugins;
 
@@ -18,7 +19,7 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     setWindowTitle(tr("Attributes Manager"));
 
     QToolBar *toolBar = new QToolBar(this);
-    toolBar->setIconSize(QSize(24,24));
+    toolBar->setIconSize(MainWindow::getIconSize());
     ui->horizontalLayout->setMenuBar(toolBar);
 
     QAction *actionGenerateAttributes = new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),toolBar);

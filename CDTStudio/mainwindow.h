@@ -37,12 +37,13 @@ public:
     ~MainWindow();       
 
 private:
+    void initIconSize();
     void initActions();
     void initMenuBar();
     void initToolBar();
     void initStatusBar();
     void initDockWidgets();
-    void initConsole();
+    void initConsole();    
 
     void registerDocks(Qt::DockWidgetArea area, CDTDockWidget* dock);
 
@@ -58,6 +59,7 @@ public:
     static CDTLayerInfoWidget       *getLayerInfoWidget();
     static CDTProjectWidget         *getCurrentProjectWidget();
     static QgsMapCanvas             *getCurrentMapCanvas();
+    static QSize getIconSize();
 
 signals:
     void loadSetting();
@@ -105,6 +107,8 @@ private:
 
     QLineEdit *lineEditCoord;
     QgsScaleComboBox *scaleEdit;
+
+    QSize iconSize;
 
     RecentFileSupervisor *supervisor;
     int recentFileCount;
