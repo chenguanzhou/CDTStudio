@@ -100,25 +100,62 @@
       <number>2</number>
      </property>
      <item>
-      <widget class="QTreeView" name="treeViewProject">
-       <property name="contextMenuPolicy">
-        <enum>Qt::CustomContextMenu</enum>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="tabPosition">
+        <enum>QTabWidget::West</enum>
        </property>
-       <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
+       <property name="currentIndex">
+        <number>0</number>
        </property>
-       <property name="showDropIndicator" stdset="0">
-        <bool>false</bool>
-       </property>
-       <property name="indentation">
-        <number>10</number>
-       </property>
-       <property name="animated">
-        <bool>true</bool>
-       </property>
-       <property name="headerHidden">
-        <bool>true</bool>
-       </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Images and Objects</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTreeView" name="treeViewProject">
+           <property name="contextMenuPolicy">
+            <enum>Qt::CustomContextMenu</enum>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="showDropIndicator" stdset="0">
+            <bool>false</bool>
+           </property>
+           <property name="indentation">
+            <number>10</number>
+           </property>
+           <property name="animated">
+            <bool>true</bool>
+           </property>
+           <property name="headerHidden">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_2">
+        <attribute name="title">
+         <string>Changes</string>
+        </attribute>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -136,9 +173,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <tabstops>
-  <tabstop>treeViewProject</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>
