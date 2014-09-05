@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     recentFileToolButton->setPopupMode(QToolButton::InstantPopup);
     ui->mainToolBar->addWidget(recentFileToolButton);
 
-    connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewProject,SLOT(expandAll()));
+    connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewObjects,SLOT(expandAll()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
     connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),supervisor,SLOT(updateMenuRecent(QString)));
     connect(this,SIGNAL(loadSetting()),supervisor,SLOT(loadSetting()));
@@ -116,6 +116,16 @@ void MainWindow::initActions()
     actionSaveAs->setShortcut(QKeySequence::SaveAs);
     actionSaveAs->setStatusTip(tr("Save current project as"));
     connect(actionSaveAs,SIGNAL(triggered()),SLOT(onActionSaveAs()));
+
+    actionPBCD = new QAction(QIcon(":/Icon/ChangePixel.png"),tr("&Pixel-based change detection"),this);
+//    actionPBCD->setShortcut(QKeySequence::SaveAs);
+    actionPBCD->setStatusTip(tr("Pixel-based change detection"));
+    connect(actionPBCD,SIGNAL(triggered()),SLOT(onActionPBCD()));
+
+    actionOBCD = new QAction(QIcon(":/Icon/ChangeObject.png"),tr("O&bject-based change detection"),this);
+//    actionOBCD->setShortcut(QKeySequence::SaveAs);
+    actionOBCD->setStatusTip(tr("Object-based change detection"));
+    connect(actionOBCD,SIGNAL(triggered()),SLOT(onActioOPBCD()));
 }
 
 void MainWindow::initMenuBar()
@@ -142,6 +152,11 @@ void MainWindow::initToolBar()
                                 <<actionSave
                                 <<actionSaveAll
                                 <<actionSaveAs);
+    ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addActions(QList<QAction*>()
+                                <<actionPBCD
+                                <<actionOBCD);
+    ui->mainToolBar->addSeparator();
 }
 
 void MainWindow::initStatusBar()
@@ -244,7 +259,7 @@ MainWindow *MainWindow::getMainWindow()
 
 QTreeView *MainWindow::getProjectTreeView()
 {
-    return mainWindow->ui->treeViewProject;
+    return mainWindow->ui->treeViewObjects;
 }
 
 CDTSampleDockWidget *MainWindow::getSampleDockWidget()
@@ -293,16 +308,16 @@ void MainWindow::onCurrentTabChanged(int i)
 {
     if(i<0)
     {
-        ui->treeViewProject->setModel(NULL);
+        ui->treeViewObjects->setModel(NULL);
         lineEditCoord->setText(QString::null);
         scaleEdit->lineEdit()->setText(QString::null);
         return ;
     }
 
     CDTProjectWidget* projectWidget = (CDTProjectWidget*)(ui->tabWidgetProject->currentWidget());
-    ui->treeViewProject->setModel(projectWidget->treeModel);
-    ui->treeViewProject->expandAll();
-    ui->treeViewProject->resizeColumnToContents(0);
+    ui->treeViewObjects->setModel(projectWidget->treeModel);
+    ui->treeViewObjects->expandAll();
+    ui->treeViewObjects->resizeColumnToContents(0);
     if (getCurrentMapCanvas())
     {
         getCurrentMapCanvas()->updateScale();
@@ -409,19 +424,19 @@ void MainWindow::onRecentFileTriggered()
     ui->tabWidgetProject->openProject(action->text());
 }
 
-void MainWindow::on_treeViewProject_customContextMenuRequested(const QPoint &pos)
+void MainWindow::on_treeViewObjects_customContextMenuRequested(const QPoint &pos)
 {
-    QModelIndex index =ui->treeViewProject->indexAt(pos);
+    QModelIndex index =ui->treeViewObjects->indexAt(pos);
     CDTProjectWidget* curwidget =(CDTProjectWidget*) ui->tabWidgetProject->currentWidget();
     if(curwidget == NULL)
         return;
     curwidget->onContextMenu(pos,index);
-    ui->treeViewProject->expandAll();
+    ui->treeViewObjects->expandAll();
 }
 
-void MainWindow::on_treeViewProject_clicked(const QModelIndex &index)
+void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
 {
-    QStandardItemModel* model = (QStandardItemModel*)(ui->treeViewProject->model());
+    QStandardItemModel* model = (QStandardItemModel*)(ui->treeViewObjects->model());
     if (model==NULL)
         return;
 

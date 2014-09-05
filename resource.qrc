@@ -28,5 +28,7 @@
         <file>Icon/Stop.png</file>
         <file>Icon/Redo.png</file>
         <file>StyleSheet/default.css</file>
+        <file>Icon/ChangeObject.png</file>
+        <file>Icon/ChangePixel.png</file>
     </qresource>
 </RCC>

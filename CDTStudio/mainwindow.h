@@ -80,8 +80,8 @@ private slots:
     void onActionSaveAs();
     void onRecentFileTriggered();
 
-    void on_treeViewProject_customContextMenuRequested(const QPoint &pos);
-    void on_treeViewProject_clicked(const QModelIndex &index);
+    void on_treeViewObjects_customContextMenuRequested(const QPoint &pos);
+    void on_treeViewObjects_clicked(const QModelIndex &index);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -101,6 +101,9 @@ private:
     QAction *actionSaveAll;
     QAction *actionSaveAs;
     QAction *actionConsole;
+
+    QAction *actionPBCD;//Pixel-based Change Detection
+    QAction *actionOBCD;//Object-based Change Detection
 
     QMenu *menuFile;
     QMenu *menuRecent;
