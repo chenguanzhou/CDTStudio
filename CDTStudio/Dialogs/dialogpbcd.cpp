@@ -2,11 +2,15 @@
 #include "ui_dialogpbcd.h"
 #include "stable.h"
 
+#include "dialogpbcdbinary.h"
+
 DialogPBCD::DialogPBCD(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogPBCD)
 {
     ui->setupUi(this);
+    connect(ui->toolButtonBinary,SIGNAL(clicked()),SLOT(onStartBinaryCD()));
+    connect(ui->toolButtonFromTo,SIGNAL(clicked()),SLOT(onStartFromToCD()));
 }
 
 DialogPBCD::~DialogPBCD()
@@ -43,4 +47,15 @@ void DialogPBCD::openPBCDDialog(QUuid projectID)
     dlg.prjID = projectID;
     dlg.imageLayerIDList = imageLayerIDList;
     dlg.exec();
+}
+
+void DialogPBCD::onStartBinaryCD()
+{
+    DialogPBCDBinary dlg;
+    dlg.exec();
+}
+
+void DialogPBCD::onStartFromToCD()
+{
+
 }

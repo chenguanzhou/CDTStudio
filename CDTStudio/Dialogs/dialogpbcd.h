@@ -18,6 +18,10 @@ private:
 public:
     static void openPBCDDialog(QUuid projectID);
 
+public slots:
+    void onStartBinaryCD();
+    void onStartFromToCD();
+
 private:
     Ui::DialogPBCD *ui;
 
