@@ -17,7 +17,9 @@
 #include "cdtclassificationlayer.h"
 #include "cdtundowidget.h"
 #include "cdtlayerinfowidget.h"
+
 #include "dialogconsole.h"
+#include "dialogpbcd.h"
 
 #ifdef Q_OS_WIN
 #include "Windows.h"
@@ -125,7 +127,7 @@ void MainWindow::initActions()
     actionOBCD = new QAction(QIcon(":/Icon/ChangeObject.png"),tr("O&bject-based change detection"),this);
 //    actionOBCD->setShortcut(QKeySequence::SaveAs);
     actionOBCD->setStatusTip(tr("Object-based change detection"));
-    connect(actionOBCD,SIGNAL(triggered()),SLOT(onActioOPBCD()));
+    connect(actionOBCD,SIGNAL(triggered()),SLOT(onActionOBCD()));
 }
 
 void MainWindow::initMenuBar()
@@ -299,6 +301,14 @@ QgsMapCanvas *MainWindow::getCurrentMapCanvas()
     return projectWidget->mapCanvas;
 }
 
+QUuid MainWindow::getCurrentProjectID()
+{
+    CDTProjectWidget *prjWidget = getCurrentProjectWidget();
+    if (prjWidget == 0)
+        return QUuid();
+    return prjWidget->project->id();
+}
+
 QSize MainWindow::getIconSize()
 {
     return mainWindow->iconSize;
@@ -422,6 +432,24 @@ void MainWindow::onRecentFileTriggered()
 {
     QAction* action = (QAction*)sender();
     ui->tabWidgetProject->openProject(action->text());
+}
+
+void MainWindow::onActionPBCD()
+{
+    if (ui->tabWidgetProject->count()==0)
+    {
+        QMessageBox::critical(this,tr("Error"),tr("No project opend!"));
+        return;
+    }
+
+    QUuid prjID = getCurrentProjectID();    
+
+    DialogPBCD::openPBCDDialog(prjID);
+}
+
+void MainWindow::onActionOBCD()
+{
+
 }
 
 void MainWindow::on_treeViewObjects_customContextMenuRequested(const QPoint &pos)

@@ -6,7 +6,8 @@ FORMS += \
     Dialogs/dialogconsole.ui \
     Dialogs/dialogdbconnection.ui \
     Dialogs/dialognewimage.ui \
-    Dialogs/dialognewproject.ui
+    Dialogs/dialognewproject.ui \
+    Dialogs/dialogpbcd.ui
 
 HEADERS += \
     Dialogs/dialoggenerateattributes.h \
@@ -16,7 +17,8 @@ HEADERS += \
     Dialogs/dialogconsole.h \
     Dialogs/dialognewimage.h \
     Dialogs/dialognewproject.h \
-    Dialogs/dialogdbconnection.h
+    Dialogs/dialogdbconnection.h \
+    Dialogs/dialogpbcd.h
 
 SOURCES += \
     Dialogs/dialoggenerateattributes.cpp \
@@ -26,6 +28,7 @@ SOURCES += \
     Dialogs/dialogconsole.cpp \
     Dialogs/dialogdbconnection.cpp \
     Dialogs/dialognewimage.cpp \
-    Dialogs/dialognewproject.cpp
+    Dialogs/dialognewproject.cpp \
+    Dialogs/dialogpbcd.cpp
 
 INCLUDEPATH += $$PWD

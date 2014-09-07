@@ -59,6 +59,8 @@ public:
     static CDTLayerInfoWidget       *getLayerInfoWidget();
     static CDTProjectWidget         *getCurrentProjectWidget();
     static QgsMapCanvas             *getCurrentMapCanvas();
+
+    static QUuid getCurrentProjectID();
     static QSize getIconSize();
 
 signals:
@@ -79,6 +81,9 @@ private slots:
     void onActionSaveAll();
     void onActionSaveAs();
     void onRecentFileTriggered();
+
+    void onActionPBCD();
+    void onActionOBCD();
 
     void on_treeViewObjects_customContextMenuRequested(const QPoint &pos);
     void on_treeViewObjects_clicked(const QModelIndex &index);

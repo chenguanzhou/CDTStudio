@@ -30,5 +30,7 @@
         <file>StyleSheet/default.css</file>
         <file>Icon/ChangeObject.png</file>
         <file>Icon/ChangePixel.png</file>
+        <file>Icon/2.png</file>
+        <file>Icon/2+.png</file>
     </qresource>
 </RCC>
