@@ -44,14 +44,14 @@ void DialogPBCD::openPBCDDialog(QUuid projectID)
     }
 
     DialogPBCD dlg;
-    dlg.prjID = projectID;
+    dlg.prjID = projectID;    
     dlg.imageLayerIDList = imageLayerIDList;
     dlg.exec();
 }
 
 void DialogPBCD::onStartBinaryCD()
 {
-    DialogPBCDBinary dlg;
+    DialogPBCDBinary dlg(prjID);
     dlg.exec();
 }
 

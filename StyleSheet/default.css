@@ -116,3 +116,8 @@ QFrame#qwtPlot {
 QgsMapCanvas#mapCanvas{
     border:none;
 }
+
+QListView#listWidgetT2Bands::item:selected,QListView#listWidgetT1Bands::item:selected{
+    color:#ff0000;
+    font: bold 20px;
+}

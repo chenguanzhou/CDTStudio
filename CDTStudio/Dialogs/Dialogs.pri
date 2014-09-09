@@ -8,7 +8,8 @@ FORMS += \
     Dialogs/dialognewimage.ui \
     Dialogs/dialognewproject.ui \
     Dialogs/dialogpbcd.ui \
-    Dialogs/dialogpbcdbinary.ui
+    Dialogs/dialogpbcdbinary.ui \
+    Dialogs/dialogpbcdaddbandpair.ui
 
 HEADERS += \
     Dialogs/dialoggenerateattributes.h \
@@ -20,7 +21,8 @@ HEADERS += \
     Dialogs/dialognewproject.h \
     Dialogs/dialogdbconnection.h \
     Dialogs/dialogpbcd.h \
-    Dialogs/dialogpbcdbinary.h
+    Dialogs/dialogpbcdbinary.h \
+    Dialogs/dialogpbcdaddbandpair.h
 
 SOURCES += \
     Dialogs/dialoggenerateattributes.cpp \
@@ -32,6 +34,7 @@ SOURCES += \
     Dialogs/dialognewimage.cpp \
     Dialogs/dialognewproject.cpp \
     Dialogs/dialogpbcd.cpp \
-    Dialogs/dialogpbcdbinary.cpp
+    Dialogs/dialogpbcdbinary.cpp \
+    Dialogs/dialogpbcdaddbandpair.cpp
 
 INCLUDEPATH += $$PWD
