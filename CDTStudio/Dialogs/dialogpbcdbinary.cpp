@@ -30,6 +30,7 @@ DialogPBCDBinary::DialogPBCDBinary(QUuid projectID, QWidget *parent) :
     ui->comboBoxT2Image->setModel(modelImage);
     ui->comboBoxT2Image->setCurrentIndex(1);
 
+    ui->pushButtonAutoBand->click();
 
 }
 
