@@ -55,7 +55,6 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     int port = setting.value("UpPort",59876).toInt();
 
     processor->start("Processor");
-    connect(this,SIGNAL(aboutToQuit()),processor,SLOT(terminate()));
 
     QByteArray testData;
     QDataStream test(&testData,QFile::ReadWrite);
