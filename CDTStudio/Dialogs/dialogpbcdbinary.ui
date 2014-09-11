@@ -226,7 +226,28 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_9">
          <item>
-          <widget class="QComboBox" name="comboBoxAutoThresholdMethod"/>
+          <widget class="QComboBox" name="comboBoxAutoThresholdMethod">
+           <item>
+            <property name="text">
+             <string>Otsu</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Tsai</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Kapur</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Kittler</string>
+            </property>
+           </item>
+          </widget>
          </item>
         </layout>
        </widget>

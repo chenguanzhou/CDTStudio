@@ -13,7 +13,10 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 QList<CDTExtractionInterface *>     extractionPlugins;
 
 CDTApplication::CDTApplication(int & argc, char ** argv) :
-    QgsApplication(argc, argv,true)
+    QgsApplication(argc, argv,true),
+    processor (new QProcess(this)),
+    udpReceiver(new QUdpSocket(this)),
+    udpSender(new QUdpSocket(this))
 {
     setApplicationName("CDTStudio");
     setApplicationVersion("v0.1");
@@ -46,6 +49,18 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     qDebug()<<"extractionPlugins:"<<extractionPlugins.size();
 
     this->setStyleSheet(getStyleSheetByName("default"));
+
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("Settings");
+    int port = setting.value("UpPort",59876).toInt();
+
+    processor->start("Processor");
+    connect(this,SIGNAL(aboutToQuit()),processor,SLOT(terminate()));
+
+    QByteArray testData;
+    QDataStream test(&testData,QFile::ReadWrite);
+    test<<QString("CDTData")<<QString("cgz").toUtf8();
+    udpSender->writeDatagram(testData,QHostAddress::LocalHost,port);
 }
 
 CDTApplication::~CDTApplication()
