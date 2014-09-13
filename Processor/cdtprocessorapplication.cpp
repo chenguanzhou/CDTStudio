@@ -10,8 +10,15 @@ CDTProcessorApplication::CDTProcessorApplication(int &argc, char **argv) :
     setting.beginGroup("Settings");
     port = setting.value("UpPort",59876).toInt();
 
+    initPlugins();
+
     udpReceiver->bind(QHostAddress::LocalHost,port);
     connect(udpReceiver,SIGNAL(readyRead()),SLOT(readCommand()));
+
+}
+
+CDTProcessorApplication::initPlugins()
+{
 
 }
 

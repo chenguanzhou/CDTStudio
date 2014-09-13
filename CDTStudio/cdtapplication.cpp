@@ -6,11 +6,14 @@
 #include "cdtattributesinterface.h"
 #include "cdtclassifierinterface.h"
 #include "cdtextractioninterface.h"
+#include "cdtpbcddiffinterface.h"
 
 QList<CDTSegmentationInterface *>   segmentationPlugins;
 QList<CDTAttributesInterface *>     attributesPlugins;
 QList<CDTClassifierInterface *>     classifierPlugins;
 QList<CDTExtractionInterface *>     extractionPlugins;
+
+QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
 
 CDTApplication::CDTApplication(int & argc, char ** argv) :
     QgsApplication(argc, argv,true),
@@ -45,8 +48,12 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     attributesPlugins   = CDTPluginLoader<CDTAttributesInterface>::getPlugins();
     classifierPlugins   = CDTPluginLoader<CDTClassifierInterface>::getPlugins();
     extractionPlugins   = CDTPluginLoader<CDTExtractionInterface>::getPlugins();
+
+    pbcdDiffPlugins     = CDTPluginLoader<CDTPBCDDiffInterface>::getPlugins();
+
     qDebug()<<"segmentationPlugins:"<<segmentationPlugins.size();
     qDebug()<<"extractionPlugins:"<<extractionPlugins.size();
+    qDebug()<<"pbcdDiffPlugins:"<<pbcdDiffPlugins.size();
 
     this->setStyleSheet(getStyleSheetByName("default"));
 

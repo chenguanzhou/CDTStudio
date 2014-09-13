@@ -10,6 +10,9 @@ class CDTProcessorApplication : public QCoreApplication
 public:
     explicit CDTProcessorApplication(int &argc, char **argv);
 
+private:
+    initPlugins();
+
 signals:
 
 public slots:
