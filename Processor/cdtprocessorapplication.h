@@ -3,6 +3,11 @@
 
 #include <QCoreApplication>
 
+#if defined(qApp)
+#undef qApp
+#endif
+#define qApp (static_cast<CDTProcessorApplication *>(QCoreApplication::instance()))
+
 class QUdpSocket;
 class CDTProcessorApplication : public QCoreApplication
 {
@@ -11,7 +16,7 @@ public:
     explicit CDTProcessorApplication(int &argc, char **argv);
 
 private:
-    initPlugins();
+    void initPlugins();
 
 signals:
 

@@ -1,7 +1,10 @@
 #ifndef CDTPLUGINLOADER_H
 #define CDTPLUGINLOADER_H
 
-#include "stable.h"
+#include <QtCore>
+//Log4Qt
+#include "log4qt/logger.h"
+#include "log4qt/basicconfigurator.h"
 
 template <typename T>
 class CDTPluginLoader
@@ -35,7 +38,7 @@ public:
 private:
     static QDir directoryof(const QString &subDir)
     {
-        QDir dir(QApplication::applicationDirPath());
+        QDir dir(QCoreApplication::applicationDirPath());
 
 #if defined(Q_OS_WIN)
         if (dir.dirName().toLower()=="debug"||dir.dirName().toLower()=="release")

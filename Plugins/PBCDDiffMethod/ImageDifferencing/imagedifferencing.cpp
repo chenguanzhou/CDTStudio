@@ -9,7 +9,7 @@ ImageDifferencing::ImageDifferencing(QObject *parent) :
 
 QString ImageDifferencing::methodName() const
 {
-    return "ImageDifferencing";
+    return "Image Differencing";
 }
 
 #if QT_VERSION < 0x050000

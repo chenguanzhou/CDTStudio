@@ -44,16 +44,7 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     initStxxl();
 #endif
 
-    segmentationPlugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();
-    attributesPlugins   = CDTPluginLoader<CDTAttributesInterface>::getPlugins();
-    classifierPlugins   = CDTPluginLoader<CDTClassifierInterface>::getPlugins();
-    extractionPlugins   = CDTPluginLoader<CDTExtractionInterface>::getPlugins();
-
-    pbcdDiffPlugins     = CDTPluginLoader<CDTPBCDDiffInterface>::getPlugins();
-
-    qDebug()<<"segmentationPlugins:"<<segmentationPlugins.size();
-    qDebug()<<"extractionPlugins:"<<extractionPlugins.size();
-    qDebug()<<"pbcdDiffPlugins:"<<pbcdDiffPlugins.size();
+    initPlugins();
 
     this->setStyleSheet(getStyleSheetByName("default"));
 
@@ -96,6 +87,21 @@ QString CDTApplication::getStyleSheetByName(QString styleName)
     }
 //    qDebug()<<styleSheet;
     return styleSheet;
+}
+
+void CDTApplication::initPlugins()
+{
+    segmentationPlugins = CDTPluginLoader<CDTSegmentationInterface>::getPlugins();
+    attributesPlugins   = CDTPluginLoader<CDTAttributesInterface>::getPlugins();
+    classifierPlugins   = CDTPluginLoader<CDTClassifierInterface>::getPlugins();
+    extractionPlugins   = CDTPluginLoader<CDTExtractionInterface>::getPlugins();
+
+    pbcdDiffPlugins     = CDTPluginLoader<CDTPBCDDiffInterface>::getPlugins();
+
+    qDebug()<<"segmentationPlugins:"<<segmentationPlugins.size();
+    qDebug()<<"extractionPlugins:"<<extractionPlugins.size();
+    qDebug()<<"pbcdDiffPlugins:"<<pbcdDiffPlugins.size();
+
 }
 
 bool CDTApplication::initDatabase()

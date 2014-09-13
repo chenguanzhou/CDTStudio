@@ -1,6 +1,10 @@
 #include "cdtprocessorapplication.h"
 #include <QtNetwork>
 
+#include "cdtpluginloader.h"
+#include "cdtpbcddiffinterface.h"
+QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
+
 CDTProcessorApplication::CDTProcessorApplication(int &argc, char **argv) :
     QCoreApplication(argc,argv),
     udpReceiver(new QUdpSocket(this)),
@@ -17,9 +21,10 @@ CDTProcessorApplication::CDTProcessorApplication(int &argc, char **argv) :
 
 }
 
-CDTProcessorApplication::initPlugins()
+void CDTProcessorApplication::initPlugins()
 {
-
+    pbcdDiffPlugins     = CDTPluginLoader<CDTPBCDDiffInterface>::getPlugins();
+    qDebug()<<pbcdDiffPlugins.size();
 }
 
 void CDTProcessorApplication::readCommand()

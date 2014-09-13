@@ -33,6 +33,8 @@ private slots:
     void onAutoThresholdToggled(bool toggled);
     void onManualThresholdToggled(bool toggled);
 
+    void generateXML();
+
 private:
     Ui::DialogPBCDBinary *ui;
 

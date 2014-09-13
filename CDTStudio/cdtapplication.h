@@ -24,6 +24,7 @@ signals:
 public slots:
 
 private:
+    void initPlugins();
     bool initDatabase();
     #ifdef Q_OS_WIN
     void initStxxl();

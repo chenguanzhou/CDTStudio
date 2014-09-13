@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       = core
 
 TARGET = ImageDifferencing
 TEMPLATE = lib

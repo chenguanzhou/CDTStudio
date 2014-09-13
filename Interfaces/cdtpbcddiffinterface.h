@@ -3,8 +3,6 @@
 
 #include <QtCore>
 #include <QtPlugin>
-#include <QProgressBar>
-#include <QLabel>
 
 class CDTPBCDDiffInterface:public QObject
 {

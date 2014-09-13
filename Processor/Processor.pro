@@ -21,3 +21,9 @@ SOURCES += main.cpp \
 
 HEADERS += \
     cdtprocessorapplication.h
+
+INCLUDEPATH += \
+    ../Interfaces \
+    ../Tools\
+
+LIBS += -L../lib -llog4qt

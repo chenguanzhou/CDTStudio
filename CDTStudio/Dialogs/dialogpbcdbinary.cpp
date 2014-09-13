@@ -3,6 +3,8 @@
 #include "stable.h"
 
 #include "dialogpbcdaddbandpair.h"
+#include "cdtpbcddiffinterface.h"
+extern QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
 
 DialogPBCDBinary::DialogPBCDBinary(QUuid projectID, QWidget *parent) :
     QDialog(parent),
@@ -24,11 +26,17 @@ DialogPBCDBinary::DialogPBCDBinary(QUuid projectID, QWidget *parent) :
     connect(ui->groupBoxAutoThreshold,SIGNAL(toggled(bool)),SLOT(onAutoThresholdToggled(bool)));
     connect(ui->groupBoxManualThreshold,SIGNAL(toggled(bool)),SLOT(onManualThresholdToggled(bool)));
 
+    connect(this,SIGNAL(accepted()),SLOT(generateXML()));
+
     modelImage->setQuery(QString("select name,id,path from imagelayer where projectid  = '%1'").arg(prjID.toString()),
                     QSqlDatabase::database("category"));
     ui->comboBoxT1Image->setModel(modelImage);
     ui->comboBoxT2Image->setModel(modelImage);
     ui->comboBoxT2Image->setCurrentIndex(1);
+
+    foreach (CDTPBCDDiffInterface *pbcdPlugin, pbcdDiffPlugins) {
+        ui->comboBoxDiffMethod->addItem(pbcdPlugin->methodName());
+    }
 
     ui->pushButtonAutoBand->click();
 
@@ -122,4 +130,74 @@ void DialogPBCDBinary::onManualThresholdToggled(bool toggled)
     ui->groupBoxAutoThreshold->blockSignals(true);
     ui->groupBoxAutoThreshold->setChecked(!toggled);
     ui->groupBoxAutoThreshold->blockSignals(false);
+}
+
+void DialogPBCDBinary::generateXML()
+{
+    QDomDocument doc("PBCDBinaryParams");
+    QDomElement root = doc.createElement("CDTTask");
+    doc.appendChild(root);
+    QDomElement createTask = doc.createElement("create");
+    root.appendChild(createTask);
+
+    createTask.setAttribute("name","PBCD_Binary");
+    createTask.setAttribute("id",QUuid::createUuid().toString());
+    createTask.setAttribute("time",QDateTime::currentDateTime().toString());
+
+    QDomElement params = doc.createElement("params");
+    createTask.appendChild(params);
+
+    QDomElement iamges = doc.createElement("iamges");
+    QDomElement bands = doc.createElement("bands");
+    QDomElement radiometric_correction = doc.createElement("radiometric_correction");
+    QDomElement diff_method = doc.createElement("diff_method");
+    QDomElement merge_method = doc.createElement("merge_method");
+    QDomElement threshold = doc.createElement("threshold");
+    params.appendChild(iamges);
+    params.appendChild(bands);
+    params.appendChild(radiometric_correction);
+    params.appendChild(diff_method);
+    params.appendChild(merge_method);
+    params.appendChild(threshold);
+
+    QDomElement t1 = doc.createElement("t1");
+    QDomElement t2 = doc.createElement("t2");
+    t1.setAttribute("path",ui->labelT1Path->text());
+    t2.setAttribute("path",ui->labelT2Path->text());
+    iamges.appendChild(t1);
+    iamges.appendChild(t2);
+
+    for (int i=0;i<ui->listWidgetBandPairs->count();++i)
+    {
+        QDomElement pair = doc.createElement("band_pair");
+        pair.setNodeValue(ui->listWidgetBandPairs->item(i)->text());
+        bands.appendChild(pair);
+    }
+
+    if (ui->groupBoxRadiometricCorrection->isChecked())
+    {
+        radiometric_correction.setAttribute("valid","true");
+        radiometric_correction.setNodeValue(ui->comboBoxRadiometricCorrection->currentText());
+    }
+    else
+        radiometric_correction.setAttribute("valid","false");
+
+    diff_method.setAttribute("name",ui->comboBoxDiffMethod->currentText());
+//    diff_method.appendChild() //TODO: params
+
+    merge_method.setAttribute("name",ui->comboBoxMergeMethod->currentText());
+
+    if (ui->groupBoxAutoThreshold->isChecked())
+    {
+        threshold.setAttribute("type","auto");
+        threshold.setNodeValue(ui->comboBoxAutoThresholdMethod->currentText());
+    }
+    else
+    {
+        threshold.setAttribute("type","manual");
+        threshold.setNodeValue(ui->doubleSpinBoxMinT->text()+";"+ui->doubleSpinBoxMaxT->text());
+    }
+
+    QString xml = doc.toString();
+    qDebug()<<xml;
 }

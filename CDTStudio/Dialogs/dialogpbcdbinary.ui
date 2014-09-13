@@ -159,7 +159,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBoxRadiometricCorrection">
      <property name="title">
       <string>Radiometric correction</string>
      </property>
@@ -171,7 +171,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <widget class="QComboBox" name="comboBox_3"/>
+       <widget class="QComboBox" name="comboBoxRadiometricCorrection"/>
       </item>
      </layout>
     </widget>
@@ -183,7 +183,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
-       <widget class="QComboBox" name="comboBox_4"/>
+       <widget class="QComboBox" name="comboBoxDiffMethod"/>
       </item>
       <item>
        <widget class="QFrame" name="frame">
@@ -205,7 +205,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>
-       <widget class="QComboBox" name="comboBox_5"/>
+       <widget class="QComboBox" name="comboBoxMergeMethod"/>
       </item>
      </layout>
     </widget>
@@ -272,7 +272,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+          <widget class="QDoubleSpinBox" name="doubleSpinBoxMinT"/>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_4">
@@ -282,7 +282,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+          <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxT"/>
          </item>
         </layout>
        </widget>
