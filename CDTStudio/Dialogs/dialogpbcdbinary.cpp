@@ -1,6 +1,7 @@
 #include "dialogpbcdbinary.h"
 #include "ui_dialogpbcdbinary.h"
 #include "stable.h"
+#include "cdtapplication.h"
 
 #include "dialogpbcdaddbandpair.h"
 #include "cdtpbcddiffinterface.h"
@@ -87,7 +88,7 @@ void DialogPBCDBinary::onAutoBand()
     {
         ui->listWidgetBandPairs->addItem(QString("band%1->band%1").arg(i+1));
     }
-    ui->listWidgetBandPairs->addItem("ave->ave");
+//    ui->listWidgetBandPairs->addItem("ave->ave");
     updatePushbuttonRemoveAll();
 }
 
@@ -170,14 +171,16 @@ void DialogPBCDBinary::generateXML()
     for (int i=0;i<ui->listWidgetBandPairs->count();++i)
     {
         QDomElement pair = doc.createElement("band_pair");
-        pair.setNodeValue(ui->listWidgetBandPairs->item(i)->text());
+        QDomText text = doc.createTextNode(ui->listWidgetBandPairs->item(i)->text());
+        pair.appendChild(text);
         bands.appendChild(pair);
     }
 
     if (ui->groupBoxRadiometricCorrection->isChecked())
     {
         radiometric_correction.setAttribute("valid","true");
-        radiometric_correction.setNodeValue(ui->comboBoxRadiometricCorrection->currentText());
+        QDomText text = doc.createTextNode(ui->comboBoxRadiometricCorrection->currentText());
+        radiometric_correction.appendChild(text);
     }
     else
         radiometric_correction.setAttribute("valid","false");
@@ -190,14 +193,16 @@ void DialogPBCDBinary::generateXML()
     if (ui->groupBoxAutoThreshold->isChecked())
     {
         threshold.setAttribute("type","auto");
-        threshold.setNodeValue(ui->comboBoxAutoThresholdMethod->currentText());
+        QDomText text = doc.createTextNode(ui->comboBoxAutoThresholdMethod->currentText());
+        threshold.appendChild(text);
     }
     else
     {
         threshold.setAttribute("type","manual");
-        threshold.setNodeValue(ui->doubleSpinBoxMinT->text()+";"+ui->doubleSpinBoxMaxT->text());
+        QDomText text = doc.createTextNode(ui->doubleSpinBoxMinT->text()+";"+ui->doubleSpinBoxMaxT->text());
+        threshold.appendChild(text);
     }
 
-    QString xml = doc.toString();
-    qDebug()<<xml;
+    qApp->sendTask( doc.toByteArray() ) ;
+
 }

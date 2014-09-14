@@ -4,13 +4,17 @@
 #include "QtGlobal"
 #include "qgsapplication.h"
 
+class CDTApplication;
+class QProcess;
+class QUdpSocket;
+
 #if defined(qApp)
 #undef qApp
 #endif
 #define qApp (static_cast<CDTApplication *>(QCoreApplication::instance()))
 
-class QProcess;
-class QUdpSocket;
+
+
 class CDTApplication : public QgsApplication
 {
     Q_OBJECT
@@ -22,6 +26,7 @@ public:
 signals:
 
 public slots:
+    void sendTask(const QByteArray &data);
 
 private:
     void initPlugins();
@@ -33,6 +38,7 @@ private:
     QProcess *processor;
     QUdpSocket* udpReceiver;
     QUdpSocket* udpSender;
+    qint16 port;
 };
 
 #endif // CDTAPPLICATION_H

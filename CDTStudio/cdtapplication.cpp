@@ -50,7 +50,7 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
 
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("Settings");
-    int port = setting.value("UpPort",59876).toInt();
+    port = setting.value("UpPort",59876).toInt();
 
     processor->start("Processor");
 
@@ -87,6 +87,17 @@ QString CDTApplication::getStyleSheetByName(QString styleName)
     }
 //    qDebug()<<styleSheet;
     return styleSheet;
+}
+
+void CDTApplication::sendTask(const QByteArray &data)
+{
+    QByteArray toSend;
+    QDataStream stream(&toSend,QFile::ReadWrite);
+    stream<<QString("CDTData")<<data;
+    if (udpSender->writeDatagram(toSend,QHostAddress::LocalHost,port)==-1)
+    {
+        qWarning()<<"Upload failed!";
+    }
 }
 
 void CDTApplication::initPlugins()

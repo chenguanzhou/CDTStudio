@@ -1,5 +1,6 @@
 #include "cdtprocessorapplication.h"
 #include <QtNetwork>
+#include <QtXml>
 
 #include "cdtpluginloader.h"
 #include "cdtpbcddiffinterface.h"
@@ -54,4 +55,13 @@ void CDTProcessorApplication::parseCommand(QByteArray data)
 
     if (xmlContent.isEmpty())
         return;
+
+    QDomDocument doc;
+    bool ret = doc.setContent(xmlContent);
+
+    QFile file("D:/test.xml");
+    file.open(QFile::WriteOnly);
+    QTextStream stream(&file);
+    doc.save(stream,4);
+    file.close();
 }
