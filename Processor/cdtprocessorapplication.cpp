@@ -64,4 +64,6 @@ void CDTProcessorApplication::parseCommand(QByteArray data)
     QTextStream stream(&file);
     doc.save(stream,4);
     file.close();
+
+    doc.fir
 }
