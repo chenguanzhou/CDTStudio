@@ -17,10 +17,16 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    cdtprocessorapplication.cpp
+    cdtprocessorapplication.cpp \
+    cdttask.cpp \
+    cdttaskmanager.cpp \
+    cdttask_pbcdbinary.cpp
 
 HEADERS += \
-    cdtprocessorapplication.h
+    cdtprocessorapplication.h \
+    cdttask.h \
+    cdttaskmanager.h \
+    cdttask_pbcdbinary.h
 
 INCLUDEPATH += \
     ../Interfaces \

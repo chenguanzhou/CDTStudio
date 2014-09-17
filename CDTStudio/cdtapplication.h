@@ -27,6 +27,7 @@ signals:
 
 public slots:
     void sendTask(const QByteArray &data);
+    void readMessage();
 
 private:
     void initPlugins();
@@ -38,7 +39,8 @@ private:
     QProcess *processor;
     QUdpSocket* udpReceiver;
     QUdpSocket* udpSender;
-    qint16 port;
+    qint16 portUpload;
+    qint16 portDownload;
 };
 
 #endif // CDTAPPLICATION_H

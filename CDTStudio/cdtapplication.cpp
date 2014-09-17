@@ -50,14 +50,13 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
 
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("Settings");
-    port = setting.value("UpPort",59876).toInt();
+    portUpload = setting.value("UpPort",59876).toInt();
+    portDownload = setting.value("DownPort",59877).toInt();
+
+    udpReceiver->bind(QHostAddress::LocalHost,portDownload);
+    connect(udpReceiver,SIGNAL(readyRead()),SLOT(readMessage()));
 
     processor->start("Processor");
-
-    QByteArray testData;
-    QDataStream test(&testData,QFile::ReadWrite);
-    test<<QString("CDTData")<<QString("cgz").toUtf8();
-    udpSender->writeDatagram(testData,QHostAddress::LocalHost,port);
 }
 
 CDTApplication::~CDTApplication()
@@ -94,9 +93,33 @@ void CDTApplication::sendTask(const QByteArray &data)
     QByteArray toSend;
     QDataStream stream(&toSend,QFile::ReadWrite);
     stream<<QString("CDTData")<<data;
-    if (udpSender->writeDatagram(toSend,QHostAddress::LocalHost,port)==-1)
+    if (udpSender->writeDatagram(toSend,QHostAddress::LocalHost,portUpload)==-1)
     {
         qWarning()<<"Upload failed!";
+    }
+}
+
+void CDTApplication::readMessage()
+{
+    while (udpReceiver->hasPendingDatagrams()) {
+        QByteArray datagram;
+        datagram.resize(udpReceiver->pendingDatagramSize());
+        udpReceiver->readDatagram(datagram.data(), datagram.size());
+        QDataStream in(datagram);
+        QString flag,data;
+        in>>flag;
+        if (flag.toLower()=="debug")
+        {
+            in>>data;
+            qDebug()<<"Debug from server: "<<data;
+        }
+        else if (flag.toLower()=="taskinfo")
+        {
+            int status,progress;
+            QString currentStep;
+            in>>status>>currentStep>>progress;
+            qDebug()<<QString("TaskInfo from server: \n%1:\t %2 \%").arg(currentStep).arg(progress);
+        }
     }
 }
 
