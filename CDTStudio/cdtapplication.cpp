@@ -115,10 +115,11 @@ void CDTApplication::readMessage()
         }
         else if (flag.toLower()=="taskinfo")
         {
-            int status,progress;
-            QString currentStep;
-            in>>status>>currentStep>>progress;
-            qDebug()<<QString("TaskInfo from server: \n%1:\t %2 \%").arg(currentStep).arg(progress);
+            int status,currentProgress,totalProgress;
+            QString id,currentStep;
+            in>>id>>status>>currentStep>>currentProgress>>totalProgress;
+            emit taskInfoUpdated(id,status,currentStep,currentProgress,totalProgress);
+            qDebug()<<QString("TaskInfo from server: \n%1:\t %2\% id:%3").arg(currentStep).arg(totalProgress).arg(id);
         }
     }
 }

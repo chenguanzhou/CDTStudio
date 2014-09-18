@@ -51,7 +51,7 @@ void DialogPBCD::openPBCDDialog(QUuid projectID)
 
 void DialogPBCD::onStartBinaryCD()
 {
-    DialogPBCDBinary dlg(prjID);
+    DialogPBCDBinary dlg(prjID);//TODO: maybe a bug when dialog turn to unmodal dialog
     dlg.exec();
 }
 

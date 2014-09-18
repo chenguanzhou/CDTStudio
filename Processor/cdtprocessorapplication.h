@@ -26,7 +26,7 @@ public slots:
     void readCommand();
     void parseCommand(QByteArray data);
     void returnDebugMessage(QString msg);
-    void returnTaskInfo(CDTTaskInfo info);
+    void returnTaskInfo(QString id, CDTTaskInfo info);
 
     void onTaskAppended(QString id);
     void onTaskInfoUpdated(QString id,CDTTaskInfo info);

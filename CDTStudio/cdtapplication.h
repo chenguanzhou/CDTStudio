@@ -3,6 +3,7 @@
 
 #include "QtGlobal"
 #include "qgsapplication.h"
+#include "cdttaskdockwidget.h"
 
 class CDTApplication;
 class QProcess;
@@ -24,6 +25,7 @@ public:
 
     static QString getStyleSheetByName(QString styleName);
 signals:
+    void taskInfoUpdated(QString id,int status,QString currentStep,int currentProgress,int totalProgress);
 
 public slots:
     void sendTask(const QByteArray &data);

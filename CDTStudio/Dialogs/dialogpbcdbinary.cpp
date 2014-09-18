@@ -2,6 +2,7 @@
 #include "ui_dialogpbcdbinary.h"
 #include "stable.h"
 #include "cdtapplication.h"
+#include "mainwindow.h"
 
 #include "dialogpbcdaddbandpair.h"
 #include "cdtpbcddiffinterface.h"
@@ -141,8 +142,10 @@ void DialogPBCDBinary::generateXML()
     QDomElement createTask = doc.createElement("create");
     root.appendChild(createTask);
 
-    createTask.setAttribute("name","PBCD_Binary");
-    createTask.setAttribute("id",QUuid::createUuid().toString());
+    QString id = QUuid::createUuid().toString();
+    const QString name = "PBCD_Binary";
+    createTask.setAttribute("name",name);
+    createTask.setAttribute("id",id);
     createTask.setAttribute("time",QDateTime::currentDateTime().toString());
 
     QDomElement params = doc.createElement("params");
@@ -204,5 +207,5 @@ void DialogPBCDBinary::generateXML()
     }
 
     qApp->sendTask( doc.toByteArray() ) ;
-
+    MainWindow::getTaskDockWIdget()->appendNewTask(id,name,prjID.toString());
 }

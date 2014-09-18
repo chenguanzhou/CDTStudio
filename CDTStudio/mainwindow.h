@@ -58,6 +58,7 @@ public:
     static CDTExtractionDockWidget  *getExtractionDockWidget();
     static CDTUndoWidget            *getUndoWidget();
     static CDTLayerInfoWidget       *getLayerInfoWidget();
+    static CDTTaskDockWidget        *getTaskDockWIdget();
     static CDTProjectWidget         *getCurrentProjectWidget();
     static QgsMapCanvas             *getCurrentMapCanvas();
 

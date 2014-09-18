@@ -120,11 +120,11 @@ void CDTProcessorApplication::returnDebugMessage(QString msg)
     udpSender->writeDatagram(toReturn,QHostAddress::LocalHost,portDownload);
 }
 
-void CDTProcessorApplication::returnTaskInfo(CDTTaskInfo info)
+void CDTProcessorApplication::returnTaskInfo(QString id, CDTTaskInfo info)
 {
     QByteArray toReturn;
     QDataStream stream(&toReturn,QFile::ReadWrite);
-    stream<<QString("TaskInfo")<<info.status<<info.currentStep<<info.currentProgress<<info.totalProgress;;
+    stream<<QString("TaskInfo")<<id<<info.status<<info.currentStep<<info.currentProgress<<info.totalProgress;;
     udpSender->writeDatagram(toReturn,QHostAddress::LocalHost,portDownload);
 }
 
@@ -135,5 +135,5 @@ void CDTProcessorApplication::onTaskAppended(QString id)
 
 void CDTProcessorApplication::onTaskInfoUpdated(QString id, CDTTaskInfo info)
 {
-    returnTaskInfo(info);
+    returnTaskInfo(id,info);
 }
