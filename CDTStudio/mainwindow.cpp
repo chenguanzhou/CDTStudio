@@ -17,6 +17,7 @@
 #include "cdtclassificationlayer.h"
 #include "cdtundowidget.h"
 #include "cdtlayerinfowidget.h"
+#include "cdttaskdockwidget.h"
 
 #include "dialogconsole.h"
 #include "dialogpbcd.h"
@@ -232,6 +233,9 @@ void MainWindow::initDockWidgets()
     dockWidgetLayerInfo = new CDTLayerInfoWidget(this);
     dockWidgetLayerInfo->setObjectName("dockWidgetLayerInfo");
     registerDocks(Qt::LeftDockWidgetArea,dockWidgetLayerInfo);
+
+    dockWIdgetTask = new CDTTaskDockWidget(this);
+    registerDocks(Qt::AllDockWidgetAreas,dockWIdgetTask);
 }
 
 void MainWindow::initConsole()

@@ -10,7 +10,8 @@ HEADERS += \
     Docks/cdtlayerinfowidget.h \
     Docks/cdtmaptoolselecttrainingsamples.h \
     Docks/cdtsampledockwidget.h \
-    Docks/cdtundowidget.h
+    Docks/cdtundowidget.h \
+    Docks/cdttaskdockwidget.h
 
 SOURCES += \
     Docks/cdtattributedockwidget.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
     Docks/cdtlayerinfowidget.cpp \
     Docks/cdtmaptoolselecttrainingsamples.cpp \
     Docks/cdtsampledockwidget.cpp \
-    Docks/cdtundowidget.cpp
+    Docks/cdtundowidget.cpp \
+    Docks/cdttaskdockwidget.cpp
 
 INCLUDEPATH += $$PWD

@@ -24,6 +24,7 @@ class CDTExtractionDockWidget;
 class CDTLayerInfoWidget;
 class CDTUndoWidget;
 class CDTAttributeDockWidget;
+class CDTTaskDockWidget;
 class CDTProjectLayer;
 class DialogConsole;
 
@@ -99,6 +100,7 @@ private:
     CDTExtractionDockWidget *dockWidgetExtraction;
     CDTUndoWidget           *dockWidgetUndo;
     CDTLayerInfoWidget      *dockWidgetLayerInfo;
+    CDTTaskDockWidget       *dockWIdgetTask;
 
     QAction *actionNew;
     QAction *actionOpen;
