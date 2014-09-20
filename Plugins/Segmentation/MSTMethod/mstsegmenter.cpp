@@ -29,13 +29,13 @@ MSTSegmenter::MSTSegmenter(const QString &inputImagePath,
     GDALAllRegister();
     CPLSetConfigOption("GDAL_FILENAME_IS_UTF8","YES");
 
-    stxxl::config * cfg = stxxl::config::get_instance();
 #ifdef Q_OS_WIN
     stxxl::disk_config disk((QDir::tempPath()+"\\cdtstudio_seg_stxxl").toLocal8Bit().constData(), 800 * 1024 * 1024, "wincall delete");
 #endif
 //#ifdef  Q_OS_UNIX
 //    stxxl::disk_config disk((QDir::tempPath()+"\\cdtstudio_seg_stxxl").toLocal8Bit().constData(), 800 * 1024 * 1024, "syscall unlink");
 //#endif
+//    stxxl::config * cfg = stxxl::config::get_instance();
 //    cfg->add_disk(disk);
 }
 

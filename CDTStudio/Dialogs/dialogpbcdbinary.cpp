@@ -151,7 +151,7 @@ void DialogPBCDBinary::generateXML()
     QDomElement params = doc.createElement("params");
     createTask.appendChild(params);
 
-    QDomElement iamges = doc.createElement("iamges");
+    QDomElement iamges = doc.createElement("images");
     QDomElement bands = doc.createElement("bands");
     QDomElement radiometric_correction = doc.createElement("radiometric_correction");
     QDomElement diff_method = doc.createElement("diff_method");

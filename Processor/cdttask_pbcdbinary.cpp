@@ -1,27 +1,175 @@
 #include "cdttask_pbcdbinary.h"
 #include <QtCore>
+#include <QtXml>
+#include <QtXmlPatterns>
+#include <gdal_priv.h>
 #include "cdttaskmanager.h"
 #include "cdtprocessorapplication.h"
+#include "messagehandler.h"
 
-CDTTask_PBCDBinary::CDTTask_PBCDBinary(QString id,QDomElement params, QObject *parent) :
-    CDTTask(id,params,parent)
+CDTTask_PBCDBinary::CDTTask_PBCDBinary(QString id,QDomDocument params, QObject *parent) :
+    CDTTask(id,params,parent),poT1DS(NULL),poT2DS(NULL)
 {
-
+    GDALAllRegister();
 }
 
 void CDTTask_PBCDBinary::start()
 {
-    qApp->returnDebugMessage("start");
-    info.status = CDTTaskInfo::PROCESSING;
-    info.currentStep = "hehe";
-    for(int i=0;i<100;i+=1)
+    //1.Check Params and init
+    if (validateParams()==false)
     {
-        info.currentProgress = i;
-        info.totalProgress = i;
-        emit taskInfoUpdated(id,info);
+        error(tr("XML file validate failed!"));
+        return;
     }
+
+
+    QString errorText = readParams();
+    if (!errorText.isEmpty())
+    {
+        error(errorText);
+        return;
+    }
+
+    int nXSize = poT1DS->GetRasterXSize();
+    int nYSize = poT1DS->GetRasterYSize();
+    if (nXSize != poT2DS->GetRasterXSize() || nYSize != poT2DS->GetRasterYSize() )
+    {
+        error(tr("Two images have different size"));
+        return;
+    }
+
+    GDALDataType dataType = poT1DS->GetRasterBand(1)->GetRasterDataType();
+    if (dataType != poT2DS->GetRasterBand(1)->GetRasterDataType())
+    {
+        error(tr("Two images have different data type"));
+        return;
+    }
+    int dataSize = GDALGetDataTypeSize(dataType)/8;
+
+    int bandCount1 = poT1DS->GetRasterCount();
+    int bandCount2 = poT2DS->GetRasterCount();
+
+
+    //2.Create Diff Image
+    GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
+    if (poDriver == NULL)
+    {
+        error(tr("No GeoTiff Driver!"));
+        return;
+    }
+
+    GDALDataset *poDiffDS = (GDALDataset *)(poDriver->Create(qApp->getTempFileName(".tif").toUtf8().constData(),
+                                                             nXSize,nYSize,bandPairs.size(),GDT_Float32,NULL));
+    if (poDiffDS == NULL)
+    {
+        error(tr("Create diff image failed!"));
+        return;
+    }
+
+
+//    qApp->returnDebugMessage("start");
+//    info.status = CDTTaskInfo::PROCESSING;
+//    info.currentStep = "hehe";
+//    for(int i=0;i<100;i+=1)
+//    {
+//        info.currentProgress = i;
+//        info.totalProgress = i;
+//        emit taskInfoUpdated(id,info);
+//    }
 
     info.currentProgress = info.totalProgress = 100;
     info.status = CDTTaskInfo::COMPLETED;
     emit taskInfoUpdated(id,info);
+}
+
+bool CDTTask_PBCDBinary::validateParams()
+{
+    QFile fileSchema(":/xsd/PBCD_Binary.xsd");
+    fileSchema.open(QFile::ReadOnly);
+    const QByteArray schemaData = fileSchema.readAll();
+    const QByteArray instanceData = params.toString(4).toUtf8();
+
+    MessageHandler messageHandler;
+    QXmlSchema schema;
+    schema.setMessageHandler(&messageHandler);
+    schema.load(schemaData);
+
+    bool errorOccurred = false;
+    if (!schema.isValid()) {
+        errorOccurred = true;
+    } else {
+        QXmlSchemaValidator validator(schema);
+        if (!validator.validate(instanceData))
+            errorOccurred = true;
+    }
+
+    return !errorOccurred;
+}
+
+QString CDTTask_PBCDBinary::readParams()
+{
+    QDomElement params_root = params.firstChildElement().firstChildElement().firstChildElement();
+
+    //1.images
+    QDomElement images = params_root.firstChildElement("images");
+    QString t1Path = images.firstChildElement("t1").attribute("path");
+    QString t2Path = images.firstChildElement("t2").attribute("path");
+    if (t1Path.isEmpty() || t2Path.isEmpty())
+        return tr("Fetch images' path failed!");
+
+    poT1DS = (GDALDataset*)GDALOpen(t1Path.toUtf8().constData(),GA_ReadOnly);
+    poT2DS = (GDALDataset*)GDALOpen(t2Path.toUtf8().constData(),GA_ReadOnly);
+    if (poT1DS == NULL || poT2DS==NULL)
+        return tr("Open images failed!");
+
+    //2.bands
+    QDomElement bands = params_root.firstChildElement("bands");
+    bandPairs.clear();
+    QDomElement bandPair = bands.firstChildElement("band_pair");
+    while(!bandPair.isNull())
+    {
+        QStringList pair = bandPair.text().split("->");
+        uint t1band = 0,t2band = 0;
+        if (pair[0]!="ave")
+            t1band = pair[0].right(1).toInt();
+        if (pair[1]!="ave")
+            t2band = pair[1].right(1).toInt();
+        bandPairs.append(qMakePair(t1band,t2band));//ave-0
+
+        bandPair = bandPair.nextSiblingElement("band_pair");
+    }
+
+    //3.radiometric_correction
+    QDomElement radio = params_root.firstChildElement("radiometric_correction");
+    if (radio.attribute("valid").toLower()=="false")
+    {
+        radiometricCorrectionMethod = QString::null;
+    }
+    else
+    {
+        radiometricCorrectionMethod = radio.text();
+    }
+
+    //4.diff_method
+    QDomElement diff = params_root.firstChildElement("diff_method");
+    diffMethod = diff.attribute("name");
+
+    //5.merge_method
+    QDomElement merge = params_root.firstChildElement("merge_method");
+    mergeMethod = merge.attribute("name");
+
+    //6.threshold
+    QDomElement threshold = params_root.firstChildElement("threshold");
+    if (threshold.attribute("type").toLower()=="auto")
+    {
+        autoThreshold = threshold.text();
+    }
+    else
+    {
+        autoThreshold = QString::null;
+        QStringList thres = threshold.text().split(";");
+        minThreshold = thres[0].toDouble();
+        maxThreshold = thres[1].toDouble();
+    }
+    return QString::null;
 }

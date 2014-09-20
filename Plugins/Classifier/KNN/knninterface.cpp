@@ -9,7 +9,8 @@ class KNNInterfacePrivate
 };
 
 KNNInterface::KNNInterface(QObject *parent)
-    :data(new KNNInterfacePrivate)
+    :CDTClassifierInterface(parent),
+    data(new KNNInterfacePrivate)
 {
 
 }

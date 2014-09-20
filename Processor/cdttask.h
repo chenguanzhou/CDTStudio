@@ -24,17 +24,18 @@ class CDTTask : public QObject
 {
     Q_OBJECT
 public:
-    explicit CDTTask(QString id,QDomElement params, QObject *parent = 0);
+    explicit CDTTask(QString id, QDomDocument params, QObject *parent = 0);
 
 signals:
     void taskInfoUpdated(QString id,CDTTaskInfo taskInfo);
 public slots:
     virtual void start() =0;
+    void error(QString errorText);
 
 protected:
     QString id;
     QString name;
-    QDomElement params;
+    QDomDocument params;
     CDTTaskInfo info;
 };
 

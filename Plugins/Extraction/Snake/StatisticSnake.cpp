@@ -128,10 +128,6 @@ bool* CStatisticSnake::FillSeedArrayRgn(std::vector<VERTEX2D> &seedArray, VERTEX
 	n=sgnArray.size();
 	for(i=0;i<n;i++)
 	{
-		if(i==n-1)
-		{
-			int test=0;
-		}
 		int c=freeCodePolyLine.fca[i];
 		int cc=sgnArray[i];
 		if(borderImage_temp[(int)((p.y-border_start.y)*border_w+p.x-border_start.x)]==255)
@@ -139,10 +135,6 @@ bool* CStatisticSnake::FillSeedArrayRgn(std::vector<VERTEX2D> &seedArray, VERTEX
 		else
 			borderImage_temp[(int)((p.y-border_start.y)*border_w+p.x-border_start.x)]+=cc;
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		if((int)(p.y-border_start.y)>=border_h)
-			int test=0;
-		if((int)(p.x-border_start.x)>=border_w)
-			int test=0;
 		switch(c)
 		{
 		case 0:p.x++;break;
@@ -192,10 +184,6 @@ double CStatisticSnake::Statistic_GetIncrement_Polygon(int s, int i, int j, ucha
 	case 1:
 		for(k=0;k<=j;k++)
 		{
-			if(k==150&&i==150)
-			{
-				int test=0;
-			}
 			rtn=rtn+blockimage[i*statistic_w+k];
 		}
 		break;

@@ -2,6 +2,7 @@
 #include <limits>
 
 ERTreesInterface::ERTreesInterface(QObject *parent)
+    :CDTClassifierInterface(parent)
 {
 }
 

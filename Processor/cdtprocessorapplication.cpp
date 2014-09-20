@@ -29,6 +29,11 @@ CDTProcessorApplication::CDTProcessorApplication(int &argc, char **argv) :
     connect(taskManager,SIGNAL(taskInfoUpdated(QString,CDTTaskInfo)),SLOT(onTaskInfoUpdated(QString,CDTTaskInfo)));
 }
 
+QString CDTProcessorApplication::getTempFileName(QString suffix)
+{
+    return QDir::tempPath() + "/" + QUuid::createUuid().toString() + suffix;
+}
+
 void CDTProcessorApplication::initPlugins()
 {
     pbcdDiffPlugins     = CDTPluginLoader<CDTPBCDDiffInterface>::getPlugins();
@@ -72,8 +77,6 @@ void CDTProcessorApplication::parseCommand(QByteArray data)
     QDomDocument doc;
     bool ret = doc.setContent(xmlContent);
 
-    returnDebugMessage(doc.toString(4));
-
     QDomElement root = doc.documentElement();
 
     if (root.isNull())
@@ -108,8 +111,7 @@ void CDTProcessorApplication::parseCommand(QByteArray data)
         return;
     }
 
-    QDomElement params = task.firstChildElement("params");
-    taskManager->appendNewTask(taskName,taskID,params);
+    taskManager->appendNewTask(taskName,taskID,doc);
 }
 
 void CDTProcessorApplication::returnDebugMessage(QString msg)

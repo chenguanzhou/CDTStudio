@@ -2,7 +2,8 @@
 #include <limits>
 
 SVMInterface::SVMInterface(QObject *parent)
-    :data(new cv::SVMParams)
+    :CDTClassifierInterface(parent),
+      data(new cv::SVMParams)
 {
 }
 

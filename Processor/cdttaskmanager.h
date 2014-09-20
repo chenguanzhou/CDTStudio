@@ -16,7 +16,7 @@ public:
     explicit CDTTaskManager(QObject *parent = 0);
     static void registerTask(QString taskName, QMetaObject metaObj);
 
-    bool appendNewTask(QString name, QString id, QDomElement params);
+    bool appendNewTask(QString name, QString id, QDomDocument params);
     void queryTaskInfo(QString id);
 signals:
     void taskAppended(QString id);

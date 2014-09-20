@@ -18,13 +18,12 @@ void CDTTaskManager::registerTask(QString taskName,QMetaObject metaObj)
     availableTasks.insert(taskName,metaObj);
 }
 
-bool CDTTaskManager::appendNewTask(QString name, QString id, QDomElement params)
+bool CDTTaskManager::appendNewTask(QString name, QString id, QDomDocument params)
 {
     if (availableTasks.contains(name))
     {
-        qApp->returnDebugMessage("contain!");
         QMetaObject metaObj = availableTasks.value(name);
-        CDTTask* newTask = qobject_cast<CDTTask*>(metaObj.newInstance(Q_ARG(QString,id),Q_ARG(QDomElement,params),Q_ARG(QObject*,this)));
+        CDTTask* newTask = qobject_cast<CDTTask*>(metaObj.newInstance(Q_ARG(QString,id),Q_ARG(QDomDocument,params),Q_ARG(QObject*,this)));
         if (newTask==NULL)
         {
             qApp->returnDebugMessage("create new task failed!");

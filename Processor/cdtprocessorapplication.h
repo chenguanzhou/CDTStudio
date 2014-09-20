@@ -17,6 +17,8 @@ class CDTProcessorApplication : public QCoreApplication
 public:
     explicit CDTProcessorApplication(int &argc, char **argv);
 
+    static QString getTempFileName(QString suffix);
+
 private:
     void initPlugins();
 

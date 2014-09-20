@@ -2,6 +2,7 @@
 #include <limits>
 
 AutoSVMInterface::AutoSVMInterface(QObject *parent)
+    :CDTClassifierInterface(parent)
 {
 }
 

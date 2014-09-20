@@ -6,4 +6,5 @@ SUBDIRS += \
     CDTFileSystem\
     CDTHistogramPlot\
     QtColorPicker\    
-    CDTClassifierAssessmentWidget
+    CDTClassifierAssessmentWidget \
+    XMLSchemaValidator

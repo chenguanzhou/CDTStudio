@@ -37,7 +37,6 @@ void CDTTaskDockWidget::appendNewTask(QString id, QString name, QString projectI
 void CDTTaskDockWidget::updateTaskInfo(QString id, int status, QString currentStep, int currentProgress, int totalProgress)
 {
     QList<QStandardItem*> lists = model->findItems(id);
-    qDebug()<<lists.size();
     int row = lists[0]->row();
     model->setData(model->index(row,3),status);
     model->setData(model->index(row,4),currentStep);

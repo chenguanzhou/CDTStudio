@@ -2,6 +2,7 @@
 #include <limits>
 
 BayesInterface::BayesInterface(QObject *parent)
+    :CDTClassifierInterface(parent)
 {
 
 }

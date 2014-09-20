@@ -119,7 +119,6 @@ void CDTApplication::readMessage()
             QString id,currentStep;
             in>>id>>status>>currentStep>>currentProgress>>totalProgress;
             emit taskInfoUpdated(id,status,currentStep,currentProgress,totalProgress);
-            qDebug()<<QString("TaskInfo from server: \n%1:\t %2\% id:%3").arg(currentStep).arg(totalProgress).arg(id);
         }
     }
 }
