@@ -20,7 +20,7 @@ CDTProcessorApplication::CDTProcessorApplication(int &argc, char **argv) :
     portUpload = setting.value("UpPort",59876).toInt();
     portDownload = setting.value("DownPort",59877).toInt();
 
-    initPlugins();
+    initPlugins();    
 
     udpReceiver->bind(QHostAddress::LocalHost,portUpload);
     connect(udpReceiver,SIGNAL(readyRead()),SLOT(readCommand()));

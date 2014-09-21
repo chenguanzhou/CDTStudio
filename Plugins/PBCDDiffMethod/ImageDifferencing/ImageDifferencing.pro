@@ -22,6 +22,13 @@ HEADERS += \
 OTHER_FILES += ImageDifferencing.json
 
 unix {
+INCLUDEPATH += /usr/include/gdal \
+            /usr/local/include/gdal \
     target.path = /usr/lib
     INSTALLS += target
+    LIBS += -lgdal
+}
+!unix{
+    include(../../../Tools/Config/win.pri)
+    LIBS += -lgdal_i
 }

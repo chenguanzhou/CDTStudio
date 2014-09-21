@@ -237,6 +237,7 @@ void MainWindow::initDockWidgets()
     registerDocks(Qt::LeftDockWidgetArea,dockWidgetLayerInfo);
 
     dockWIdgetTask = new CDTTaskDockWidget(this);
+    dockWIdgetTask->setObjectName("dockWIdgetTask");
     registerDocks(Qt::BottomDockWidgetArea,dockWIdgetTask);
 }
 

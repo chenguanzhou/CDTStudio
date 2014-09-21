@@ -17,6 +17,7 @@ public:
     ImageDifferencing(QObject *parent = 0);
 
     QString methodName()const;
+    QString generateDiffImage(QList<QPair<GDALRasterBand*,GDALRasterBand*> > poBands,GDALDataset* outDiffDS) ;
 };
 
 #endif // GENERICPLUGIN_H

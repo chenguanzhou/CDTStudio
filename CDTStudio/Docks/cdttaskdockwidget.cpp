@@ -13,7 +13,6 @@ CDTTaskDockWidget::CDTTaskDockWidget(QWidget *parent) :
     tableView->setModel(model);
     tableView->resizeColumnsToContents();
 
-    appendNewTask("123","pbcd","456");
     tableView->resizeRowsToContents();
 }
 

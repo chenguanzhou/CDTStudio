@@ -5,6 +5,8 @@
 #include <QPair>
 
 class GDALDataset;
+class GDALDriver;
+class CDTPBCDDiffInterface;
 class CDTTask_PBCDBinary : public CDTTask
 {
     Q_OBJECT
@@ -18,14 +20,16 @@ public slots:
 private:
     bool validateParams();
     QString readParams();
+    GDALDataset *generateAveImage(GDALDriver *poDriver, GDALDataset *poSrcDS);
 
     GDALDataset* poT1DS;
     GDALDataset* poT2DS;
-    QList<QPair<uint,uint>> bandPairs;
+    QList<QPair<uint,uint> > bandPairs;
     QString radiometricCorrectionMethod;
     QString diffMethod;
     QString mergeMethod;
     QString autoThreshold;
+    CDTPBCDDiffInterface *diffPlugin;
     double minThreshold,maxThreshold;
 };
 

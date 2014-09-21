@@ -56,6 +56,8 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     udpReceiver->bind(QHostAddress::LocalHost,portDownload);
     connect(udpReceiver,SIGNAL(readyRead()),SLOT(readMessage()));
 
+    processor->setStandardOutputFile(qApp->applicationDirPath()+"/task.log");
+    processor->setStandardErrorFile(qApp->applicationDirPath()+"/error.log");
     processor->start("Processor");
 }
 

@@ -5,10 +5,13 @@
 #include <gdal_priv.h>
 #include "cdttaskmanager.h"
 #include "cdtprocessorapplication.h"
+#include "cdtpbcddiffinterface.h"
 #include "messagehandler.h"
 
+extern QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
+
 CDTTask_PBCDBinary::CDTTask_PBCDBinary(QString id,QDomDocument params, QObject *parent) :
-    CDTTask(id,params,parent),poT1DS(NULL),poT2DS(NULL)
+    CDTTask(id,params,parent),poT1DS(NULL),poT2DS(NULL),diffPlugin(NULL)
 {
     GDALAllRegister();
 }
@@ -66,6 +69,43 @@ void CDTTask_PBCDBinary::start()
         return;
     }
 
+    //3.Generate diff images;
+    GDALDataset *poT1AveDS = NULL;
+    GDALDataset *poT2AveDS = NULL;
+    QList<QPair<GDALRasterBand*,GDALRasterBand*> > poBands;
+    for (int i=0;i<bandPairs.size();++i)
+    {
+        GDALRasterBand *poBand1,*poBand2;
+        QPair<uint,uint> pair = bandPairs.value(i);
+        uint bandID1 = pair.first;
+        uint bandID2 = pair.second;
+        if (bandID1 == 0)
+        {
+            if (poT1AveDS == NULL)
+                poT1AveDS = generateAveImage(poDriver,poT1DS);
+            poBand1 = poT1AveDS->GetRasterBand(1);
+        }
+        else
+            poBand1 = poT1DS->GetRasterBand(bandID1);
+        if (bandID2 == 0)
+        {
+            if (poT2AveDS == NULL)
+                poT2AveDS = generateAveImage(poDriver,poT2DS);
+            poBand2 = poT2AveDS->GetRasterBand(1);
+        }
+        else
+            poBand2 = poT2DS->GetRasterBand(bandID2);
+        poBands.append(qMakePair(poBand1,poBand2));
+    }
+
+    qDebug()<<"lala0";
+    errorText = diffPlugin->generateDiffImage(poBands,poDiffDS);
+    if (!errorText.isEmpty())
+    {
+        error(errorText);
+        return;
+    }
+    qDebug()<<"lala1";
 
 //    qApp->returnDebugMessage("start");
 //    info.status = CDTTaskInfo::PROCESSING;
@@ -153,6 +193,14 @@ QString CDTTask_PBCDBinary::readParams()
     //4.diff_method
     QDomElement diff = params_root.firstChildElement("diff_method");
     diffMethod = diff.attribute("name");
+    foreach (CDTPBCDDiffInterface *plugin, pbcdDiffPlugins) {
+        if (plugin->methodName()==diffMethod)
+        {
+            diffPlugin = plugin;
+        }
+    }
+    if (diffPlugin == NULL)
+        return tr("Plugin named %1 is not found").arg(diffMethod);
 
     //5.merge_method
     QDomElement merge = params_root.firstChildElement("merge_method");
@@ -172,4 +220,39 @@ QString CDTTask_PBCDBinary::readParams()
         maxThreshold = thres[1].toDouble();
     }
     return QString::null;
+}
+
+GDALDataset *CDTTask_PBCDBinary::generateAveImage(GDALDriver *poDriver,GDALDataset *poSrcDS)
+{
+    int nXSize = poSrcDS->GetRasterXSize();
+    int nYSize = poSrcDS->GetRasterYSize();
+    GDALDataType dataType = poT1DS->GetRasterBand(1)->GetRasterDataType();
+    int dataSize = GDALGetDataTypeSize(dataType)/8;
+
+
+    GDALDataset *poAveDS = (GDALDataset *)(poDriver->Create(qApp->getTempFileName(".tif").toUtf8().constData(),
+                                                             nXSize,nYSize,1,GDT_Float32,NULL));
+    if (poAveDS == NULL)
+    {
+        error(tr("Create average image failed!"));
+        return NULL;
+    }
+
+    uchar* buffer = new uchar[dataSize];
+    for (int i=0;i<nYSize;++i)
+    {
+        for (int j=0;j<nXSize;++j)
+        {
+            float ave = 0;
+            for (int k=0;k<poSrcDS->GetRasterCount();++k)
+            {
+                poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,j,i,1,1,buffer,1,1,dataType,0,0);
+                ave += SRCVAL(buffer,dataType,0);
+            }
+            ave /= poSrcDS->GetRasterCount();
+            poAveDS->GetRasterBand(1)->RasterIO(GF_Write,j,i,1,1,&ave,1,1,GDT_Float32,0,0);
+        }
+    }
+    delete []buffer;
+    return poAveDS;
 }
