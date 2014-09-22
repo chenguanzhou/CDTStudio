@@ -6,7 +6,11 @@
 
 class GDALDataset;
 class GDALDriver;
+
 class CDTPBCDDiffInterface;
+class CDTPBCDMergeInterface;
+class CDTAutoThresholdInterface;
+
 class CDTTask_PBCDBinary : public CDTTask
 {
     Q_OBJECT
@@ -21,6 +25,7 @@ private:
     bool validateParams();
     QString readParams();
     GDALDataset *generateAveImage(GDALDriver *poDriver, GDALDataset *poSrcDS);
+    void merge(GDALDataset *poDS, GDALDataset *poMerged);
 
     GDALDataset* poT1DS;
     GDALDataset* poT2DS;
@@ -30,7 +35,10 @@ private:
     QString mergeMethod;
     QString autoThreshold;
     CDTPBCDDiffInterface *diffPlugin;
-    double minThreshold,maxThreshold;
+    CDTPBCDMergeInterface *mergePlugin;
+    CDTAutoThresholdInterface *autoThresholdPlugin;
+    double positiveThreshold,negetiveThreshold;
+    bool isDoubleThreshold;
 };
 
 #endif // CDTTASK_PBCDBINARY_H

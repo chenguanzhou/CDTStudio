@@ -27,8 +27,11 @@ private slots:
     void onAutoBand();
     void onRemoveBands();
     void onSelectionChanged();
-    void updatePushbuttonRemoveAll();
+    void updatePushbuttonRemoveAll();    
     void clearBandPairs();
+
+    void updateGroupBoxMerge();
+    void updateDoubleThreshold();
 
     void onAutoThresholdToggled(bool toggled);
     void onManualThresholdToggled(bool toggled);
@@ -40,6 +43,7 @@ private:
 
     QUuid prjID;
     QSqlQueryModel *modelImage;
+    bool isDoubleThreshold;
 };
 
 #endif // DIALOGPBCDBINARY_H

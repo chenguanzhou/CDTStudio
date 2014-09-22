@@ -6,13 +6,19 @@
 
 #include "dialogpbcdaddbandpair.h"
 #include "cdtpbcddiffinterface.h"
+#include "cdtpbcdmergeinterface.h"
+#include "cdtautothresholdinterface.h"
+
 extern QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
+extern QList<CDTPBCDMergeInterface *>      pbcdMergePlugins;
+extern QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
 
 DialogPBCDBinary::DialogPBCDBinary(QUuid projectID, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogPBCDBinary),
     prjID(projectID),
-    modelImage(new QSqlQueryModel(this))
+    modelImage(new QSqlQueryModel(this)),
+    isDoubleThreshold(false)
 {
     ui->setupUi(this);
 
@@ -38,6 +44,14 @@ DialogPBCDBinary::DialogPBCDBinary(QUuid projectID, QWidget *parent) :
 
     foreach (CDTPBCDDiffInterface *pbcdPlugin, pbcdDiffPlugins) {
         ui->comboBoxDiffMethod->addItem(pbcdPlugin->methodName());
+    }
+
+    foreach (CDTPBCDMergeInterface *pbcdPlugin, pbcdMergePlugins) {
+        ui->comboBoxMergeMethod->addItem(pbcdPlugin->methodName());
+    }
+
+    foreach (CDTAutoThresholdInterface *pbcdPlugin, autoThresholdPlugins) {
+        ui->comboBoxAutoThresholdMethod->addItem(pbcdPlugin->methodName());
     }
 
     ui->pushButtonAutoBand->click();
@@ -74,6 +88,7 @@ void DialogPBCDBinary::onAddBandPair()
         return;
     ui->listWidgetBandPairs->addItem(newPair);
     updatePushbuttonRemoveAll();
+    updateGroupBoxMerge();
 }
 
 void DialogPBCDBinary::onAutoBand()
@@ -91,6 +106,8 @@ void DialogPBCDBinary::onAutoBand()
     }
 //    ui->listWidgetBandPairs->addItem("ave->ave");
     updatePushbuttonRemoveAll();
+    updateGroupBoxMerge();
+    updateDoubleThreshold();
 }
 
 void DialogPBCDBinary::onRemoveBands()
@@ -101,12 +118,14 @@ void DialogPBCDBinary::onRemoveBands()
         delete item;
     }
     updatePushbuttonRemoveAll();
+    updateGroupBoxMerge();
 }
 
 void DialogPBCDBinary::onSelectionChanged()
 {
     ui->pushButtonRemoveBands->setEnabled(ui->listWidgetBandPairs->selectedItems().size()!=0);
     updatePushbuttonRemoveAll();
+    updateGroupBoxMerge();
 }
 
 void DialogPBCDBinary::updatePushbuttonRemoveAll()
@@ -118,20 +137,35 @@ void DialogPBCDBinary::clearBandPairs()
 {
     ui->listWidgetBandPairs->clear();
     updatePushbuttonRemoveAll();
+    updateGroupBoxMerge();
+}
+
+void DialogPBCDBinary::updateGroupBoxMerge()
+{
+    isDoubleThreshold = ui->listWidgetBandPairs->count()<=1;
+    ui->groupBoxMerge->setEnabled(!isDoubleThreshold);
+    updateDoubleThreshold();
+}
+
+void DialogPBCDBinary::updateDoubleThreshold()
+{
+    ui->doubleSpinBoxMaxT->setEnabled(ui->groupBoxManualThreshold->isChecked() & isDoubleThreshold);
 }
 
 void DialogPBCDBinary::onAutoThresholdToggled(bool toggled)
 {
     ui->groupBoxManualThreshold->blockSignals(true);
     ui->groupBoxManualThreshold->setChecked(!toggled);
-    ui->groupBoxManualThreshold->blockSignals(false);
+    ui->groupBoxManualThreshold->blockSignals(false);    
+    updateDoubleThreshold();
 }
 
 void DialogPBCDBinary::onManualThresholdToggled(bool toggled)
 {
     ui->groupBoxAutoThreshold->blockSignals(true);
-    ui->groupBoxAutoThreshold->setChecked(!toggled);
-    ui->groupBoxAutoThreshold->blockSignals(false);
+    ui->groupBoxAutoThreshold->setChecked(!toggled);    
+    ui->groupBoxAutoThreshold->blockSignals(false);    
+    updateDoubleThreshold();
 }
 
 void DialogPBCDBinary::generateXML()
@@ -191,7 +225,10 @@ void DialogPBCDBinary::generateXML()
     diff_method.setAttribute("name",ui->comboBoxDiffMethod->currentText());
 //    diff_method.appendChild() //TODO: params
 
-    merge_method.setAttribute("name",ui->comboBoxMergeMethod->currentText());
+    if (ui->groupBoxMerge->isEnabled())
+        merge_method.setAttribute("name",ui->comboBoxMergeMethod->currentText());
+    else
+        merge_method.setAttribute("name","null");
 
     if (ui->groupBoxAutoThreshold->isChecked())
     {
@@ -202,7 +239,12 @@ void DialogPBCDBinary::generateXML()
     else
     {
         threshold.setAttribute("type","manual");
-        QDomText text = doc.createTextNode(ui->doubleSpinBoxMinT->text()+";"+ui->doubleSpinBoxMaxT->text());
+        QString textThreshold;
+        if (ui->doubleSpinBoxMaxT->isEnabled())
+            textThreshold = ui->doubleSpinBoxMinT->text() + ";" + ui->doubleSpinBoxMaxT->text();
+        else
+            textThreshold = ui->doubleSpinBoxMinT->text();
+        QDomText text = doc.createTextNode(textThreshold);
         threshold.appendChild(text);
     }
 

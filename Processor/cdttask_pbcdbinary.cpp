@@ -6,12 +6,17 @@
 #include "cdttaskmanager.h"
 #include "cdtprocessorapplication.h"
 #include "cdtpbcddiffinterface.h"
+#include "cdtpbcdmergeinterface.h"
+#include "cdtautothresholdinterface.h"
 #include "messagehandler.h"
 
 extern QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
+extern QList<CDTPBCDMergeInterface *>      pbcdMergePlugins;
+extern QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
 
 CDTTask_PBCDBinary::CDTTask_PBCDBinary(QString id,QDomDocument params, QObject *parent) :
-    CDTTask(id,params,parent),poT1DS(NULL),poT2DS(NULL),diffPlugin(NULL)
+    CDTTask(id,params,parent),poT1DS(NULL),poT2DS(NULL),diffPlugin(NULL),
+    mergePlugin(NULL),autoThresholdPlugin(NULL),isDoubleThreshold(false)
 {
     GDALAllRegister();
 }
@@ -61,13 +66,21 @@ void CDTTask_PBCDBinary::start()
         return;
     }
 
-    GDALDataset *poDiffDS = (GDALDataset *)(poDriver->Create(qApp->getTempFileName(".tif").toUtf8().constData(),
+    QString diffPath = qApp->getTempFileName(".tif");
+    GDALDataset *poDiffDS = (GDALDataset *)(poDriver->Create(diffPath.toUtf8().constData(),
                                                              nXSize,nYSize,bandPairs.size(),GDT_Float32,NULL));
     if (poDiffDS == NULL)
     {
         error(tr("Create diff image failed!"));
         return;
     }
+    qDebug()<<"diffPath:"<<diffPath;
+
+    double geoTransform[6];
+    poT1DS->GetGeoTransform(geoTransform);
+    poDiffDS->SetGeoTransform(geoTransform);
+    poDiffDS->SetProjection(poT1DS->GetProjectionRef());
+
 
     //3.Generate diff images;
     GDALDataset *poT1AveDS = NULL;
@@ -98,14 +111,61 @@ void CDTTask_PBCDBinary::start()
         poBands.append(qMakePair(poBand1,poBand2));
     }
 
-    qDebug()<<"lala0";
     errorText = diffPlugin->generateDiffImage(poBands,poDiffDS);
     if (!errorText.isEmpty())
     {
         error(errorText);
         return;
+    }    
+
+    //4.Merge
+    GDALDataset *poMergeDS = NULL;
+    if (isDoubleThreshold)
+    {
+        poMergeDS = poDiffDS;
     }
-    qDebug()<<"lala1";
+    else
+    {
+        QString mergePath = qApp->getTempFileName(".tif");
+        qDebug()<<"mergePath:"<<mergePath;
+        poMergeDS = (GDALDataset *)(poDriver->Create(mergePath.toUtf8().constData(),
+                                                                 nXSize,nYSize,1,GDT_Float32,NULL));
+        if (poMergeDS == NULL)
+        {
+            error(tr("Create merge image failed!"));
+            return;
+        }
+
+        merge(poDiffDS,poMergeDS);
+    }
+
+    //5.Threshold
+    if (!autoThreshold.isEmpty())//Auto
+    {
+        GDALRasterBand *poMergedBand = poMergeDS->GetRasterBand(1);
+        double dMinMax[2] = {0.0,255.0};
+        poMergedBand->ComputeRasterMinMax(false,dMinMax);
+        qDebug()<<"min:"<<dMinMax[0];
+        qDebug()<<"max:"<<dMinMax[1];
+
+        if (isDoubleThreshold)
+        {
+
+        }
+        else
+        {
+            QVector<int> histogram(256);
+            poMergedBand->GetHistogram(dMinMax[0],dMinMax[1],256,&histogram[0],false,false,NULL,NULL);
+//            int threshold = autoThreshold(histogram);
+            qDebug()<<"autoThresholdPlugins.size():"<<autoThresholdPlugins.size();
+        }
+    }
+
+    //6.Close
+
+    if (poDiffDS)GDALClose(poDiffDS);
+    if (!isDoubleThreshold)GDALClose(poMergeDS);
+
 
 //    qApp->returnDebugMessage("start");
 //    info.status = CDTTaskInfo::PROCESSING;
@@ -178,6 +238,7 @@ QString CDTTask_PBCDBinary::readParams()
 
         bandPair = bandPair.nextSiblingElement("band_pair");
     }
+    isDoubleThreshold = bandPairs.count()<=1;
 
     //3.radiometric_correction
     QDomElement radio = params_root.firstChildElement("radiometric_correction");
@@ -203,21 +264,52 @@ QString CDTTask_PBCDBinary::readParams()
         return tr("Plugin named %1 is not found").arg(diffMethod);
 
     //5.merge_method
-    QDomElement merge = params_root.firstChildElement("merge_method");
-    mergeMethod = merge.attribute("name");
+    if (!isDoubleThreshold)
+    {
+        QDomElement merge = params_root.firstChildElement("merge_method");
+        mergeMethod = merge.attribute("name");
+        if (!mergeMethod.isEmpty())
+        {
+            foreach (CDTPBCDMergeInterface *plugin, pbcdMergePlugins) {
+                if (plugin->methodName()==mergeMethod)
+                {
+                    mergePlugin = plugin;
+                }
+            }
+            if (mergePlugin == NULL)
+                return tr("Plugin named %1 is not found").arg(mergeMethod);
+        }
+    }
 
     //6.threshold
     QDomElement threshold = params_root.firstChildElement("threshold");
     if (threshold.attribute("type").toLower()=="auto")
     {
         autoThreshold = threshold.text();
+        foreach (CDTAutoThresholdInterface *plugin, autoThresholdPlugins) {
+            if (plugin->methodName()==autoThreshold)
+            {
+                autoThresholdPlugin = plugin;
+            }
+        }
+        if (autoThresholdPlugin == NULL)
+            return tr("Plugin named %1 is not found").arg(autoThreshold);
     }
     else
     {
         autoThreshold = QString::null;
-        QStringList thres = threshold.text().split(";");
-        minThreshold = thres[0].toDouble();
-        maxThreshold = thres[1].toDouble();
+        if (isDoubleThreshold)
+        {
+            QStringList thres = threshold.text().split(";");
+            double t1 = thres[0].toDouble();
+            double t2 = thres[1].toDouble();
+            positiveThreshold = qMax(t1,t2);
+            negetiveThreshold = qMin(t1,t2);
+        }
+        else
+        {
+            positiveThreshold = threshold.text().toDouble();
+        }
     }
     return QString::null;
 }
@@ -228,7 +320,6 @@ GDALDataset *CDTTask_PBCDBinary::generateAveImage(GDALDriver *poDriver,GDALDatas
     int nYSize = poSrcDS->GetRasterYSize();
     GDALDataType dataType = poT1DS->GetRasterBand(1)->GetRasterDataType();
     int dataSize = GDALGetDataTypeSize(dataType)/8;
-
 
     GDALDataset *poAveDS = (GDALDataset *)(poDriver->Create(qApp->getTempFileName(".tif").toUtf8().constData(),
                                                              nXSize,nYSize,1,GDT_Float32,NULL));
@@ -256,3 +347,22 @@ GDALDataset *CDTTask_PBCDBinary::generateAveImage(GDALDriver *poDriver,GDALDatas
     delete []buffer;
     return poAveDS;
 }
+
+void CDTTask_PBCDBinary::merge(GDALDataset *poDS,GDALDataset *poMerged)
+{
+    int nXSize = poDS->GetRasterXSize();
+    int nYSize = poDS->GetRasterYSize();
+    int bandCount = poDS->GetRasterCount();
+
+    QVector<float> buffer(bandCount);
+    for (int i=0;i<nYSize;++i)
+    {
+        for(int j=0;j<nXSize;++j)
+        {
+            poDS->RasterIO(GF_Read,j,i,1,1,&buffer[0],1,1,GDT_Float32,bandCount,NULL,0,0,0);
+            float result = mergePlugin->merge(buffer);
+            poMerged->GetRasterBand(1)->RasterIO(GF_Write,j,i,1,1,&result,1,1,GDT_Float32,0,0);
+        }
+    }
+}
+

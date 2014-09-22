@@ -5,4 +5,6 @@ SUBDIRS += \
     Attributes \
     Classifier\
     Extraction \
-    PBCDDiffMethod
+    PBCDDiffMethod\
+	PBCDMergeMethod\
+	AutoThreshold

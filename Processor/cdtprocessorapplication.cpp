@@ -4,10 +4,14 @@
 
 #include "cdtpluginloader.h"
 #include "cdtpbcddiffinterface.h"
+#include "cdtpbcdmergeinterface.h"
+#include "cdtautothresholdinterface.h"
 #include "cdttaskmanager.h"
 #include "cdttask.h"
 
 QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
+QList<CDTPBCDMergeInterface *>      pbcdMergePlugins;
+QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
 
 CDTProcessorApplication::CDTProcessorApplication(int &argc, char **argv) :
     QCoreApplication(argc,argv),
@@ -36,8 +40,9 @@ QString CDTProcessorApplication::getTempFileName(QString suffix)
 
 void CDTProcessorApplication::initPlugins()
 {
-    pbcdDiffPlugins     = CDTPluginLoader<CDTPBCDDiffInterface>::getPlugins();
-    qDebug()<<pbcdDiffPlugins.size();
+    pbcdDiffPlugins      = CDTPluginLoader<CDTPBCDDiffInterface>::getPlugins();
+    pbcdMergePlugins     = CDTPluginLoader<CDTPBCDMergeInterface>::getPlugins();
+    autoThresholdPlugins =CDTPluginLoader<CDTAutoThresholdInterface>::getPlugins();
 }
 
 void CDTProcessorApplication::readCommand()

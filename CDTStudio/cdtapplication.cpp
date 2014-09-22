@@ -7,6 +7,8 @@
 #include "cdtclassifierinterface.h"
 #include "cdtextractioninterface.h"
 #include "cdtpbcddiffinterface.h"
+#include "cdtpbcdmergeinterface.h"
+#include "cdtautothresholdinterface.h"
 
 QList<CDTSegmentationInterface *>   segmentationPlugins;
 QList<CDTAttributesInterface *>     attributesPlugins;
@@ -14,6 +16,8 @@ QList<CDTClassifierInterface *>     classifierPlugins;
 QList<CDTExtractionInterface *>     extractionPlugins;
 
 QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
+QList<CDTPBCDMergeInterface *>      pbcdMergePlugins;
+QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
 
 CDTApplication::CDTApplication(int & argc, char ** argv) :
     QgsApplication(argc, argv,true),
@@ -133,11 +137,8 @@ void CDTApplication::initPlugins()
     extractionPlugins   = CDTPluginLoader<CDTExtractionInterface>::getPlugins();
 
     pbcdDiffPlugins     = CDTPluginLoader<CDTPBCDDiffInterface>::getPlugins();
-
-    qDebug()<<"segmentationPlugins:"<<segmentationPlugins.size();
-    qDebug()<<"extractionPlugins:"<<extractionPlugins.size();
-    qDebug()<<"pbcdDiffPlugins:"<<pbcdDiffPlugins.size();
-
+    pbcdMergePlugins    = CDTPluginLoader<CDTPBCDMergeInterface>::getPlugins();
+    autoThresholdPlugins= CDTPluginLoader<CDTAutoThresholdInterface>::getPlugins();
 }
 
 bool CDTApplication::initDatabase()
