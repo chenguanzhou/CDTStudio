@@ -17,7 +17,11 @@ public:
     Otsu(QObject *parent = 0);
 
     QString methodName()const;
-    int autoThreshold(QVector<int> histogram);
+    float autoThreshold(QVector<int> data);
+
+private:
+    float var(const QVector<int> &data, int from, int to, float mean);
+    float ratio(int count1,int count2,float var1,float var2,float mean1,float mean2);
 };
 
 #endif // GENERICPLUGIN_H

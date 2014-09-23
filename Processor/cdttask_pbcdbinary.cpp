@@ -150,14 +150,22 @@ void CDTTask_PBCDBinary::start()
 
         if (isDoubleThreshold)
         {
-
+            QVector<int> histogramPositive(256),histogramNegetive(256);
+            poMergedBand->GetHistogram(0,dMinMax[1],256,&histogramPositive[0],false,false,NULL,NULL);
+            poMergedBand->GetHistogram(dMinMax[0],0,256,&histogramNegetive[0],false,false,NULL,NULL);
+            positiveThreshold = autoThresholdPlugin->autoThreshold(histogramPositive)*(dMinMax[1]-0)/256.;
+            negetiveThreshold = autoThresholdPlugin->autoThreshold(histogramNegetive)*(0-dMinMax[0])/256.+dMinMax[0];
+            qDebug()<<"double threshold:";
+            qDebug()<<QString("Min: %1\tMax: %2\tPosetiveThreshold: %3\tNegetiveThreshold: %4")
+                      .arg(dMinMax[0]).arg(dMinMax[1]).arg(positiveThreshold).arg(negetiveThreshold);
         }
         else
         {
             QVector<int> histogram(256);
             poMergedBand->GetHistogram(dMinMax[0],dMinMax[1],256,&histogram[0],false,false,NULL,NULL);
-//            int threshold = autoThreshold(histogram);
-            qDebug()<<"autoThresholdPlugins.size():"<<autoThresholdPlugins.size();
+            positiveThreshold = autoThresholdPlugin->autoThreshold(histogram)*(dMinMax[1]-dMinMax[0])/256.+dMinMax[0];
+            qDebug()<<"single threshold:";
+            qDebug()<<QString("Min: %1\tMax: %2\tThreshold: %3").arg(dMinMax[0]).arg(dMinMax[1]).arg(positiveThreshold);
         }
     }
 

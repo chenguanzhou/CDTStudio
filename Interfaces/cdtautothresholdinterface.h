@@ -14,7 +14,7 @@ public:
 
     virtual QString methodName()const =0;
 
-    virtual int autoThreshold(QVector<int> histogram) =0;
+    virtual float autoThreshold(QVector<int> histogram) =0;
 };
 
 Q_DECLARE_INTERFACE(CDTAutoThresholdInterface,"cn.edu.WHU.CDTStudio.CDTAutoThresholdInterface/1.0")
