@@ -64,6 +64,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this,SIGNAL(updateSetting()),supervisor,SLOT(updateSetting()));
 
     connect(qApp,SIGNAL(taskInfoUpdated(QString ,int ,QString ,int ,int )),dockWIdgetTask,SLOT(updateTaskInfo(QString,int,QString,int,int)));
+    connect(qApp,SIGNAL(taskCompleted(QString ,QByteArray )),dockWIdgetTask,SLOT(onTaskCompleted(QString ,QByteArray)));
 
     QSettings setting("WHU","CDTStudio");
     this->restoreGeometry(setting.value("geometry").toByteArray());
@@ -238,7 +239,7 @@ void MainWindow::initDockWidgets()
 
     dockWIdgetTask = new CDTTaskDockWidget(this);
     dockWIdgetTask->setObjectName("dockWIdgetTask");
-    registerDocks(Qt::BottomDockWidgetArea,dockWIdgetTask);
+    registerDocks(Qt::AllDockWidgetAreas,dockWIdgetTask);
 }
 
 void MainWindow::initConsole()

@@ -28,6 +28,7 @@ public:
 
 signals:
     void taskInfoUpdated(QString id,CDTTaskInfo taskInfo);
+    void taskCompleted(QString id,QByteArray result);
 public slots:
     virtual void start() =0;
     void error(QString errorText);

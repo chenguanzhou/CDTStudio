@@ -31,6 +31,7 @@ CDTProcessorApplication::CDTProcessorApplication(int &argc, char **argv) :
 
     connect(taskManager,SIGNAL(taskAppended(QString)),SLOT(onTaskAppended(QString)));
     connect(taskManager,SIGNAL(taskInfoUpdated(QString,CDTTaskInfo)),SLOT(onTaskInfoUpdated(QString,CDTTaskInfo)));
+    connect(taskManager,SIGNAL(taskCompleted(QString,QByteArray)),SLOT(onTaskCompleted(QString,QByteArray)));
 }
 
 QString CDTProcessorApplication::getTempFileName(QString suffix)
@@ -135,6 +136,14 @@ void CDTProcessorApplication::returnTaskInfo(QString id, CDTTaskInfo info)
     udpSender->writeDatagram(toReturn,QHostAddress::LocalHost,portDownload);
 }
 
+void CDTProcessorApplication::returnTaskResult(QString id, QByteArray data)
+{
+    QByteArray toReturn;
+    QDataStream stream(&toReturn,QFile::ReadWrite);
+    stream<<QString("TaskResult")<<id<<data;
+    udpSender->writeDatagram(toReturn,QHostAddress::LocalHost,portDownload);
+}
+
 void CDTProcessorApplication::onTaskAppended(QString id)
 {
 
@@ -143,4 +152,9 @@ void CDTProcessorApplication::onTaskAppended(QString id)
 void CDTProcessorApplication::onTaskInfoUpdated(QString id, CDTTaskInfo info)
 {
     returnTaskInfo(id,info);
+}
+
+void CDTProcessorApplication::onTaskCompleted(QString id, QByteArray result)
+{
+    returnTaskResult(id,result);
 }

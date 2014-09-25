@@ -15,7 +15,6 @@ class QUdpSocket;
 #define qApp (static_cast<CDTApplication *>(QCoreApplication::instance()))
 
 
-
 class CDTApplication : public QgsApplication
 {
     Q_OBJECT
@@ -26,6 +25,7 @@ public:
     static QString getStyleSheetByName(QString styleName);
 signals:
     void taskInfoUpdated(QString id,int status,QString currentStep,int currentProgress,int totalProgress);
+    void taskCompleted(QString id,QByteArray result);
 
 public slots:
     void sendTask(const QByteArray &data);
@@ -42,7 +42,7 @@ private:
     QUdpSocket* udpReceiver;
     QUdpSocket* udpSender;
     qint16 portUpload;
-    qint16 portDownload;
+    qint16 portDownload;    
 };
 
 #endif // CDTAPPLICATION_H

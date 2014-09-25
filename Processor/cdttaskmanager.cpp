@@ -10,7 +10,7 @@ CDTTaskManager::CDTTaskManager(QObject *parent) :
 {
     CDTTaskManager::registerTask("PBCD_Binary",CDTTask_PBCDBinary::staticMetaObject);
 
-    connect(this,SIGNAL(taskInfoUpdated(QString,CDTTaskInfo)),SLOT(onTaskInfoUpdated(QString,CDTTaskInfo)));
+    connect(this,SIGNAL(taskCompleted(QString,QByteArray)),SLOT(onTaskCompleted(QString,QByteArray)));
 }
 
 void CDTTaskManager::registerTask(QString taskName,QMetaObject metaObj)
@@ -31,6 +31,7 @@ bool CDTTaskManager::appendNewTask(QString name, QString id, QDomDocument params
         }
         tasks.insert(id,newTask);
         connect(newTask,SIGNAL(taskInfoUpdated(QString,CDTTaskInfo)),this,SIGNAL(taskInfoUpdated(QString,CDTTaskInfo)));
+        connect(newTask,SIGNAL(taskCompleted(QString,QByteArray)),this,SIGNAL(taskCompleted(QString,QByteArray)));
 
         waitingTasksQueue.enqueue(id);
         emit taskAppended(id);
@@ -53,21 +54,19 @@ bool CDTTaskManager::appendNewTask(QString name, QString id, QDomDocument params
         return false;
     }
 }
+
 void CDTTaskManager::queryTaskInfo(QString id)
 {
 
 }
 
-void CDTTaskManager::onTaskInfoUpdated(QString id, CDTTaskInfo info)
+void CDTTaskManager::onTaskCompleted(QString id, QByteArray result)
 {
-    if (info.status==CDTTaskInfo::COMPLETED)
+    currentTaskID.clear();
+    if (!waitingTasksQueue.empty())
     {
-        currentTaskID.clear();
-        if (!waitingTasksQueue.empty())
-        {
-            QString newID = waitingTasksQueue.dequeue();
-            currentTaskID = newID;
-            tasks.value(newID)->start();
-        }
+        QString newID = waitingTasksQueue.dequeue();
+        currentTaskID = newID;
+        tasks.value(newID)->start();
     }
 }

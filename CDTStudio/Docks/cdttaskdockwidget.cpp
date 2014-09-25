@@ -3,6 +3,16 @@
 #include <QTableView>
 #include <QPushButton>
 
+CDTTaskReply::CDTTaskReply(QObject *parent)
+    :QObject(parent){
+}
+
+void CDTTaskReply::sendCompleteSignal(QByteArray result) {
+    qDebug()<<"CDTTaskReply::sendCompleteSignal(QByteArray result)";
+    emit completed(result);
+}
+
+
 CDTTaskDockWidget::CDTTaskDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
     tableView(new QTableView(this)),
@@ -18,9 +28,10 @@ CDTTaskDockWidget::CDTTaskDockWidget(QWidget *parent) :
 
 CDTTaskDockWidget::~CDTTaskDockWidget()
 {
+    taskReplies.clear();
 }
 
-void CDTTaskDockWidget::appendNewTask(QString id, QString name, QString projectID)
+CDTTaskReply* CDTTaskDockWidget::appendNewTask(QString id, QString name, QString projectID)
 {
     model->appendRow(QList<QStandardItem*>()
                      <<new QStandardItem(id)
@@ -31,6 +42,19 @@ void CDTTaskDockWidget::appendNewTask(QString id, QString name, QString projectI
                      <<new QStandardItem("0")
                      <<new QStandardItem("0")
                      <<new QStandardItem());
+    CDTTaskReply *reply = new CDTTaskReply();
+    taskReplies.insert(QUuid(id),reply);
+    return reply;
+}
+
+void CDTTaskDockWidget::setCurrentLayer(CDTBaseLayer *layer)
+{
+    Q_UNUSED(layer);
+}
+
+void CDTTaskDockWidget::onCurrentProjectClosed()
+{
+
 }
 
 void CDTTaskDockWidget::updateTaskInfo(QString id, int status, QString currentStep, int currentProgress, int totalProgress)
@@ -43,12 +67,10 @@ void CDTTaskDockWidget::updateTaskInfo(QString id, int status, QString currentSt
     model->setData(model->index(row,6),totalProgress);
 }
 
-void CDTTaskDockWidget::setCurrentLayer(CDTBaseLayer *layer)
+void CDTTaskDockWidget::onTaskCompleted(QString id, QByteArray result)
 {
-
-}
-
-void CDTTaskDockWidget::onCurrentProjectClosed()
-{
-
+    qDebug()<<"CDTTaskDockWidget::onTaskCompleted(QString id, QByteArray result)";
+    CDTTaskReply *reply = taskReplies.value(QUuid(id),NULL);
+    reply->sendCompleteSignal(result);
+//    taskReplies.remove(QUuid(id));
 }

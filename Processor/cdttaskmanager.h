@@ -21,8 +21,9 @@ public:
 signals:
     void taskAppended(QString id);
     void taskInfoUpdated(QString id,CDTTaskInfo info);
+    void taskCompleted(QString id,QByteArray result);
 public slots:
-    void onTaskInfoUpdated(QString id,CDTTaskInfo info);
+    void onTaskCompleted(QString id,QByteArray result);
 private:
     QMap<QString,CDTTask*> tasks;
     QString currentTaskID;

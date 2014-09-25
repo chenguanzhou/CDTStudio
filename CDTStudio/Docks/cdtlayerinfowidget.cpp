@@ -7,7 +7,7 @@ CDTLayerInfoWidget::CDTLayerInfoWidget(QWidget *parent) :
     propertyWidget(new QPropertyEditorWidget(this))
 {
     QWidget *widget = new QWidget(this);
-    QVBoxLayout *vbox = new QVBoxLayout(this);
+    QVBoxLayout *vbox = new QVBoxLayout(widget);
     vbox->addWidget(propertyWidget);
     widget->setLayout(vbox);
     this->setWidget(widget);

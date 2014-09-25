@@ -1,4 +1,4 @@
-#ifndef CDTPROCESSORAPPLICATION_H
+ #ifndef CDTPROCESSORAPPLICATION_H
 #define CDTPROCESSORAPPLICATION_H
 
 #include <QCoreApplication>
@@ -29,9 +29,11 @@ public slots:
     void parseCommand(QByteArray data);
     void returnDebugMessage(QString msg);
     void returnTaskInfo(QString id, CDTTaskInfo info);
+    void returnTaskResult(QString id,QByteArray data);
 
     void onTaskAppended(QString id);
     void onTaskInfoUpdated(QString id,CDTTaskInfo info);
+    void onTaskCompleted(QString id,QByteArray result);
 
 private:
     qint16 portUpload;

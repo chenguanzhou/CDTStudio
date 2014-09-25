@@ -174,6 +174,11 @@ void CDTTask_PBCDBinary::start()
     if (poDiffDS)GDALClose(poDiffDS);
     if (!isDoubleThreshold)GDALClose(poMergeDS);
 
+    QByteArray result;
+    QDataStream out(&result,QFile::WriteOnly);
+    out<<positiveThreshold<<negetiveThreshold;
+    emit taskCompleted(id,result);
+
 
 //    qApp->returnDebugMessage("start");
 //    info.status = CDTTaskInfo::PROCESSING;
@@ -185,9 +190,9 @@ void CDTTask_PBCDBinary::start()
 //        emit taskInfoUpdated(id,info);
 //    }
 
-    info.currentProgress = info.totalProgress = 100;
-    info.status = CDTTaskInfo::COMPLETED;
-    emit taskInfoUpdated(id,info);
+//    info.currentProgress = info.totalProgress = 100;
+//    info.status = CDTTaskInfo::COMPLETED;
+//    emit taskInfoUpdated(id,info);
 }
 
 bool CDTTask_PBCDBinary::validateParams()

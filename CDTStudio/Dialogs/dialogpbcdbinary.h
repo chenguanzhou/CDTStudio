@@ -38,6 +38,8 @@ private slots:
 
     void generateXML();
 
+    void onCompleted(QByteArray result);
+
 private:
     Ui::DialogPBCDBinary *ui;
 

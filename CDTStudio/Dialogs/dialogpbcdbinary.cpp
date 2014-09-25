@@ -3,6 +3,7 @@
 #include "stable.h"
 #include "cdtapplication.h"
 #include "mainwindow.h"
+#include "cdttaskdockwidget.h"
 
 #include "dialogpbcdaddbandpair.h"
 #include "cdtpbcddiffinterface.h"
@@ -249,5 +250,16 @@ void DialogPBCDBinary::generateXML()
     }
 
     qApp->sendTask( doc.toByteArray() ) ;
-    MainWindow::getTaskDockWIdget()->appendNewTask(id,name,prjID.toString());
+    CDTTaskReply *reply = MainWindow::getTaskDockWIdget()->appendNewTask(id,name,prjID.toString());
+    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(onCompleted(QByteArray)));    
+}
+
+void DialogPBCDBinary::onCompleted(QByteArray result)
+{
+    qDebug()<<"DialogPBCDBinary::onCompleted(QByteArray result)";
+    QDataStream in(result);
+    double posT,negT;
+    in>>posT>>negT;
+    qDebug()<<QString("posT: %1\tnegT: %2").arg(posT).arg(negT);
+    deleteLater();
 }

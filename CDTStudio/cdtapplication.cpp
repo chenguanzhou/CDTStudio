@@ -126,6 +126,14 @@ void CDTApplication::readMessage()
             in>>id>>status>>currentStep>>currentProgress>>totalProgress;
             emit taskInfoUpdated(id,status,currentStep,currentProgress,totalProgress);
         }
+        else if (flag.toLower()=="taskresult")
+        {
+            QString id;
+            QByteArray result;
+            in>>id>>result;
+            emit taskInfoUpdated(id,2,tr("finished"),100,100);
+            emit taskCompleted(id,result);
+        }
     }
 }
 
