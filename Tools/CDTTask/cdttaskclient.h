@@ -1,12 +1,11 @@
 #ifndef CDTTASKCLIENT_H
 #define CDTTASKCLIENT_H
 
-#include "cdttaskclient_global.h"
-#include "cdttask.h"
+#include "cdttask_global.h"
 #include <QObject>
 
 class QUdpSocket;
-class CDTTASKCLIENTSHARED_EXPORT CDTTaskClient:public QObject
+class CDTTASKSHARED_EXPORT CDTTaskClient:public QObject
 {
     Q_OBJECT
 public:

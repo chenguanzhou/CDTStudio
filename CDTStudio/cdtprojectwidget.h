@@ -1,15 +1,12 @@
 #ifndef CDTPROJECTWIDGET_H
 #define CDTPROJECTWIDGET_H
 
-#include <QPoint>
-#include <QModelIndex>
-#include <QFile>
-#include <QWidget>
 #include <qgsmapcanvas.h>
 #include <qgsmaptool.h>
 #include "cdtprojectlayer.h"
 #include "mainwindow.h"
 
+class QStandardItemModel;
 class CDTProjectWidget : public QWidget
 {
     Q_OBJECT
@@ -31,7 +28,7 @@ public:
 signals:
     void projectChanged();
 public slots:
-    void onContextMenu(QPoint, QModelIndex index);
+//    void onContextMenu(QPoint, QModelIndex index);
     void onProjectChanged();
     bool saveProject(QString &path);
 
@@ -42,7 +39,9 @@ public slots:
     void appendLayers(QList<QgsMapLayer*> layers);
     void removeLayer(QList<QgsMapLayer*> layer);
     void refreshMapCanvas(bool zoomToFullExtent=true);
-    void onItemChanged(QStandardItem*item);
+
+    void onObjectItemChanged(QStandardItem* item);
+    void onChangesItemChanged(QStandardItem* item);
 
 private slots:
     void untoggledToolBar();
@@ -50,7 +49,8 @@ private slots:
 private:
     CDTProjectLayer *project;
     QFile file;
-    QStandardItemModel* treeModel;
+    QStandardItemModel *treeModelObject;
+    QStandardItemModel *treeModelChanges;
 
     QgsMapCanvas* mapCanvas;
     QToolBar *initToolBar();

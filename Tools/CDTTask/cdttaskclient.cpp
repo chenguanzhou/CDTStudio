@@ -19,7 +19,7 @@ bool CDTTaskClient::sendNewTask(const QByteArray &data)
 {
     QByteArray toSend;
     QDataStream stream(&toSend,QFile::ReadWrite);
-    stream<<QString("CDTData")<<data;
+    stream<<QString("CDTTask")<<data;
     if (udpSender->writeDatagram(toSend,QHostAddress::LocalHost,portUpload)==-1)
     {
         qWarning()<<"Upload failed!";

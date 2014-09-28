@@ -256,10 +256,11 @@ void DialogPBCDBinary::generateXML()
 
 void DialogPBCDBinary::onCompleted(QByteArray result)
 {
-    qDebug()<<"DialogPBCDBinary::onCompleted(QByteArray result)";
-    QDataStream in(result);
-    double posT,negT;
-    in>>posT>>negT;
-    qDebug()<<QString("posT: %1\tnegT: %2").arg(posT).arg(negT);
+    QDataStream in(result);    
+    QList<double> thresholds;
+    QString diffPath;
+    in>>thresholds>>diffPath;
+    qDebug()<<"thresolds: "<<thresholds<<"diff path: "<<diffPath;
+
     deleteLater();
 }

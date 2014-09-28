@@ -8,11 +8,14 @@
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
     project(NULL),
-    treeModel(new QStandardItemModel(this)),
+    treeModelObject(new QStandardItemModel(this)),
+    treeModelChanges(new QStandardItemModel(this)),
     mapCanvas(new QgsMapCanvas(this,"mapCanvas"))
 {
 //    treeModel->setHorizontalHeaderLabels(QStringList()<<tr("Layer")<<tr("Value"));
-    connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));    
+    connect(treeModelObject,SIGNAL(itemChanged(QStandardItem*)),SLOT(onObjectItemChanged(QStandardItem*)));
+    connect(treeModelChanges,SIGNAL(itemChanged(QStandardItem*)),SLOT(onChangesItemChanged(QStandardItem*)));
+
     connect(this,SIGNAL(projectChanged()),this,SLOT(onProjectChanged()));
     connect(mapCanvas,SIGNAL(xyCoordinates(QgsPoint)),MainWindow::getMainWindow(),SLOT(showMouseCoordinate(QgsPoint)));
     connect(mapCanvas,SIGNAL(scaleChanged(double)),MainWindow::getMainWindow(),SLOT(showScale(double)));
@@ -36,20 +39,13 @@ CDTProjectWidget::~CDTProjectWidget()
     file.close();
 }
 
-void CDTProjectWidget::onContextMenu(QPoint , QModelIndex index)
-{
-    CDTProjectTreeItem *item =(CDTProjectTreeItem*)treeModel->itemFromIndex(index);
-    if(item ==NULL)
-        return;
-//    int type = item->getType();
-
-
-    CDTBaseLayer* correspondingObject = item->correspondingObject();
-    if (correspondingObject)
-    {
-        correspondingObject->onContextMenuRequest(this);
-    }
-}
+//void CDTProjectWidget::onContextMenu(QPoint , QModelIndex index)
+//{
+//    CDTProjectTreeItem *item =(CDTProjectTreeItem*)treeModelObject->itemFromIndex(index);
+//    if(item ==NULL)
+//        return;
+////    int type = item->getType();
+//}
 
 bool CDTProjectWidget::readProject(const QString &filepath)
 {
@@ -218,7 +214,7 @@ void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
         mapCanvas->zoomToFullExtent();
 }
 
-void CDTProjectWidget::onItemChanged(QStandardItem *item)
+void CDTProjectWidget::onObjectItemChanged(QStandardItem *item)
 {
     //layer visible
     CDTProjectTreeItem* treeItem = (CDTProjectTreeItem*)item;
@@ -227,6 +223,11 @@ void CDTProjectWidget::onItemChanged(QStandardItem *item)
         layersVisible[treeItem->mapLayer()] = treeItem->checkState()==Qt::Checked;
         refreshMapCanvas(false);
     }
+}
+
+void CDTProjectWidget::onChangesItemChanged(QStandardItem *item)
+{
+
 }
 
 QToolBar *CDTProjectWidget::initToolBar()
@@ -291,7 +292,7 @@ void CDTProjectWidget::createProject(QUuid id)
     connect(project,SIGNAL(appendLayers(QList<QgsMapLayer*>)),this,SLOT(appendLayers(QList<QgsMapLayer*>)));
     connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
 
-    treeModel->appendRow(project->standardKeyItem());
+    treeModelObject->appendRow(project->standardKeyItem());
 }
 
 void CDTProjectWidget::untoggledToolBar()

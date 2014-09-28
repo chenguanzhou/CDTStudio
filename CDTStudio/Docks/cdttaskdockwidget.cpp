@@ -8,7 +8,6 @@ CDTTaskReply::CDTTaskReply(QObject *parent)
 }
 
 void CDTTaskReply::sendCompleteSignal(QByteArray result) {
-    qDebug()<<"CDTTaskReply::sendCompleteSignal(QByteArray result)";
     emit completed(result);
 }
 
@@ -69,7 +68,6 @@ void CDTTaskDockWidget::updateTaskInfo(QString id, int status, QString currentSt
 
 void CDTTaskDockWidget::onTaskCompleted(QString id, QByteArray result)
 {
-    qDebug()<<"CDTTaskDockWidget::onTaskCompleted(QString id, QByteArray result)";
     CDTTaskReply *reply = taskReplies.value(QUuid(id),NULL);
     reply->sendCompleteSignal(result);
 //    taskReplies.remove(QUuid(id));

@@ -66,9 +66,9 @@ void CDTProcessorApplication::parseCommand(QByteArray data)
     QString flag;
     QByteArray xmlContent;
     in>>flag;
-    if (flag != "CDTData")
+    if (flag != "CDTTask")
     {
-        returnDebugMessage("Flag is not CDTData");
+        returnDebugMessage("Flag is not CDTTask");
         return;
     }
 

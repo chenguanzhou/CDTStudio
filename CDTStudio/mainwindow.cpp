@@ -338,7 +338,7 @@ void MainWindow::onCurrentTabChanged(int i)
     }
 
     CDTProjectWidget* projectWidget = (CDTProjectWidget*)(ui->tabWidgetProject->currentWidget());
-    ui->treeViewObjects->setModel(projectWidget->treeModel);
+    ui->treeViewObjects->setModel(projectWidget->treeModelObject);
     ui->treeViewObjects->expandAll();
     ui->treeViewObjects->resizeColumnToContents(0);
     if (getCurrentMapCanvas())
@@ -471,7 +471,17 @@ void MainWindow::on_treeViewObjects_customContextMenuRequested(const QPoint &pos
     CDTProjectWidget* curwidget =(CDTProjectWidget*) ui->tabWidgetProject->currentWidget();
     if(curwidget == NULL)
         return;
-    curwidget->onContextMenu(pos,index);
+//    curwidget->onContextMenu(pos,index);
+
+    CDTProjectTreeItem *item =static_cast<CDTProjectTreeItem *>(static_cast<QStandardItemModel *>(ui->treeViewObjects->model())->itemFromIndex(index));
+    if(item ==NULL)
+        return;
+    CDTBaseLayer* correspondingObject = item->correspondingObject();
+    if (correspondingObject)
+    {
+        correspondingObject->onContextMenuRequest(this);
+    }
+
     ui->treeViewObjects->expandAll();
 }
 

@@ -176,7 +176,9 @@ void CDTTask_PBCDBinary::start()
 
     QByteArray result;
     QDataStream out(&result,QFile::WriteOnly);
-    out<<positiveThreshold<<negetiveThreshold;
+    QList<double> thresholds;
+    thresholds<<positiveThreshold<<negetiveThreshold;
+    out<<thresholds<<diffPath;
     emit taskCompleted(id,result);
 
 
