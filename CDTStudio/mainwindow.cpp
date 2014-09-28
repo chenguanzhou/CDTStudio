@@ -332,6 +332,7 @@ void MainWindow::onCurrentTabChanged(int i)
     if(i<0)
     {
         ui->treeViewObjects->setModel(NULL);
+        ui->treeViewChanges->setModel(NULL);
         lineEditCoord->setText(QString::null);
         scaleEdit->lineEdit()->setText(QString::null);
         return ;
@@ -339,6 +340,7 @@ void MainWindow::onCurrentTabChanged(int i)
 
     CDTProjectWidget* projectWidget = (CDTProjectWidget*)(ui->tabWidgetProject->currentWidget());
     ui->treeViewObjects->setModel(projectWidget->treeModelObject);
+    ui->treeViewChanges->setModel(projectWidget->treeModelChanges);
     ui->treeViewObjects->expandAll();
     ui->treeViewObjects->resizeColumnToContents(0);
     if (getCurrentMapCanvas())

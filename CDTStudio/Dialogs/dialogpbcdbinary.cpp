@@ -261,6 +261,5 @@ void DialogPBCDBinary::onCompleted(QByteArray result)
     QString diffPath;
     in>>thresholds>>diffPath;
     qDebug()<<"thresolds: "<<thresholds<<"diff path: "<<diffPath;
-
     deleteLater();
 }
