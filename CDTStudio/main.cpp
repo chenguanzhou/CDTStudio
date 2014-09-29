@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "cdtapplication.h"
+#include <QObject>
 
 //TODO  Some QButtonGroup
 //TODO  Project tree Checkbox

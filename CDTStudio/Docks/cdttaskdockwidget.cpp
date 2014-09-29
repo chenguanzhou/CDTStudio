@@ -17,6 +17,7 @@ CDTTaskDockWidget::CDTTaskDockWidget(QWidget *parent) :
     tableView(new QTableView(this)),
     model(new QStandardItemModel(this))
 {
+    this->setWindowFlags(Qt::FramelessWindowHint|Qt::Tool| Qt::X11BypassWindowManagerHint);
     this->setWindowTitle(tr("Tasks"));
     this->setWidget(tableView);
     tableView->setModel(model);

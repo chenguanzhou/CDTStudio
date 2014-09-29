@@ -90,8 +90,12 @@ private slots:
     void on_treeViewObjects_customContextMenuRequested(const QPoint &pos);
     void on_treeViewObjects_clicked(const QModelIndex &index);
 
+    void updateTaskDock();
+
 protected:
-    void closeEvent(QCloseEvent *event);
+    void moveEvent(QMoveEvent *e);
+    void resizeEvent(QResizeEvent *e);
+    void closeEvent(QCloseEvent *e);
 
 
 private:
@@ -101,7 +105,7 @@ private:
     CDTExtractionDockWidget *dockWidgetExtraction;
     CDTUndoWidget           *dockWidgetUndo;
     CDTLayerInfoWidget      *dockWidgetLayerInfo;
-    CDTTaskDockWidget       *dockWIdgetTask;
+    CDTTaskDockWidget       *dockWidgetTask;
 
     QAction *actionNew;
     QAction *actionOpen;
