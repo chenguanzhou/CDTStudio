@@ -19,7 +19,8 @@ DialogPBCDBinary::DialogPBCDBinary(QUuid projectID, QWidget *parent) :
     ui(new Ui::DialogPBCDBinary),
     prjID(projectID),
     modelImage(new QSqlQueryModel(this)),
-    isDoubleThreshold(false)
+    isDoubleThreshold(false),
+    reply(NULL)
 {
     ui->setupUi(this);
 
@@ -62,6 +63,13 @@ DialogPBCDBinary::DialogPBCDBinary(QUuid projectID, QWidget *parent) :
 DialogPBCDBinary::~DialogPBCDBinary()
 {
     delete ui;
+}
+
+CDTTaskReply* DialogPBCDBinary::startBinaryPBCD(QUuid prjID)
+{
+    DialogPBCDBinary dlg(prjID);//TODO: maybe a bug when dialog turn to unmodal dialog
+    dlg.exec();
+    return dlg.reply;
 }
 
 void DialogPBCDBinary::onT1ImageChanged(int row)
@@ -250,16 +258,16 @@ void DialogPBCDBinary::generateXML()
     }
 
     qApp->sendTask( doc.toByteArray() ) ;
-    CDTTaskReply *reply = MainWindow::getTaskDockWIdget()->appendNewTask(id,name,prjID.toString());
-    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(onCompleted(QByteArray)));    
+    reply = MainWindow::getTaskDockWIdget()->appendNewTask(id,name,prjID.toString());
+//    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(onCompleted(QByteArray)));
 }
 
-void DialogPBCDBinary::onCompleted(QByteArray result)
-{
-    QDataStream in(result);    
-    QList<double> thresholds;
-    QString diffPath;
-    in>>thresholds>>diffPath;
-    qDebug()<<"thresolds: "<<thresholds<<"diff path: "<<diffPath;
-    deleteLater();
-}
+//void DialogPBCDBinary::onCompleted(QByteArray result)
+//{
+//    QDataStream in(result);
+//    QList<double> thresholds;
+//    QString diffPath;
+//    in>>thresholds>>diffPath;
+//    qDebug()<<"thresolds: "<<thresholds<<"diff path: "<<diffPath;
+//    deleteLater();
+//}

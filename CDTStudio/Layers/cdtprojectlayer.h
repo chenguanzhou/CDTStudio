@@ -22,10 +22,10 @@ public:
     friend class CDTBaseLayer;
     friend class CDTSegmentationLayer;
 
-
     void addImageLayer(CDTImageLayer *image);
     void insertToTable(QString name);
     QString name()const;
+    bool isCDEnabled(QUuid projectID);
 
 signals:
     void projectChanged();
@@ -34,8 +34,13 @@ public slots:
     void addImageLayer();
     void removeImageLayer(CDTImageLayer *image);
     void removeAllImageLayers();
+
+    void addPBCDBinaryLayer();
+    void addOBCDBinaryLayer();
+    void addPBCDBinaryLayer(QByteArray result);
+
     void onContextMenuRequest(QWidget *parent);
-    void rename();    
+    void rename();
     void setName(const QString& name);
 
 private:
@@ -44,10 +49,15 @@ private:
     CDTFileSystem* fileSystem;
 
     QAction* actionAddImage;
-    QAction* removeAllImages;
+    QAction* actiobRemoveAllImages;
+    QAction* actionAddPBCDBinary;
+    QAction* actionAddPBCDFromTo;
+    QAction* actionAddOBCDBinary;
+    QAction* actionAddOBCDFromTo;
     QAction* actionRename;
 
-//    void updateTreeModel(CDTProjectTreeModel* model);
+    CDTProjectTreeItem *imagesRoot;
+    CDTProjectTreeItem *changesRoot;
 };
 
 #endif // CDTPROJECT_H

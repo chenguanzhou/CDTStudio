@@ -38,10 +38,12 @@ void CDTProjectTreeItem::initFont()
         font.setBold(true);
         font.setPointSize(font.pointSize()+3);        
         break;
-    case IMAGE_ROOT:
+    case IMAGE:
         font.setBold(true);
         font.setPointSize(font.pointSize()+2);
         break;
+    case IMAGE_ROOT:
+    case CHANGE_ROOT:
     case EXTRACTION_ROOT:
     case SEGMENTION_ROOT:
         font.setBold(true);
@@ -69,7 +71,7 @@ void CDTProjectTreeItem::initColor()
     switch (_itemType) {
     case PROJECT_ROOT:
         break;
-    case IMAGE_ROOT:
+    case IMAGE:
         brush.setColor(QColor(Qt::red));
         break;
     case METHOD_PARAMS:
@@ -84,7 +86,7 @@ void CDTProjectTreeItem::initColor()
 
 void CDTProjectTreeItem::initCheckState()
 {
-    if (layerType != EMPTY)
+    if (layerType != EMPTY && layerType != GROUP)
     {
         this->setCheckable(true);
         this->setCheckState(Qt::Checked);

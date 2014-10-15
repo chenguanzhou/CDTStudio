@@ -5,6 +5,7 @@
 
 struct QUuid;
 class QSqlQueryModel;
+class CDTTaskReply;
 
 namespace Ui {
 class DialogPBCDBinary;
@@ -18,6 +19,8 @@ public:
     friend class DialogPBCD;
     explicit DialogPBCDBinary(QUuid projectID,QWidget *parent = 0);
     ~DialogPBCDBinary();
+
+    static CDTTaskReply *startBinaryPBCD(QUuid prjID);
 
 private slots:
     void onT1ImageChanged(int row);
@@ -38,11 +41,12 @@ private slots:
 
     void generateXML();
 
-    void onCompleted(QByteArray result);
+//    void onCompleted(QByteArray result);
 
 private:
     Ui::DialogPBCDBinary *ui;
 
+    CDTTaskReply *reply;
     QUuid prjID;
     QSqlQueryModel *modelImage;
     bool isDoubleThreshold;

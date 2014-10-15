@@ -7,7 +7,6 @@ FORMS += \
     Dialogs/dialogdbconnection.ui \
     Dialogs/dialognewimage.ui \
     Dialogs/dialognewproject.ui \
-    Dialogs/dialogpbcd.ui \
     Dialogs/dialogpbcdbinary.ui \
     Dialogs/dialogpbcdaddbandpair.ui
 
@@ -20,7 +19,6 @@ HEADERS += \
     Dialogs/dialognewimage.h \
     Dialogs/dialognewproject.h \
     Dialogs/dialogdbconnection.h \
-    Dialogs/dialogpbcd.h \
     Dialogs/dialogpbcdbinary.h \
     Dialogs/dialogpbcdaddbandpair.h
 
@@ -33,7 +31,6 @@ SOURCES += \
     Dialogs/dialogdbconnection.cpp \
     Dialogs/dialognewimage.cpp \
     Dialogs/dialognewproject.cpp \
-    Dialogs/dialogpbcd.cpp \
     Dialogs/dialogpbcdbinary.cpp \
     Dialogs/dialogpbcdaddbandpair.cpp
 

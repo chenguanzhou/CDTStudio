@@ -20,7 +20,6 @@
 #include "cdttaskdockwidget.h"
 
 #include "dialogconsole.h"
-#include "dialogpbcd.h"
 
 #ifdef Q_OS_WIN
 #include "Windows.h"
@@ -123,15 +122,15 @@ void MainWindow::initActions()
     actionSaveAs->setStatusTip(tr("Save current project as"));
     connect(actionSaveAs,SIGNAL(triggered()),SLOT(onActionSaveAs()));
 
-    actionPBCD = new QAction(QIcon(":/Icon/ChangePixel.png"),tr("&Pixel-based change detection"),this);
-//    actionPBCD->setShortcut(QKeySequence::SaveAs);
-    actionPBCD->setStatusTip(tr("Pixel-based change detection"));
-    connect(actionPBCD,SIGNAL(triggered()),SLOT(onActionPBCD()));
+//    actionPBCD = new QAction(QIcon(":/Icon/ChangePixel.png"),tr("&Pixel-based change detection"),this);
+////    actionPBCD->setShortcut(QKeySequence::SaveAs);
+//    actionPBCD->setStatusTip(tr("Pixel-based change detection"));
+//    connect(actionPBCD,SIGNAL(triggered()),SLOT(onActionPBCD()));
 
-    actionOBCD = new QAction(QIcon(":/Icon/ChangeObject.png"),tr("O&bject-based change detection"),this);
-//    actionOBCD->setShortcut(QKeySequence::SaveAs);
-    actionOBCD->setStatusTip(tr("Object-based change detection"));
-    connect(actionOBCD,SIGNAL(triggered()),SLOT(onActionOBCD()));
+//    actionOBCD = new QAction(QIcon(":/Icon/ChangeObject.png"),tr("O&bject-based change detection"),this);
+////    actionOBCD->setShortcut(QKeySequence::SaveAs);
+//    actionOBCD->setStatusTip(tr("Object-based change detection"));
+//    connect(actionOBCD,SIGNAL(triggered()),SLOT(onActionOBCD()));
 }
 
 void MainWindow::initMenuBar()
@@ -158,11 +157,11 @@ void MainWindow::initToolBar()
                                 <<actionSave
                                 <<actionSaveAll
                                 <<actionSaveAs);
-    ui->mainToolBar->addSeparator();
-    ui->mainToolBar->addActions(QList<QAction*>()
-                                <<actionPBCD
-                                <<actionOBCD);
-    ui->mainToolBar->addSeparator();
+//    ui->mainToolBar->addSeparator();
+//    ui->mainToolBar->addActions(QList<QAction*>()
+//                                <<actionPBCD
+//                                <<actionOBCD);
+//    ui->mainToolBar->addSeparator();
 }
 
 void MainWindow::initStatusBar()
@@ -340,17 +339,17 @@ void MainWindow::onCurrentTabChanged(int i)
     if(i<0)
     {
         ui->treeViewObjects->setModel(NULL);
-        ui->treeViewChanges->setModel(NULL);
         lineEditCoord->setText(QString::null);
         scaleEdit->lineEdit()->setText(QString::null);
         return ;
     }
 
     CDTProjectWidget* projectWidget = (CDTProjectWidget*)(ui->tabWidgetProject->currentWidget());
-    ui->treeViewObjects->setModel(projectWidget->treeModelObject);
-    ui->treeViewChanges->setModel(projectWidget->treeModelChanges);
+
+    ui->treeViewObjects->setModel(projectWidget->treeModelObject);    
     ui->treeViewObjects->expandAll();
     ui->treeViewObjects->resizeColumnToContents(0);
+
     if (getCurrentMapCanvas())
     {
         getCurrentMapCanvas()->updateScale();
@@ -457,23 +456,21 @@ void MainWindow::onRecentFileTriggered()
     ui->tabWidgetProject->openProject(action->text());
 }
 
-void MainWindow::onActionPBCD()
-{
-    if (ui->tabWidgetProject->count()==0)
-    {
-        QMessageBox::critical(this,tr("Error"),tr("No project opend!"));
-        return;
-    }
+//void MainWindow::onActionPBCD()
+//{
+//    if (ui->tabWidgetProject->count()==0)
+//    {
+//        QMessageBox::critical(this,tr("Error"),tr("No project opend!"));
+//        return;
+//    }
 
-    QUuid prjID = getCurrentProjectID();    
+//    QUuid prjID = getCurrentProjectID();
+//}
 
-    DialogPBCD::openPBCDDialog(prjID);
-}
+//void MainWindow::onActionOBCD()
+//{
 
-void MainWindow::onActionOBCD()
-{
-
-}
+//}
 
 void MainWindow::on_treeViewObjects_customContextMenuRequested(const QPoint &pos)
 {
@@ -551,7 +548,7 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
             getCurrentMapCanvas()->refresh();
         }
     }
-    else if (type == CDTProjectTreeItem::IMAGE_ROOT)
+    else if (type == CDTProjectTreeItem::IMAGE)
     {
         //TODO  set current layer?
     }

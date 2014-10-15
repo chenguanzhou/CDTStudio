@@ -11,6 +11,9 @@ public:
     enum CDTItemType{
         PROJECT_ROOT,
         IMAGE_ROOT,
+        IMAGE,
+        CHANGE_ROOT,
+        CHANGE,
         SEGMENTION_ROOT,
         SEGMENTION,
         EXTRACTION_ROOT,

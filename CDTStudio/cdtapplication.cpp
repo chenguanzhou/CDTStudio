@@ -298,6 +298,22 @@ bool CDTApplication::initDatabase()
         return false;
     }
 
+    ///  Create pbcd_binary
+    ret = query.exec("CREATE TABLE pbcd_binary"
+                     "(id text NOT NULL, "
+                     "name text NOT NULL,"
+                     "diff_image text NOT NULL,"
+                     "image_t1 text NOT NULL,"
+                     "image_t2 text NOT NULL,"
+                     "params blob,"
+                     "Primary Key(id) )");
+    if (ret == false)
+    {
+        QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("create table pbcd_binary failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table pbcd_binary failed!\nerror msg:%1",query.lastError().text());
+        return false;
+    }
+
     Log4Qt::Logger::rootLogger()->info("Program database initialized!");
     return true;
 }

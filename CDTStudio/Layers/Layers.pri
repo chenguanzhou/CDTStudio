@@ -4,7 +4,9 @@ HEADERS += \
     Layers/cdtimagelayer.h \
     Layers/cdtsegmentationlayer.h \
     Layers/cdtclassificationlayer.h \
-    Layers/cdtprojectlayer.h
+    Layers/cdtprojectlayer.h \
+    $$PWD/cdtpbcdlayer.h \
+    $$PWD/cdtpbcdbinarylayer.h
 
 SOURCES += \
     Layers/cdtbaselayer.cpp \
@@ -12,6 +14,8 @@ SOURCES += \
     Layers/cdtimagelayer.cpp \
     Layers/cdtsegmentationlayer.cpp \
     Layers/cdtclassificationlayer.cpp \
-    Layers/cdtprojectlayer.cpp
+    Layers/cdtprojectlayer.cpp \
+    $$PWD/cdtpbcdlayer.cpp \
+    $$PWD/cdtpbcdbinarylayer.cpp
 
 INCLUDEPATH += $$PWD

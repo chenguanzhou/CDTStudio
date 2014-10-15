@@ -293,6 +293,7 @@ void CDTProjectWidget::createProject(QUuid id)
     connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
 
     treeModelObject->appendRow(project->standardKeyItem());
+    treeModelChanges->appendRow(project->standardKeyItem());
 }
 
 void CDTProjectWidget::untoggledToolBar()

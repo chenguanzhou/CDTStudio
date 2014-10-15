@@ -20,13 +20,13 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
       actionRemoveAllSegmentations(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Segmentations"),this)),
       actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Image"),this))
 {
-    keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::RASTER,QString(),this);
+    keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE,CDTProjectTreeItem::RASTER,QString(),this);
 //    valueItem
 //            = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     extractionRoot
-            = new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION_ROOT,CDTProjectTreeItem::GROUP,tr("extractions"),this);
+            = new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION_ROOT,CDTProjectTreeItem::GROUP,tr("Extractions"),this);
     segmentationsRoot
-            = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,CDTProjectTreeItem::GROUP,tr("segmentations"),this);
+            = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,CDTProjectTreeItem::GROUP,tr("Segmentations"),this);
     keyItem->appendRow(extractionRoot);
     keyItem->appendRow(segmentationsRoot);
 

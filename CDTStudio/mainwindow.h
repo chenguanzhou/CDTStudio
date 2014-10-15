@@ -84,8 +84,8 @@ private slots:
     void onActionSaveAs();
     void onRecentFileTriggered();
 
-    void onActionPBCD();
-    void onActionOBCD();
+//    void onActionPBCD();
+//    void onActionOBCD();
 
     void on_treeViewObjects_customContextMenuRequested(const QPoint &pos);
     void on_treeViewObjects_clicked(const QModelIndex &index);
@@ -114,8 +114,8 @@ private:
     QAction *actionSaveAs;
     QAction *actionConsole;
 
-    QAction *actionPBCD;//Pixel-based Change Detection
-    QAction *actionOBCD;//Object-based Change Detection
+//    QAction *actionPBCD;//Pixel-based Change Detection
+//    QAction *actionOBCD;//Object-based Change Detection
 
     QMenu *menuFile;
     QMenu *menuRecent;

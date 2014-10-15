@@ -28,9 +28,9 @@
         <file>Icon/Stop.png</file>
         <file>Icon/Redo.png</file>
         <file>StyleSheet/default.css</file>
-        <file>Icon/ChangeObject.png</file>
-        <file>Icon/ChangePixel.png</file>
+        <file>Icon/OBCD.png</file>
+        <file>Icon/PBCD.png</file>
         <file>Icon/2.png</file>
-        <file>Icon/2+.png</file>
+        <file>Icon/2p.png</file>
     </qresource>
 </RCC>
