@@ -39,19 +39,13 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     layers.push_back(this);
 
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
-//    valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
-
-//    paramRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
-//    paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
-//    keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
-
     classificationRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::EMPTY,tr("Classification"),this);
     keyItem->appendRow(classificationRootItem);    
 
-    connect(this,SIGNAL(nameChanged()),this,SIGNAL(segmentationChanged()));
-    connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(segmentationChanged()));
+    connect(this,SIGNAL(nameChanged()),this,SIGNAL(layerChanged()));
+    connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(layerChanged()));
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
-    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
+//    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
 
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
     connect(actionEditDBInfo,SIGNAL(triggered()),SLOT(editDBInfo()));
@@ -167,7 +161,7 @@ void CDTSegmentationLayer::removeClassification(CDTClassificationLayer* clf)
         classifications.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<clf->canvasLayer());
         delete clf;
-        emit segmentationChanged();
+        emit layerChanged();
     }
 }
 
@@ -180,7 +174,7 @@ void CDTSegmentationLayer::removeAllClassifications()
         delete clf;
     }
     classifications.clear();
-    emit segmentationChanged();
+    emit layerChanged();
 }
 
 
@@ -250,7 +244,6 @@ QColor CDTSegmentationLayer::borderColor() const
     QSqlQuery query(db);
     query.exec("select bordercolor from segmentationlayer where id ='" + this->id().toString() +"'");
     query.next();
-    qDebug()<<query.value(0);
     return query.value(0).value<QColor>();
 }
 
@@ -318,7 +311,7 @@ void CDTSegmentationLayer::setBorderColor(const QColor &clr)
 
     setOriginRenderer();
     this->mapCanvas->refresh();
-    emit segmentationChanged();
+    emit layerChanged();
 }
 
 void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
@@ -386,7 +379,7 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     setOriginRenderer();
 
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
-    emit segmentationChanged();
+    emit layerChanged();
 }
 
 void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
@@ -397,13 +390,13 @@ void CDTSegmentationLayer::setDatabaseURL(CDTDatabaseConnInfo url)
     query.bindValue(0,dataToVariant(url));
     query.bindValue(1,this->id().toString());
     query.exec();
-    emit segmentationChanged();
+    emit layerChanged();
 }
 
 void CDTSegmentationLayer::addClassification(CDTClassificationLayer *classification)
 {
     classifications.push_back(classification);
-    emit segmentationChanged();
+    emit layerChanged();
 }
 
 void CDTSegmentationLayer::loadSamplesFromStruct(const QMap<QString, QString> &sample_id_name, const QList<SampleElement> &samples)

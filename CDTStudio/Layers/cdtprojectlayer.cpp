@@ -4,8 +4,10 @@
 #include "mainwindow.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtimagelayer.h"
+#include "cdtchangelayer.h"
 #include "cdtfilesystem.h"
-#include"cdttaskdockwidget.h"
+#include "cdttaskdockwidget.h"
+#include "cdtpbcdbinarylayer.h"
 #include "dialognewimage.h"
 #include "dialogpbcdbinary.h"
 
@@ -13,14 +15,6 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     CDTBaseLayer(uuid,parent),
     fileSystem(new CDTFileSystem)
 {
-    actionAddImage = new QAction(QIcon(":/Icon/Add.png"),tr("Add Image"),this);
-    actiobRemoveAllImages = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All images"),this);
-    actionAddPBCDBinary = new QAction(QIcon(":/Icon/2.png"),tr("Add binary CD layer"),this);
-    actionAddOBCDBinary = new QAction(QIcon(":/Icon/2.png"),tr("Add binary CD layer"),this);
-    actionAddPBCDFromTo = new QAction(QIcon(":/Icon/2p.png"),tr("Add from-to CD layer"),this);
-    actionAddOBCDFromTo = new QAction(QIcon(":/Icon/2p.png"),tr("Add from-to CD layer"),this);
-    actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Project"),this);
-
     keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);
     imagesRoot = new CDTProjectTreeItem
             (CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::GROUP,tr("Images"),this);
@@ -29,6 +23,19 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
 
     keyItem->appendRow(imagesRoot);
     keyItem->appendRow(changesRoot);
+
+    //actions
+    QAction *actionAddImage = new QAction(QIcon(":/Icon/Add.png"),tr("Add Image"),this);
+    QAction *actiobRemoveAllImages = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All images"),this);
+    QAction *actionAddPBCDBinary = new QAction(QIcon(":/Icon/2.png"),tr("Add pixel-based change detection(binary) layer"),this);
+    QAction *actionAddPBCDFromTo = new QAction(QIcon(":/Icon/2p.png"),tr("Add pixel-based change detection(from-to) layer"),this);
+    QAction *actionAddOBCDBinary = new QAction(QIcon(":/Icon/2.png"),tr("Add object-based change detection(binary) layer"),this);
+    QAction *actionAddOBCDFromTo = new QAction(QIcon(":/Icon/2p.png"),tr("Add object-based change detection(from-to) layer"),this);
+    QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Project"),this);
+
+    actions <<(QList<QAction *>()<<actionAddImage<<actiobRemoveAllImages)
+            <<(QList<QAction *>()<<actionAddPBCDBinary<<actionAddPBCDFromTo<<actionAddOBCDBinary<<actionAddOBCDFromTo)
+            <<(QList<QAction *>()<<actionRename);
 
     connect(actionAddImage,SIGNAL(triggered()),SLOT(addImageLayer()));
     connect(actiobRemoveAllImages,SIGNAL(triggered()),SLOT(removeAllImageLayers()));
@@ -49,73 +56,6 @@ CDTProjectLayer::~CDTProjectLayer()
         qWarning()<<"prepare:"<<query.lastError().text();
 
     if (fileSystem) delete fileSystem;
-}
-
-void CDTProjectLayer::addImageLayer()
-{
-    DialogNewImage dlg;
-    if(dlg.exec() == DialogNewImage::Accepted)
-    {
-        CDTImageLayer *image = new CDTImageLayer(QUuid::createUuid(),this);
-        image->setNameAndPath(dlg.imageName(),dlg.imagePath());
-        imagesRoot->appendRow(image->standardKeyItem());
-        addImageLayer(image);
-    }
-}
-
-void CDTProjectLayer::removeImageLayer(CDTImageLayer* image)
-{
-    int index = images.indexOf(image);
-    if (index>=0)
-    {
-        image->removeAllExtractionLayers();
-        image->removeAllSegmentationLayers();
-        QStandardItem* item = image->standardKeyItem();
-        item->parent()->removeRow(item->index().row());
-        images.remove(index);
-        emit removeLayer(QList<QgsMapLayer*>()<<image->canvasLayer());
-        delete image;
-        emit projectChanged();
-    }
-}
-
-void CDTProjectLayer::removeAllImageLayers()
-{    
-    foreach (CDTImageLayer* image, images) {
-        removeImageLayer(image);
-    }
-}
-
-void CDTProjectLayer::addPBCDBinaryLayer()
-{
-    QUuid prjID = MainWindow::getCurrentProjectID();
-    if (isCDEnabled(prjID)==false)
-        return;
-
-    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
-    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));
-}
-
-void CDTProjectLayer::addOBCDBinaryLayer()
-{
-
-}
-
-void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
-{
-    QDataStream in(result);
-    QList<double> thresholds;
-    QString diffPath;
-    in>>thresholds>>diffPath;
-    qDebug()<<"thresolds: "<<thresholds<<"diff path: "<<diffPath;
-}
-
-void CDTProjectLayer::addImageLayer(CDTImageLayer *image)
-{    
-    images.push_back(image);
-    emit projectChanged();
-    if (images.size()==1)
-        mapCanvas->zoomToFullExtent();
 }
 
 void CDTProjectLayer::insertToTable(QString name)
@@ -165,6 +105,94 @@ bool CDTProjectLayer::isCDEnabled(QUuid projectID)
     return true;
 }
 
+void CDTProjectLayer::addImageLayer()
+{
+    DialogNewImage dlg;
+    if(dlg.exec() == DialogNewImage::Accepted)
+    {
+        CDTImageLayer *image = new CDTImageLayer(QUuid::createUuid(),this);
+        image->setNameAndPath(dlg.imageName(),dlg.imagePath());
+        imagesRoot->appendRow(image->standardKeyItem());
+        addImageLayer(image);
+    }
+}
+
+void CDTProjectLayer::removeImageLayer(CDTImageLayer* image)
+{
+    int index = images.indexOf(image);
+    if (index>=0)
+    {
+        image->removeAllExtractionLayers();
+        image->removeAllSegmentationLayers();
+        QStandardItem* item = image->standardKeyItem();
+        item->parent()->removeRow(item->index().row());
+        images.remove(index);
+        emit removeLayer(QList<QgsMapLayer*>()<<image->canvasLayer());
+        delete image;
+        emit layerChanged();
+    }
+}
+
+void CDTProjectLayer::removeAllImageLayers()
+{    
+    foreach (CDTImageLayer* image, images) {
+        removeImageLayer(image);
+    }
+}
+
+void CDTProjectLayer::addPBCDBinaryLayer()
+{
+    QUuid prjID = MainWindow::getCurrentProjectID();
+    if (isCDEnabled(prjID)==false)
+        return;
+
+    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
+    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));
+}
+
+void CDTProjectLayer::addOBCDBinaryLayer()
+{
+
+}
+
+void CDTProjectLayer::addImageLayer(CDTImageLayer *image)
+{    
+    images.push_back(image);
+    emit layerChanged();
+    if (images.size()==1)
+        mapCanvas->zoomToFullExtent();
+}
+
+void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
+{
+    CDTTaskReply *reply = qobject_cast<CDTTaskReply *>(sender());
+
+    QDataStream in(result);
+
+    QVariantMap params;
+    in>>params;
+    qDebug()<<"params: "<<params;
+
+    QString diffImageID = QUuid::createUuid().toString();
+    QString diffPath = params.value("diffPath").toString();
+    fileSystem->registerFile(diffImageID,diffPath,QString(),QString(),
+                             CDTFileSystem::getShapefileAffaliated(diffPath));
+
+    params.insert("diffImageID",diffImageID);
+    params.remove("diffPath");
+
+    CDTPBCDBinaryLayer *layer = new CDTPBCDBinaryLayer(QUuid::createUuid(),this);
+    layer->initLayer(
+                reply->property("name").toString(),
+                reply->property("image_t1").toString(),
+                reply->property("image_t2").toString(),
+                params);
+    changesRoot->appendRow(layer->standardKeyItem());    
+    changes.push_back(layer);
+
+    emit layerChanged();
+}
+
 void CDTProjectLayer::setName(const QString &name)
 {
     if (this->name() == name)
@@ -177,31 +205,7 @@ void CDTProjectLayer::setName(const QString &name)
     query.exec();
 
     keyItem->setText(name);
-    emit projectChanged();
-}
-
-void CDTProjectLayer::onContextMenuRequest(QWidget* parent)
-{    
-    QMenu* menu =new QMenu(parent);
-    menu->addAction(actionAddImage);
-    menu->addAction(actiobRemoveAllImages);
-    menu->addSeparator();
-
-    QMenu* menuPBCD =new QMenu(tr("Pixel-based change detection"),parent);
-    QMenu* menuOBCD =new QMenu(tr("Object-based change detection"),parent);
-
-    menuPBCD->addAction(actionAddPBCDBinary);
-    menuPBCD->addAction(actionAddPBCDFromTo);
-    menuOBCD->addAction(actionAddOBCDBinary);
-    menuOBCD->addAction(actionAddOBCDFromTo);
-
-    menu->addMenu(menuPBCD);
-    menu->addMenu(menuOBCD);
-
-    menu->addSeparator();
-    menu->addAction(actionRename);
-
-    menu->exec(QCursor::pos());
+    emit layerChanged();
 }
 
 void CDTProjectLayer::rename()
@@ -219,11 +223,16 @@ void CDTProjectLayer::rename()
 QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project)
 {
     out<<project.id()<<project.name()<<*(project.fileSystem);
+
     out<<project.images.size();
-    foreach (CDTImageLayer* image, project.images) {
-        out<<*image;
+    foreach (CDTImageLayer* layer, project.images) {
+        out<<*layer;
     }
 
+    out<<project.changes.size();
+    foreach (CDTChangeLayer* layer, project.changes) {
+        out<<QString(layer->metaObject()->className())<<*layer;
+    }
 
     return out;
 }
@@ -244,6 +253,19 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
         in>>*image;
         project.imagesRoot->appendRow(image->standardKeyItem());
         project.images.push_back(image);
+    }
+    in>>count;
+    for (int i=0;i<count;++i)
+    {
+        QString clsName;
+        in>>clsName;
+        QMetaObject obj =  CDTChangeLayer::changeLayerMetaObjects.value(clsName);
+
+        CDTChangeLayer *layer = qobject_cast<CDTChangeLayer *>(obj.newInstance(Q_ARG(QUuid,QUuid()),Q_ARG(QObject*,&project)));
+
+        in>>*layer;
+        project.changesRoot->appendRow(layer->standardKeyItem());
+        project.changes.push_back(layer);
     }
 
     return in;

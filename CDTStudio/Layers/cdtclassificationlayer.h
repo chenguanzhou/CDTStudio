@@ -42,10 +42,8 @@ public:
 
 signals:
     void removeClassification(CDTClassificationLayer*);
-    void classificationLayerChanged();
 
 public slots:
-    void onContextMenuRequest(QWidget *parent);
     void rename();
     void remove();
 
@@ -53,13 +51,6 @@ private:
     void setName(const QString& name);
 
 private:
-    QAction* actionRemoveClassification;
-    QAction *actionRename;
-
-//    CDTProjectTreeItem* paramRootItem;
-//    CDTProjectTreeItem* paramRootValueItem;
-//    CDTProjectTreeItem* normalizeItem;
-//    CDTProjectTreeItem* pcaItem;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification);

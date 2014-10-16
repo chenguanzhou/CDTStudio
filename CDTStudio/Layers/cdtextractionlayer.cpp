@@ -10,22 +10,19 @@ QList<CDTExtractionLayer *> CDTExtractionLayer::layers;
 CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
     CDTBaseLayer(uuid,parent),
     actionChangeParams(new QWidgetAction(this)),
-    actionRemoveExtraction(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Extraction"),this)),
     actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this)),
-    actionExportShapefile(new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this))
+    actionExportShapefile(new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this)),
+    actionRemoveExtraction(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Extraction"),this))
 {
     layers.push_back(this);
-
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION,CDTProjectTreeItem::VECTOR,QString(),this);
-//    valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
 
     connect(this,SIGNAL(removeExtraction(CDTExtractionLayer*)),this->parent(),SLOT(removeExtraction(CDTExtractionLayer*)));
-    connect(this,SIGNAL(nameChanged()),this,SIGNAL(extractionChanged()));
-    connect(this,SIGNAL(extractionChanged()),this->parent(),SIGNAL(imageLayerChanged()));
+    connect(this,SIGNAL(nameChanged()),this,SIGNAL(layerChanged()));
 
-    connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
-    connect(actionRemoveExtraction,SIGNAL(triggered()),SLOT(remove()));
+    connect(actionRename,SIGNAL(triggered()),SLOT(rename()));    
     connect(actionExportShapefile,SIGNAL(triggered()),SLOT(exportShapefile()));
+    connect(actionRemoveExtraction,SIGNAL(triggered()),SLOT(remove()));
 }
 
 CDTExtractionLayer::~CDTExtractionLayer()
@@ -145,11 +142,6 @@ void CDTExtractionLayer::onContextMenuRequest(QWidget *parent)
     menu->addAction(actionExportShapefile);
     menu->addSeparator();
     menu->addAction(actionRemoveExtraction);
-    //    menu->addSeparator();
-    //    menu->addAction(actionStartEdit);
-    //    menu->addAction(actionRollBack);
-    //    menu->addAction(actionSave);
-    //    menu->addAction(actionStop);
     menu->exec(QCursor::pos());
 
     actionChangeParams->releaseWidget(menuWidget);
@@ -182,7 +174,7 @@ void CDTExtractionLayer::setColor(const QColor &clr)
 
     setOriginRenderer();
     this->mapCanvas->refresh();
-    emit extractionChanged();
+    emit layerChanged();
 }
 
 void CDTExtractionLayer::setBorderColor(const QColor &clr)
@@ -197,7 +189,7 @@ void CDTExtractionLayer::setBorderColor(const QColor &clr)
 
     setOriginRenderer();
     this->mapCanvas->refresh();
-    emit extractionChanged();
+    emit layerChanged();
 }
 
 void CDTExtractionLayer::setOpacity(const double &val)
@@ -210,7 +202,7 @@ void CDTExtractionLayer::setOpacity(const double &val)
 
     //    setOriginRenderer();
     //    this->mapCanvas->refresh();
-    emit extractionChanged();
+    emit layerChanged();
 }
 
 void CDTExtractionLayer::setOpacity(const int &val)
@@ -257,7 +249,7 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
     setOriginRenderer();
 
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
-    emit extractionChanged();
+    emit layerChanged();
 }
 
 void CDTExtractionLayer::rename()

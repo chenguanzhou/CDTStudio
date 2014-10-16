@@ -12,17 +12,9 @@
 QList<CDTImageLayer *> CDTImageLayer::layers;
 
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
-    : CDTBaseLayer(uuid,parent),
-      actionAddExtractionLayer(new QAction(QIcon(":/Icon/Add.png"),tr("Add Extraction"),this)),
-      actionAddSegmentationLayer(new QAction(QIcon(":/Icon/Add.png"),tr("Add Segmentation"),this)),
-      actionRemoveImage(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Image"),this)),
-      actionRemoveAllExtractions(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Extractions"),this)),
-      actionRemoveAllSegmentations(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Segmentations"),this)),
-      actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Image"),this))
+    : CDTBaseLayer(uuid,parent)
 {
     keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE,CDTProjectTreeItem::RASTER,QString(),this);
-//    valueItem
-//            = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
     extractionRoot
             = new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION_ROOT,CDTProjectTreeItem::GROUP,tr("Extractions"),this);
     segmentationsRoot
@@ -34,7 +26,20 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
 
 
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProjectLayer*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
-    connect(this,SIGNAL(imageLayerChanged()),(CDTProjectLayer*)(this->parent()),SIGNAL(projectChanged()));
+
+
+    //actions
+    QAction *actionRename                   = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Image"),this);
+    QAction *actionRemoveImage              = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Image"),this);
+    QAction *actionAddExtractionLayer       = new QAction(QIcon(":/Icon/Add.png"),tr("Add Extraction"),this);
+    QAction *actionAddSegmentationLayer     = new QAction(QIcon(":/Icon/Add.png"),tr("Add Segmentation"),this);
+    QAction *actionRemoveAllExtractions     = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Extractions"),this);
+    QAction *actionRemoveAllSegmentations   = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Segmentations"),this);
+
+
+    actions <<(QList<QAction *>()<<actionRename<<actionRemoveImage)
+            <<(QList<QAction *>()<<actionAddExtractionLayer<<actionRemoveAllExtractions)
+            <<(QList<QAction *>()<<actionAddSegmentationLayer<<actionRemoveAllSegmentations);
 
     connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
     connect(actionRemoveImage,SIGNAL(triggered()),this,SLOT(remove()));
@@ -69,7 +74,7 @@ void CDTImageLayer::setName(const QString &name)
     query.exec();
 
     keyItem->setText(name);
-    emit imageLayerChanged();
+    emit layerChanged();
 }
 
 void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
@@ -113,7 +118,7 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
     query.exec();
 
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
-    emit imageLayerChanged();
+    emit layerChanged();
 }
 
 void CDTImageLayer::setCategoryInfo(const CDTCategoryInformationList &info)
@@ -229,7 +234,7 @@ void CDTImageLayer::removeExtraction(CDTExtractionLayer *ext)
         emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
         fileSystem()->removeFile(ext->shapefileID());
 //        delete ext;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        emit imageLayerChanged();
+        emit layerChanged();
     }
 }
 
@@ -243,7 +248,7 @@ void CDTImageLayer::removeAllExtractionLayers()
         delete ext;
     }
     extractions.clear();
-    emit imageLayerChanged();
+    emit layerChanged();
 }
 
 void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
@@ -258,7 +263,7 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
         fileSystem()->removeFile(sgmt->shapefilePath());
         fileSystem()->removeFile(sgmt->markfilePath());
 //        delete sgmt; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        emit imageLayerChanged();
+        emit layerChanged();
     }
 }
 
@@ -273,7 +278,7 @@ void CDTImageLayer::removeAllSegmentationLayers()
         delete sgmt;
     }
     segmentations.clear();
-    emit imageLayerChanged();
+    emit layerChanged();
 }
 
 void CDTImageLayer::rename()
@@ -288,38 +293,38 @@ void CDTImageLayer::rename()
     }
 }
 
-void CDTImageLayer::onContextMenuRequest(QWidget *parent)
-{
-    QMenu *menu =new QMenu(parent);
+//void CDTImageLayer::onContextMenuRequest(QWidget *parent)
+//{
+//    QMenu *menu =new QMenu(parent);
 
-    menu->addAction(actionRename);
-    menu->addAction(actionRemoveImage);
-    menu->addSeparator();
-    menu->addAction(actionAddExtractionLayer);
-    menu->addAction(actionRemoveAllExtractions);
-    menu->addSeparator();
-    menu->addAction(actionAddSegmentationLayer);
-    menu->addAction(actionRemoveAllSegmentations);
+//    menu->addAction(actionRename);
+//    menu->addAction(actionRemoveImage);
+//    menu->addSeparator();
+//    menu->addAction(actionAddExtractionLayer);
+//    menu->addAction(actionRemoveAllExtractions);
+//    menu->addSeparator();
+//    menu->addAction(actionAddSegmentationLayer);
+//    menu->addAction(actionRemoveAllSegmentations);
 
-    menu->exec(QCursor::pos());
-}
+//    menu->exec(QCursor::pos());
+//}
 
 void CDTImageLayer::addExtraction(CDTExtractionLayer *extraction)
 {
     extractions.push_back(extraction);
-    emit imageLayerChanged();
+    emit layerChanged();
 }
 
 
 void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
 {
     segmentations.push_back(segmentation);
-    emit imageLayerChanged();
+    emit layerChanged();
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
 {
-    out<<image.uuid<<image.path()<<image.name();
+    out<<image.id()<<image.path()<<image.name();
 
     out<<image.segmentations.size();
     for (int i=0;i<image.segmentations.size();++i)

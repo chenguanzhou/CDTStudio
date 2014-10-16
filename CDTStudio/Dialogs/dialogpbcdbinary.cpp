@@ -259,6 +259,11 @@ void DialogPBCDBinary::generateXML()
 
     qApp->sendTask( doc.toByteArray() ) ;
     reply = MainWindow::getTaskDockWIdget()->appendNewTask(id,name,prjID.toString());
+
+    reply->setProperty("name",name);
+    reply->setProperty("image_t1",modelImage->data(modelImage->index(ui->comboBoxT1Image->currentIndex(),1)));
+    reply->setProperty("image_t2",modelImage->data(modelImage->index(ui->comboBoxT2Image->currentIndex(),1)));
+
 //    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(onCompleted(QByteArray)));
 }
 

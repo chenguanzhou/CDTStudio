@@ -34,7 +34,7 @@ public:
     static CDTImageLayer *getLayer(const QUuid& id);
 
 signals:
-    void imageLayerChanged();
+//    void imageLayerChanged();
     void removeImageLayer(CDTImageLayer*);
 
 public slots:        
@@ -46,7 +46,7 @@ public slots:
     void removeSegmentation(CDTSegmentationLayer*);
     void removeAllSegmentationLayers();
     void rename();
-    void onContextMenuRequest(QWidget *parent);
+//    void onContextMenuRequest(QWidget *parent);
 
 private:        
     void addExtraction(CDTExtractionLayer* extraction);
@@ -56,12 +56,12 @@ private:
     QVector<CDTExtractionLayer *>   extractions;
     QVector<CDTSegmentationLayer *> segmentations;
 
-    QAction *actionRename;
-    QAction *actionRemoveImage;
-    QAction *actionAddExtractionLayer;    
-    QAction *actionRemoveAllExtractions;
-    QAction *actionAddSegmentationLayer;
-    QAction *actionRemoveAllSegmentations;
+//    QAction *actionRename;
+//    QAction *actionRemoveImage;
+//    QAction *actionAddExtractionLayer;
+//    QAction *actionRemoveAllExtractions;
+//    QAction *actionAddSegmentationLayer;
+//    QAction *actionRemoveAllSegmentations;
 
     CDTProjectTreeItem *segmentationsRoot;
     CDTProjectTreeItem *extractionRoot;

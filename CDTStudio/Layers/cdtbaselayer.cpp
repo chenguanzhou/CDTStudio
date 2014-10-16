@@ -12,12 +12,23 @@ CDTBaseLayer::CDTBaseLayer(QUuid uuid, QObject *parent) :
     this->uuid = uuid;
     if (parent) connect(this,SIGNAL(appendLayers(QList<QgsMapLayer*> )),parent,SIGNAL(appendLayers(QList<QgsMapLayer*>)));
     if (parent) connect(this,SIGNAL(removeLayer(QList<QgsMapLayer*> )),parent,SIGNAL(removeLayer(QList<QgsMapLayer*>)));
+    if (parent) connect(this,SIGNAL(layerChanged()),parent,SIGNAL(layerChanged()));
     if (parent) mapCanvas = ((CDTBaseLayer*)parent)->mapCanvas;
 }
 
 CDTBaseLayer::~CDTBaseLayer()
 {
 
+}
+
+void CDTBaseLayer::onContextMenuRequest(QWidget *parent)
+{
+    QMenu* menu =new QMenu(parent);
+    foreach (QList<QAction *> list, actions) {
+        menu->addActions(list);
+        menu->addSeparator();
+    }
+    menu->exec(QCursor::pos());
 }
 
 QStandardItem *CDTBaseLayer::standardKeyItem() const

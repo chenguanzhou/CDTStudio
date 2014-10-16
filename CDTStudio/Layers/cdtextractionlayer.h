@@ -53,7 +53,6 @@ public slots:
 
 signals:
     void    nameChanged();
-    void    extractionChanged();
     void    removeExtraction(CDTExtractionLayer*);
 
 private:

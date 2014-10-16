@@ -5,29 +5,17 @@
 #include "cdtvariantconverter.h"
 
 CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
-    :CDTBaseLayer(uuid,parent),
-      actionRemoveClassification(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this)),
-      actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this))
+    :CDTBaseLayer(uuid,parent)
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this);    
-//    valueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
 
-//    paramRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::METHOD_PARAMS,CDTProjectTreeItem::EMPTY,tr("Method"),this);
-//    paramRootValueItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
-//    keyItem->appendRow(QList<QStandardItem*>()<<paramRootItem<<paramRootValueItem);
+    //actions
+    QAction *actionRename               = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this);
+    QAction* actionRemoveClassification = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this);
 
-//    normalizeItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
-//    keyItem->appendRow(
-//                QList<QStandardItem*>()
-//                <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("Normalize"),this)
-//                <<normalizeItem);
-//    pcaItem = new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,QString(),this);
-//    keyItem->appendRow(
-//                QList<QStandardItem*>()
-//                <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,tr("PCA"),this)
-//                <<pcaItem);
+    actions <<(QList<QAction*>()<<actionRename)
+            <<(QList<QAction*>()<<actionRemoveClassification);
 
-    connect(this,SIGNAL(classificationLayerChanged()),this->parent(),SIGNAL(segmentationChanged()));
     connect(this,SIGNAL(removeClassification(CDTClassificationLayer*)),this->parent(),SLOT(removeClassification(CDTClassificationLayer*)));
     connect(actionRemoveClassification,SIGNAL(triggered()),SLOT(remove()));
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
@@ -43,15 +31,6 @@ CDTClassificationLayer::~CDTClassificationLayer()
     ret = query.exec("delete from classificationlayer where id = '"+uuid.toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
-}
-
-void CDTClassificationLayer::onContextMenuRequest(QWidget *parent)
-{    
-    QMenu *menu =new QMenu(parent);
-    menu->addAction(actionRemoveClassification);
-    menu->addSeparator();
-    menu->addAction(actionRename);
-    menu->exec(QCursor::pos());
 }
 
 void CDTClassificationLayer::rename()
@@ -189,21 +168,6 @@ void CDTClassificationLayer::initClassificationLayer(
         const QString &pcaParams)
 {
     keyItem->setText(name);
-
-//    paramRootItem->removeRows(0,paramRootItem->rowCount());
-//    paramRootValueItem->setText(methodName);
-//    QStringList keys = params.keys();
-//    foreach (QString key, keys) {
-//        QVariant value = params.value(key);
-//        paramRootItem->appendRow(
-//                    QList<QStandardItem*>()
-//                    <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,key,this)
-//                    <<new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,value.toString(),this)
-//                    );
-//    }
-
-//    normalizeItem->setText(normalizeMethod);
-//    pcaItem->setText(pcaParams);
 
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("insert into classificationlayer VALUES(?,?,?,?,?,?,?,?,?)");

@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QUuid>
+
+class QAction;
 class QStandardItem;
 class QgsMapLayer;
 class QgsMapCanvas;
@@ -17,7 +19,7 @@ public:
     explicit CDTBaseLayer(QUuid uuid,QObject *parent = 0);
     virtual ~CDTBaseLayer();
 
-    virtual void onContextMenuRequest(QWidget *parent) = 0;
+    virtual void onContextMenuRequest(QWidget *parent);
 //    QList<QStandardItem *> standardItems()const;
     QStandardItem   *standardKeyItem()const;
     QgsMapLayer     *canvasLayer()const;
@@ -29,6 +31,7 @@ public:
 signals:
     void appendLayers(QList<QgsMapLayer*> layer);
     void removeLayer(QList<QgsMapLayer*> layer);
+    void layerChanged();
 public slots:
     void setMapCanvas(QgsMapCanvas* canvas);
 protected:
@@ -37,6 +40,8 @@ protected:
 //    CDTProjectTreeItem  *valueItem;
     QgsMapLayer         *mapCanvasLayer;
     QgsMapCanvas        *mapCanvas;
+
+    QList<QList<QAction *> > actions;
 };
 
 #endif // CDTBASELAYER_H

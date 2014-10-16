@@ -38,7 +38,7 @@ private:
     CDTPBCDMergeInterface *mergePlugin;
     CDTAutoThresholdInterface *autoThresholdPlugin;
     double positiveThreshold,negetiveThreshold;
-    bool isDoubleThreshold;
+    bool isDoubleThreshold;    
 };
 
 #endif // CDTTASK_PBCDBINARY_H

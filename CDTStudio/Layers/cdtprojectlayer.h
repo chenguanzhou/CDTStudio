@@ -5,6 +5,7 @@
 
 class QAction;
 class CDTImageLayer;
+class CDTChangeLayer;
 class CDTFileSystem;
 
 class CDTProjectLayer: public CDTBaseLayer
@@ -22,13 +23,12 @@ public:
     friend class CDTBaseLayer;
     friend class CDTSegmentationLayer;
 
-    void addImageLayer(CDTImageLayer *image);
-    void insertToTable(QString name);
-    QString name()const;
-    bool isCDEnabled(QUuid projectID);
+    void    insertToTable(QString name);
+    QString name() const;
+    bool    isCDEnabled(QUuid projectID);
 
 signals:
-    void projectChanged();
+//    void projectChanged();
 
 public slots:    
     void addImageLayer();
@@ -36,25 +36,19 @@ public slots:
     void removeAllImageLayers();
 
     void addPBCDBinaryLayer();
-    void addOBCDBinaryLayer();
+    void addOBCDBinaryLayer();    
+
+    void addImageLayer(CDTImageLayer *image);
     void addPBCDBinaryLayer(QByteArray result);
 
-    void onContextMenuRequest(QWidget *parent);
     void rename();
     void setName(const QString& name);
 
 private:
     bool    isFileExsit;
-    QVector<CDTImageLayer *> images;
-    CDTFileSystem* fileSystem;
-
-    QAction* actionAddImage;
-    QAction* actiobRemoveAllImages;
-    QAction* actionAddPBCDBinary;
-    QAction* actionAddPBCDFromTo;
-    QAction* actionAddOBCDBinary;
-    QAction* actionAddOBCDFromTo;
-    QAction* actionRename;
+    QVector<CDTImageLayer *>    images;
+    QVector<CDTChangeLayer *>   changes;
+    CDTFileSystem *fileSystem;
 
     CDTProjectTreeItem *imagesRoot;
     CDTProjectTreeItem *changesRoot;

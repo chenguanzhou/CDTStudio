@@ -288,7 +288,7 @@ void CDTProjectWidget::createProject(QUuid id)
     project->setMapCanvas( mapCanvas);
 
 
-    connect(project,SIGNAL(projectChanged()),this,SIGNAL(projectChanged()));
+    connect(project,SIGNAL(layerChanged()),this,SIGNAL(projectChanged()));
     connect(project,SIGNAL(appendLayers(QList<QgsMapLayer*>)),this,SLOT(appendLayers(QList<QgsMapLayer*>)));
     connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
 

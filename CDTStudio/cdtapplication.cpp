@@ -9,6 +9,8 @@
 #include "cdtpbcddiffinterface.h"
 #include "cdtpbcdmergeinterface.h"
 #include "cdtautothresholdinterface.h"
+#include "cdtchangelayer.h"
+#include "cdtpbcdbinarylayer.h"
 
 QList<CDTSegmentationInterface *>   segmentationPlugins;
 QList<CDTAttributesInterface *>     attributesPlugins;
@@ -26,7 +28,7 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     udpSender(new QUdpSocket(this))
 {
     setApplicationName("CDTStudio");
-    setApplicationVersion("v0.1");
+    setApplicationVersion("v0.2");
 
     QStringList env = QProcess::systemEnvironment();
     foreach (QString path, env) {
@@ -299,10 +301,9 @@ bool CDTApplication::initDatabase()
     }
 
     ///  Create pbcd_binary
-    ret = query.exec("CREATE TABLE pbcd_binary"
+    ret = query.exec("CREATE TABLE changes"
                      "(id text NOT NULL, "
                      "name text NOT NULL,"
-                     "diff_image text NOT NULL,"
                      "image_t1 text NOT NULL,"
                      "image_t2 text NOT NULL,"
                      "params blob,"
@@ -313,6 +314,8 @@ bool CDTApplication::initDatabase()
         Log4Qt::Logger::rootLogger()->error("create table pbcd_binary failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
+
+    CDTChangeLayer::changeLayerMetaObjects.insert("CDTPBCDBinaryLayer",CDTPBCDBinaryLayer::staticMetaObject);
 
     Log4Qt::Logger::rootLogger()->info("Program database initialized!");
     return true;

@@ -8,7 +8,7 @@ QT       += core gui sql xml svg network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-VERSION = 0.1
+VERSION = 0.2
 TARGET = CDTStudio
 TEMPLATE = app
 DESTDIR = ../bin

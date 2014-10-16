@@ -57,7 +57,6 @@ public:
 signals:
     void methodParamsChanged();
     void nameChanged();
-    void segmentationChanged();
     void removeSegmentation(CDTSegmentationLayer*);
 
 public slots:
@@ -100,9 +99,6 @@ private:
     QAction *actionAddClassifications;
     QAction *actionRemoveAllClassifications;
 
-
-//    CDTProjectTreeItem* paramRootItem;
-//    CDTProjectTreeItem* paramRootValueItem;
     CDTProjectTreeItem* classificationRootItem;
 
     static QList<CDTSegmentationLayer *> layers;

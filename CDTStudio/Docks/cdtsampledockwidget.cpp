@@ -118,11 +118,11 @@ void CDTSampleDockWidget::clear()
     QList<CDTImageLayer*> layers = CDTImageLayer::getLayers();
     foreach (CDTImageLayer* layer, layers) {
         if (layer) disconnect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                              layer,SIGNAL(imageLayerChanged()));
+                              layer,SIGNAL(layerChanged()));
         if (layer) disconnect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
-                              layer,SIGNAL(imageLayerChanged()));
+                              layer,SIGNAL(layerChanged()));
         if (layer) disconnect(categoryModel,SIGNAL(beforeDelete(int)),
-                              layer,SIGNAL(imageLayerChanged()));
+                              layer,SIGNAL(layerChanged()));
     }
 
     imageLayerID = QUuid();
@@ -142,11 +142,11 @@ void CDTSampleDockWidget::setImageID(QUuid uuid)
     CDTImageLayer* layer = CDTImageLayer::getLayer(imageLayerID);
 
     connect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-            layer,SIGNAL(imageLayerChanged()));
+            layer,SIGNAL(layerChanged()));
     connect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
-            layer,SIGNAL(imageLayerChanged()));
+            layer,SIGNAL(layerChanged()));
     connect(categoryModel,SIGNAL(beforeDelete(int)),
-            layer,SIGNAL(imageLayerChanged()));
+            layer,SIGNAL(layerChanged()));
 
     ui->toolButtonEditSample->setChecked(false);
 //    updateComboBox();
