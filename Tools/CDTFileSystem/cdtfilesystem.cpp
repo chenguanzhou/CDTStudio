@@ -102,6 +102,7 @@ void CDTFileSystem::removeFile(QString id, bool deleteFiles)
     }
     foreach (QString path, list) {
         QFile(path).remove();
+        logger()->info("file removed! path: %1",path);
     }
 }
 

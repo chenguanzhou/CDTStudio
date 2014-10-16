@@ -26,9 +26,10 @@ public:
     friend QDataStream &operator>>(QDataStream &in, CDTChangeLayer &layer);
 
     QString name()const;
-    QString image_t1() const;
-    QString image_t2() const;
+    QString image_t1()  const;
+    QString image_t2()  const;
     QVariantMap params()const;
+    virtual QStringList files() const;//Used when layer removed
 public slots:
     virtual void onContextMenuRequest(QWidget *parent) = 0;
 

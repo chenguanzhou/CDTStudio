@@ -74,13 +74,10 @@ void CDTTask_PBCDBinary::start()
         error(tr("Create diff image failed!"));
         return;
     }
-    qDebug()<<"diffPath:"<<diffPath;
-
     double geoTransform[6];
     poT1DS->GetGeoTransform(geoTransform);
     poDiffDS->SetGeoTransform(geoTransform);
     poDiffDS->SetProjection(poT1DS->GetProjectionRef());
-
 
     //3.Generate diff images;
     GDALDataset *poT1AveDS = NULL;
@@ -126,15 +123,18 @@ void CDTTask_PBCDBinary::start()
     }
     else
     {
-        QString mergePath = qApp->getTempFileName(".tif");
-        qDebug()<<"mergePath:"<<mergePath;
-        poMergeDS = (GDALDataset *)(poDriver->Create(mergePath.toUtf8().constData(),
+        diffPath = qApp->getTempFileName(".tif");
+        qDebug()<<"mergedPath:"<<diffPath;
+        poMergeDS = (GDALDataset *)(poDriver->Create(diffPath.toUtf8().constData(),
                                                                  nXSize,nYSize,1,GDT_Float32,NULL));
         if (poMergeDS == NULL)
         {
             error(tr("Create merge image failed!"));
             return;
         }
+
+        poMergeDS->SetGeoTransform(geoTransform);
+        poMergeDS->SetProjection(poT1DS->GetProjectionRef());
 
         merge(poDiffDS,poMergeDS);
     }
@@ -176,8 +176,7 @@ void CDTTask_PBCDBinary::start()
 
     QByteArray result;
     QDataStream out(&result,QFile::WriteOnly);
-//    QList<double> thresholds;
-//    thresholds<<positiveThreshold<<negetiveThreshold;
+
     QVariantMap params;
     params.insert("positiveThreshold",positiveThreshold);
     params.insert("negetiveThreshold",negetiveThreshold);

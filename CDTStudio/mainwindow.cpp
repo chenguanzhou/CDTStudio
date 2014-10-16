@@ -15,6 +15,7 @@
 #include "cdtextractionlayer.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtclassificationlayer.h"
+#include "cdtchangelayer.h"
 #include "cdtundowidget.h"
 #include "cdtlayerinfowidget.h"
 #include "cdttaskdockwidget.h"
@@ -515,8 +516,6 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
         CDTExtractionLayer* extractionLayer = qobject_cast<CDTExtractionLayer*>(item->correspondingObject());
         if (extractionLayer != NULL)
         {
-            //            dockWidgetExtraction->show();
-            //            dockWidgetExtraction->setCurrentLayer(extractionLayer);
             extractionLayer->setOriginRenderer();
         }
     }
@@ -525,16 +524,13 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
         CDTSegmentationLayer* segmentationLayer = qobject_cast<CDTSegmentationLayer*>(item->correspondingObject());
         if (segmentationLayer != NULL)
         {
-            //            dockWidgetSample->setCurrentLayer(segmentationLayer);
-            //            dockWidgetAttributes->setCurrentLayer(segmentationLayer);
 
             segmentationLayer->setOriginRenderer();
             if (segmentationLayer->canvasLayer()!=NULL)
             {
-                CDTProjectWidget* widget = (CDTProjectWidget*)ui->tabWidgetProject->currentWidget();
-                widget->mapCanvas->setCurrentLayer(segmentationLayer->canvasLayer());
-            }
-            getCurrentMapCanvas()->refresh();
+                getCurrentMapCanvas()->setCurrentLayer(segmentationLayer->canvasLayer());
+                getCurrentMapCanvas()->refresh();
+            }            
         }
     }
     else if (type == CDTProjectTreeItem::CLASSIFICATION)
@@ -547,10 +543,16 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
             segmentationLayer->setRenderer(renderer);
             getCurrentMapCanvas()->refresh();
         }
-    }
-    else if (type == CDTProjectTreeItem::IMAGE)
+    }    
+    else if (type == CDTProjectTreeItem::CHANGE)
     {
-        //TODO  set current layer?
+        CDTChangeLayer *layer = qobject_cast<CDTChangeLayer *>(item->correspondingObject());
+        if (layer != NULL)
+        {
+            getCurrentMapCanvas()->setCurrentLayer(layer->canvasLayer());
+            getCurrentMapCanvas()->refresh();
+        }
+
     }
 }
 

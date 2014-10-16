@@ -32,14 +32,15 @@ signals:
 
 public slots:    
     void addImageLayer();
-    void removeImageLayer(CDTImageLayer *image);
-    void removeAllImageLayers();
-
     void addPBCDBinaryLayer();
-    void addOBCDBinaryLayer();    
+    void addOBCDBinaryLayer();
 
     void addImageLayer(CDTImageLayer *image);
+    void removeImageLayer(CDTImageLayer *image);
+    void removeAllImageLayers();
     void addPBCDBinaryLayer(QByteArray result);
+    void removeChangeLayer(CDTChangeLayer *layer);
+    void removeAllChangeLayers();
 
     void rename();
     void setName(const QString& name);

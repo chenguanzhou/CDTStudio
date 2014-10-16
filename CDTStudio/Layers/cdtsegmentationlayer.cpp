@@ -344,18 +344,7 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
     keyItem->setMapLayer(mapCanvasLayer);
 
-    //set method $ params
-//    paramRootItem->removeRows(0,paramRootItem->rowCount());
-//    paramRootValueItem->setText(method);
-//    QStringList keys = params.keys();
-//    foreach (QString key, keys) {
-//        QVariant value = params.value(key);
-//        paramRootItem->appendRow(
-//                    QList<QStandardItem*>()
-//                    <<new CDTProjectTreeItem(CDTProjectTreeItem::PARAM,CDTProjectTreeItem::EMPTY,key,this)
-//                    <<new CDTProjectTreeItem(CDTProjectTreeItem::VALUE,CDTProjectTreeItem::EMPTY,value.toString(),this)
-//                    );
-//    }
+
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?,?,?,?,?)");

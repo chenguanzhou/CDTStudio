@@ -55,6 +55,11 @@ QVariantMap CDTChangeLayer::params() const
     return variantToData<QVariantMap>(query.value(0));
 }
 
+QStringList CDTChangeLayer::files() const
+{
+    return QStringList();
+}
+
 void CDTChangeLayer::setName(const QString &name)
 {
     if (this->name() == name)

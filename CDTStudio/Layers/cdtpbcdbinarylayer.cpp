@@ -24,6 +24,11 @@ double CDTPBCDBinaryLayer::negT() const
     return params().value("negetiveThreshold").toDouble();
 }
 
+QStringList CDTPBCDBinaryLayer::files() const
+{
+    return QStringList()<<params().value("diffImageID").toString();
+}
+
 void CDTPBCDBinaryLayer::onContextMenuRequest(QWidget *parent)
 {
 
@@ -53,5 +58,6 @@ void CDTPBCDBinaryLayer::initLayer(const QString &name, const QString &image_t1,
     CDTChangeLayer::initLayer(name,image_t1,image_t2,params);
 
     emit layerChanged();
+    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
 }
 

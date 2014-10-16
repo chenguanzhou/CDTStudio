@@ -16,6 +16,7 @@ public:
     QString diffImage() const;
     double posT()const;
     double negT()const;
+    QStringList files()const;
 signals:
 
 public slots:
