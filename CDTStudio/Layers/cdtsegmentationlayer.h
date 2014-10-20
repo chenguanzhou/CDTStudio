@@ -52,7 +52,7 @@ public:
     void setOriginRenderer();
 
     static QList<CDTSegmentationLayer *> getLayers();
-    static CDTSegmentationLayer * getLayer(QUuid id);
+    static CDTSegmentationLayer *getLayer(QUuid id);
 
 signals:
     void methodParamsChanged();

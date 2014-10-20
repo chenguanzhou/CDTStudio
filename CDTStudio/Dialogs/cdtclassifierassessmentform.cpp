@@ -1,22 +1,120 @@
 #include "cdtclassifierassessmentform.h"
 #include "ui_cdtclassifierassessmentform.h"
-#include <QtGui>
-#if QT_VERSION >= 0x050000
-#include <QtWidgets>
-#endif
-#include <opencv2/core/core.hpp>
-#include <iostream>
+#include "stable.h"
+
+#include "cdtimagelayer.h"
+#include "cdtsegmentationlayer.h"
+#include "cdtclassificationlayer.h"
 
 CDTClassifierAssessmentForm::CDTClassifierAssessmentForm(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::CDTClassifierAssessmentForm)
+    ui(new Ui::CDTClassifierAssessmentForm),
+    modelClassification(new QSqlQueryModel(this)),
+    modelSample(new QSqlQueryModel(this))
 {
     ui->setupUi(this);
+    this->setWindowTitle(tr("Accuracy Assessment"));
+    ui->comboBoxClassification->setModel(modelClassification);
+    ui->comboBoxSample->setModel(modelSample);
+
+    connect(ui->comboBoxClassification,SIGNAL(currentIndexChanged(int)),SLOT(onComboBoxClassificationChanged(int)));
+    connect(ui->comboBoxSample,SIGNAL(currentIndexChanged(int)),SLOT(onComboBoxSampleChanged(int)));
+
+    init();
 }
 
 CDTClassifierAssessmentForm::~CDTClassifierAssessmentForm()
 {
     delete ui;
+}
+
+void CDTClassifierAssessmentForm::setClassification(QString id)
+{
+    CDTClassificationLayer *layer = CDTClassificationLayer::getLayer(id);
+    for (int i=0;i<modelClassification->rowCount();++i)
+    {
+        if (modelClassification->data(modelClassification->index(i,1)).toString() == id)
+        {
+            ui->comboBoxClassification->setCurrentIndex(i);
+        }
+    }
+}
+
+void CDTClassifierAssessmentForm::init()
+{
+    QSqlDatabase db = QSqlDatabase::database("category");
+    modelClassification->setQuery("Select name,id,segmentationID from classificationlayer",db);
+}
+
+void CDTClassifierAssessmentForm::onComboBoxClassificationChanged(int index)
+{
+    if (index<0)
+        return;
+    QString segmentationID = modelClassification->data(modelClassification->index(index,2)).toString();
+    CDTSegmentationLayer *segLayer = CDTSegmentationLayer::getLayer(segmentationID);
+    QString segmentationName = segLayer->name();
+    QString imageName = static_cast<CDTImageLayer *>(segLayer->parent())->name();
+
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->appendPlainText(tr("Image name:    ")+imageName);
+    ui->plainTextEdit->appendPlainText(tr("Segmentation name:    ")+segmentationName);
+
+
+    modelSample->setQuery(QString("Select name,id from sample_segmentation where segmentationid = '%1'")
+                          .arg(segmentationID),QSqlDatabase::database("category"));
+}
+
+void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
+{
+    if (index<0)
+        return;
+
+    QString classificationID = modelClassification->data
+            (modelClassification->index(ui->comboBoxClassification->currentIndex(),1)).toString();
+    QString sampleID = modelSample->data(modelSample->index(index,1)).toString();
+
+    CDTClassificationLayer *layer = CDTClassificationLayer::getLayer(classificationID);
+    CDTClassificationInformation info;
+    info.clsName = layer->name();
+    info.classifierName = layer->method();
+    info.classifierParams = layer->params();
+    info.categoryCount = layer->clsInfo().size();
+    info.isNormalized = !layer->normalizeMethod().isEmpty();
+    info.pcaParams = layer->pcaParams();
+    info.selectedFeatures = layer->selectedFeatures();
+
+    //for confusion matrix
+    QMap<QString,QString> categoryID_Name;
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.exec(QString("select id,name from category where imageid ='%1'")
+               .arg(static_cast<CDTImageLayer *>(layer->parent()->parent())->id()));
+    while(query.next())
+    {
+        categoryID_Name.insert(query.value(0).toString(),query.value(1).toString());
+        info.categories.push_back(query.value(1).toString());
+    }
+
+    QMap<int,QString> index_CategoryName;
+    QMapIterator<QString, QVariant> i(layer->clsInfo());
+    while (i.hasNext()) {
+        i.next();
+        index_CategoryName.insert(i.value().toInt(),categoryID_Name[i.key()]);
+    }
+
+    QMap<int,QString> testSamples;
+    QList<QVariant> label = layer->data();
+    query.exec(QString("select objectid,categoryid from samples where sampleid ='%1'").arg(sampleID));
+
+    while(query.next())
+    {
+        testSamples.insert(query.value(0).toInt(),query.value(1).toString());
+    }
+    foreach (int objID, testSamples.keys()) {
+        QString clsIndex = testSamples.value(objID);
+        info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[objID].toInt()],categoryID_Name[clsIndex]));
+    }
+    this->setInfo(info);
+
 }
 
 void CDTClassifierAssessmentForm::setInfo(const CDTClassificationInformation &info)
@@ -38,7 +136,7 @@ void CDTClassifierAssessmentForm::updateGeneralInfo(const CDTClassificationInfor
     QTreeWidgetItem *itemNormal = new QTreeWidgetItem(
                 ui->treeWidget,QStringList()<<tr("Normalized")<<(info.isNormalized?tr("true"):tr("false")));
     QTreeWidgetItem *itemPCA = new QTreeWidgetItem(
-                ui->treeWidget,QStringList()<<tr("PCA Params")<<QString::number(info.pcaParams));
+                ui->treeWidget,QStringList()<<tr("PCA Params")<<info.pcaParams);
     QTreeWidgetItem *itemFeatures = new QTreeWidgetItem(
                 ui->treeWidget,QStringList()<<tr("Selected Features"));
 
@@ -51,6 +149,7 @@ void CDTClassifierAssessmentForm::updateGeneralInfo(const CDTClassificationInfor
         itemFeatures->addChild(new QTreeWidgetItem(
                 itemFeatures,QStringList()<<featureName));
     }
+
     ui->treeWidget->addTopLevelItems(QList<QTreeWidgetItem*>()<<itemClsName<<itemClsfier
                 <<itemCateCount<<itemNormal<<itemPCA<<itemFeatures);
 
@@ -86,7 +185,6 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
         ++ matrixData.at<int>(resultIndex,testSampleIndex);
     }
 
-
     for(int i=0;i<categories.size();++i)
     {
         int sumRow=0,sumCol=0;
@@ -110,6 +208,7 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
             ui->tableWidget->setItem(i,j,item);
         }
     }
+
     for(int i=0;i<categories.size();++i)
     {
         QTableWidgetItem *item = ui->tableWidget->item(i,i);
@@ -128,6 +227,7 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
     {
         correctCount += matrixData.at<int>(i,i);
     }
+    qDebug()<<"info.confusionParams.size():"<<info.confusionParams.size();
     double overall = correctCount*100/info.confusionParams.size();
     ui->overallAcuraccyLineEdit->setText(QString::number(overall)+"%");
 

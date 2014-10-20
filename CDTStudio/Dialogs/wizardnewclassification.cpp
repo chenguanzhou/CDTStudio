@@ -179,7 +179,7 @@ void WizardNewClassification::startClassification()
     QSqlDatabase db = QSqlDatabase::database("cls");
     query = QSqlQuery(db);
 
-    QStringList featuresList = modelSelectedFeature->stringList();
+    featuresList = modelSelectedFeature->stringList();
     QStringList selectString;
     QSet<QString> tables;
     foreach (QString featureName, featuresList) {
@@ -258,70 +258,78 @@ void WizardNewClassification::startClassification()
     finished = true;
 }
 
-void WizardNewClassification::generateAssessmentResult()
-{
-    Q_ASSERT(finished);
-    CDTClassificationInformation info;
-    QSqlQuery query(QSqlDatabase::database("category"));
+//void WizardNewClassification::generateAssessmentResult()
+//{
+//    Q_ASSERT(finished);
+//    CDTClassificationInformation info;
+//    QSqlQuery query(QSqlDatabase::database("category"));
 
-    //general info
-    info.clsName = ui->lineEditOutputName->text();
-    info.classifierName = ui->comboBoxClassifier->currentText();
-    info.classifierParams = params;
-    info.categoryCount = categoryID_Index.size();
-    info.isNormalized = ui->checkBoxNormalize->isChecked();
-    info.pcaParams = ui->checkBoxPCA->isChecked()?ui->spinBoxPCA->value():0;
-    info.selectedFeatures = modelSelectedFeature->stringList();
+//    //general info
+////    info.clsName = ui->lineEditOutputName->text();
+////    info.classifierName = ui->comboBoxClassifier->currentText();
+////    info.classifierParams = params;
+////    info.categoryCount = categoryID_Index.size();
+////    info.isNormalized = ui->checkBoxNormalize->isChecked();
+////    info.pcaParams = ui->checkBoxPCA->isChecked()?ui->spinBoxPCA->value():0;
+////    info.selectedFeatures = modelSelectedFeature->stringList();
 
-    //for confusion matrix
-    QMap<QString,QString> categoryID_Name;
-    query.exec(QString("select id,name from category where imageid ='%1'").arg(this->imageID()));
-    while(query.next())
-    {
-        categoryID_Name.insert(query.value(0).toString(),query.value(1).toString());
-        info.categories.push_back(query.value(1).toString());
-    }
+//    info.clsName = name;
+//    info.classifierName = method;
+//    info.classifierParams = params;
+//    info.categoryCount = categoryID_Index.size();
+//    info.isNormalized = !normalizeMethod.isEmpty();
+//    info.pcaParams = pcaParams;
+//    info.selectedFeatures = featuresList;
 
-    QMap<int,QString> index_CategoryName;
-    QMapIterator<QString, QVariant> i(categoryID_Index);
-    while (i.hasNext()) {
-        i.next();
-        index_CategoryName.insert(i.value().toInt(),categoryID_Name[i.key()]);
-    }
+//    //for confusion matrix
+//    QMap<QString,QString> categoryID_Name;
+//    query.exec(QString("select id,name from category where imageid ='%1'").arg(this->imageID()));
+//    while(query.next())
+//    {
+//        categoryID_Name.insert(query.value(0).toString(),query.value(1).toString());
+//        info.categories.push_back(query.value(1).toString());
+//    }
 
-    foreach (int objID, testSamples.keys()) {
-        QString clsIndex = testSamples.value(objID);
-        info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[objID].toInt()],categoryID_Name[clsIndex]));
-    }
+//    QMap<int,QString> index_CategoryName;
+//    QMapIterator<QString, QVariant> i(categoryID_Index);
+//    while (i.hasNext()) {
+//        i.next();
+//        index_CategoryName.insert(i.value().toInt(),categoryID_Name[i.key()]);
+//    }
 
-    ui->assessmentForm->setInfo(info);
-}
+//    foreach (int objID, testSamples.keys()) {
+//        QString clsIndex = testSamples.value(objID);
+//        info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[objID].toInt()],categoryID_Name[clsIndex]));
+//    }
 
-int WizardNewClassification::nextId() const
-{
-    switch (currentId()) {
-    case 0:
-        return 1;
-    case 1:
-        if (ui->checkBoxAssessment->isChecked())
-            return 2;
-        else
-            return -1;
-    case 2:
-        return -1;
-    default://Never used!!
-        return -1;
-    }    
-}
+//    ui->assessmentForm->setInfo(info);
+//}
 
-void WizardNewClassification::initializePage(int id )
-{
-    QWizard::initializePage(id);
-    if (id == 2)    //Assessment
-    {
-        generateAssessmentResult();
-    }
-}
+//int WizardNewClassification::nextId() const
+//{
+//    switch (currentId()) {
+//    case 0:
+//        return 1;
+//    case 1:
+//        if (ui->checkBoxAssessment->isChecked())
+//            return 2;
+//        else
+//            return -1;
+//    case 2:
+//        return -1;
+//    default://Never used!!
+//        return -1;
+//    }
+//}
+
+//void WizardNewClassification::initializePage(int id )
+//{
+//    QWizard::initializePage(id);
+//    if (id == 2)    //Assessment
+//    {
+//        generateAssessmentResult();
+//    }
+//}
 
 QString WizardNewClassification::segmentationID() const
 {

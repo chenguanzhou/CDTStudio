@@ -1,24 +1,33 @@
 #include "cdtclassificationlayer.h"
-#include "cdtsegmentationlayer.h"
+
 #include "stable.h"
+#include "cdtsegmentationlayer.h"
+#include "cdtclassifierassessmentform.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtvariantconverter.h"
 
+
+QList<CDTClassificationLayer *> CDTClassificationLayer::layers;
 CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
     :CDTBaseLayer(uuid,parent)
 {
+    layers.push_back(this);
+
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this);    
 
     //actions
     QAction *actionRename               = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this);
+    QAction *actionAccuracyAssessment   = new QAction(tr("Accuracy Assessment"),this);
     QAction* actionRemoveClassification = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this);
 
-    actions <<(QList<QAction*>()<<actionRename)
+
+    actions <<(QList<QAction*>()<<actionRename<<actionAccuracyAssessment)
             <<(QList<QAction*>()<<actionRemoveClassification);
 
     connect(this,SIGNAL(removeClassification(CDTClassificationLayer*)),this->parent(),SLOT(removeClassification(CDTClassificationLayer*)));
     connect(actionRemoveClassification,SIGNAL(triggered()),SLOT(remove()));
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
+    connect(actionAccuracyAssessment,SIGNAL(triggered()),SLOT(showAccuracy()));
 }
 
 CDTClassificationLayer::~CDTClassificationLayer()
@@ -31,6 +40,8 @@ CDTClassificationLayer::~CDTClassificationLayer()
     ret = query.exec("delete from classificationlayer where id = '"+uuid.toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
+
+    layers.removeAll(this);
 }
 
 void CDTClassificationLayer::rename()
@@ -47,6 +58,13 @@ void CDTClassificationLayer::rename()
 void CDTClassificationLayer::remove()
 {
     emit removeClassification(this);
+}
+
+void CDTClassificationLayer::showAccuracy()
+{
+    CDTClassifierAssessmentForm *form = new CDTClassifierAssessmentForm(NULL);
+    form->setClassification(id());
+    form->show();
 }
 
 QString CDTClassificationLayer::name() const
@@ -114,6 +132,11 @@ QString CDTClassificationLayer::pcaParams() const
     return query.value(0).toString();
 }
 
+QStringList CDTClassificationLayer::selectedFeatures() const
+{
+    return featuresList;
+}
+
 QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
 {
     QMap<QString,QVariant> clsInfo = this->clsInfo();
@@ -158,16 +181,17 @@ void CDTClassificationLayer::setName(const QString &name)
     keyItem->setText(name);
 }
 
-void CDTClassificationLayer::initClassificationLayer(
-        const QString &name,
+void CDTClassificationLayer::initClassificationLayer(const QString &name,
         const QString &methodName,
         const QMap<QString, QVariant> &params,
         const QList<QVariant> &data,
         const QMap<QString, QVariant> &clsInfo,
         const QString &normalizeMethod,
-        const QString &pcaParams)
+        const QString &pcaParams,
+        const QStringList &selectedFeatures)
 {
-    keyItem->setText(name);
+    featuresList = selectedFeatures;
+    keyItem->setText(name);    
 
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("insert into classificationlayer VALUES(?,?,?,?,?,?,?,?,?)");
@@ -188,6 +212,20 @@ void CDTClassificationLayer::initClassificationLayer(
     }
 }
 
+QList<CDTClassificationLayer *> CDTClassificationLayer::getLayers()
+{
+    return layers;
+}
+
+CDTClassificationLayer *CDTClassificationLayer::getLayer(QUuid id)
+{
+    foreach (CDTClassificationLayer *layer, layers) {
+        if (id == layer->uuid)
+            return layer;
+    }
+    return NULL;
+}
+
 QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification)
 {
     out<<classification.uuid
@@ -197,7 +235,8 @@ QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classifi
     <<classification.data()
     <<classification.clsInfo()
     <<classification.normalizeMethod()
-    <<classification.pcaParams();
+    <<classification.pcaParams()
+    <<classification.selectedFeatures();
     return out;
 }
 
@@ -211,9 +250,10 @@ QDataStream &operator>>(QDataStream &in, CDTClassificationLayer &classification)
     QMap<QString, QVariant> clsInfo;
     QString normalize;
     QString pca;
+    QStringList selectedFeatures;
 
-    in>>classification.uuid>>name>>method>>param>>data>>clsInfo>>normalize>>pca;
-    classification.initClassificationLayer(name,method,param,data,clsInfo,normalize,pca);
+    in>>classification.uuid>>name>>method>>param>>data>>clsInfo>>normalize>>pca>>selectedFeatures;
+    classification.initClassificationLayer(name,method,param,data,clsInfo,normalize,pca,selectedFeatures);
 
     return in;
 }

@@ -29,6 +29,7 @@ public:
     QVariantMap     clsInfo()           const;
     QString         normalizeMethod()   const;
     QString         pcaParams()         const;
+    QStringList     selectedFeatures()  const;
 
     QgsFeatureRendererV2* renderer();
 
@@ -38,19 +39,25 @@ public:
             const QList<QVariant> &data,
             const QMap<QString, QVariant> &clsInfo,
             const QString &normalizeMethod,
-            const QString &pcaParams);
+            const QString &pcaParams,
+            const QStringList &selectedFeatures);
 
+    static QList<CDTClassificationLayer *> getLayers();
+    static CDTClassificationLayer *getLayer(QUuid id);
 signals:
     void removeClassification(CDTClassificationLayer*);
 
 public slots:
     void rename();
     void remove();
+    void showAccuracy();
 
 private:
     void setName(const QString& name);
 
 private:
+    QStringList featuresList;
+    static QList<CDTClassificationLayer *> layers;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification);

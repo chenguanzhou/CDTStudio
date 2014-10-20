@@ -341,22 +341,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="wizardPage3">
-   <property name="title">
-    <string>Acurracy assessment</string>
-   </property>
-   <property name="subTitle">
-    <string>Acurracy assessment</string>
-   </property>
-   <attribute name="pageId">
-    <string notr="true">2</string>
-   </attribute>
-   <layout class="QHBoxLayout" name="horizontalLayout_3">
-    <item>
-     <widget class="CDTClassifierAssessmentForm" name="assessmentForm" native="true"/>
-    </item>
-   </layout>
-  </widget>
  </widget>
  <customwidgets>
   <customwidget>
@@ -369,12 +353,6 @@
    <class>QPropertyEditorWidget</class>
    <extends>QTreeView</extends>
    <header>QPropertyEditorWidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>CDTClassifierAssessmentForm</class>
-   <extends>QWidget</extends>
-   <header location="global">cdtclassifierassessmentform.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

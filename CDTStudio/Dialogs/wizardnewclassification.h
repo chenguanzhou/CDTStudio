@@ -26,9 +26,9 @@ private:
     void    updateFeatures(QString segID);    
     bool    validateCurrentPage();
     void    startClassification();
-    void    generateAssessmentResult();
-    int     nextId() const;
-    void    initializePage(int id);
+//    void    generateAssessmentResult();
+//    int     nextId() const;
+//    void    initializePage(int id);
 
     QString segmentationID() const;
     QString imageID() const;
@@ -45,22 +45,23 @@ private slots:
 
 public:
     //Export
-    QString name;
-    QString method;
-    QList<QVariant> label;//QList<int>
-    QMap<QString,QVariant> categoryID_Index;//QMap<QString,int>
-    QMap<int,QString> samples;//objID_catID
-    QMap<int,QString> testSamples;//objID_catID
-    QVariantMap params;
-    QString normalizeMethod;
-    QString pcaParams;
+    QString                 name;
+    QString                 method;
+    QList<QVariant>         label;//QList<int>
+    QMap<QString,QVariant>  categoryID_Index;//QMap<QString,int>
+    QMap<int,QString>       samples;//objID_catID
+    QMap<int,QString>       testSamples;//objID_catID
+    QVariantMap             params;
+    QString                 normalizeMethod;
+    QString                 pcaParams;
+    QStringList             featuresList;
 
 private:
     Ui::WizardNewClassification *ui;
-    QSqlQueryModel *modelSample;
-    QStringListModel *modelSelectedFeature;
-    QList<QWidget*> paramWidgets;
-    bool finished;
+    QSqlQueryModel      *modelSample;
+    QStringListModel    *modelSelectedFeature;
+    QList<QWidget*>     paramWidgets;
+    bool                finished;
 };
 
 #endif // WIZARDNEWCLASSIFICATION_H

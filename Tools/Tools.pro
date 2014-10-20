@@ -6,8 +6,6 @@ SUBDIRS += \
     CDTFileSystem\
     CDTHistogramPlot\
     QtColorPicker\    
-    CDTClassifierAssessmentWidget \
-    XMLSchemaValidator \
-    CDTTask
+    XMLSchemaValidator
 
 CDTFileSystem.depends = log4qt
