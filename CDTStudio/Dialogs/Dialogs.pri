@@ -9,7 +9,8 @@ FORMS += \
     Dialogs/dialognewproject.ui \
     Dialogs/dialogpbcdbinary.ui \
     Dialogs/dialogpbcdaddbandpair.ui \
-    Dialogs/cdtclassifierassessmentform.ui
+    Dialogs/cdtclassifierassessmentform.ui \
+    $$PWD/dialogdecisionfusion.ui
 
 HEADERS += \
     Dialogs/dialoggenerateattributes.h \
@@ -22,7 +23,8 @@ HEADERS += \
     Dialogs/dialogdbconnection.h \
     Dialogs/dialogpbcdbinary.h \
     Dialogs/dialogpbcdaddbandpair.h \
-    Dialogs/cdtclassifierassessmentform.h
+    Dialogs/cdtclassifierassessmentform.h \
+    $$PWD/dialogdecisionfusion.h
 
 SOURCES += \
     Dialogs/dialoggenerateattributes.cpp \
@@ -35,6 +37,7 @@ SOURCES += \
     Dialogs/dialognewproject.cpp \
     Dialogs/dialogpbcdbinary.cpp \
     Dialogs/dialogpbcdaddbandpair.cpp \
-    Dialogs/cdtclassifierassessmentform.cpp
+    Dialogs/cdtclassifierassessmentform.cpp \
+    $$PWD/dialogdecisionfusion.cpp
 
 INCLUDEPATH += $$PWD

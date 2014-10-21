@@ -5,6 +5,7 @@
 #include "cdtclassificationlayer.h"
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "wizardnewclassification.h"
+#include "dialogdecisionfusion.h"
 #include "cdtvariantconverter.h"
 #include "cdtattributedockwidget.h"
 #include "mainwindow.h"
@@ -30,6 +31,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent),
       actionAddClassifications(new QAction(QIcon(":/Icon/Add.png"),tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Segmentation"),this)),
+      actionAddDecisionFusion(new QAction(tr("Run Decision Fusion"),this)),
       actionExportShapefile(new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this)),
       actionRemoveAllClassifications(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Classifications"),this)),
       actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Segmentation"),this)),
@@ -53,6 +55,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(actionRemoveSegmentation,SIGNAL(triggered()),SLOT(remove()));
     connect(actionAddClassifications,SIGNAL(triggered()),SLOT(addClassification()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));    
+    connect(actionAddDecisionFusion,SIGNAL(triggered()),SLOT(decisionFusion()));
 }
 
 CDTSegmentationLayer::~CDTSegmentationLayer()
@@ -86,7 +89,8 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     menu->addAction(actionRemoveSegmentation);
     menu->addSeparator();
     menu->addAction(actionAddClassifications);
-    menu->addAction(actionRemoveAllClassifications);    
+    menu->addAction(actionRemoveAllClassifications);
+    menu->addAction(actionAddDecisionFusion);
     menu->addSeparator();    
     menu->exec(QCursor::pos());
 
@@ -176,6 +180,12 @@ void CDTSegmentationLayer::removeAllClassifications()
     }
     classifications.clear();
     emit layerChanged();
+}
+
+void CDTSegmentationLayer::decisionFusion()
+{
+    DialogDecisionFusion dlg(id().toString());
+    dlg.exec();
 }
 
 

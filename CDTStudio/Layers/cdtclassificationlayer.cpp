@@ -1,6 +1,7 @@
 #include "cdtclassificationlayer.h"
 
 #include "stable.h"
+#include "mainwindow.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtclassifierassessmentform.h"
 #include "cdtprojecttreeitem.h"
@@ -61,10 +62,12 @@ void CDTClassificationLayer::remove()
 }
 
 void CDTClassificationLayer::showAccuracy()
-{
-    CDTClassifierAssessmentForm *form = new CDTClassifierAssessmentForm(NULL);
+{    
+    QDialog dlg;
+    dlg.setWindowTitle(tr("Accuracy Assessment"));
+    CDTClassifierAssessmentForm *form = new CDTClassifierAssessmentForm(&dlg);
     form->setClassification(id());
-    form->show();
+    dlg.exec();
 }
 
 QString CDTClassificationLayer::name() const

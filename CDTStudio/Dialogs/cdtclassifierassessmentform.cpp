@@ -13,7 +13,6 @@ CDTClassifierAssessmentForm::CDTClassifierAssessmentForm(QWidget *parent) :
     modelSample(new QSqlQueryModel(this))
 {
     ui->setupUi(this);
-    this->setWindowTitle(tr("Accuracy Assessment"));
     ui->comboBoxClassification->setModel(modelClassification);
     ui->comboBoxSample->setModel(modelSample);
 

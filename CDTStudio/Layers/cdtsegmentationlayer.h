@@ -69,6 +69,7 @@ public slots:
     void addClassification();
     void removeClassification(CDTClassificationLayer *);
     void removeAllClassifications();
+    void decisionFusion();
 
     void setName(const QString& name);
     void setBorderColor(const QColor &clr);
@@ -98,6 +99,7 @@ private:
     QAction *actionRemoveSegmentation;    
     QAction *actionAddClassifications;
     QAction *actionRemoveAllClassifications;
+    QAction *actionAddDecisionFusion;
 
     CDTProjectTreeItem* classificationRootItem;
 
