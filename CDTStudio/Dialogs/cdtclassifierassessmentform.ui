@@ -6,11 +6,11 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
-    <height>328</height>
+    <width>670</width>
+    <height>524</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,3,8">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -50,11 +50,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QLineEdit" name="lineEdit">
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
+    <widget class="QPlainTextEdit" name="plainTextEdit"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">

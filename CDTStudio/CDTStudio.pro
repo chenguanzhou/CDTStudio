@@ -87,7 +87,7 @@ LIBS += -lgdal_i -lgdi32
 }
 
 LIBS +=     -L../lib -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
-             -lCDTFileSystem -llog4qt -lCDTClassifierAssessmentWidget\
+             -lCDTFileSystem -llog4qt\
             -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 #opencv

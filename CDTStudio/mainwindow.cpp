@@ -171,7 +171,7 @@ void MainWindow::initStatusBar()
     QLabel *labelCoord = new QLabel( QString(), statusBar() );
     labelCoord->setObjectName( "mCoordsLabel" );
     labelCoord->setMinimumWidth( 10 );
-    labelCoord->setMaximumHeight( 20 );
+//    labelCoord->setMaximumHeight( 20 );
     labelCoord->setAlignment( Qt::AlignCenter );
     labelCoord->setFrameStyle( QFrame::NoFrame );
     labelCoord->setText( tr( "Coordinate:" ) );
@@ -182,7 +182,7 @@ void MainWindow::initStatusBar()
     lineEditCoord->setObjectName( "lineEditCoord" );
     lineEditCoord->setMinimumWidth( 10 );
     lineEditCoord->setMaximumWidth( 300 );
-    lineEditCoord->setMaximumHeight( 20 );
+//    lineEditCoord->setMaximumHeight( 20 );
     lineEditCoord->setAlignment( Qt::AlignCenter );
     QRegExp coordValidator( "[+-]?\\d+\\.?\\d*\\s*,\\s*[+-]?\\d+\\.?\\d*" );
     new QRegExpValidator( coordValidator, lineEditCoord );
@@ -198,7 +198,7 @@ void MainWindow::initStatusBar()
     QLabel *scaleLabel = new QLabel( QString(), statusBar() );
     scaleLabel->setObjectName( "scaleLabel" );
     scaleLabel->setMinimumWidth( 10 );
-    scaleLabel->setMaximumHeight( 20 );
+//    scaleLabel->setMaximumHeight( 20 );
     scaleLabel->setAlignment( Qt::AlignCenter );
     scaleLabel->setFrameStyle( QFrame::NoFrame );
     scaleLabel->setText( tr( "Scale:" ) );
@@ -209,7 +209,7 @@ void MainWindow::initStatusBar()
     scaleEdit->setObjectName( "scaleEdit" );
     scaleEdit->setMinimumWidth( 10 );
     scaleEdit->setMaximumWidth( 200 );
-    scaleEdit->setMaximumHeight( 20 );
+//    scaleEdit->setMaximumHeight( 20 );
     scaleEdit->lineEdit()->setAlignment(Qt::AlignCenter);
     scaleEdit->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     scaleEdit->setWhatsThis( tr( "Displays the current map scale" ) );
