@@ -186,6 +186,20 @@ void CDTSegmentationLayer::decisionFusion()
 {
     DialogDecisionFusion dlg(id().toString());
     dlg.exec();
+
+        CDTClassificationLayer *classification = new CDTClassificationLayer(QUuid::createUuid(),this);
+        classification->initClassificationLayer(
+                    dlg.name,
+                    dlg.method,
+                    dlg.params,
+                    dlg.label,
+                    dlg.categoryID_Index,
+                    dlg.normalizeMethod,
+                    dlg.pcaParams,
+                    dlg.featuresList);
+        classificationRootItem->appendRow(classification->standardKeyItem());
+        addClassification(classification);
+
 }
 
 
