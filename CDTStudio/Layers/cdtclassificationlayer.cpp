@@ -65,7 +65,12 @@ void CDTClassificationLayer::showAccuracy()
 {    
     QDialog dlg;
     dlg.setWindowTitle(tr("Accuracy Assessment"));
+    QVBoxLayout *vbox = new QVBoxLayout(&dlg);
+    vbox->setMargin(0);
+    dlg.setLayout(vbox);
     CDTClassifierAssessmentForm *form = new CDTClassifierAssessmentForm(&dlg);
+    vbox->addWidget(form);
+
     form->setClassification(id());
     dlg.exec();
 }
