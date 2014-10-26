@@ -56,7 +56,7 @@ void DialogDecisionFusion::startDecisionFusion()
         {
             votes[labels[k][i].toInt()] += 1;
         }
-        size_t winner = std::max_element(votes.begin(),votes.end())-votes.begin();
+        int winner = std::max_element(votes.begin(),votes.end())-votes.begin();
 
         result.push_back(winner);
     }

@@ -42,7 +42,7 @@
 #		warning "QAtomicPointer test and set is not native. The class Log4Qt::ClassLogger is not thread-safe."
 #	endif
 #endif
-#include "log4qt_global.h"
+#include "../log4qt_global.h"
 
 /******************************************************************************
  * Declarations

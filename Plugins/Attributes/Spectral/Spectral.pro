@@ -8,7 +8,7 @@ QT       += core gui sql
 
 TARGET = Spectral
 TEMPLATE = lib
-CONFIG += Plugin
+CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
 

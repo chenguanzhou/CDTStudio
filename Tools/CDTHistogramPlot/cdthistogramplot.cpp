@@ -75,7 +75,7 @@ void CDTHistogramPlot::replot()
         QFont sansFont("Helvetica", 15);
         sansFont.setBold(false);
         title.setFont(sansFont);
-        title.setBorderRadius(4);
+//        title.setBorderRadius(4);
         this->setTitle(title);
 
         setAxisAutoScale(QwtPlot::xBottom);

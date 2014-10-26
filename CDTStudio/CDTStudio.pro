@@ -39,7 +39,13 @@ HEADERS  += \
     cdtbasethread.h \
     cdtvariantconverter.h \
     cdtapplication.h \
+    ../Interfaces/cdtattributesinterface.h \
+    ../Interfaces/cdtautothresholdinterface.h \
+    ../Interfaces/cdtclassifierinterface.h \
     ../Interfaces/cdtextractioninterface.h \
+    ../Interfaces/cdtpbcddiffinterface.h \
+    ../Interfaces/cdtpbcdmergeinterface.h \
+    ../Interfaces/cdtsegmentationinterface.h \
     cdtclassificationhelper.h
 
 FORMS    += \

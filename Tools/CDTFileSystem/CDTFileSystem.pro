@@ -40,6 +40,7 @@ unix {
 }
 #log4qt
 INCLUDEPATH += ../
+INCLUDEPATH += ../log4qt
 DEPENDPATH += ../log4qt
 LIBS += -L../../lib -llog4qt
 

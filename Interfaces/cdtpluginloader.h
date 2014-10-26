@@ -15,8 +15,6 @@ public:
         QDir pluginDir=directoryof("Plugins");
         QList<T*> plugins;
 
-        QString className = typeid(T).name();
-
         foreach (QString fileName, pluginDir.entryList(QDir::Files))
         {
             QPluginLoader loader(pluginDir.absoluteFilePath(fileName));
@@ -26,6 +24,8 @@ public:
             }
         }
 
+//        QString className = plugins[0]->metaObject()->className();
+        QString className = T::staticMetaObject.className();
         if (plugins.size()!=0)
             Log4Qt::Logger::rootLogger()->info("%1 plugins of %2 is initialized!",
                             plugins.size(),className);
