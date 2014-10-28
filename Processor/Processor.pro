@@ -28,7 +28,12 @@ HEADERS += \
     cdttask.h \
     cdttaskmanager.h \
     cdttask_pbcdbinary.h \
-    messagehandler.h
+    messagehandler.h\
+    ../Interfaces/cdtattributesinterface.h \
+    ../Interfaces/cdtautothresholdinterface.h \
+    ../Interfaces/cdtclassifierinterface.h \
+    ../Interfaces/cdtpbcddiffinterface.h \
+    ../Interfaces/cdtpbcdmergeinterface.h
 
 INCLUDEPATH += \
     ../Interfaces \

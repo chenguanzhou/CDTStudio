@@ -1,6 +1,7 @@
 #include "dialoggenerateattributes.h"
 #include "ui_dialoggenerateattributes.h"
 
+#include "stable.h"
 #include "cdtfilesystem.h"
 #include "cdtattributesinterface.h"
 #include "cdtattributegenerator.h"
@@ -151,6 +152,11 @@ void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
     CDTSegmentationLayer* segmentationLayer =
             CDTSegmentationLayer::getLayer(segID);
 
+    if (QSqlDatabase::contains("attribute")==false)
+    {
+        QMessageBox::critical(this,tr("Error"),tr("Database \"attribute\" is not found"));
+        return;
+    }
     CDTAttributeGenerator* attributeGenerator = new CDTAttributeGenerator(
                 segmentationLayer->imagePath(),
                 segmentationLayer->markfileTempPath(),
@@ -175,6 +181,7 @@ void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
     attributeGenerator->start();
     this->setEnabled(false);
     connect(attributeGenerator,SIGNAL(finished()),this,SLOT(onFinished()));
+    connect(attributeGenerator,SIGNAL(finished()),attributeGenerator,SLOT(deleteLater()));
 }
 
 void DialogGenerateAttributes::on_treeWidgetAll_itemSelectionChanged()

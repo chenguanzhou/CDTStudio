@@ -77,18 +77,24 @@ void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
 
 void CDTAttributeDockWidget::updateTable()
 {       
-    QSqlDatabase db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"attribute");
-    db.setDatabaseName(dbConnInfo.dbName);
-    db.setHostName(dbConnInfo.hostName);
-    db.setPort(dbConnInfo.port);
+    QSqlDatabase db;
+//    if (QSqlDatabase::contains("attribute"))
+//        db = QSqlDatabase::database("attribute");
+//    else
+//    {
+        db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"attribute");
+        db.setDatabaseName(dbConnInfo.dbName);
+        db.setHostName(dbConnInfo.hostName);
+        db.setPort(dbConnInfo.port);
 
-    if (!db.open(dbConnInfo.username, dbConnInfo.password)) {
-        QSqlError err = db.lastError();
-        db = QSqlDatabase();
-        QSqlDatabase::removeDatabase("attribute");
-        QMessageBox::critical(this,tr("Error"),tr("Open database failed!\n information:")+err.text());
-        return;
-    }
+        if (!db.open(dbConnInfo.username, dbConnInfo.password)) {
+            QSqlError err = db.lastError();
+            db = QSqlDatabase();
+            QSqlDatabase::removeDatabase("attribute");
+            QMessageBox::critical(this,tr("Error"),tr("Open database failed!\n information:")+err.text());
+            return;
+        }
+//    }
 
     QStringList attributes = attributeNames();
     QStringList originalTables = db.tables();
@@ -119,6 +125,7 @@ void CDTAttributeDockWidget::clear()
     this->setEnabled(false);
     dbConnInfo = CDTDatabaseConnInfo();
     clearTables();
+    QSqlDatabase::removeDatabase("attribute");
     ui->qwtPlot->clear();
     segmentationLayer =NULL;
 }

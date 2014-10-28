@@ -63,6 +63,7 @@ public slots:
     void onContextMenuRequest(QWidget *parent);
     void rename();
     void editDBInfo();
+    void generateAttributes();
     void exportShapefile();
     void remove();
 
@@ -94,6 +95,7 @@ private:
 
     QWidgetAction *actionChangeBorderColor;
     QAction *actionRename;
+    QAction *actionGenerateAttributes;
     QAction *actionEditDBInfo;
     QAction *actionExportShapefile;
     QAction *actionRemoveSegmentation;    

@@ -13,7 +13,7 @@ public:
     explicit CDTSegmentationInterface(QObject* parent = 0):QObject(parent){}
 
     virtual QString segmentationMethod()const =0;
-    virtual void startSegmentation(QProgressBar *progressBar,QLabel *label) =0;
+    virtual void startSegmentation(QProgressBar *progressBar,QLabel *label) =0;//TODO:Hide QProgressBar
 
     QVariantMap params() const
     {

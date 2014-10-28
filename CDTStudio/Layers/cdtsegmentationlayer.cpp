@@ -1,17 +1,18 @@
 #include "cdtsegmentationlayer.h"
 #include "stable.h"
+#include "qtcolorpicker.h"
+#include "cdtfilesystem.h"
+#include "mainwindow.h"
 #include "cdtprojectlayer.h"
 #include "cdtimagelayer.h"
 #include "cdtclassificationlayer.h"
+#include "cdtprojecttreeitem.h"
 #include "cdtmaptoolselecttrainingsamples.h"
-#include "wizardnewclassification.h"
-#include "dialogdecisionfusion.h"
 #include "cdtvariantconverter.h"
 #include "cdtattributedockwidget.h"
-#include "mainwindow.h"
-#include "qtcolorpicker.h"
-#include "cdtfilesystem.h"
-#include "cdtprojecttreeitem.h"
+#include "wizardnewclassification.h"
+#include "dialogdecisionfusion.h"
+#include "dialoggenerateattributes.h"
 
 QDataStream &operator<<(QDataStream &out, const SampleElement &sample)
 {
@@ -29,6 +30,7 @@ QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
 
 CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent),
+      actionGenerateAttributes(new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),this)),
       actionAddClassifications(new QAction(QIcon(":/Icon/Add.png"),tr("Add Classification"),this)),
       actionRemoveSegmentation(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Segmentation"),this)),
       actionAddDecisionFusion(new QAction(tr("Run Decision Fusion"),this)),
@@ -51,6 +53,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
 
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
     connect(actionEditDBInfo,SIGNAL(triggered()),SLOT(editDBInfo()));
+    connect(actionGenerateAttributes,SIGNAL(triggered()),SLOT(generateAttributes()));
     connect(actionExportShapefile,SIGNAL(triggered()),SLOT(exportShapefile()));
     connect(actionRemoveSegmentation,SIGNAL(triggered()),SLOT(remove()));
     connect(actionAddClassifications,SIGNAL(triggered()),SLOT(addClassification()));
@@ -84,6 +87,7 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     menu->addAction(actionChangeBorderColor);
     menu->addAction(actionRename);
     menu->addAction(actionEditDBInfo);
+    menu->addAction(actionGenerateAttributes);
     menu->addAction(actionExportShapefile);
     menu->addSeparator();
     menu->addAction(actionRemoveSegmentation);
@@ -119,6 +123,31 @@ void CDTSegmentationLayer::editDBInfo()
         //TODO  update AttributDockWidget
         setDatabaseURL(dlg.dbConnectInfo());
     }
+}
+
+void CDTSegmentationLayer::generateAttributes()
+{
+    MainWindow::getAttributesDockWidget()->clear();
+
+
+    CDTDatabaseConnInfo dbConnInfo = this->databaseURL();
+    QSqlDatabase db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"attribute");
+    db.setDatabaseName(dbConnInfo.dbName);
+    db.setHostName(dbConnInfo.hostName);
+    db.setPort(dbConnInfo.port);
+
+    if (!db.open(dbConnInfo.username, dbConnInfo.password)) {
+        QSqlDatabase::removeDatabase("attribute");
+        QMessageBox::critical(NULL,tr("Error"),tr("Open database failed!\n information:")+db.lastError().text());
+        return;
+    }
+
+    CDTImageLayer* imageLayer = (CDTImageLayer*)(parent());
+    DialogGenerateAttributes dlg(this->id(),imageLayer->bandCount());
+    dlg.exec();
+    QSqlDatabase::removeDatabase("attribute");
+
+    MainWindow::getAttributesDockWidget()->setDatabaseURL(this->databaseURL());
 }
 
 void CDTSegmentationLayer::exportShapefile()
