@@ -47,6 +47,7 @@ public:
     CDTDatabaseConnInfo databaseURL() const;
     QColor  borderColor()const;
     QString imagePath()const;
+    QList<QAbstractTableModel *> tableModels();
 
     void setRenderer(QgsFeatureRendererV2 *r);
     void setOriginRenderer();
@@ -106,6 +107,7 @@ private:
     CDTProjectTreeItem* classificationRootItem;
 
     static QList<CDTSegmentationLayer *> layers;
+    static QStringList attributeNames();
 };
 QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
 QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);

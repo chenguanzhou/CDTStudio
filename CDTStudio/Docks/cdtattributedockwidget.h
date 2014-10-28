@@ -4,10 +4,9 @@
 #include "cdtdockwidget.h"
 #include "dialogdbconnection.h"
 
-class QToolBar;
-class QMenuBar;
 class QPainter;
 class QWidget;
+class QAbstractTableModel;
 class CDTSegmentationLayer;
 
 
@@ -52,17 +51,19 @@ public slots:
     void setCurrentLayer(CDTBaseLayer* layer);
     void onCurrentProjectClosed();
 
-    void setDatabaseURL(CDTDatabaseConnInfo url);    
-    void updateTable();
+//    void setDatabaseURL(CDTDatabaseConnInfo url);
+
+//    void updateTable();
     void clearTables();
     void clear();
 
 private slots:
 //    void onActionGenerateAttributesTriggered();
-    void onCurrentTabChanged(int index);
+//    void onCurrentTabChanged(int index);
+    void setTableModels(QList<QAbstractTableModel*> models);
     void onItemClicked(QModelIndex index);
 private:
-    static QStringList attributeNames();
+//    static QStringList attributeNames();
 private:
     Ui::CDTAttributeDockWidget *ui;
     CDTDatabaseConnInfo     dbConnInfo;

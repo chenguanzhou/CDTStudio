@@ -10,9 +10,13 @@
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "cdtvariantconverter.h"
 #include "cdtattributedockwidget.h"
+#include "cdtattributesinterface.h"
 #include "wizardnewclassification.h"
 #include "dialogdecisionfusion.h"
 #include "dialoggenerateattributes.h"
+
+extern QList<CDTAttributesInterface *>     attributesPlugins;
+QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
 
 QDataStream &operator<<(QDataStream &out, const SampleElement &sample)
 {
@@ -25,8 +29,6 @@ QDataStream &operator>>(QDataStream &in, SampleElement &sample)
     in>>sample.ObjectID>>sample.categoryID>>sample.sampleID;
     return in;
 }
-
-QList<CDTSegmentationLayer *> CDTSegmentationLayer::layers;
 
 CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent),
@@ -44,12 +46,12 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
 
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
     classificationRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::EMPTY,tr("Classification"),this);
-    keyItem->appendRow(classificationRootItem);    
+    keyItem->appendRow(classificationRootItem);
 
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(layerChanged()));
     connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(layerChanged()));
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
-//    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
+    //    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
 
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
     connect(actionEditDBInfo,SIGNAL(triggered()),SLOT(editDBInfo()));
@@ -57,7 +59,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(actionExportShapefile,SIGNAL(triggered()),SLOT(exportShapefile()));
     connect(actionRemoveSegmentation,SIGNAL(triggered()),SLOT(remove()));
     connect(actionAddClassifications,SIGNAL(triggered()),SLOT(addClassification()));
-    connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));    
+    connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));
     connect(actionAddDecisionFusion,SIGNAL(triggered()),SLOT(decisionFusion()));
 }
 
@@ -95,7 +97,7 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     menu->addAction(actionAddClassifications);
     menu->addAction(actionRemoveAllClassifications);
     menu->addAction(actionAddDecisionFusion);
-    menu->addSeparator();    
+    menu->addSeparator();
     menu->exec(QCursor::pos());
 
     actionChangeBorderColor->releaseWidget(borderColorPicker);
@@ -147,7 +149,7 @@ void CDTSegmentationLayer::generateAttributes()
     dlg.exec();
     QSqlDatabase::removeDatabase("attribute");
 
-    MainWindow::getAttributesDockWidget()->setDatabaseURL(this->databaseURL());
+    MainWindow::getAttributesDockWidget()->setCurrentLayer(this);
 }
 
 void CDTSegmentationLayer::exportShapefile()
@@ -161,7 +163,7 @@ void CDTSegmentationLayer::addClassification()
     MainWindow::getAttributesDockWidget()->clearTables();
     WizardNewClassification dlg(id());
     int ret = dlg.exec();
-    MainWindow::getAttributesDockWidget()->updateTable();
+    MainWindow::getAttributesDockWidget()->setCurrentLayer(this);
 
     if (ret == QWizard::Accepted || dlg.isValid())
     {
@@ -216,18 +218,18 @@ void CDTSegmentationLayer::decisionFusion()
     DialogDecisionFusion dlg(id().toString());
     dlg.exec();
 
-        CDTClassificationLayer *classification = new CDTClassificationLayer(QUuid::createUuid(),this);
-        classification->initClassificationLayer(
-                    dlg.name,
-                    dlg.method,
-                    dlg.params,
-                    dlg.label,
-                    dlg.categoryID_Index,
-                    dlg.normalizeMethod,
-                    dlg.pcaParams,
-                    dlg.featuresList);
-        classificationRootItem->appendRow(classification->standardKeyItem());
-        addClassification(classification);
+    CDTClassificationLayer *classification = new CDTClassificationLayer(QUuid::createUuid(),this);
+    classification->initClassificationLayer(
+                dlg.name,
+                dlg.method,
+                dlg.params,
+                dlg.label,
+                dlg.categoryID_Index,
+                dlg.normalizeMethod,
+                dlg.pcaParams,
+                dlg.featuresList);
+    classificationRootItem->appendRow(classification->standardKeyItem());
+    addClassification(classification);
 
 }
 
@@ -304,6 +306,40 @@ QColor CDTSegmentationLayer::borderColor() const
 QString CDTSegmentationLayer::imagePath() const
 {
     return ((CDTImageLayer*)parent())->path();
+}
+
+QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
+{
+    QList<QAbstractTableModel *> models;
+    CDTDatabaseConnInfo dbConnInfo = databaseURL();
+    QSqlDatabase db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"attribute");
+    db.setDatabaseName(dbConnInfo.dbName);
+    db.setHostName(dbConnInfo.hostName);
+    db.setPort(dbConnInfo.port);
+
+    if (!db.open(dbConnInfo.username, dbConnInfo.password)) {
+        QSqlError err = db.lastError();
+        db = QSqlDatabase();
+        QSqlDatabase::removeDatabase("attribute");
+        QMessageBox::critical(NULL,tr("Error"),tr("Open database failed!\n information:")+err.text());
+        return models;
+    }
+
+    QStringList attributes = attributeNames();
+    QStringList originalTables = db.tables();
+    QStringList tableNames;
+    foreach (QString name, originalTables) {
+        if (attributes.contains(name))
+            tableNames<<name;
+    }
+    foreach (QString tableName, tableNames) {
+        QSqlTableModel* model = new QSqlTableModel(NULL,db);
+        model->setProperty("name",tableName);
+        model->setTable(tableName);
+        model->select();
+        models.append(model);
+    }
+    return models;
 }
 
 void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
@@ -482,6 +518,15 @@ void CDTSegmentationLayer::saveSamplesToStruct(QMap<QString, QString> &sample_id
             samples<<SampleElement(query.value(0).toInt(),query.value(1).toString(),sampleID);
         }
     }
+}
+
+QStringList CDTSegmentationLayer::attributeNames()
+{
+    QStringList list;
+    foreach (CDTAttributesInterface *interface, attributesPlugins) {
+        list<<interface->tableName();
+    }
+    return list;
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentation)

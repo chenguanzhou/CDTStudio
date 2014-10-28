@@ -4,10 +4,10 @@
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
 #include "dialoggenerateattributes.h"
-#include "cdtattributesinterface.h"
+
 #include "mainwindow.h"
 
-extern QList<CDTAttributesInterface *>     attributesPlugins;
+//extern QList<CDTAttributesInterface *>     attributesPlugins;
 
 CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
@@ -18,19 +18,19 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
 
     setWindowTitle(tr("Attributes Manager"));
 
-//    QToolBar *toolBar = new QToolBar(this);
-//    toolBar->setIconSize(MainWindow::getIconSize());
-//    ui->horizontalLayout->setMenuBar(toolBar);
+    //    QToolBar *toolBar = new QToolBar(this);
+    //    toolBar->setIconSize(MainWindow::getIconSize());
+    //    ui->horizontalLayout->setMenuBar(toolBar);
 
-//    QAction *actionGenerateAttributes = new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),toolBar);
-//    connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
-//    toolBar->addAction(actionGenerateAttributes);
+    //    QAction *actionGenerateAttributes = new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),toolBar);
+    //    connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
+    //    toolBar->addAction(actionGenerateAttributes);
 
     QSettings settings("WHU","CDTStudio");
     ui->splitter->restoreGeometry(settings.value("CDTAttributeDockWidget/geometry").toByteArray());
     ui->splitter->restoreState(settings.value("CDTAttributeDockWidget/windowState").toByteArray());
 
-    connect(ui->tabWidget,SIGNAL(currentChanged(int)),SLOT(onCurrentTabChanged(int)));
+    //    connect(ui->tabWidget,SIGNAL(currentChanged(int)),SLOT(onCurrentTabChanged(int)));
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()
@@ -57,7 +57,9 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer);
     if (segmentationLayer)
     {
-        setDatabaseURL(segmentationLayer->databaseURL());
+//        setDatabaseURL(segmentationLayer->databaseURL());
+        setTableModels(segmentationLayer->tableModels());
+        setEnabled(true);
     }
 }
 
@@ -66,59 +68,53 @@ void CDTAttributeDockWidget::onCurrentProjectClosed()
     clear();
 }
 
-void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
-{
-    if (dbConnInfo == url)return;
-    dbConnInfo = url;
-    clearTables();
-    updateTable();
-    this->setEnabled(true);
-}
+//void CDTAttributeDockWidget::setDatabaseURL(CDTDatabaseConnInfo url)
+//{
+//    if (dbConnInfo == url)return;
+//    dbConnInfo = url;
+//    clearTables();
+//    updateTable();
+//    this->setEnabled(true);
+//}
 
-void CDTAttributeDockWidget::updateTable()
-{       
-    QSqlDatabase db;
-//    if (QSqlDatabase::contains("attribute"))
-//        db = QSqlDatabase::database("attribute");
-//    else
-//    {
-        db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"attribute");
-        db.setDatabaseName(dbConnInfo.dbName);
-        db.setHostName(dbConnInfo.hostName);
-        db.setPort(dbConnInfo.port);
+//void CDTAttributeDockWidget::updateTable()
+//{
+//    QSqlDatabase db;
+//    db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"attribute");
+//    db.setDatabaseName(dbConnInfo.dbName);
+//    db.setHostName(dbConnInfo.hostName);
+//    db.setPort(dbConnInfo.port);
 
-        if (!db.open(dbConnInfo.username, dbConnInfo.password)) {
-            QSqlError err = db.lastError();
-            db = QSqlDatabase();
-            QSqlDatabase::removeDatabase("attribute");
-            QMessageBox::critical(this,tr("Error"),tr("Open database failed!\n information:")+err.text());
-            return;
-        }
+//    if (!db.open(dbConnInfo.username, dbConnInfo.password)) {
+//        QSqlError err = db.lastError();
+//        db = QSqlDatabase();
+//        QSqlDatabase::removeDatabase("attribute");
+//        QMessageBox::critical(this,tr("Error"),tr("Open database failed!\n information:")+err.text());
+//        return;
 //    }
 
-    QStringList attributes = attributeNames();
-    QStringList originalTables = db.tables();
-    QStringList tableNames;
-    foreach (QString name, originalTables) {
-        if (attributes.contains(name))
-            tableNames<<name;
-    }
-    foreach (QString tableName, tableNames) {
-        QTableView* widget = new QTableView(ui->tabWidget);
-        QSqlTableModel* model = new QSqlTableModel(widget,db);
-        model->setTable(tableName);
-        model->select();
-        model->setProperty("isSelected",false);
-        widget->setModel(model);
-        widget->setSelectionMode(QTableView::SingleSelection);        
-        widget->setEditTriggers(QTableView::NoEditTriggers);
-        widget->setItemDelegateForColumn(0,new CDTObjectIDDelegate(this));
-        widget->verticalHeader()->hide();
+//    QStringList attributes = attributeNames();
+//    QStringList originalTables = db.tables();
+//    QStringList tableNames;
+//    foreach (QString name, originalTables) {
+//        if (attributes.contains(name))
+//            tableNames<<name;
+//    }
+//    foreach (QString tableName, tableNames) {
+//        QTableView* widget = new QTableView(ui->tabWidget);
+//        QSqlTableModel* model = new QSqlTableModel(widget,db);
+//        model->setTable(tableName);
+//        model->select();
+//        widget->setModel(model);
+//        widget->setSelectionMode(QTableView::SingleSelection);
+//        widget->setEditTriggers(QTableView::NoEditTriggers);
+//        widget->setItemDelegateForColumn(0,new CDTObjectIDDelegate(this));
+//        widget->verticalHeader()->hide();
 
-        ui->tabWidget->addTab(widget,tableName);
-        connect(widget,SIGNAL(clicked(QModelIndex)),SLOT(onItemClicked(QModelIndex)));
-    }
-}
+//        ui->tabWidget->addTab(widget,tableName);
+//        connect(widget,SIGNAL(clicked(QModelIndex)),SLOT(onItemClicked(QModelIndex)));
+//    }
+//}
 
 void CDTAttributeDockWidget::clear()
 {
@@ -130,6 +126,25 @@ void CDTAttributeDockWidget::clear()
     segmentationLayer =NULL;
 }
 
+void CDTAttributeDockWidget::setTableModels(QList<QAbstractTableModel *> models)
+{
+    clearTables();
+    foreach (QAbstractTableModel *model, models) {
+        QTableView* widget = new QTableView(ui->tabWidget);
+        model->setParent(widget);
+        widget->setModel(model);
+        widget->setSelectionMode(QTableView::SingleSelection);
+        widget->setEditTriggers(QTableView::NoEditTriggers);
+        widget->setItemDelegateForColumn(0,new CDTObjectIDDelegate(this));
+        widget->verticalHeader()->hide();
+        widget->resizeColumnsToContents();
+        widget->resizeRowsToContents();
+
+        ui->tabWidget->addTab(widget,model->property("name").toString());
+        connect(widget,SIGNAL(clicked(QModelIndex)),SLOT(onItemClicked(QModelIndex)));
+    }
+}
+
 //void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
 //{
 //    clearTables();
@@ -139,19 +154,16 @@ void CDTAttributeDockWidget::clear()
 //    updateTable();
 //}
 
-void CDTAttributeDockWidget::onCurrentTabChanged(int index)
-{
-    if (index<0)
-        return;
-    QTableView* widget = static_cast<QTableView*>(ui->tabWidget->widget(index));
-    QSqlTableModel* model = static_cast<QSqlTableModel*>(widget->model());
-    if (model->property("isSelected").toBool()==true)
-        return;
-//    model->select();
-    widget->resizeColumnsToContents();
-    widget->resizeRowsToContents();
-    model->setProperty("isSelected",true);
-}
+//void CDTAttributeDockWidget::onCurrentTabChanged(int index)
+//{
+//    if (index<0)
+//        return;
+//    QTableView* widget = static_cast<QTableView*>(ui->tabWidget->widget(index));
+//    QSqlTableModel* model = static_cast<QSqlTableModel*>(widget->model());
+////    model->select();
+//    widget->resizeColumnsToContents();
+//    widget->resizeRowsToContents();
+//}
 
 void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
 {    
@@ -170,19 +182,21 @@ void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
     ui->qwtPlot->replot();
 }
 
-QStringList CDTAttributeDockWidget::attributeNames()
-{
-    QStringList list;
-    foreach (CDTAttributesInterface *interface, attributesPlugins) {
-        list<<interface->tableName();
-    }
-    return list;
-}
+//QStringList CDTAttributeDockWidget::attributeNames()
+//{
+//    QStringList list;
+//    foreach (CDTAttributesInterface *interface, attributesPlugins) {
+//        list<<interface->tableName();
+//    }
+//    return list;
+//}
 
 void CDTAttributeDockWidget::clearTables()
 {
     while (ui->tabWidget->count()>0)
     {
+        QWidget *widget = ui->tabWidget->widget(0);
         ui->tabWidget->removeTab(0);
+        delete widget;
     }
 }
