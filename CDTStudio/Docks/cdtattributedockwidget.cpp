@@ -18,13 +18,13 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
 
     setWindowTitle(tr("Attributes Manager"));
 
-    QToolBar *toolBar = new QToolBar(this);
-    toolBar->setIconSize(MainWindow::getIconSize());
-    ui->horizontalLayout->setMenuBar(toolBar);
+//    QToolBar *toolBar = new QToolBar(this);
+//    toolBar->setIconSize(MainWindow::getIconSize());
+//    ui->horizontalLayout->setMenuBar(toolBar);
 
-    QAction *actionGenerateAttributes = new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),toolBar);
-    connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
-    toolBar->addAction(actionGenerateAttributes);
+//    QAction *actionGenerateAttributes = new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),toolBar);
+//    connect(actionGenerateAttributes,SIGNAL(triggered()),this,SLOT(onActionGenerateAttributesTriggered()));
+//    toolBar->addAction(actionGenerateAttributes);
 
     QSettings settings("WHU","CDTStudio");
     ui->splitter->restoreGeometry(settings.value("CDTAttributeDockWidget/geometry").toByteArray());
@@ -107,7 +107,7 @@ void CDTAttributeDockWidget::updateTable()
         QTableView* widget = new QTableView(ui->tabWidget);
         QSqlTableModel* model = new QSqlTableModel(widget,db);
         model->setTable(tableName);
-//        model->select();
+        model->select();
         model->setProperty("isSelected",false);
         widget->setModel(model);
         widget->setSelectionMode(QTableView::SingleSelection);        
@@ -130,14 +130,14 @@ void CDTAttributeDockWidget::clear()
     segmentationLayer =NULL;
 }
 
-void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
-{
-    clearTables();
-    CDTImageLayer* layer = (CDTImageLayer*)(segmLayer()->parent());
-    DialogGenerateAttributes dlg(segmLayer()->id(),layer->bandCount());
-    dlg.exec();
-    updateTable();
-}
+//void CDTAttributeDockWidget::onActionGenerateAttributesTriggered()
+//{
+//    clearTables();
+//    CDTImageLayer* layer = (CDTImageLayer*)(segmLayer()->parent());
+//    DialogGenerateAttributes dlg(segmLayer()->id(),layer->bandCount());
+//    dlg.exec();
+//    updateTable();
+//}
 
 void CDTAttributeDockWidget::onCurrentTabChanged(int index)
 {
@@ -147,7 +147,7 @@ void CDTAttributeDockWidget::onCurrentTabChanged(int index)
     QSqlTableModel* model = static_cast<QSqlTableModel*>(widget->model());
     if (model->property("isSelected").toBool()==true)
         return;
-    model->select();
+//    model->select();
     widget->resizeColumnsToContents();
     widget->resizeRowsToContents();
     model->setProperty("isSelected",true);
@@ -181,10 +181,8 @@ QStringList CDTAttributeDockWidget::attributeNames()
 
 void CDTAttributeDockWidget::clearTables()
 {
-    while (ui->tabWidget->widget(0))
+    while (ui->tabWidget->count()>0)
     {
-        QWidget *widget = ui->tabWidget->widget(0);
         ui->tabWidget->removeTab(0);
-        delete widget;
     }
 }

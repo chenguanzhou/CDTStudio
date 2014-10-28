@@ -84,7 +84,6 @@ CDTAttributeGenerator::~CDTAttributeGenerator()
     GDALClose(_poImageDS);
     GDALClose(_poFlagDS);
     OGRDataSource::DestroyDataSource( _poGeometryDS );
-    OGRCleanupAll();
 }
 
 void CDTAttributeGenerator::run()
@@ -99,6 +98,7 @@ void CDTAttributeGenerator::run()
     QMap<QString,QStringList> attributesFieldNames;
     if (computeAttributes(attributesValues,attributesFieldNames)==false)
         return;
+
     addAttributesToTables(attributesValues,attributesFieldNames);
 }
 

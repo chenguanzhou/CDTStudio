@@ -58,7 +58,7 @@ public slots:
     void clear();
 
 private slots:
-    void onActionGenerateAttributesTriggered();
+//    void onActionGenerateAttributesTriggered();
     void onCurrentTabChanged(int index);
     void onItemClicked(QModelIndex index);
 private:

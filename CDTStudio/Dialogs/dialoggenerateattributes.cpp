@@ -22,6 +22,7 @@ DialogGenerateAttributes::DialogGenerateAttributes(QUuid segmentationID, int ban
 DialogGenerateAttributes::~DialogGenerateAttributes()
 {
     delete ui;
+    toolBoxWidgets.clear();
 }
 
 int DialogGenerateAttributes::bandCount() const
