@@ -24,6 +24,7 @@ class CDTExtractionDockWidget;
 class CDTLayerInfoWidget;
 class CDTUndoWidget;
 class CDTAttributeDockWidget;
+class CDTPlot2DDockWidget;
 class CDTTaskDockWidget;
 class CDTProjectLayer;
 class DialogConsole;
@@ -55,6 +56,7 @@ public:
     static QTreeView                *getProjectTreeView();
     static CDTSampleDockWidget      *getSampleDockWidget();
     static CDTAttributeDockWidget   *getAttributesDockWidget();
+    static CDTPlot2DDockWidget      *getPlot2DDockWidget();
     static CDTExtractionDockWidget  *getExtractionDockWidget();
     static CDTUndoWidget            *getUndoWidget();
     static CDTLayerInfoWidget       *getLayerInfoWidget();
@@ -101,6 +103,7 @@ protected:
 private:
     Ui::MainWindow *ui;
     CDTAttributeDockWidget  *dockWidgetAttributes;
+    CDTPlot2DDockWidget     *dockWidgetPlot2D;
     CDTSampleDockWidget     *dockWidgetSample;
     CDTExtractionDockWidget *dockWidgetExtraction;
     CDTUndoWidget           *dockWidgetUndo;

@@ -7,6 +7,7 @@
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
 #include "cdtattributedockwidget.h"
+#include "cdtplot2ddockwidget.h"
 #include "cdtdockwidget.h"
 #include "cdtsampledockwidget.h"
 #include "cdtextractiondockwidget.h"
@@ -235,6 +236,11 @@ void MainWindow::initDockWidgets()
     dockWidgetAttributes = new CDTAttributeDockWidget(this);
     registerDocks(Qt::BottomDockWidgetArea,dockWidgetAttributes);
 
+    dockWidgetPlot2D = new CDTPlot2DDockWidget(this);
+    dockWidgetPlot2D->setObjectName("dockWidgetPlot2D");
+    registerDocks(Qt::RightDockWidgetArea,dockWidgetPlot2D);
+
+
     dockWidgetExtraction = new CDTExtractionDockWidget(this);
     registerDocks(Qt::RightDockWidgetArea,dockWidgetExtraction);
 
@@ -288,6 +294,11 @@ CDTSampleDockWidget *MainWindow::getSampleDockWidget()
 CDTAttributeDockWidget *MainWindow::getAttributesDockWidget()
 {
     return mainWindow->dockWidgetAttributes;
+}
+
+CDTPlot2DDockWidget *MainWindow::getPlot2DDockWidget()
+{
+    return mainWindow->dockWidgetPlot2D;
 }
 
 CDTExtractionDockWidget *MainWindow::getExtractionDockWidget()
