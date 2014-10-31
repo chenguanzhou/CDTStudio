@@ -6,6 +6,7 @@
 
 class QPainter;
 class QWidget;
+class QTabWidget;
 class QAbstractTableModel;
 class CDTSegmentationLayer;
 
@@ -58,9 +59,10 @@ private slots:
     void setTableModels(QList<QAbstractTableModel*> models);
     void onItemClicked(QModelIndex index);
 private:
-    Ui::CDTAttributeDockWidget *ui;
+//    Ui::CDTAttributeDockWidget *ui;
     CDTDatabaseConnInfo     dbConnInfo;
     CDTSegmentationLayer*   segmentationLayer;
+    QTabWidget *tabWidget;
 };
 
 #endif // CDTATTRIBUTEDOCKWIDGET_H

@@ -9,7 +9,8 @@
 #include "cdtattributedockwidget.h"
 #include "cdtplot2ddockwidget.h"
 #include "cdtdockwidget.h"
-#include "cdtsampledockwidget.h"
+#include "cdttrainingsampledockwidget.h"
+#include "cdtcategorydockwidget.h"
 #include "cdtextractiondockwidget.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtimagelayer.h"
@@ -33,13 +34,10 @@ bool MainWindow::isLocked = false;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    recentFileToolButton(NULL),
-    supervisor(NULL)
+    recentFileToolButton(new QToolButton(this)),
+    supervisor(new RecentFileSupervisor(this))
 {        
     ui->setupUi(this);
-
-    supervisor = new RecentFileSupervisor(this);
-    recentFileToolButton = new QToolButton(this);
     mainWindow = this;
 
     initIconSize();
@@ -230,10 +228,15 @@ void MainWindow::initStatusBar()
 
 void MainWindow::initDockWidgets()
 {
-    dockWidgetSample = new CDTSampleDockWidget(this);
+    dockWidgetSample = new CDTTrainingSampleDockWidget(this);
     registerDocks(Qt::RightDockWidgetArea,dockWidgetSample);
 
+    dockWidgetCategory = new CDTCategoryDockWidget(this);
+    dockWidgetCategory->setObjectName("dockWidgetCategory");
+    registerDocks(Qt::RightDockWidgetArea,dockWidgetCategory);
+
     dockWidgetAttributes = new CDTAttributeDockWidget(this);
+    dockWidgetAttributes->setObjectName("dockWidgetAttributes");
     registerDocks(Qt::BottomDockWidgetArea,dockWidgetAttributes);
 
     dockWidgetPlot2D = new CDTPlot2DDockWidget(this);
@@ -286,7 +289,7 @@ QTreeView *MainWindow::getProjectTreeView()
     return mainWindow->ui->treeViewObjects;
 }
 
-CDTSampleDockWidget *MainWindow::getSampleDockWidget()
+CDTTrainingSampleDockWidget *MainWindow::getSampleDockWidget()
 {
     return mainWindow->dockWidgetSample;
 }

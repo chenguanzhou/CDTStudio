@@ -12,7 +12,6 @@ class CDTProjectWidget : public QWidget
     Q_OBJECT
 public:
     friend class CDTProjectTabWidget;
-    friend class CDTProjectWidget;
     friend class MainWindow;
 
     explicit CDTProjectWidget(QWidget *parent = 0);
@@ -41,7 +40,7 @@ public slots:
     void refreshMapCanvas(bool zoomToFullExtent=true);
 
     void onObjectItemChanged(QStandardItem* item);
-    void onChangesItemChanged(QStandardItem* item);
+//    void onChangesItemChanged(QStandardItem* item);
 
 private slots:
     void untoggledToolBar();

@@ -14,7 +14,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 {
 //    treeModel->setHorizontalHeaderLabels(QStringList()<<tr("Layer")<<tr("Value"));
     connect(treeModelObject,SIGNAL(itemChanged(QStandardItem*)),SLOT(onObjectItemChanged(QStandardItem*)));
-    connect(treeModelChanges,SIGNAL(itemChanged(QStandardItem*)),SLOT(onChangesItemChanged(QStandardItem*)));
+//    connect(treeModelChanges,SIGNAL(itemChanged(QStandardItem*)),SLOT(onChangesItemChanged(QStandardItem*)));
 
     connect(this,SIGNAL(projectChanged()),this,SLOT(onProjectChanged()));
     connect(mapCanvas,SIGNAL(xyCoordinates(QgsPoint)),MainWindow::getMainWindow(),SLOT(showMouseCoordinate(QgsPoint)));
@@ -225,10 +225,10 @@ void CDTProjectWidget::onObjectItemChanged(QStandardItem *item)
     }
 }
 
-void CDTProjectWidget::onChangesItemChanged(QStandardItem *item)
-{
+//void CDTProjectWidget::onChangesItemChanged(QStandardItem *item)
+//{
 
-}
+//}
 
 QToolBar *CDTProjectWidget::initToolBar()
 {

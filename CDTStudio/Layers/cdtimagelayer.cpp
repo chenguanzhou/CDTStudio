@@ -384,3 +384,15 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
     image.setCategoryInfo(info);
     return in;
 }
+
+QDataStream &operator <<(QDataStream &out,const CategoryInformation &categoryInformation)
+{
+    out<<categoryInformation.id<<categoryInformation.categoryName<<categoryInformation.color;
+    return out;
+}
+
+QDataStream &operator >>(QDataStream &in, CategoryInformation &categoryInformation)
+{
+    in>>categoryInformation.id>>categoryInformation.categoryName>>categoryInformation.color;
+    return in;
+}

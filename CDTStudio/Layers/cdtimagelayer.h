@@ -2,12 +2,15 @@
 #define CDTIMAGELAYER_H
 
 #include "cdtbaselayer.h"
-#include "cdtsampledockwidget.h"
+#include "cdttrainingsampledockwidget.h"
 
 class QAction;
 class CDTProjectTreeItem;
 class CDTExtractionLayer;
 class CDTSegmentationLayer;
+class CategoryInformation;
+
+typedef QList<CategoryInformation> CDTCategoryInformationList;
 
 class CDTImageLayer:public CDTBaseLayer
 {
@@ -69,8 +72,20 @@ private:
     static QList<CDTImageLayer *> layers;
 };
 
-
-
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image);
 QDataStream &operator>>(QDataStream &in, CDTImageLayer &image);
+
+
+class CategoryInformation
+{
+public:
+    CategoryInformation(QUuid uuid=QUuid(),QString name=QString(),QColor clr=QColor())
+        :id(uuid),categoryName(name),color(clr){}
+    QUuid id;
+    QString categoryName;
+    QColor color;
+};
+
+QDataStream &operator <<(QDataStream &out,const CategoryInformation &categoryInformation);
+QDataStream &operator >>(QDataStream &in, CategoryInformation &categoryInformation);
 #endif // CDTIMAGELAYER_H

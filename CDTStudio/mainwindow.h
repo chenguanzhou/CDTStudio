@@ -19,7 +19,8 @@ class QgsScaleComboBox;
 
 class CDTDockWidget;
 class CDTProjectWidget;
-class CDTSampleDockWidget;
+class CDTTrainingSampleDockWidget;
+class CDTCategoryDockWidget;
 class CDTExtractionDockWidget;
 class CDTLayerInfoWidget;
 class CDTUndoWidget;
@@ -54,7 +55,7 @@ private:
 public:
     static MainWindow               *getMainWindow();
     static QTreeView                *getProjectTreeView();
-    static CDTSampleDockWidget      *getSampleDockWidget();
+    static CDTTrainingSampleDockWidget      *getSampleDockWidget();
     static CDTAttributeDockWidget   *getAttributesDockWidget();
     static CDTPlot2DDockWidget      *getPlot2DDockWidget();
     static CDTExtractionDockWidget  *getExtractionDockWidget();
@@ -102,13 +103,15 @@ protected:
 
 private:
     Ui::MainWindow *ui;
-    CDTAttributeDockWidget  *dockWidgetAttributes;
-    CDTPlot2DDockWidget     *dockWidgetPlot2D;
-    CDTSampleDockWidget     *dockWidgetSample;
-    CDTExtractionDockWidget *dockWidgetExtraction;
-    CDTUndoWidget           *dockWidgetUndo;
-    CDTLayerInfoWidget      *dockWidgetLayerInfo;
-    CDTTaskDockWidget       *dockWidgetTask;
+
+    CDTAttributeDockWidget      *dockWidgetAttributes;
+    CDTPlot2DDockWidget         *dockWidgetPlot2D;
+    CDTTrainingSampleDockWidget *dockWidgetSample;
+    CDTCategoryDockWidget       *dockWidgetCategory;
+    CDTExtractionDockWidget     *dockWidgetExtraction;
+    CDTUndoWidget               *dockWidgetUndo;
+    CDTLayerInfoWidget          *dockWidgetLayerInfo;
+    CDTTaskDockWidget           *dockWidgetTask;
 
     QAction *actionNew;
     QAction *actionOpen;

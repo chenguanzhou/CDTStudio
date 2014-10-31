@@ -23,10 +23,10 @@ public:
 //    QList<QStandardItem *> standardItems()const;
     QStandardItem   *standardKeyItem()const;
     QgsMapLayer     *canvasLayer()const;
-    QgsMapCanvas    *canvas()const;
-    inline QUuid    id()const{return uuid;}
-    CDTProjectLayer      *rootProject()const;
+    QgsMapCanvas    *canvas()const;    
+    CDTProjectLayer *rootProject()const;
     CDTFileSystem   *fileSystem()const;
+    inline QUuid    id()const{return uuid;}
 
 signals:
     void appendLayers(QList<QgsMapLayer*> layer);

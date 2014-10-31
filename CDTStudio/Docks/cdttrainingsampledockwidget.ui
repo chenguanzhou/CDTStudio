@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CDTSampleDockWidget</class>
- <widget class="QDockWidget" name="CDTSampleDockWidget">
+ <class>CDTTrainingSampleDockWidget</class>
+ <widget class="QDockWidget" name="CDTTrainingSampleDockWidget">
   <property name="enabled">
    <bool>false</bool>
   </property>
@@ -87,12 +87,6 @@
        </property>
        <item>
         <widget class="QFrame" name="frameSample">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="leftMargin">
            <number>0</number>

@@ -1,5 +1,5 @@
-#include "cdtsampledockwidget.h"
-#include "ui_cdtsampledockwidget.h"
+#include "cdttrainingsampledockwidget.h"
+#include "ui_cdttrainingsampledockwidget.h"
 #include "stable.h"
 #include "cdtmaptoolselecttrainingsamples.h"
 #include "cdtimagelayer.h"
@@ -8,25 +8,12 @@
 #include "cdtsegmentationlayer.h"
 #include "cdtclassificationlayer.h"
 
-QDataStream &operator <<(QDataStream &out,const CategoryInformation &categoryInformation)
-{
-    out<<categoryInformation.id<<categoryInformation.categoryName<<categoryInformation.color;
-    return out;
-}
-
-QDataStream &operator >>(QDataStream &in, CategoryInformation &categoryInformation)
-{
-    in>>categoryInformation.id>>categoryInformation.categoryName>>categoryInformation.color;
-    return in;
-}
-
-CDTSampleDockWidget::CDTSampleDockWidget(QWidget *parent) :
+CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
-    ui(new Ui::CDTSampleDockWidget),
+    ui(new Ui::CDTTrainingSampleDockWidget),
     categoryModel(new QSqlRelationalTableModel(this,QSqlDatabase::database("category"))),
     sampleModel(new QSqlQueryModel(this)),
-    delegateColor(new CDTCategoryDelegate(this)),
-    delegateImageID(new QSqlRelationalDelegate(this)),
+//    delegateColor(new CDTCategoryDelegate(this)),
     lastMapTool(NULL),
     currentMapTool(NULL)
 {
@@ -57,12 +44,12 @@ CDTSampleDockWidget::CDTSampleDockWidget(QWidget *parent) :
     ui->toolButtonSampleRename->setIconSize(MainWindow::getIconSize());
 }
 
-CDTSampleDockWidget::~CDTSampleDockWidget()
+CDTTrainingSampleDockWidget::~CDTTrainingSampleDockWidget()
 {
     delete ui;
 }
 
-void CDTSampleDockWidget::updateTable()
+void CDTTrainingSampleDockWidget::updateTable()
 {
     categoryModel->setTable("category");
     categoryModel->setFilter("imageID='"+imageLayerID.toString()+"'");
@@ -71,14 +58,14 @@ void CDTSampleDockWidget::updateTable()
     if (categoryModel->rowCount()>0)
         ui->tableView->setCurrentIndex(categoryModel->index(0,0));
 
-    ui->tableView->setItemDelegateForColumn(2,delegateColor);
+//    ui->tableView->setItemDelegateForColumn(2,delegateColor);
     ui->tableView->hideColumn(0);
     ui->tableView->hideColumn(3);
     ui->tableView->resizeColumnsToContents();
     ui->tableView->resizeRowsToContents();
 }
 
-void CDTSampleDockWidget::updateComboBox()
+void CDTTrainingSampleDockWidget::updateComboBox()
 {
     QSqlQueryModel *model = new QSqlQueryModel(this);
     if (ui->comboBox->model()) delete ui->comboBox->model();
@@ -94,7 +81,7 @@ void CDTSampleDockWidget::updateComboBox()
         sampleModel->clear();
 }
 
-void CDTSampleDockWidget::updateListView()
+void CDTTrainingSampleDockWidget::updateListView()
 {
     int index = ui->comboBox->currentIndex();
     if (index<0) return;
@@ -109,7 +96,7 @@ void CDTSampleDockWidget::updateListView()
         ui->listView->setCurrentIndex(sampleModel->index(0,0));
 }
 
-void CDTSampleDockWidget::clear()
+void CDTTrainingSampleDockWidget::clear()
 {
     sampleModel->clear();
     categoryModel->clear();
@@ -133,7 +120,7 @@ void CDTSampleDockWidget::clear()
     }
 }
 
-void CDTSampleDockWidget::setImageID(QUuid uuid)
+void CDTTrainingSampleDockWidget::setImageID(QUuid uuid)
 {
     if (imageLayerID == uuid)
         return;
@@ -153,7 +140,7 @@ void CDTSampleDockWidget::setImageID(QUuid uuid)
     updateTable();
 }
 
-void CDTSampleDockWidget::setSegmentationID(QUuid uuid)
+void CDTTrainingSampleDockWidget::setSegmentationID(QUuid uuid)
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -171,7 +158,7 @@ void CDTSampleDockWidget::setSegmentationID(QUuid uuid)
     ui->comboBox->setCurrentIndex(ui->comboBox->findText(segName));
 }
 
-bool CDTSampleDockWidget::isValid()
+bool CDTTrainingSampleDockWidget::isValid()
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -187,7 +174,7 @@ bool CDTSampleDockWidget::isValid()
     return false;
 }
 
-QUuid CDTSampleDockWidget::currentCategoryID()
+QUuid CDTTrainingSampleDockWidget::currentCategoryID()
 {
     QModelIndex currentIndex = ui->tableView->currentIndex();
     if (!currentIndex.isValid())
@@ -198,7 +185,7 @@ QUuid CDTSampleDockWidget::currentCategoryID()
     return QUuid(id);
 }
 
-void CDTSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
+void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     clear();
     if (layer == NULL)
@@ -240,13 +227,13 @@ void CDTSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     }
 }
 
-void CDTSampleDockWidget::onCurrentProjectClosed()
+void CDTTrainingSampleDockWidget::onCurrentProjectClosed()
 {
     clear();
     this->setEnabled(false);
 }
 
-void CDTSampleDockWidget::on_actionInsert_triggered()
+void CDTTrainingSampleDockWidget::on_actionInsert_triggered()
 {
     if (!this->isValid()) return;
 
@@ -254,7 +241,7 @@ void CDTSampleDockWidget::on_actionInsert_triggered()
     ui->actionInsert->setEnabled(false);
 }
 
-void CDTSampleDockWidget::on_actionRemove_triggered()
+void CDTTrainingSampleDockWidget::on_actionRemove_triggered()
 {
     if (!this->isValid()) return;
     int row = ui->tableView->currentIndex().row();
@@ -264,7 +251,7 @@ void CDTSampleDockWidget::on_actionRemove_triggered()
     ui->tableView->resizeRowsToContents();
 }
 
-void CDTSampleDockWidget::on_actionRemove_All_triggered()
+void CDTTrainingSampleDockWidget::on_actionRemove_All_triggered()
 {
     if (!this->isValid()) return;
     categoryModel->removeRows(0,categoryModel->rowCount());
@@ -272,7 +259,7 @@ void CDTSampleDockWidget::on_actionRemove_All_triggered()
     ui->tableView->resizeRowsToContents();
 }
 
-void CDTSampleDockWidget::on_actionRevert_triggered()
+void CDTTrainingSampleDockWidget::on_actionRevert_triggered()
 {
     if (!this->isValid()) return;
     categoryModel->revertAll();
@@ -281,7 +268,7 @@ void CDTSampleDockWidget::on_actionRevert_triggered()
     ui->tableView->resizeRowsToContents();
 }
 
-void CDTSampleDockWidget::on_actionSubmit_triggered()
+void CDTTrainingSampleDockWidget::on_actionSubmit_triggered()
 {
     if (categoryModel->submitAll()==false)
         qDebug()<<"Submit failed:"<<categoryModel->lastError();
@@ -290,7 +277,7 @@ void CDTSampleDockWidget::on_actionSubmit_triggered()
     ui->tableView->resizeRowsToContents();
 }
 
-void CDTSampleDockWidget::onPrimeInsert(int , QSqlRecord &record)
+void CDTTrainingSampleDockWidget::onPrimeInsert(int , QSqlRecord &record)
 {
     record.setValue(0,QUuid::createUuid().toString());
     record.setValue(1,tr("New Class"));
@@ -302,7 +289,7 @@ void CDTSampleDockWidget::onPrimeInsert(int , QSqlRecord &record)
     record.setGenerated(3,true);
 }
 
-void CDTSampleDockWidget::on_actionEdit_triggered(bool checked)
+void CDTTrainingSampleDockWidget::on_actionEdit_triggered(bool checked)
 {
     if (!this->isValid()) return;
 
@@ -317,7 +304,7 @@ void CDTSampleDockWidget::on_actionEdit_triggered(bool checked)
         ui->tableView->setEditTriggers(QTableView::NoEditTriggers);
 }
 
-void CDTSampleDockWidget::on_comboBox_currentIndexChanged(int index)
+void CDTTrainingSampleDockWidget::on_comboBox_currentIndexChanged(int index)
 {
     QString segID = ui->comboBox->model()->data(ui->comboBox->model()->index(index,1)).toString();
     CDTSegmentationLayer *segLayer = CDTSegmentationLayer::getLayer(segID);
@@ -325,14 +312,14 @@ void CDTSampleDockWidget::on_comboBox_currentIndexChanged(int index)
     updateListView();
 }
 
-void CDTSampleDockWidget::on_toolButtonEditSample_toggled(bool checked)
+void CDTTrainingSampleDockWidget::on_toolButtonEditSample_toggled(bool checked)
 {
     if (currentMapTool)
         currentMapTool->setReadOnly(!checked);
 
 }
 
-void CDTSampleDockWidget::on_toolButtonSampleRename_clicked()
+void CDTTrainingSampleDockWidget::on_toolButtonSampleRename_clicked()
 {
     if (!this->isValid()) return;
     int index = ui->listView->currentIndex().row();
@@ -356,7 +343,7 @@ void CDTSampleDockWidget::on_toolButtonSampleRename_clicked()
     updateListView();
 }
 
-void CDTSampleDockWidget::on_toolButtonNewSample_clicked()
+void CDTTrainingSampleDockWidget::on_toolButtonNewSample_clicked()
 {
     if (!this->isValid()) return;
 
@@ -378,7 +365,7 @@ void CDTSampleDockWidget::on_toolButtonNewSample_clicked()
     updateListView();
 }
 
-void CDTSampleDockWidget::on_toolButtonRemoveSelected_clicked()
+void CDTTrainingSampleDockWidget::on_toolButtonRemoveSelected_clicked()
 {
     if (!this->isValid()) return;
     int index = ui->listView->currentIndex().row();
@@ -394,7 +381,7 @@ void CDTSampleDockWidget::on_toolButtonRemoveSelected_clicked()
     updateListView();
 }
 
-void CDTSampleDockWidget::on_listView_clicked(const QModelIndex &index)
+void CDTTrainingSampleDockWidget::on_listView_clicked(const QModelIndex &index)
 {
     if (currentMapTool)
     {
@@ -403,7 +390,7 @@ void CDTSampleDockWidget::on_listView_clicked(const QModelIndex &index)
     }
 }
 
-void CDTSampleDockWidget::on_groupBoxSamples_toggled(bool toggled)
+void CDTTrainingSampleDockWidget::on_groupBoxSamples_toggled(bool toggled)
 {
     ui->frameSample->setEnabled(toggled);
     if (toggled)

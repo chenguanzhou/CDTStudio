@@ -1,5 +1,5 @@
 #include "cdtattributedockwidget.h"
-#include "ui_cdtattributedockwidget.h"
+//#include "ui_cdtattributedockwidget.h"
 #include "stable.h"
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
@@ -10,24 +10,20 @@
 
 CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
-    ui(new Ui::CDTAttributeDockWidget),
+//    ui(new Ui::CDTAttributeDockWidget),
+    tabWidget(new QTabWidget(this)),
     segmentationLayer(NULL)
 {
-    ui->setupUi(this);
+//    ui->setupUi(this);
 
+    tabWidget->setMovable(true);
+    setWidget(tabWidget);
     setWindowTitle(tr("Attributes Manager"));
-
-    QSettings settings("WHU","CDTStudio");
-//    ui->splitter->restoreGeometry(settings.value("CDTAttributeDockWidget/geometry").toByteArray());
-//    ui->splitter->restoreState(settings.value("CDTAttributeDockWidget/windowState").toByteArray());
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()
 {
-    QSettings settings("WHU","CDTStudio");
-//    settings.setValue("CDTAttributeDockWidget/geometry", ui->splitter->saveGeometry());
-//    settings.setValue("CDTAttributeDockWidget/windowState", ui->splitter->saveState());
-    delete ui;
+//    delete ui;
 }
 
 CDTSegmentationLayer *CDTAttributeDockWidget::segmLayer() const
@@ -62,7 +58,6 @@ void CDTAttributeDockWidget::clear()
     dbConnInfo = CDTDatabaseConnInfo();
     clearTables();
     QSqlDatabase::removeDatabase("attribute");
-//    ui->qwtPlot->clear();
     segmentationLayer =NULL;
 }
 
@@ -70,7 +65,7 @@ void CDTAttributeDockWidget::setTableModels(QList<QAbstractTableModel *> models)
 {
     clearTables();
     foreach (QAbstractTableModel *model, models) {
-        QTableView* widget = new QTableView(ui->tabWidget);
+        QTableView* widget = new QTableView(tabWidget);
         model->setParent(widget);
         widget->setModel(model);
         widget->setSelectionMode(QTableView::SingleSelection);
@@ -80,36 +75,31 @@ void CDTAttributeDockWidget::setTableModels(QList<QAbstractTableModel *> models)
         widget->resizeColumnsToContents();
         widget->resizeRowsToContents();
 
-        ui->tabWidget->addTab(widget,model->property("name").toString());
+        tabWidget->addTab(widget,model->property("name").toString());
         connect(widget,SIGNAL(clicked(QModelIndex)),SLOT(onItemClicked(QModelIndex)));
     }
 }
 
 void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
 {    
-    QTableView *view = (QTableView *)(ui->tabWidget->currentWidget());
+    QTableView *view = (QTableView *)(tabWidget->currentWidget());
     if (view==NULL)return;
 
-    QString tableName = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
+    QString tableName = tabWidget->tabText(tabWidget->currentIndex());
     QString featureName = view->model()->headerData(index.column(),Qt::Horizontal).toString();
 
     if (featureName.toLower() == "objectid")
         return;
-//    ui->qwtPlot->setDatabase(QSqlDatabase::database("attribute"));
-//    ui->qwtPlot->setTableName(tableName);
-//    ui->qwtPlot->setFieldName(featureName);
-
-//    ui->qwtPlot->replot();
 
     MainWindow::getPlot2DDockWidget()->setDataSource(QSqlDatabase::database("attribute"),tableName,featureName);
 }
 
 void CDTAttributeDockWidget::clearTables()
 {
-    while (ui->tabWidget->count()>0)
+    while (tabWidget->count()>0)
     {
-        QWidget *widget = ui->tabWidget->widget(0);
-        ui->tabWidget->removeTab(0);
+        QWidget *widget = tabWidget->widget(0);
+        tabWidget->removeTab(0);
         delete widget;
     }
 }
