@@ -10,51 +10,14 @@
     <x>0</x>
     <y>0</y>
     <width>292</width>
-    <height>540</height>
+    <height>248</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Category and Samples</string>
+   <string>Training Samples</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>1</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="title">
-       <string>Categories</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="leftMargin">
-        <number>5</number>
-       </property>
-       <property name="topMargin">
-        <number>5</number>
-       </property>
-       <property name="rightMargin">
-        <number>5</number>
-       </property>
-       <property name="bottomMargin">
-        <number>5</number>
-       </property>
-       <item>
-        <widget class="QTableView" name="tableView">
-         <property name="selectionMode">
-          <enum>QAbstractItemView::SingleSelection</enum>
-         </property>
-         <property name="selectionBehavior">
-          <enum>QAbstractItemView::SelectRows</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item>
      <widget class="QGroupBox" name="groupBoxSamples">
       <property name="sizePolicy">
@@ -100,43 +63,6 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <property name="spacing">
-             <number>6</number>
-            </property>
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Segmentation</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="comboBox"/>
-            </item>
-            <item>
-             <widget class="QToolButton" name="toolButtonRefresh">
-              <property name="toolTip">
-               <string>Refresh</string>
-              </property>
-              <property name="text">
-               <string>Refresh</string>
-              </property>
-              <property name="icon">
-               <iconset resource="../../resource.qrc">
-                <normaloff>:/Icon/Refresh.png</normaloff>:/Icon/Refresh.png</iconset>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <property name="spacing">
@@ -269,81 +195,6 @@
     </item>
    </layout>
   </widget>
-  <action name="actionInsert">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resource.qrc">
-     <normaloff>:/Icon/Add.png</normaloff>:/Icon/Add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Insert</string>
-   </property>
-  </action>
-  <action name="actionRemove">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resource.qrc">
-     <normaloff>:/Icon/Remove.png</normaloff>:/Icon/Remove.png</iconset>
-   </property>
-   <property name="text">
-    <string>Remove</string>
-   </property>
-  </action>
-  <action name="actionRemove_All">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resource.qrc">
-     <normaloff>:/Icon/Remove.png</normaloff>:/Icon/Remove.png</iconset>
-   </property>
-   <property name="text">
-    <string>Remove All</string>
-   </property>
-  </action>
-  <action name="actionEdit">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resource.qrc">
-     <normaloff>:/Icon/Edit.png</normaloff>:/Icon/Edit.png</iconset>
-   </property>
-   <property name="text">
-    <string>Edit</string>
-   </property>
-  </action>
-  <action name="actionRevert">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resource.qrc">
-     <normaloff>:/Icon/Undo.png</normaloff>:/Icon/Undo.png</iconset>
-   </property>
-   <property name="text">
-    <string>Revert</string>
-   </property>
-  </action>
-  <action name="actionSubmit">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../../resource.qrc">
-     <normaloff>:/Icon/Ok.png</normaloff>:/Icon/Ok.png</iconset>
-   </property>
-   <property name="text">
-    <string>Submit</string>
-   </property>
-   <property name="toolTip">
-    <string>Submit</string>
-   </property>
-  </action>
  </widget>
  <resources>
   <include location="../../resource.qrc"/>

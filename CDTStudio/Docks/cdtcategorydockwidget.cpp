@@ -20,6 +20,7 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     //layout
     QWidget *panel = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout(panel);
+    vbox->setMargin(2);
     QToolBar* toolBar = new QToolBar(this);
     toolBar->setIconSize(MainWindow::getIconSize());
     vbox->addWidget(toolBar);
@@ -29,7 +30,9 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
 
     //tableView
     tableView->setModel(categoryModel);
-    tableView->setEditTriggers(QTableView::NoEditTriggers);
+        tableView->setEditTriggers(QTableView::DoubleClicked|QTableView::AnyKeyPressed);
+    tableView->setSelectionBehavior(QTableView::SelectRows);
+    tableView->setSelectionMode(QTableView::SingleSelection);
     categoryModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Category Name"));
     categoryModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Color"));
     connect(categoryModel,SIGNAL(primeInsert(int,QSqlRecord&)),SLOT(onPrimeInsert(int,QSqlRecord&)));
@@ -40,7 +43,11 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     toolBar->addSeparator();
     toolBar->addActions(QList<QAction*>()
                         <<actionInsert<<actionRemove<<actionRemove_All);
-
+    connect(actionInsert,SIGNAL(triggered()),SLOT(on_actionInsert_triggered()));
+    connect(actionRemove,SIGNAL(triggered()),SLOT(on_actionRemove_triggered()));
+    connect(actionRemove_All,SIGNAL(triggered()),SLOT(on_actionRemove_All_triggered()));
+    connect(actionRevert,SIGNAL(triggered()),SLOT(on_actionRevert_triggered()));
+    connect(actionSubmit,SIGNAL(triggered()),SLOT(on_actionSubmit_triggered()));
 }
 
 void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
@@ -75,7 +82,13 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 
 void CDTCategoryDockWidget::onCurrentProjectClosed()
 {
-
+    CDTImageLayer* layer = CDTImageLayer::getLayer(imageLayerID);
+    if (layer) disconnect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                          layer,SIGNAL(layerChanged()));
+    if (layer) disconnect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
+                          layer,SIGNAL(layerChanged()));
+    if (layer) disconnect(categoryModel,SIGNAL(beforeDelete(int)),
+                          layer,SIGNAL(layerChanged()));
 }
 
 void CDTCategoryDockWidget::updateImageID(QUuid id)
@@ -105,8 +118,8 @@ void CDTCategoryDockWidget::updateTable()
     categoryModel->setFilter("imageID='"+imageLayerID.toString()+"'");
     categoryModel->select();
 
-    if (categoryModel->rowCount()>0)
-        tableView->setCurrentIndex(categoryModel->index(0,0));
+    //    if (categoryModel->rowCount()>0)
+    //        tableView->setCurrentIndex(categoryModel->index(0,0));
 
     tableView->setItemDelegateForColumn(2,delegateColor);
     tableView->hideColumn(0);
@@ -117,15 +130,22 @@ void CDTCategoryDockWidget::updateTable()
 
 void CDTCategoryDockWidget::on_actionInsert_triggered()
 {
-    categoryModel->insertRow(categoryModel->rowCount());
-    actionInsert->setEnabled(false);
+    static int indexOffset = 0;
+    QSqlRecord record= categoryModel->record();
+    record.setValue(0,QUuid::createUuid().toString());
+    record.setValue(1,tr("New Class")+QString::number(indexOffset++));
+    record.setValue(2,QColor(qrand()%255,qrand()%255,qrand()%255));
+    record.setValue(3,imageLayerID.toString());
+    categoryModel->insertRecord(categoryModel->rowCount(),record);
 }
 
 void CDTCategoryDockWidget::on_actionRemove_triggered()
 {
-    int row = tableView->currentIndex().row();
-    if (row <0) return;
-    categoryModel->removeRow(row);
+    QModelIndexList list = tableView->selectionModel()->selectedRows();
+    foreach (QModelIndex index, list) {
+        categoryModel->removeRow(index.row());
+    }
+
     tableView->resizeColumnsToContents();
     tableView->resizeRowsToContents();
 }
@@ -140,7 +160,6 @@ void CDTCategoryDockWidget::on_actionRemove_All_triggered()
 void CDTCategoryDockWidget::on_actionRevert_triggered()
 {
     categoryModel->revertAll();
-    actionInsert->setEnabled(true);
     tableView->resizeColumnsToContents();
     tableView->resizeRowsToContents();
 }
@@ -156,14 +175,15 @@ void CDTCategoryDockWidget::on_actionSubmit_triggered()
 
 void CDTCategoryDockWidget::onPrimeInsert(int , QSqlRecord &record)
 {
-    record.setValue(0,QUuid::createUuid().toString());
-    record.setValue(1,tr("New Class"));
-    record.setValue(2,QColor(qrand()%255,qrand()%255,qrand()%255));
-    record.setValue(3,imageLayerID.toString());
-    record.setGenerated(0,true);
-    record.setGenerated(1,true);
-    record.setGenerated(2,true);
-    record.setGenerated(3,true);
+    //    static int indexOffset = 0;
+    //    record.setValue(0,QUuid::createUuid().toString());
+    //    record.setValue(1,tr("New Class")+QString::number(indexOffset++));
+    //    record.setValue(2,QColor(qrand()%255,qrand()%255,qrand()%255));
+    //    record.setValue(3,imageLayerID.toString());
+    //    record.setGenerated(0,true);
+    //    record.setGenerated(1,true);
+    //    record.setGenerated(2,true);
+    //    record.setGenerated(3,true);
 }
 
 void CDTCategoryDockWidget::on_actionEdit_triggered(bool checked)

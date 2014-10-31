@@ -27,32 +27,19 @@ public:
     explicit CDTTrainingSampleDockWidget(QWidget *parent = 0);
     ~CDTTrainingSampleDockWidget();
 
-    bool isValid();
     QUuid currentCategoryID();
 
 private:
-    void setImageID(QUuid uuid);
     void setSegmentationID(QUuid uuid);
 
 public slots:
     void setCurrentLayer(CDTBaseLayer* layer);
     void onCurrentProjectClosed();
 
-    void updateTable();
-    void updateComboBox();
     void updateListView();
     void clear();
 
 private slots:
-    void on_actionInsert_triggered();
-    void on_actionRemove_triggered();
-    void on_actionRemove_All_triggered();
-    void on_actionRevert_triggered();
-    void on_actionSubmit_triggered();
-    void onPrimeInsert(int, QSqlRecord& record);
-    void on_actionEdit_triggered(bool checked);
-
-    void on_comboBox_currentIndexChanged(int index);
     void on_toolButtonEditSample_toggled(bool checked);
     void on_toolButtonSampleRename_clicked();
     void on_toolButtonNewSample_clicked();
@@ -62,10 +49,8 @@ private slots:
 
 private:
     Ui::CDTTrainingSampleDockWidget *ui;
-    QSqlTableModel *categoryModel;
     QSqlQueryModel *sampleModel;
-//    QAbstractItemDelegate* delegateColor;
-    QUuid   imageLayerID;
+    QUuid   segmentationID;
 
     QgsMapTool *lastMapTool;
     CDTMapToolSelectTrainingSamples* currentMapTool;
