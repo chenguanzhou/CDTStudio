@@ -18,6 +18,7 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     actionRemove_All(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All"),this))
 {
     //layout
+    this->setEnabled(false);
     QWidget *panel = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout(panel);
     vbox->setMargin(2);
@@ -26,7 +27,7 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     vbox->addWidget(toolBar);
     vbox->addWidget(tableView);
     this->setWidget(panel);
-    this->setWindowTitle(tr("Category Panel"));
+    this->setWindowTitle(tr("Categories"));
 
     //tableView
     tableView->setModel(categoryModel);
@@ -62,6 +63,7 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (imgLayer)
     {
         updateImageID(imgLayer->id());
+        setEnabled(true);
         return;
     }
 
@@ -69,6 +71,7 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (segLayer)
     {
         updateImageID(qobject_cast<CDTImageLayer*>(segLayer->parent())->id());
+        setEnabled(true);
         return;
     }
 
@@ -76,8 +79,10 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (clsLayer)
     {
         updateImageID(qobject_cast<CDTImageLayer*>(segLayer->parent()->parent())->id());
+        setEnabled(true);
         return;
     }
+    onCurrentProjectClosed();
 }
 
 void CDTCategoryDockWidget::onCurrentProjectClosed()
@@ -89,6 +94,7 @@ void CDTCategoryDockWidget::onCurrentProjectClosed()
                           layer,SIGNAL(layerChanged()));
     if (layer) disconnect(categoryModel,SIGNAL(beforeDelete(int)),
                           layer,SIGNAL(layerChanged()));
+    this->setEnabled(false);
 }
 
 void CDTCategoryDockWidget::updateImageID(QUuid id)

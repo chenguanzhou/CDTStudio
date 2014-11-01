@@ -78,7 +78,7 @@ void DialogNewExtraction::onAccepted()
     OGRDataSource::DestroyDataSource(poDS);
     reference->Release();
     GDALClose(poImageDS);
-    OGRCleanupAll();
+//    OGRCleanupAll();
 
     shapefileID = QUuid::createUuid().toString();
     fileSystem->registerFile(shapefileID,shapefileTempPath,QString(),QString()

@@ -2,9 +2,6 @@
 <ui version="4.0">
  <class>CDTTrainingSampleDockWidget</class>
  <widget class="QDockWidget" name="CDTTrainingSampleDockWidget">
-  <property name="enabled">
-   <bool>false</bool>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -27,7 +24,7 @@
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Training Samples</string>
+       <string>Edit training samples</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -69,32 +66,6 @@
              <number>3</number>
             </property>
             <item>
-             <widget class="QToolButton" name="toolButtonEditSample">
-              <property name="toolTip">
-               <string>Edit Samples</string>
-              </property>
-              <property name="text">
-               <string>Edit Samples</string>
-              </property>
-              <property name="icon">
-               <iconset resource="../../resource.qrc">
-                <normaloff>:/Icon/Edit.png</normaloff>:/Icon/Edit.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>16</width>
-                <height>16</height>
-               </size>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <property name="autoRaise">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QToolButton" name="toolButtonSampleRename">
               <property name="toolTip">
                <string>Rename</string>
@@ -119,9 +90,6 @@
             </item>
             <item>
              <widget class="QToolButton" name="toolButtonNewSample">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
               <property name="toolTip">
                <string>Insert New Sample</string>
               </property>
@@ -145,9 +113,6 @@
             </item>
             <item>
              <widget class="QToolButton" name="toolButtonRemoveSelected">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
               <property name="toolTip">
                <string>Remove Selected Sample</string>
               </property>
@@ -156,7 +121,7 @@
               </property>
               <property name="icon">
                <iconset resource="../../resource.qrc">
-                <normaloff>:/Icon/Minus.png</normaloff>:/Icon/Minus.png</iconset>
+                <normaloff>:/Icon/Remove.png</normaloff>:/Icon/Remove.png</iconset>
               </property>
               <property name="iconSize">
                <size>

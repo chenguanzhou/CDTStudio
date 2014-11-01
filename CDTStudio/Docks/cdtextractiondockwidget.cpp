@@ -72,10 +72,9 @@ void CDTExtractionDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     {
         this->setEnabled(false);
         return;
-    }
-    if (layer->id() == currentExtractionID)
-        return;
+    }    
 
+    onCurrentProjectClosed();
     CDTExtractionLayer *extLayer = qobject_cast<CDTExtractionLayer *>(layer);
     if (extLayer)
     {
@@ -252,6 +251,9 @@ void CDTExtractionDockWidget::stop()
 
 void CDTExtractionDockWidget::setExtractionLayer(QString id)
 {
+    if (id == currentExtractionID)
+        return;
+
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("select name,imageID from extractionlayer where id = ?");
     query.addBindValue(id);

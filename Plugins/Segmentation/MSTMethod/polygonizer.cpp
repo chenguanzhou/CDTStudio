@@ -58,7 +58,7 @@ void Polygonizer::run()
         emit showWarningMessage(tr("Create Layer Failed!"));
         GDALClose(poFlagDS);
         OGRDataSource::DestroyDataSource( poDstDataset );
-        OGRCleanupAll();
+//        OGRCleanupAll();
         return;
     }
 
@@ -68,7 +68,7 @@ void Polygonizer::run()
         emit showWarningMessage(tr("Create Field Failed!"));
         GDALClose(poFlagDS);
         OGRDataSource::DestroyDataSource( poDstDataset );
-        OGRCleanupAll();
+//        OGRCleanupAll();
         return;
     }
 
@@ -84,7 +84,7 @@ void Polygonizer::run()
         GDALClose(poFlagDS);
         OGRDataSource::DestroyDataSource( poDstDataset );
         if (pSpecialReference) delete pSpecialReference;
-        OGRCleanupAll();
+//        OGRCleanupAll();
         return;
     }
 
@@ -93,7 +93,7 @@ void Polygonizer::run()
     if (pSpecialReference) delete pSpecialReference;
     GDALClose(poFlagDS);
     OGRDataSource::DestroyDataSource( poDstDataset );
-    OGRCleanupAll();
+//    OGRCleanupAll();
 
     return;
 }

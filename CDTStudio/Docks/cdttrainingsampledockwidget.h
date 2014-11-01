@@ -40,7 +40,7 @@ public slots:
     void clear();
 
 private slots:
-    void on_toolButtonEditSample_toggled(bool checked);
+//    void on_toolButtonEditSample_toggled(bool checked);
     void on_toolButtonSampleRename_clicked();
     void on_toolButtonNewSample_clicked();
     void on_toolButtonRemoveSelected_clicked();

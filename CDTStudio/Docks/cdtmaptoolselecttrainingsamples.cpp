@@ -6,15 +6,23 @@
 CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *canvas, bool isReadOnly) :
     QgsMapTool(canvas),
     mapCanvas(canvas),
-    mReadOnly(isReadOnly)/*,
-            segmentationLayer(NULL),
-            trainingSampleForm(NULL)*/
+//    mReadOnly(isReadOnly),
+    toolBar(new QToolBar(tr("Select training samples"),MainWindow::getMainWindow())),
+    model(new QSqlQueryModel(this)),
+    comboBoxCategory(new QComboBox(toolBar))
 {
+    MainWindow::getMainWindow()->addToolBar(toolBar);
+    toolBar->setFloatable(true);
+
+    comboBoxCategory->setModel(model);
+    toolBar->addWidget(comboBoxCategory);
 }
 
 CDTMapToolSelectTrainingSamples::~CDTMapToolSelectTrainingSamples()
 {
     clearRubberBand();
+    delete comboBoxCategory;
+    delete toolBar;
 }
 
 void CDTMapToolSelectTrainingSamples::canvasMoveEvent(QMouseEvent *e)
@@ -46,8 +54,8 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QMouseEvent *e)
     }
     else if (e->button()==Qt::RightButton)
     {
-        if (!mReadOnly)
-        {
+//        if (!mReadOnly)
+//        {
             QgsVectorLayer* vlayer = NULL;
             if ( !mapCanvas->currentLayer()
                  || ( vlayer = qobject_cast<QgsVectorLayer *>( mapCanvas->currentLayer() ) ) == NULL )
@@ -101,23 +109,35 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QMouseEvent *e)
 
             if ( foundSingleFeature )
                 addSingleSample( closestFeatureId );
-        }
+//        }
     }
 }
 
 void CDTMapToolSelectTrainingSamples::setSampleID(QUuid id)
 {
-    if (id.isNull()) return;
-
-    sampleID = id;
+    if (id.isNull()) return;    
     clearRubberBand();
+    
+    model->clear();
+    model->setQuery(QString("select name,id from category where imageid = "
+                            "(select imageid from segmentationlayer where id = "
+                            "(select segmentationid from sample_segmentation "
+                            "where id = '%1'))").arg(id),
+                    QSqlDatabase::database("category"));
+
+    qDebug()<<QString("select name,id from category where imageid = "
+                      "(select imageid from segmentationlayer where id = "
+                      "(select segmentationid from sample_segmentation"
+                      "where id = '%1'))").arg(id);
+    qDebug()<<id<<comboBoxCategory->itemText(0);
+    sampleID = id;
     updateRubber();
 }
 
-void CDTMapToolSelectTrainingSamples::setReadOnly(bool readOnly)
-{
-    mReadOnly = readOnly;
-}
+//void CDTMapToolSelectTrainingSamples::setReadOnly(bool readOnly)
+//{
+//    mReadOnly = readOnly;
+//}
 
 void CDTMapToolSelectTrainingSamples::clearRubberBand()
 {
@@ -191,13 +211,13 @@ void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
         return;
     }
 
-    QUuid categoryID = MainWindow::getSampleDockWidget()->currentCategoryID();
-    if (categoryID.isNull())
-    {
-        qWarning()<<tr("No category selected!");
-        return;
-    }
-
+//    QUuid categoryID = MainWindow::getSampleDockWidget()->currentCategoryID();
+//    if (categoryID.isNull())
+//    {
+//        qWarning()<<tr("No category selected!");
+//        return;
+//    }
+    QUuid categoryID = QUuid(model->data(model->index(comboBoxCategory->currentIndex(),1)).toString());
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("select * from samples where objectid = ?  and sampleID = ?");
     query.bindValue(0,id);

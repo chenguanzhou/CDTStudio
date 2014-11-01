@@ -17,9 +17,10 @@ CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setEnabled(false);
     ui->listView->setModel(sampleModel);
 
-    ui->toolButtonEditSample->setIconSize(MainWindow::getIconSize());
+//    ui->toolButtonEditSample->setIconSize(MainWindow::getIconSize());
     ui->toolButtonNewSample->setIconSize(MainWindow::getIconSize());
     ui->toolButtonRemoveSelected->setIconSize(MainWindow::getIconSize());
     ui->toolButtonSampleRename->setIconSize(MainWindow::getIconSize());
@@ -32,14 +33,16 @@ CDTTrainingSampleDockWidget::~CDTTrainingSampleDockWidget()
 
 void CDTTrainingSampleDockWidget::updateListView()
 {
-    QString segmentationID = /*model->data(model->index(index,1)).toString()*/"";
-    sampleModel->setQuery("select name,id from sample_segmentation where segmentationid='"+segmentationID+"'",QSqlDatabase::database("category"));
+    sampleModel->setQuery("select name,id from sample_segmentation where segmentationid='"
+                          +segmentationID.toString()+"'",QSqlDatabase::database("category"));
     if (sampleModel->rowCount()>0)
         ui->listView->setCurrentIndex(sampleModel->index(0,0));
 }
 
 void CDTTrainingSampleDockWidget::clear()
 {
+    this->setEnabled(false);
+    segmentationID = QUuid();
     sampleModel->clear();
     if (currentMapTool)
     {
@@ -55,6 +58,8 @@ void CDTTrainingSampleDockWidget::setSegmentationID(QUuid uuid)
         qDebug()<<"Same segmentation ID";
         return;
     }
+    segmentationID = uuid;
+    updateListView();
 }
 
 QUuid CDTTrainingSampleDockWidget::currentCategoryID()
@@ -64,20 +69,14 @@ QUuid CDTTrainingSampleDockWidget::currentCategoryID()
 }
 
 void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
-{
-    clear();
+{    
     if (layer == NULL)
     {
         this->setEnabled(false);
         return;
     }
 
-    if (layer->id()==segmentationID)
-    {
-        qDebug()<<"same imageLayerID";
-        return;
-    }
-
+    clear();
     CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer);
     if (segLayer)
     {
@@ -103,12 +102,12 @@ void CDTTrainingSampleDockWidget::onCurrentProjectClosed()
     this->setEnabled(false);
 }
 
-void CDTTrainingSampleDockWidget::on_toolButtonEditSample_toggled(bool checked)
-{
-    if (currentMapTool)
-        currentMapTool->setReadOnly(!checked);
+//void CDTTrainingSampleDockWidget::on_toolButtonEditSample_toggled(bool checked)
+//{
+//    if (currentMapTool)
+//        currentMapTool->setReadOnly(!checked);
 
-}
+//}
 
 void CDTTrainingSampleDockWidget::on_toolButtonSampleRename_clicked()
 {
@@ -146,6 +145,7 @@ void CDTTrainingSampleDockWidget::on_toolButtonNewSample_clicked()
     q.bindValue(1,sampleName);
     q.bindValue(2,segmentationID.toString());
     q.exec();
+    qDebug()<<segmentationID;
 
     updateListView();
 }
@@ -192,7 +192,7 @@ void CDTTrainingSampleDockWidget::on_groupBoxSamples_toggled(bool toggled)
             QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();
             currentMapTool->setSampleID(sampleid);
         }
-        currentMapTool->setReadOnly(!ui->toolButtonEditSample->isChecked());
+//        currentMapTool->setReadOnly(!ui->toolButtonEditSample->isChecked());
     }
     else
     {

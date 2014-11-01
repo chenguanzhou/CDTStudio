@@ -13,9 +13,9 @@ class MSTMethodInterface:public CDTSegmentationInterface
     Q_INTERFACES(CDTSegmentationInterface)
 #endif // QT_VERSION >= 0x050000
 
-    Q_PROPERTY(double threshold READ threshold WRITE setThreshold DESIGNABLE true USER true)
-    Q_PROPERTY(int minObjectCount READ minObjectCount WRITE setMinObjectCount DESIGNABLE true USER true)
-    Q_PROPERTY(bool shieldNulValue READ shieldNulValue WRITE setShieldNulValue DESIGNABLE true USER true)
+    Q_PROPERTY(double Threshold READ threshold WRITE setThreshold DESIGNABLE true USER true)
+    Q_PROPERTY(int Minimal_Object_Count READ minObjectCount WRITE setMinObjectCount DESIGNABLE true USER true)
+    Q_PROPERTY(bool Shield_Null_Value READ shieldNulValue WRITE setShieldNulValue DESIGNABLE true USER true)
 
 public:
     explicit MSTMethodInterface(QObject* parent = 0);

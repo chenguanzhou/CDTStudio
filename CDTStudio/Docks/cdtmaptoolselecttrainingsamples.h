@@ -4,6 +4,9 @@
 #include <qgsmaptool.h>
 
 class QgsRubberBand;
+class QToolBar;
+class QComboBox;
+class QSqlQueryModel;
 class CDTMapToolSelectTrainingSamples : public QgsMapTool
 {
     Q_OBJECT
@@ -17,15 +20,18 @@ signals:
 
 public slots:
     void setSampleID(QUuid layerID);
-    void setReadOnly(bool readOnly);
+//    void setReadOnly(bool readOnly);
     void clearRubberBand();
 private:
-    QUuid sampleID;
+    QUuid sampleID;    
     QgsMapCanvas *mapCanvas;
-//    QList<QgsRubberBand*> rubberBands;
     QMap<qint64,QgsRubberBand*> rubberBands;
     bool mDragging;
-    bool mReadOnly;
+//    bool mReadOnly;
+    
+    QToolBar *toolBar;
+    QComboBox *comboBoxCategory;
+    QSqlQueryModel *model;
 
     void updateRubber();
     void addSingleSample(qint64 id);
