@@ -2,7 +2,6 @@
 #define CDTIMAGELAYER_H
 
 #include "cdtbaselayer.h"
-#include "cdttrainingsampledockwidget.h"
 
 class QAction;
 class CDTProjectTreeItem;

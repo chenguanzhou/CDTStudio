@@ -1,7 +1,7 @@
 #include "cdttrainingsampledockwidget.h"
 #include "ui_cdttrainingsampledockwidget.h"
 #include "stable.h"
-#include "cdtmaptoolselecttrainingsamples.h"
+#include "MapTools/cdtmaptoolselecttrainingsamples.h"
 #include "cdtimagelayer.h"
 #include "mainwindow.h"
 #include "cdtprojectwidget.h"
@@ -10,7 +10,7 @@
 
 CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
-    ui(new Ui::CDTTrainingSampleDockWidget),
+    ui(new Ui::CDTSampleAbstractDockWidget),
     sampleModel(new QSqlQueryModel(this)),
     lastMapTool(NULL),
     currentMapTool(NULL)
@@ -20,7 +20,6 @@ CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     this->setEnabled(false);
     ui->listView->setModel(sampleModel);
 
-//    ui->toolButtonEditSample->setIconSize(MainWindow::getIconSize());
     ui->toolButtonNewSample->setIconSize(MainWindow::getIconSize());
     ui->toolButtonRemoveSelected->setIconSize(MainWindow::getIconSize());
     ui->toolButtonSampleRename->setIconSize(MainWindow::getIconSize());

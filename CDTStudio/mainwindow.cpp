@@ -10,6 +10,7 @@
 #include "cdtplot2ddockwidget.h"
 #include "cdtdockwidget.h"
 #include "cdttrainingsampledockwidget.h"
+#include "cdtvalidationsampledockwidget.h"
 #include "cdtcategorydockwidget.h"
 #include "cdtextractiondockwidget.h"
 #include "cdtprojecttreeitem.h"
@@ -228,12 +229,16 @@ void MainWindow::initStatusBar()
 
 void MainWindow::initDockWidgets()
 {
-    dockWidgetSample = new CDTTrainingSampleDockWidget(this);
-    registerDocks(Qt::RightDockWidgetArea,dockWidgetSample);
+    dockWidgetTrainingSample = new CDTTrainingSampleDockWidget(this);
+    registerDocks(Qt::RightDockWidgetArea,dockWidgetTrainingSample);
+
+    dockWidgetValidationSample = new CDTValidationSampleDockWidget(this);
+    dockWidgetValidationSample->setObjectName("dockWidgetValidationSample");
+    registerDocks(Qt::RightDockWidgetArea,dockWidgetValidationSample);
 
     dockWidgetCategory = new CDTCategoryDockWidget(this);
     dockWidgetCategory->setObjectName("dockWidgetCategory");
-    registerDocks(Qt::RightDockWidgetArea,dockWidgetCategory);
+    registerDocks(Qt::BottomDockWidgetArea,dockWidgetCategory);
 
     dockWidgetAttributes = new CDTAttributeDockWidget(this);
     dockWidgetAttributes->setObjectName("dockWidgetAttributes");
@@ -289,9 +294,9 @@ QTreeView *MainWindow::getProjectTreeView()
     return mainWindow->ui->treeViewObjects;
 }
 
-CDTTrainingSampleDockWidget *MainWindow::getSampleDockWidget()
+CDTTrainingSampleDockWidget *MainWindow::getTrainingSampleDockWidget()
 {
-    return mainWindow->dockWidgetSample;
+    return mainWindow->dockWidgetTrainingSample;
 }
 
 CDTAttributeDockWidget *MainWindow::getAttributesDockWidget()

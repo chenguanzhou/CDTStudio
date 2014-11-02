@@ -3,26 +3,28 @@ FORMS += \
     $$PWD/cdttrainingsampledockwidget.ui
 
 HEADERS += \
-    Docks/cdtattributedockwidget.h \
-    Docks/cdtdockwidget.h \
-    Docks/cdtextractiondockwidget.h \
-    Docks/cdtlayerinfowidget.h \
-    Docks/cdtmaptoolselecttrainingsamples.h \
-    Docks/cdtundowidget.h \
-    Docks/cdttaskdockwidget.h \
+    $$PWD/cdtattributedockwidget.h \
+    $$PWD/cdtdockwidget.h \
+    $$PWD/cdtextractiondockwidget.h \
+    $$PWD/cdtlayerinfowidget.h \
+    $$PWD/cdtundowidget.h \
+    $$PWD/cdttaskdockwidget.h \
     $$PWD/cdtplot2ddockwidget.h \
-    $$PWD/cdttrainingsampledockwidget.h \
-    $$PWD/cdtcategorydockwidget.h
+    $$PWD/cdtcategorydockwidget.h\
+    $$PWD/MapTools/cdtmaptoolselecttrainingsamples.h \
+    $$PWD/cdtvalidationsampledockwidget.h \
+    $$PWD/cdttrainingsampledockwidget.h
 
 SOURCES += \
-    Docks/cdtattributedockwidget.cpp \
-    Docks/cdtextractiondockwidget.cpp \
-    Docks/cdtlayerinfowidget.cpp \
-    Docks/cdtmaptoolselecttrainingsamples.cpp \
-    Docks/cdtundowidget.cpp \
-    Docks/cdttaskdockwidget.cpp \
+    $$PWD/cdtattributedockwidget.cpp \
+    $$PWD/cdtextractiondockwidget.cpp \
+    $$PWD/cdtlayerinfowidget.cpp \
+    $$PWD/cdtundowidget.cpp \
+    $$PWD/cdttaskdockwidget.cpp \
     $$PWD/cdtplot2ddockwidget.cpp \
-    $$PWD/cdttrainingsampledockwidget.cpp \
-    $$PWD/cdtcategorydockwidget.cpp
+    $$PWD/cdtcategorydockwidget.cpp\
+    $$PWD/MapTools/cdtmaptoolselecttrainingsamples.cpp \
+    $$PWD/cdtvalidationsampledockwidget.cpp \
+    $$PWD/cdttrainingsampledockwidget.cpp
 
 INCLUDEPATH += $$PWD

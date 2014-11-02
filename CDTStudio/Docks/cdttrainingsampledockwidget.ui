@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CDTTrainingSampleDockWidget</class>
- <widget class="QDockWidget" name="CDTTrainingSampleDockWidget">
+ <class>CDTSampleAbstractDockWidget</class>
+ <widget class="QDockWidget" name="CDTSampleAbstractDockWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,10 +11,22 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Training Samples</string>
+   <string>Training sample sets</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="QGroupBox" name="groupBoxSamples">
       <property name="sizePolicy">
@@ -24,7 +36,7 @@
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Edit training samples</string>
+       <string>Edit samples</string>
       </property>
       <property name="checkable">
        <bool>true</bool>

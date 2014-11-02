@@ -7,7 +7,7 @@
 #include "cdtimagelayer.h"
 #include "cdtclassificationlayer.h"
 #include "cdtprojecttreeitem.h"
-#include "cdtmaptoolselecttrainingsamples.h"
+#include "MapTools/cdtmaptoolselecttrainingsamples.h"
 #include "cdtvariantconverter.h"
 #include "cdtattributedockwidget.h"
 #include "cdtattributesinterface.h"

@@ -1,20 +1,20 @@
 HEADERS += \
-    Layers/cdtbaselayer.h \
-    Layers/cdtextractionlayer.h \
-    Layers/cdtimagelayer.h \
-    Layers/cdtsegmentationlayer.h \
-    Layers/cdtclassificationlayer.h \
-    Layers/cdtprojectlayer.h \
+    $$PWD/cdtbaselayer.h \
+    $$PWD/cdtextractionlayer.h \
+    $$PWD/cdtimagelayer.h \
+    $$PWD/cdtsegmentationlayer.h \
+    $$PWD/cdtclassificationlayer.h \
+    $$PWD/cdtprojectlayer.h \
     $$PWD/cdtpbcdbinarylayer.h \
     $$PWD/cdtchangelayer.h
 
 SOURCES += \
-    Layers/cdtbaselayer.cpp \
-    Layers/cdtextractionlayer.cpp \
-    Layers/cdtimagelayer.cpp \
-    Layers/cdtsegmentationlayer.cpp \
-    Layers/cdtclassificationlayer.cpp \
-    Layers/cdtprojectlayer.cpp \
+    $$PWD/cdtbaselayer.cpp \
+    $$PWD/cdtextractionlayer.cpp \
+    $$PWD/cdtimagelayer.cpp \
+    $$PWD/cdtsegmentationlayer.cpp \
+    $$PWD/cdtclassificationlayer.cpp \
+    $$PWD/cdtprojectlayer.cpp \
     $$PWD/cdtpbcdbinarylayer.cpp \
     $$PWD/cdtchangelayer.cpp
 

@@ -5,7 +5,7 @@
 #include <QColorDialog>
 
 namespace Ui {
-class CDTTrainingSampleDockWidget;
+class CDTSampleAbstractDockWidget;
 }
 
 struct QUuid;
@@ -48,7 +48,7 @@ private slots:
     void on_groupBoxSamples_toggled(bool toggled);
 
 private:
-    Ui::CDTTrainingSampleDockWidget *ui;
+    Ui::CDTSampleAbstractDockWidget *ui;
     QSqlQueryModel *sampleModel;
     QUuid   segmentationID;
 

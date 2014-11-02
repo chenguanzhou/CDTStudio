@@ -20,6 +20,7 @@ class QgsScaleComboBox;
 class CDTDockWidget;
 class CDTProjectWidget;
 class CDTTrainingSampleDockWidget;
+class CDTValidationSampleDockWidget;
 class CDTCategoryDockWidget;
 class CDTExtractionDockWidget;
 class CDTLayerInfoWidget;
@@ -53,17 +54,17 @@ private:
 
 
 public:
-    static MainWindow               *getMainWindow();
-    static QTreeView                *getProjectTreeView();
-    static CDTTrainingSampleDockWidget      *getSampleDockWidget();
-    static CDTAttributeDockWidget   *getAttributesDockWidget();
-    static CDTPlot2DDockWidget      *getPlot2DDockWidget();
-    static CDTExtractionDockWidget  *getExtractionDockWidget();
-    static CDTUndoWidget            *getUndoWidget();
-    static CDTLayerInfoWidget       *getLayerInfoWidget();
-    static CDTTaskDockWidget        *getTaskDockWIdget();
-    static CDTProjectWidget         *getCurrentProjectWidget();
-    static QgsMapCanvas             *getCurrentMapCanvas();
+    static MainWindow                   *getMainWindow();
+    static QTreeView                    *getProjectTreeView();
+    static CDTTrainingSampleDockWidget  *getTrainingSampleDockWidget();
+    static CDTAttributeDockWidget       *getAttributesDockWidget();
+    static CDTPlot2DDockWidget          *getPlot2DDockWidget();
+    static CDTExtractionDockWidget      *getExtractionDockWidget();
+    static CDTUndoWidget                *getUndoWidget();
+    static CDTLayerInfoWidget           *getLayerInfoWidget();
+    static CDTTaskDockWidget            *getTaskDockWIdget();
+    static CDTProjectWidget             *getCurrentProjectWidget();
+    static QgsMapCanvas                 *getCurrentMapCanvas();
 
     static QUuid getCurrentProjectID();
     static QSize getIconSize();
@@ -104,14 +105,15 @@ protected:
 private:
     Ui::MainWindow *ui;
 
-    CDTAttributeDockWidget      *dockWidgetAttributes;
-    CDTPlot2DDockWidget         *dockWidgetPlot2D;
-    CDTTrainingSampleDockWidget *dockWidgetSample;
-    CDTCategoryDockWidget       *dockWidgetCategory;
-    CDTExtractionDockWidget     *dockWidgetExtraction;
-    CDTUndoWidget               *dockWidgetUndo;
-    CDTLayerInfoWidget          *dockWidgetLayerInfo;
-    CDTTaskDockWidget           *dockWidgetTask;
+    CDTAttributeDockWidget          *dockWidgetAttributes;
+    CDTPlot2DDockWidget             *dockWidgetPlot2D;
+    CDTTrainingSampleDockWidget     *dockWidgetTrainingSample;
+    CDTValidationSampleDockWidget   *dockWidgetValidationSample;
+    CDTCategoryDockWidget           *dockWidgetCategory;
+    CDTExtractionDockWidget         *dockWidgetExtraction;
+    CDTUndoWidget                   *dockWidgetUndo;
+    CDTLayerInfoWidget              *dockWidgetLayerInfo;
+    CDTTaskDockWidget               *dockWidgetTask;
 
     QAction *actionNew;
     QAction *actionOpen;
