@@ -78,7 +78,7 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     CDTClassificationLayer *clsLayer =  qobject_cast<CDTClassificationLayer*>(layer);
     if (clsLayer)
     {
-        updateImageID(qobject_cast<CDTImageLayer*>(segLayer->parent()->parent())->id());
+        updateImageID(qobject_cast<CDTImageLayer*>(clsLayer->parent()->parent())->id());
         setEnabled(true);
         return;
     }
