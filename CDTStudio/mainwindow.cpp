@@ -78,6 +78,9 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {    
     emit updateSetting();
+    foreach (CDTDockWidget *dock, docks) {
+        dock->onCurrentProjectClosed();
+    }
     delete ui;
     logger()->info("MainWindow destruct");
 }

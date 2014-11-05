@@ -39,11 +39,17 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     //TODO  Process other layer type;
 
     clear();
-    segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer);
+    segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer->getAncestor("CDTSegmentationLayer"));
     if (segmentationLayer)
     {
+        logger()->info("Find ancestor class of CDTSegmentationLayer");
         setTableModels(segmentationLayer->tableModels());
         setEnabled(true);
+    }
+    else
+    {
+        logger()->info("No ancestor class of CDTSegmentationLayer found");
+        return;
     }
 }
 
@@ -67,6 +73,7 @@ void CDTAttributeDockWidget::setTableModels(QList<QAbstractTableModel *> models)
     foreach (QAbstractTableModel *model, models) {
         QTableView* widget = new QTableView(tabWidget);
         model->setParent(widget);
+        widget->setAlternatingRowColors(true);
         widget->setModel(model);
         widget->setSelectionMode(QTableView::SingleSelection);
         widget->setEditTriggers(QTableView::NoEditTriggers);

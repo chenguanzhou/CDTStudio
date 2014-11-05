@@ -151,7 +151,7 @@ void WizardNewClassification::startClassification()
         ++index;
     }
 
-    query.exec(QString("select count(*) from samples where sampleid ='%1'").arg(sampleID));
+    query.exec(QString("select count(*) from object_samples where sampleid ='%1'").arg(sampleID));
     query.next();
     int samplesCount = query.value(0).toInt();
     if (samplesCount<=0)
@@ -162,14 +162,14 @@ void WizardNewClassification::startClassification()
     }
 
     samples.clear();
-    query.exec(QString("select objectid,categoryid from samples where sampleid ='%1'").arg(sampleID));
+    query.exec(QString("select objectid,categoryid from object_samples where sampleid ='%1'").arg(sampleID));
     while(query.next())
     {
         samples.insert(query.value(0).toInt(),query.value(1).toString());
     }
 
     testSamples.clear();
-    query.exec(QString("select objectid,categoryid from samples where sampleid ='%1'").arg(trainingSampleID));
+    query.exec(QString("select objectid,categoryid from object_samples where sampleid ='%1'").arg(trainingSampleID));
     while(query.next())
     {
         testSamples.insert(query.value(0).toInt(),query.value(1).toString());

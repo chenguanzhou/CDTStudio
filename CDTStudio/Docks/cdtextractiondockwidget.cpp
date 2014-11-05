@@ -75,12 +75,15 @@ void CDTExtractionDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     }    
 
     onCurrentProjectClosed();
-    CDTExtractionLayer *extLayer = qobject_cast<CDTExtractionLayer *>(layer);
+    CDTExtractionLayer *extLayer = qobject_cast<CDTExtractionLayer *>(layer->getAncestor("CDTExtractionLayer"));
     if (extLayer)
     {
+        logger()->info("Find ancestor class of CDTExtractionLayer");
         this->setEnabled(true);
         setExtractionLayer(layer->id());
     }
+    else
+        logger()->info("Ancestor class of CDTExtractionLayer is not found");
 }
 
 void CDTExtractionDockWidget::onCurrentProjectClosed()

@@ -2,11 +2,13 @@
 #define CDTLAYERINFOWIDGET_H
 
 #include "cdtdockwidget.h"
+#include "log4qt/logger.h"
 class QPropertyEditorWidget;
 
 class CDTLayerInfoWidget : public CDTDockWidget
 {
     Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit CDTLayerInfoWidget(QWidget *parent = 0);
 

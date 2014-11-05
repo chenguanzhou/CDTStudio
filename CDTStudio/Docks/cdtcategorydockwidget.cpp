@@ -59,30 +59,38 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
         return;
     }
 
-    CDTImageLayer *imgLayer = qobject_cast<CDTImageLayer*>(layer);
+    onCurrentProjectClosed();
+    CDTImageLayer *imgLayer = qobject_cast<CDTImageLayer*>(layer->getAncestor("CDTImageLayer"));
     if (imgLayer)
     {
+        logger()->info("Find ancestor class of CDTImageLayer");
         updateImageID(imgLayer->id());
         setEnabled(true);
-        return;
     }
 
-    CDTSegmentationLayer *segLayer =  qobject_cast<CDTSegmentationLayer*>(layer);
-    if (segLayer)
-    {
-        updateImageID(qobject_cast<CDTImageLayer*>(segLayer->parent())->id());
-        setEnabled(true);
-        return;
-    }
+//    CDTImageLayer *imgLayer = qobject_cast<CDTImageLayer*>(layer);
+//    if (imgLayer)
+//    {
+//        updateImageID(imgLayer->id());
+//        setEnabled(true);
+//        return;
+//    }
 
-    CDTClassificationLayer *clsLayer =  qobject_cast<CDTClassificationLayer*>(layer);
-    if (clsLayer)
-    {
-        updateImageID(qobject_cast<CDTImageLayer*>(clsLayer->parent()->parent())->id());
-        setEnabled(true);
-        return;
-    }
-    onCurrentProjectClosed();
+//    CDTSegmentationLayer *segLayer =  qobject_cast<CDTSegmentationLayer*>(layer);
+//    if (segLayer)
+//    {
+//        updateImageID(qobject_cast<CDTImageLayer*>(segLayer->parent())->id());
+//        setEnabled(true);
+//        return;
+//    }
+
+//    CDTClassificationLayer *clsLayer =  qobject_cast<CDTClassificationLayer*>(layer);
+//    if (clsLayer)
+//    {
+//        updateImageID(qobject_cast<CDTImageLayer*>(clsLayer->parent()->parent())->id());
+//        setEnabled(true);
+//        return;
+//    }
 }
 
 void CDTCategoryDockWidget::onCurrentProjectClosed()

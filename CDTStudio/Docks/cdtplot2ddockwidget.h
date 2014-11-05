@@ -1,13 +1,15 @@
 #ifndef CDTPLOT2DDOCKWIDGET_H
 #define CDTPLOT2DDOCKWIDGET_H
 
-#include "cdtdockwidget.h"
 #include <QSqlDatabase>
+#include "cdtdockwidget.h"
+#include "log4qt/logger.h"
 
 class CDTHistogramPlot;
 class CDTPlot2DDockWidget : public CDTDockWidget
 {
     Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit CDTPlot2DDockWidget(QWidget *parent = 0);
     ~CDTPlot2DDockWidget();

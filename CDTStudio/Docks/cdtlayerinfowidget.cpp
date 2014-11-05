@@ -9,6 +9,7 @@ CDTLayerInfoWidget::CDTLayerInfoWidget(QWidget *parent) :
     QWidget *widget = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout(widget);
     vbox->addWidget(propertyWidget);
+    propertyWidget->setAlternatingRowColors(true);
     widget->setLayout(vbox);
     this->setWidget(widget);
 
@@ -18,6 +19,7 @@ CDTLayerInfoWidget::CDTLayerInfoWidget(QWidget *parent) :
 void CDTLayerInfoWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     propertyWidget->setObject(layer);
+    logger()->info("Layer %1 is selected",layer->metaObject()->className());
 }
 
 void CDTLayerInfoWidget::onCurrentProjectClosed()

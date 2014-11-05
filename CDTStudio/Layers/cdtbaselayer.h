@@ -28,6 +28,9 @@ public:
     CDTFileSystem   *fileSystem()const;
     inline QUuid    id()const{return uuid;}
 
+    ///Find and return the ancestor object of the this class's instace, whose name is className.
+    QObject *getAncestor(const char* className);
+
 signals:
     void appendLayers(QList<QgsMapLayer*> layer);
     void removeLayer(QList<QgsMapLayer*> layer);

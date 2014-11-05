@@ -1,9 +1,9 @@
 #ifndef CDTSAMPLEDOCKWIDGET_H
 #define CDTSAMPLEDOCKWIDGET_H
 
-#include "cdtdockwidget.h"
 #include <QColorDialog>
-
+#include "cdtdockwidget.h"
+#include "log4qt/logger.h"
 namespace Ui {
 class CDTSampleAbstractDockWidget;
 }
@@ -22,12 +22,12 @@ class CDTMapToolSelectTrainingSamples;
 class CDTTrainingSampleDockWidget : public CDTDockWidget
 {
     Q_OBJECT
-
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit CDTTrainingSampleDockWidget(QWidget *parent = 0);
     ~CDTTrainingSampleDockWidget();
 
-    QUuid currentCategoryID();
+//    QUuid currentCategoryID();
 
 private:
     void setSegmentationID(QUuid uuid);

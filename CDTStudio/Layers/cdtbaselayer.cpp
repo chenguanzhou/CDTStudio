@@ -64,6 +64,18 @@ CDTFileSystem *CDTBaseLayer::fileSystem() const
     return rootProject()->fileSystem;
 }
 
+QObject *CDTBaseLayer::getAncestor(const char *className)
+{
+    QObject *obj = this;
+    while (obj)
+    {
+        if (qstrcmp(obj->metaObject()->className(),className)==0)
+            return obj;
+        obj = obj->parent();
+    }
+    return NULL;
+}
+
 void CDTBaseLayer::setMapCanvas(QgsMapCanvas *canvas)
 {
     mapCanvas = canvas;

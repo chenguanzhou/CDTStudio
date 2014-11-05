@@ -102,7 +102,7 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
 
     QMap<int,QString> testSamples;
     QList<QVariant> label = layer->data();
-    query.exec(QString("select objectid,categoryid from samples where sampleid ='%1'").arg(sampleID));
+    query.exec(QString("select objectid,categoryid from object_samples where sampleid ='%1'").arg(sampleID));
 
     while(query.next())
     {

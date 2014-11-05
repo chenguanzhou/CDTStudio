@@ -490,7 +490,7 @@ void CDTSegmentationLayer::loadSamplesFromStruct(const QMap<QString, QString> &s
         query.exec();
     }
 
-    query.prepare("insert into samples values(?,?,?)");
+    query.prepare("insert into object_samples values(?,?,?)");
     foreach (SampleElement sample, samples) {
         query.bindValue(0,sample.ObjectID);
         query.bindValue(1,sample.categoryID.toString());
@@ -512,7 +512,7 @@ void CDTSegmentationLayer::saveSamplesToStruct(QMap<QString, QString> &sample_id
     }
 
     foreach (QString sampleID, sample_id_name.keys()) {
-        query.exec("select objectid,categoryid from samples where sampleid ='" + sampleID+"'");
+        query.exec("select objectid,categoryid from object_samples where sampleid ='" + sampleID+"'");
         while(query.next())
         {
             samples<<SampleElement(query.value(0).toInt(),query.value(1).toString(),sampleID);

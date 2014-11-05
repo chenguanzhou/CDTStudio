@@ -61,11 +61,11 @@ void CDTTrainingSampleDockWidget::setSegmentationID(QUuid uuid)
     updateListView();
 }
 
-QUuid CDTTrainingSampleDockWidget::currentCategoryID()
-{
-    //BUG: bug
-    return QUuid();
-}
+//QUuid CDTTrainingSampleDockWidget::currentCategoryID()
+//{
+//    //BUG: bug
+//    return QUuid();
+//}
 
 void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {    
@@ -76,23 +76,34 @@ void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     }
 
     clear();
-    CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer);
+    CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer->getAncestor("CDTSegmentationLayer"));
     if (segLayer)
     {
-        setSegmentationID(layer->id());
+        setSegmentationID(segLayer->id());
         this->setEnabled(true);
-        return;
+        logger()->info("Find the ancestor class CDTSegmentationLayer");
     }
-
-    CDTClassificationLayer *clsLayer = qobject_cast<CDTClassificationLayer*>(layer);
-    if (clsLayer)
+    else
     {
-        if (clsLayer->parent() == NULL)
-            return;
-        setSegmentationID(((CDTSegmentationLayer *)(clsLayer->parent()))->id());
-        this->setEnabled(true);
-        return;
+        logger()->info("The ancestor of class CDTSegmentationLayer is not found!");
     }
+//    CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer);
+//    if (segLayer)
+//    {
+//        setSegmentationID(layer->id());
+//        this->setEnabled(true);
+//        return;
+//    }
+
+//    CDTClassificationLayer *clsLayer = qobject_cast<CDTClassificationLayer*>(layer);
+//    if (clsLayer)
+//    {
+//        if (clsLayer->parent() == NULL)
+//            return;
+//        setSegmentationID(((CDTSegmentationLayer *)(clsLayer->parent()))->id());
+//        this->setEnabled(true);
+//        return;
+//    }
 }
 
 void CDTTrainingSampleDockWidget::onCurrentProjectClosed()

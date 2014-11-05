@@ -1,14 +1,16 @@
 #ifndef CDTCATEGORYDOCKWIDGET_H
 #define CDTCATEGORYDOCKWIDGET_H
 
-#include "cdtdockwidget.h"
 #include <QItemDelegate>
+#include "cdtdockwidget.h"
+#include "log4qt/logger.h"
 
 class QTableView;
 class QSqlTableModel;
 class CDTCategoryDockWidget : public CDTDockWidget
 {
     Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit CDTCategoryDockWidget(QWidget *parent = 0);
 

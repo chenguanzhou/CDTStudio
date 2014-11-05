@@ -164,7 +164,7 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
     QSqlQuery query(QSqlDatabase::database("category"));
     QList<qint64> newRubberBandsID;
 
-    query.prepare("select samples.objectid,category.color from samples natural join category where samples.categoryid = category.id and samples.sampleID = ?");
+    query.prepare("select object_samples.objectid,category.color from object_samples natural join category where object_samples.categoryid = category.id and object_samples.sampleID = ?");
     query.bindValue(0,sampleID.toString());
     query.exec();
     while (query.next()) {

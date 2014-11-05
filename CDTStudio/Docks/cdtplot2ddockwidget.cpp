@@ -31,8 +31,27 @@ void CDTPlot2DDockWidget::onCurrentProjectClosed()
 
 void CDTPlot2DDockWidget::setDataSource(QSqlDatabase db, QString tableName, QString fieldName)
 {
+    if (!db.isValid())
+    {
+        logger()->error("Database is invalid!");
+        return;
+    }
+    if (!db.isOpen())
+    {
+        logger()->error("Database is not opened!");
+        return;
+    }
+    if (!db.tables().contains(tableName))
+    {
+        logger()->error("Table %1 is not in database %2!",tableName,db.connectionName());
+        return;
+    }
+
+    logger()->info("Data source is set. Connection name: %1 Table name: %2 Field name: %3",
+                   db.connectionName(),tableName,fieldName);
     qwtPlot->setDatabase(db);
     qwtPlot->setTableName(tableName);
     qwtPlot->setFieldName(fieldName);
     qwtPlot->replot();
+
 }

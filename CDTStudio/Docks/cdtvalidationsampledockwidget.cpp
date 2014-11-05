@@ -1,6 +1,7 @@
 #include "cdtvalidationsampledockwidget.h"
 #include "stable.h"
 #include "mainwindow.h"
+#include "cdtimagelayer.h"
 
 CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
@@ -8,6 +9,7 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     listView(new QListView(this)),
     toolbar(new QToolBar(this))
 {
+    this->setEnabled(false);
     this->setWindowTitle(tr("Validation sample sets"));
     this->setWidget(groupBox);
     QVBoxLayout *vbox = new QVBoxLayout(groupBox);
@@ -25,7 +27,19 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
 
 void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
+    if (layer==NULL)
+        return ;
 
+    CDTImageLayer *imageLayer = qobject_cast<CDTImageLayer *>(layer->getAncestor("CDTImageLayer"));
+    if (imageLayer == NULL)
+    {
+        logger()->info("No CDTImageLayer ancestor!");
+        return;
+    }
+    else
+    {
+        logger()->info("Find CDTImageLayer ancestor");
+    }
 }
 
 void CDTValidationSampleDockWidget::onCurrentProjectClosed()

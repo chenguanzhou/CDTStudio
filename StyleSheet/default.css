@@ -89,6 +89,7 @@ border-top-width:3px ;
 
 QTreeView{
 background: #F5F5F5;
+alternate-background-color: #F4F4F4;
 border:none
 }
 
