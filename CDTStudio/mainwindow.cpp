@@ -79,7 +79,7 @@ MainWindow::~MainWindow()
 {    
     emit updateSetting();
     foreach (CDTDockWidget *dock, docks) {
-        dock->onCurrentProjectClosed();
+        dock->onDockClear();
     }
     delete ui;
     logger()->info("MainWindow destruct");
@@ -233,6 +233,7 @@ void MainWindow::initStatusBar()
 void MainWindow::initDockWidgets()
 {
     dockWidgetTrainingSample = new CDTTrainingSampleDockWidget(this);
+    dockWidgetTrainingSample->setObjectName("dockWidgetTrainingSample");
     registerDocks(Qt::RightDockWidgetArea,dockWidgetTrainingSample);
 
     dockWidgetValidationSample = new CDTValidationSampleDockWidget(this);
@@ -279,8 +280,8 @@ void MainWindow::initConsole()
 
 void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
 {
-    connect(this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)),dock,SLOT(onCurrentProjectClosed()));
-    connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),dock,SLOT(onCurrentProjectClosed()));
+    connect(this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)),dock,SLOT(onDockClear()));
+    connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),dock,SLOT(onDockClear()));
     this->addDockWidget(area, dock);
     dock->raise();
     docks.push_back(dock);

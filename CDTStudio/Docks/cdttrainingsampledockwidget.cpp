@@ -1,5 +1,5 @@
 #include "cdttrainingsampledockwidget.h"
-#include "ui_cdttrainingsampledockwidget.h"
+//#include "ui_cdttrainingsampledockwidget.h"
 #include "stable.h"
 #include "MapTools/cdtmaptoolselecttrainingsamples.h"
 #include "cdtimagelayer.h"
@@ -10,24 +10,44 @@
 
 CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
-    ui(new Ui::CDTSampleAbstractDockWidget),
+//    ui(new Ui::CDTSampleAbstractDockWidget),
+    groupBoxSamples(new QGroupBox(tr("Edit samples"),this)),
+    listView(new QListView(this)),
+    toolBar(new QToolBar(this)),
     sampleModel(new QSqlQueryModel(this)),
     lastMapTool(NULL),
     currentMapTool(NULL)
 {
-    ui->setupUi(this);
-
     this->setEnabled(false);
-    ui->listView->setModel(sampleModel);
+    this->setWindowTitle(tr("Training sample sets"));
+    QWidget *widget = new QWidget(this);
+    QVBoxLayout *vbox = new QVBoxLayout(widget);
+    vbox->addWidget(groupBoxSamples);
+    this->setWidget(widget);
 
-    ui->toolButtonNewSample->setIconSize(MainWindow::getIconSize());
-    ui->toolButtonRemoveSelected->setIconSize(MainWindow::getIconSize());
-    ui->toolButtonSampleRename->setIconSize(MainWindow::getIconSize());
+    QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this);
+    QAction *actionAddNew = new QAction(QIcon(":/Icon/Add.png"),tr("Add a new training sample"),this);
+    QAction *actionRemove = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove selected sample"),this);
+    toolBar->addActions(QList<QAction*>()<<actionRename<<actionAddNew<<actionRemove);
+    toolBar->setIconSize(MainWindow::getIconSize());
+    listView->setModel(sampleModel);
+    groupBoxSamples->setCheckable(true);
+    groupBoxSamples->setChecked(false);
+    QVBoxLayout *groupboxLayout = new QVBoxLayout(groupBoxSamples);
+    groupboxLayout->addWidget(toolBar);
+    groupboxLayout->addWidget(listView);
+
+    connect(actionRename,SIGNAL(triggered()),SLOT(onActionRename()));
+    connect(actionAddNew,SIGNAL(triggered()),SLOT(onActionAdd()));
+    connect(actionRemove,SIGNAL(triggered()),SLOT(onActionRemove()));
+    connect(groupBoxSamples,SIGNAL(toggled(bool)),SLOT(onGroupBoxToggled(bool)));
+    connect(listView,SIGNAL(clicked(QModelIndex)),SLOT(onListViewClicked(QModelIndex)));
+
 }
 
 CDTTrainingSampleDockWidget::~CDTTrainingSampleDockWidget()
 {
-    delete ui;
+//    delete ui;
 }
 
 void CDTTrainingSampleDockWidget::updateListView()
@@ -35,7 +55,7 @@ void CDTTrainingSampleDockWidget::updateListView()
     sampleModel->setQuery("select name,id from sample_segmentation where segmentationid='"
                           +segmentationID.toString()+"'",QSqlDatabase::database("category"));
     if (sampleModel->rowCount()>0)
-        ui->listView->setCurrentIndex(sampleModel->index(0,0));
+        listView->setCurrentIndex(sampleModel->index(0,0));
 }
 
 void CDTTrainingSampleDockWidget::clear()
@@ -61,12 +81,6 @@ void CDTTrainingSampleDockWidget::setSegmentationID(QUuid uuid)
     updateListView();
 }
 
-//QUuid CDTTrainingSampleDockWidget::currentCategoryID()
-//{
-//    //BUG: bug
-//    return QUuid();
-//}
-
 void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {    
     if (layer == NULL)
@@ -81,6 +95,7 @@ void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     {
         setSegmentationID(segLayer->id());
         this->setEnabled(true);
+        groupBoxSamples->setChecked(false);
         logger()->info("Find the ancestor class CDTSegmentationLayer");
     }
     else
@@ -106,7 +121,7 @@ void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 //    }
 }
 
-void CDTTrainingSampleDockWidget::onCurrentProjectClosed()
+void CDTTrainingSampleDockWidget::onDockClear()
 {
     clear();
     this->setEnabled(false);
@@ -119,9 +134,9 @@ void CDTTrainingSampleDockWidget::onCurrentProjectClosed()
 
 //}
 
-void CDTTrainingSampleDockWidget::on_toolButtonSampleRename_clicked()
+void CDTTrainingSampleDockWidget::onActionRename()
 {
-    int index = ui->listView->currentIndex().row();
+    int index = listView->currentIndex().row();
     if (index<0)
         return;
 
@@ -142,7 +157,7 @@ void CDTTrainingSampleDockWidget::on_toolButtonSampleRename_clicked()
     updateListView();
 }
 
-void CDTTrainingSampleDockWidget::on_toolButtonNewSample_clicked()
+void CDTTrainingSampleDockWidget::onActionAdd()
 {
     QString sampleName =
             QInputDialog::getText(this,tr("New Sample Name"),tr("Name:"),QLineEdit::Normal,tr("New Sample"));
@@ -160,9 +175,9 @@ void CDTTrainingSampleDockWidget::on_toolButtonNewSample_clicked()
     updateListView();
 }
 
-void CDTTrainingSampleDockWidget::on_toolButtonRemoveSelected_clicked()
+void CDTTrainingSampleDockWidget::onActionRemove()
 {
-    int index = ui->listView->currentIndex().row();
+    int index = listView->currentIndex().row();
     if (index<0)
         return;
 
@@ -175,7 +190,7 @@ void CDTTrainingSampleDockWidget::on_toolButtonRemoveSelected_clicked()
     updateListView();
 }
 
-void CDTTrainingSampleDockWidget::on_listView_clicked(const QModelIndex &index)
+void CDTTrainingSampleDockWidget::onListViewClicked(const QModelIndex &index)
 {
     if (currentMapTool)
     {
@@ -184,19 +199,20 @@ void CDTTrainingSampleDockWidget::on_listView_clicked(const QModelIndex &index)
     }
 }
 
-void CDTTrainingSampleDockWidget::on_groupBoxSamples_toggled(bool toggled)
+void CDTTrainingSampleDockWidget::onGroupBoxToggled(bool toggled)
 {
-    ui->frameSample->setEnabled(toggled);
+    toolBar->setEnabled(toggled);
+    listView->setEnabled(toggled);
     if (toggled)
     {
         lastMapTool = MainWindow::getCurrentMapCanvas()->mapTool();
         currentMapTool =
-                new CDTMapToolSelectTrainingSamples(MainWindow::getCurrentMapCanvas(),!ui->groupBoxSamples->isChecked());
+                new CDTMapToolSelectTrainingSamples(MainWindow::getCurrentMapCanvas(),!groupBoxSamples->isChecked());
         connect(MainWindow::getCurrentMapCanvas(),SIGNAL(destroyed()),currentMapTool,SLOT(clearRubberBand()));
         MainWindow::getCurrentMapCanvas()->setMapTool(currentMapTool);
         MainWindow::getCurrentProjectWidget()->menuBar()->setEnabled(false);
 
-        int index = ui->listView->currentIndex().row();
+        int index = listView->currentIndex().row();
         if (index>=0)
         {
             QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();

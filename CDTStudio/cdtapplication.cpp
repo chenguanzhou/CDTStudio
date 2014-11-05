@@ -27,6 +27,7 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     udpReceiver(new QUdpSocket(this)),
     udpSender(new QUdpSocket(this))
 {
+    setOrganizationName("WHU");
     setApplicationName("CDTStudio");
     setApplicationVersion("v0.2");
 

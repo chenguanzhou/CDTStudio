@@ -1,5 +1,4 @@
 #include "cdtattributedockwidget.h"
-//#include "ui_cdtattributedockwidget.h"
 #include "stable.h"
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
@@ -10,15 +9,17 @@
 
 CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
-//    ui(new Ui::CDTAttributeDockWidget),
     tabWidget(new QTabWidget(this)),
     segmentationLayer(NULL)
 {
-//    ui->setupUi(this);
-
-    tabWidget->setMovable(true);
-    setWidget(tabWidget);
     setWindowTitle(tr("Attributes Manager"));
+
+    QWidget *widget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    widget->setLayout(layout);
+    layout->addWidget(tabWidget);
+    setWidget(widget);
+    tabWidget->setMovable(true);    
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()
@@ -53,7 +54,7 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     }
 }
 
-void CDTAttributeDockWidget::onCurrentProjectClosed()
+void CDTAttributeDockWidget::onDockClear()
 {
     clear();
 }

@@ -22,7 +22,7 @@ void CDTLayerInfoWidget::setCurrentLayer(CDTBaseLayer *layer)
     logger()->info("Layer %1 is selected",layer->metaObject()->className());
 }
 
-void CDTLayerInfoWidget::onCurrentProjectClosed()
+void CDTLayerInfoWidget::onDockClear()
 {
     propertyWidget->clear();
 }

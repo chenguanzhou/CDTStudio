@@ -6,16 +6,21 @@
 CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
     groupBox(new QGroupBox(tr("Edit validation sample sets"),this)),
-    listView(new QListView(this)),
-    toolbar(new QToolBar(this))
+    toolbar(new QToolBar(this)),
+    listView(new QListView(this))
 {
     this->setEnabled(false);
     this->setWindowTitle(tr("Validation sample sets"));
-    this->setWidget(groupBox);
-    QVBoxLayout *vbox = new QVBoxLayout(groupBox);
-    vbox->addWidget(toolbar);
-    vbox->addWidget(listView);
-    groupBox->setLayout(vbox);
+
+    QWidget *widget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(widget);
+    this->setWidget(widget);
+    layout->addWidget(groupBox);
+
+    QVBoxLayout *groupboxLayout = new QVBoxLayout(groupBox);
+    groupboxLayout->addWidget(toolbar);
+    groupboxLayout->addWidget(listView);
+    groupBox->setLayout(groupboxLayout);
     groupBox->setCheckable(true);
 
     QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this);
@@ -23,6 +28,7 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     QAction *actionRemove = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove"),this);
     toolbar->addActions(QList<QAction*>()<<actionRename<<actionAddNew<<actionRemove);
     toolbar->setIconSize(MainWindow::getIconSize());
+
 }
 
 void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
@@ -30,6 +36,7 @@ void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (layer==NULL)
         return ;
 
+    onDockClear();
     CDTImageLayer *imageLayer = qobject_cast<CDTImageLayer *>(layer->getAncestor("CDTImageLayer"));
     if (imageLayer == NULL)
     {
@@ -38,11 +45,12 @@ void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     }
     else
     {
+        this->setEnabled(true);
         logger()->info("Find CDTImageLayer ancestor");
     }
 }
 
-void CDTValidationSampleDockWidget::onCurrentProjectClosed()
+void CDTValidationSampleDockWidget::onDockClear()
 {
-
+    this->setEnabled(false);
 }

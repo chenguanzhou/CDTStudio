@@ -16,7 +16,7 @@ signals:
     //TODO  Add Lock
 public slots:
     virtual void setCurrentLayer(CDTBaseLayer* layer) = 0;
-    virtual void onCurrentProjectClosed() = 0;
+    virtual void onDockClear() = 0;
 };
 
 #endif // CDTDOCKWIDGET_H

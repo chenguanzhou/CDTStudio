@@ -1,6 +1,5 @@
 FORMS += \
-    Docks/cdtextractiondockwidget.ui \
-    $$PWD/cdttrainingsampledockwidget.ui
+    Docks/cdtextractiondockwidget.ui
 
 HEADERS += \
     $$PWD/cdtattributedockwidget.h \
@@ -13,7 +12,8 @@ HEADERS += \
     $$PWD/cdtcategorydockwidget.h\
     $$PWD/MapTools/cdtmaptoolselecttrainingsamples.h \
     $$PWD/cdtvalidationsampledockwidget.h \
-    $$PWD/cdttrainingsampledockwidget.h
+    $$PWD/cdttrainingsampledockwidget.h \
+    $$PWD/MapTools/cdtcategorytoolbar.h
 
 SOURCES += \
     $$PWD/cdtattributedockwidget.cpp \
@@ -25,6 +25,7 @@ SOURCES += \
     $$PWD/cdtcategorydockwidget.cpp\
     $$PWD/MapTools/cdtmaptoolselecttrainingsamples.cpp \
     $$PWD/cdtvalidationsampledockwidget.cpp \
-    $$PWD/cdttrainingsampledockwidget.cpp
+    $$PWD/cdttrainingsampledockwidget.cpp \
+    $$PWD/MapTools/cdtcategorytoolbar.cpp
 
 INCLUDEPATH += $$PWD

@@ -18,7 +18,7 @@ signals:
 
 public slots:
     void setCurrentLayer(CDTBaseLayer* layer);
-    void onCurrentProjectClosed();
+    void onDockClear();
 
     void setDataSource(QSqlDatabase db,QString tableName,QString fieldName);
 

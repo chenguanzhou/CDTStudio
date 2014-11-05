@@ -51,7 +51,7 @@ public:
 
 public slots:    
     void setCurrentLayer(CDTBaseLayer* layer);
-    void onCurrentProjectClosed();
+    void onDockClear();
 
     void clearTables();
     void clear();

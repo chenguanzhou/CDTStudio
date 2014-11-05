@@ -36,7 +36,7 @@ public:
 public slots:
     CDTTaskReply *appendNewTask(QString id,QString name,QString projectID);
     void setCurrentLayer(CDTBaseLayer* layer);
-    void onCurrentProjectClosed();
+    void onDockClear();
 
     void updateTaskInfo(QString id,int status,QString currentStep,int currentProgress,int totalProgress);
     void onTaskCompleted(QString id,QByteArray result);

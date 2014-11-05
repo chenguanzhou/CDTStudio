@@ -52,7 +52,7 @@ void CDTTaskDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     Q_UNUSED(layer);
 }
 
-void CDTTaskDockWidget::onCurrentProjectClosed()
+void CDTTaskDockWidget::onDockClear()
 {
 
 }

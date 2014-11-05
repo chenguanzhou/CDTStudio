@@ -17,7 +17,7 @@ signals:
 
 public slots:
     void setCurrentLayer(CDTBaseLayer* layer);
-    void onCurrentProjectClosed();
+    void onDockClear();
 private:
     QGroupBox   *groupBox;
     QToolBar    *toolbar;

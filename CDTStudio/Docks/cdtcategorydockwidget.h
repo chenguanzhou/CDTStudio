@@ -18,7 +18,7 @@ signals:
 
 public slots:
     void setCurrentLayer(CDTBaseLayer* layer);
-    void onCurrentProjectClosed();
+    void onDockClear();
 private slots:
     void updateImageID(QUuid id);
     void updateTable();

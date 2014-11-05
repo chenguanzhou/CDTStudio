@@ -2,17 +2,33 @@
 #include "stable.h"
 #include "cdtimagelayer.h"
 #include "mainwindow.h"
+#include "cdtcategorytoolbar.h"
 
 CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *canvas, bool isReadOnly) :
     QgsMapTool(canvas),
     mapCanvas(canvas),
 //    mReadOnly(isReadOnly),
-    toolBar(new QToolBar(tr("Select training samples"),MainWindow::getMainWindow())),
+    toolBar(new CDTCategoryToolBar(tr("Select training samples"),MainWindow::getMainWindow())),
     model(new QSqlQueryModel(this)),
     comboBoxCategory(new QComboBox(toolBar))
 {
-    MainWindow::getMainWindow()->addToolBar(toolBar);
     toolBar->setFloatable(true);
+    toolBar->setMovable(true);
+
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("CDTCategoryToolBar");
+    QByteArray geometry = setting.value("Geometry").toByteArray();
+    setting.endGroup();
+    if (geometry.isEmpty())
+    {
+        QPoint ptGlobal = MainWindow::getCurrentMapCanvas()->mapToGlobal(MainWindow::getCurrentMapCanvas()->rect().center());
+        toolBar->move(MainWindow::getMainWindow()->mapFromGlobal(ptGlobal));
+    }
+    else
+        toolBar->restoreGeometry(geometry);
+
+
+    toolBar->show();
 
     comboBoxCategory->setModel(model);
     toolBar->addWidget(comboBoxCategory);
@@ -21,6 +37,10 @@ CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *c
 CDTMapToolSelectTrainingSamples::~CDTMapToolSelectTrainingSamples()
 {
     clearRubberBand();
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("CDTCategoryToolBar");
+    setting.setValue("Geometry",toolBar->saveGeometry());
+    setting.endGroup();
     delete comboBoxCategory;
     delete toolBar;
 }
@@ -125,11 +145,6 @@ void CDTMapToolSelectTrainingSamples::setSampleID(QUuid id)
                             "where id = '%1'))").arg(id),
                     QSqlDatabase::database("category"));
 
-    qDebug()<<QString("select name,id from category where imageid = "
-                      "(select imageid from segmentationlayer where id = "
-                      "(select segmentationid from sample_segmentation"
-                      "where id = '%1'))").arg(id);
-    qDebug()<<id<<comboBoxCategory->itemText(0);
     sampleID = id;
     updateRubber();
 }
@@ -217,16 +232,17 @@ void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
 //        qWarning()<<tr("No category selected!");
 //        return;
 //    }
+    qDebug()<<"id:"<<id;
     QUuid categoryID = QUuid(model->data(model->index(comboBoxCategory->currentIndex(),1)).toString());
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("select * from samples where objectid = ?  and sampleID = ?");
+    query.prepare("select * from object_samples where objectid = ?  and sampleID = ?");
     query.bindValue(0,id);
     //    query.bindValue(1,categoryID.toString());
     query.bindValue(1,sampleID.toString());
     query.exec();
     if (query.next())
     {//Exsist in table
-        query.prepare("delete from samples where objectid = ?  and sampleID = ?");
+        query.prepare("delete from object_samples where objectid = ?  and sampleID = ?");
         query.bindValue(0,id);
         //        query.bindValue(1,categoryID.toString());
         query.bindValue(1,sampleID.toString());
@@ -234,7 +250,7 @@ void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
     }
     else
     {//Not exist
-        query.prepare("insert into samples values(?,?,?)");
+        query.prepare("insert into object_samples values(?,?,?)");
         query.bindValue(0,id);
         query.bindValue(1,categoryID.toString());
         query.bindValue(2,sampleID.toString());

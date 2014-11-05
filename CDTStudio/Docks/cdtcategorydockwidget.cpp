@@ -21,7 +21,7 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     this->setEnabled(false);
     QWidget *panel = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout(panel);
-    vbox->setMargin(2);
+//    vbox->setMargin(2);
     QToolBar* toolBar = new QToolBar(this);
     toolBar->setIconSize(MainWindow::getIconSize());
     vbox->addWidget(toolBar);
@@ -59,7 +59,7 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
         return;
     }
 
-    onCurrentProjectClosed();
+    onDockClear();
     CDTImageLayer *imgLayer = qobject_cast<CDTImageLayer*>(layer->getAncestor("CDTImageLayer"));
     if (imgLayer)
     {
@@ -93,7 +93,7 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 //    }
 }
 
-void CDTCategoryDockWidget::onCurrentProjectClosed()
+void CDTCategoryDockWidget::onDockClear()
 {
     CDTImageLayer* layer = CDTImageLayer::getLayer(imageLayerID);
     if (layer) disconnect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),

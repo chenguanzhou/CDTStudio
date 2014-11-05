@@ -92,7 +92,7 @@ void CDTUndoWidget::setCurrentLayer(CDTBaseLayer *layer)
     setMapLayer(layer->canvasLayer());
 }
 
-void CDTUndoWidget::onCurrentProjectClosed()
+void CDTUndoWidget::onDockClear()
 {
     destroyStack();
 }
