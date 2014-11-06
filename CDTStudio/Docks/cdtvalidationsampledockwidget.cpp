@@ -134,16 +134,17 @@ void CDTValidationSampleDockWidget::onActionAdd()
     QVector<QPointF> points = generatePoints(pointsCount,extent);
     if (insertPointsIntoDB(points,pointsSetName)==false)
         return;
-
+    MainWindow::getCurrentProjectWidget()->setWindowModified(true);
 }
 
 QVector<QPointF> CDTValidationSampleDockWidget::generatePoints(int pointsCount, const QgsRectangle &extent)
 {
     const int PRECISE = 1000000;
+    qsrand(std::clock());
+
     QVector<QPointF> points;
     for (int i=0;i<pointsCount;++i)
     {
-        qsrand(std::clock());
         double x = static_cast<double>(qrand()%PRECISE)/PRECISE*extent.width();
         double y = static_cast<double>(qrand()%PRECISE)/PRECISE*extent.height();
         points.push_back(QPointF(x+extent.xMinimum(),y+extent.yMinimum()));
@@ -175,13 +176,13 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(QVector<QPointF> points, 
         return false;
     }
     foreach (QPointF pt, points) {
-        qDebug("%lf",pt.x());
         query.bindValue(0,pt.x());
         query.bindValue(1,pt.y());
         query.bindValue(2,pointsSetName);
         if (query.exec()==false)
         {
-            logger()->error("Insert point:(%1,%2) into DB failed",pt.x(),pt.y());
+            logger()->error("Insert point:(%1,%2) into DB failed. Reason:%3"
+                            ,pt.x(),pt.y(),query.lastError().text());
             db.rollback();
             return false;
         }

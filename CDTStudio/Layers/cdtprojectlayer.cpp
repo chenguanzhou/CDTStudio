@@ -35,13 +35,13 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Project"),this);
 
     actions <<(QList<QAction *>()<<actionAddImage<<actiobRemoveAllImages)
-            <<(QList<QAction *>()
-               <<actionAddPBCDBinary
-               <<actionAddPBCDFromTo
-               <<actionAddOBCDBinary
-               <<actionAddOBCDFromTo
-               <<actiobRemoveAllChanges)
-            <<(QList<QAction *>()<<actionRename);
+           <<(QList<QAction *>()
+              <<actionAddPBCDBinary
+              <<actionAddPBCDFromTo
+              <<actionAddOBCDBinary
+              <<actionAddOBCDFromTo
+              <<actiobRemoveAllChanges)
+          <<(QList<QAction *>()<<actionRename);
 
     connect(actionAddImage,SIGNAL(triggered()),SLOT(addImageLayer()));
     connect(actiobRemoveAllImages,SIGNAL(triggered()),SLOT(removeAllImageLayers()));
@@ -266,6 +266,27 @@ QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project)
         out<<QString(layer->metaObject()->className())<<*layer;
     }
 
+    //Save table "points"
+    QStringList pointsetNames;
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.exec(QString("select pointset_name from points_project "
+                       "where projectid = '%1'").arg(project.id()));
+    while (query.next())
+    {
+        pointsetNames<<query.value(0).toString();
+    }
+
+    QMap<QString,QVector<QPointF> > pointsMap;
+    foreach (QString pointSetName, pointsetNames) {
+        QVector<QPointF> points;
+        query.exec(QString("select x,y from points where pointset_name='%1'").arg(pointSetName));
+        while(query.next())
+        {
+            points<<QPointF(query.value(0).toDouble(),query.value(1).toDouble());
+        }
+        pointsMap.insert(pointSetName,points);
+    }
+    out<<pointsMap;
     return out;
 }
 
@@ -300,5 +321,42 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
         project.changes.push_back(layer);
     }
 
+    QMap<QString,QVector<QPointF> > pointsMap;
+    in>>pointsMap;
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    foreach (QString pointSetName, pointsMap.keys()) {
+        db.transaction();
+        bool ret = query.exec(QString("insert into points_project values('%1','%2')")
+                              .arg(pointSetName).arg(project.id().toString()));
+        if (ret == false)
+        {
+            QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("Insert into points_project failed"));
+            db.rollback();
+            break;
+        }
+        QVector<QPointF> points = pointsMap.value(pointSetName);
+        foreach (QPointF pt, points) {
+            ret = query.prepare("insert into points values(?,?,?)");
+            if (ret == false)
+            {
+                QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("Prepare insert into points failed"));
+                db.rollback();
+                return in;
+            }
+            query.bindValue(0,pt.x());
+            query.bindValue(1,pt.y());
+            query.bindValue(2,pointSetName);
+            ret = query.exec();
+            if (ret == false)
+            {
+                QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("Insert into points failed"));
+                db.rollback();
+                return in;
+            }
+        }
+
+        db.commit();
+    }
     return in;
 }
