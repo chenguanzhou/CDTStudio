@@ -32,7 +32,7 @@ CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     toolBar->setIconSize(MainWindow::getIconSize());
     listView->setModel(sampleModel);
     groupBoxSamples->setCheckable(true);
-    groupBoxSamples->setChecked(false);
+    groupBoxSamples->setChecked(false);    
     QVBoxLayout *groupboxLayout = new QVBoxLayout(groupBoxSamples);
     groupboxLayout->addWidget(toolBar);
     groupboxLayout->addWidget(listView);
@@ -42,7 +42,7 @@ CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     connect(actionRemove,SIGNAL(triggered()),SLOT(onActionRemove()));
     connect(groupBoxSamples,SIGNAL(toggled(bool)),SLOT(onGroupBoxToggled(bool)));
     connect(listView,SIGNAL(clicked(QModelIndex)),SLOT(onListViewClicked(QModelIndex)));
-
+    logger()->info("Constructed");
 }
 
 CDTTrainingSampleDockWidget::~CDTTrainingSampleDockWidget()
@@ -56,18 +56,6 @@ void CDTTrainingSampleDockWidget::updateListView()
                           +segmentationID.toString()+"'",QSqlDatabase::database("category"));
     if (sampleModel->rowCount()>0)
         listView->setCurrentIndex(sampleModel->index(0,0));
-}
-
-void CDTTrainingSampleDockWidget::clear()
-{
-    this->setEnabled(false);
-    segmentationID = QUuid();
-    sampleModel->clear();
-    if (currentMapTool)
-    {
-        delete currentMapTool;
-        currentMapTool = NULL;
-    }
 }
 
 void CDTTrainingSampleDockWidget::setSegmentationID(QUuid uuid)
@@ -89,7 +77,7 @@ void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
         return;
     }
 
-    clear();
+    onDockClear();
     CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer->getAncestor("CDTSegmentationLayer"));
     if (segLayer)
     {
@@ -102,37 +90,19 @@ void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     {
         logger()->info("The ancestor of class CDTSegmentationLayer is not found!");
     }
-//    CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer);
-//    if (segLayer)
-//    {
-//        setSegmentationID(layer->id());
-//        this->setEnabled(true);
-//        return;
-//    }
-
-//    CDTClassificationLayer *clsLayer = qobject_cast<CDTClassificationLayer*>(layer);
-//    if (clsLayer)
-//    {
-//        if (clsLayer->parent() == NULL)
-//            return;
-//        setSegmentationID(((CDTSegmentationLayer *)(clsLayer->parent()))->id());
-//        this->setEnabled(true);
-//        return;
-//    }
 }
 
 void CDTTrainingSampleDockWidget::onDockClear()
 {
-    clear();
     this->setEnabled(false);
+    segmentationID = QUuid();
+    if (sampleModel) sampleModel->clear();
+    if (currentMapTool)
+    {
+        delete currentMapTool;
+        currentMapTool = NULL;
+    }
 }
-
-//void CDTTrainingSampleDockWidget::on_toolButtonEditSample_toggled(bool checked)
-//{
-//    if (currentMapTool)
-//        currentMapTool->setReadOnly(!checked);
-
-//}
 
 void CDTTrainingSampleDockWidget::onActionRename()
 {
@@ -160,7 +130,7 @@ void CDTTrainingSampleDockWidget::onActionRename()
 void CDTTrainingSampleDockWidget::onActionAdd()
 {
     QString sampleName =
-            QInputDialog::getText(this,tr("New Sample Name"),tr("Name:"),QLineEdit::Normal,tr("New Sample"));
+            QInputDialog::getText(this,tr("New training sample name"),tr("Name:"),QLineEdit::Normal,tr("New Sample"));
     if (sampleName.isEmpty())
         return;
 
@@ -218,7 +188,6 @@ void CDTTrainingSampleDockWidget::onGroupBoxToggled(bool toggled)
             QString sampleid   = sampleModel->data(sampleModel->index(index,1)).toString();
             currentMapTool->setSampleID(sampleid);
         }
-//        currentMapTool->setReadOnly(!ui->toolButtonEditSample->isChecked());
     }
     else
     {

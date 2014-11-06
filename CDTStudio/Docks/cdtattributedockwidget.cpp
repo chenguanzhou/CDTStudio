@@ -15,11 +15,12 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     setWindowTitle(tr("Attributes Manager"));
 
     QWidget *widget = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    widget->setLayout(layout);
-    layout->addWidget(tabWidget);
+    QVBoxLayout *layout = new QVBoxLayout(widget);
+    widget->setLayout(layout);    
     setWidget(widget);
-    tabWidget->setMovable(true);    
+    layout->addWidget(tabWidget);
+    tabWidget->setMovable(true);
+    logger()->info("Constructed");
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()

@@ -15,21 +15,27 @@
 #ifndef QGSUNDOWIDGET_H
 #define QGSUNDOWIDGET_H
 
-#include <QVariant>
-#include <QAction>
-#include <QApplication>
-#include <QButtonGroup>
-#include <QDockWidget>
-#include <QGridLayout>
-#include <QPushButton>
-#include <QSpacerItem>
-#include <QWidget>
-#include <QUndoView>
-#include <QUndoStack>
-#include "cdtdockwidget.h"
 
+//#include <QAction>
+//#include <QApplication>
+//#include <QButtonGroup>
+//#include <QDockWidget>
+//#include <QGridLayout>
+//#include <QPushButton>
+//#include <QSpacerItem>
+//#include <QWidget>
+//#include <QUndoView>
+//#include <QUndoStack>
+#include "cdtdockwidget.h"
+#include "log4qt/logger.h"
+
+class QUndoStack;
+class QUndoView;
+class QGridLayout;
+class QPushButton;
 class QgsMapCanvas;
 class QgsMapLayer;
+
 
 /**
  * Class that handles undo display fo undo commands
@@ -37,6 +43,7 @@ class QgsMapLayer;
 class CDTUndoWidget : public CDTDockWidget
 {
     Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
   public:
     QWidget *dockWidgetContents;
     QGridLayout *gridLayout;

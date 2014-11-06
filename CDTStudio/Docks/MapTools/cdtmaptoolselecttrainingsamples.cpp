@@ -14,6 +14,7 @@ CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *c
 {
     toolBar->setFloatable(true);
     toolBar->setMovable(true);
+    MainWindow::getMainWindow()->addToolBar(Qt::NoToolBarArea,toolBar);
 
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("CDTCategoryToolBar");
@@ -27,11 +28,16 @@ CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *c
     else
         toolBar->restoreGeometry(geometry);
 
-
-    toolBar->show();
-
     comboBoxCategory->setModel(model);
-    toolBar->addWidget(comboBoxCategory);
+
+    QWidgetAction *actionLabel = new QWidgetAction(toolBar);
+    QWidgetAction *actionCombo = new QWidgetAction(toolBar);
+    actionLabel->setDefaultWidget(new QLabel(tr("Category"),toolBar));
+    actionCombo->setDefaultWidget(comboBoxCategory);
+
+    toolBar->addAction(actionLabel);
+    toolBar->addAction(actionCombo);
+    toolBar->show();
 }
 
 CDTMapToolSelectTrainingSamples::~CDTMapToolSelectTrainingSamples()

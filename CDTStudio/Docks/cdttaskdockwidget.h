@@ -2,6 +2,7 @@
 #define CDTTASKDOCKWIDGET_H
 
 #include "cdtdockwidget.h"
+#include "log4qt/logger.h"
 #include <QMap>
 
 namespace Ui {
@@ -12,7 +13,7 @@ class QTableView;
 
 class CDTTaskReply:public QObject
 {
-    Q_OBJECT
+    Q_OBJECT    
 public:
     explicit CDTTaskReply(QObject *parent = NULL);
     void sendCompleteSignal(QByteArray result);
@@ -23,6 +24,7 @@ signals:
 class CDTTaskDockWidget : public CDTDockWidget
 {
     Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 //    Q_ENUMS(Status)
 public:
 //    enum Status{

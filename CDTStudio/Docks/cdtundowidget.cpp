@@ -14,9 +14,10 @@
  ***************************************************************************/
 #include "cdtundowidget.h"
 
-#include "qgsmaplayer.h"
-#include "qgsmapcanvas.h"
-#include "qgsapplication.h"
+#include "stable.h"
+//#include "qgsmaplayer.h"
+//#include "qgsmapcanvas.h"
+//#include "qgsapplication.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtimagelayer.h"
 #include "cdtextractionlayer.h"
@@ -40,6 +41,7 @@ CDTUndoWidget::CDTUndoWidget( QWidget * parent, QgsMapCanvas * mapCanvas )
     mUndoStack = NULL;
     mPreviousIndex = 0;
     mPreviousCount = 0;
+    logger()->info("Constructed");
 }
 
 void CDTUndoWidget::setUndoStack( QUndoStack* undoStack )

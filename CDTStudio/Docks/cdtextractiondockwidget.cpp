@@ -54,6 +54,7 @@ CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
     }
 
     setEditState(LOCKED);
+    logger()->info("Constructed");
 }
 
 CDTExtractionDockWidget::~CDTExtractionDockWidget()

@@ -14,6 +14,7 @@ CDTLayerInfoWidget::CDTLayerInfoWidget(QWidget *parent) :
     this->setWidget(widget);
 
     this->setWindowTitle(tr("Layer Infomation"));
+    logger()->info("Constructed");
 }
 
 void CDTLayerInfoWidget::setCurrentLayer(CDTBaseLayer *layer)

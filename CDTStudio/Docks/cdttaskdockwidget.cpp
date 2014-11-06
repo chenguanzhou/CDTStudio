@@ -24,6 +24,7 @@ CDTTaskDockWidget::CDTTaskDockWidget(QWidget *parent) :
     tableView->resizeColumnsToContents();
 
     tableView->resizeRowsToContents();
+    logger()->info("Constructed");
 }
 
 CDTTaskDockWidget::~CDTTaskDockWidget()

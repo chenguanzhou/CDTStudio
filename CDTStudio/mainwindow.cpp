@@ -97,6 +97,7 @@ void MainWindow::initIconSize()
     iconSize = QSize(dpiX*16/96,dpiY*16/96);
 
     ui->mainToolBar->setIconSize(iconSize);
+    logger()->info("IconSize initialized");
 }
 
 void MainWindow::initActions()
@@ -126,6 +127,8 @@ void MainWindow::initActions()
     actionSaveAs->setStatusTip(tr("Save current project as"));
     connect(actionSaveAs,SIGNAL(triggered()),SLOT(onActionSaveAs()));
 
+    logger()->info("Actions initialized");
+
 //    actionPBCD = new QAction(QIcon(":/Icon/ChangePixel.png"),tr("&Pixel-based change detection"),this);
 ////    actionPBCD->setShortcut(QKeySequence::SaveAs);
 //    actionPBCD->setStatusTip(tr("Pixel-based change detection"));
@@ -151,6 +154,7 @@ void MainWindow::initMenuBar()
     menuRecent->setIcon(QIcon(":/Icon/RecentFiles.png"));
     menuFile->addMenu(menuRecent);
     menuBar()->addMenu(menuFile);
+    logger()->info("MenuBars initialized");
 }
 
 void MainWindow::initToolBar()
@@ -161,6 +165,7 @@ void MainWindow::initToolBar()
                                 <<actionSave
                                 <<actionSaveAll
                                 <<actionSaveAs);
+    logger()->info("ToolBar initialized");
 //    ui->mainToolBar->addSeparator();
 //    ui->mainToolBar->addActions(QList<QAction*>()
 //                                <<actionPBCD
@@ -228,10 +233,13 @@ void MainWindow::initStatusBar()
     connect(pushButtonTask,SIGNAL(toggled(bool)),dockWidgetTask,SLOT(setVisible(bool)));
     statusBar()->addPermanentWidget(pushButtonTask , 0 );
     //TODO: Auto Show
+
+    logger()->info("StatusBar initialized");
 }
 
 void MainWindow::initDockWidgets()
 {
+    //Qt::RightDockWidgetArea
     dockWidgetTrainingSample = new CDTTrainingSampleDockWidget(this);
     dockWidgetTrainingSample->setObjectName("dockWidgetTrainingSample");
     registerDocks(Qt::RightDockWidgetArea,dockWidgetTrainingSample);
@@ -240,6 +248,10 @@ void MainWindow::initDockWidgets()
     dockWidgetValidationSample->setObjectName("dockWidgetValidationSample");
     registerDocks(Qt::RightDockWidgetArea,dockWidgetValidationSample);
 
+    dockWidgetExtraction = new CDTExtractionDockWidget(this);
+    registerDocks(Qt::RightDockWidgetArea,dockWidgetExtraction);
+
+    //Qt::BottomDockWidgetArea
     dockWidgetCategory = new CDTCategoryDockWidget(this);
     dockWidgetCategory->setObjectName("dockWidgetCategory");
     registerDocks(Qt::BottomDockWidgetArea,dockWidgetCategory);
@@ -250,15 +262,12 @@ void MainWindow::initDockWidgets()
 
     dockWidgetPlot2D = new CDTPlot2DDockWidget(this);
     dockWidgetPlot2D->setObjectName("dockWidgetPlot2D");
-    registerDocks(Qt::RightDockWidgetArea,dockWidgetPlot2D);
-
-
-    dockWidgetExtraction = new CDTExtractionDockWidget(this);
-    registerDocks(Qt::RightDockWidgetArea,dockWidgetExtraction);
+    registerDocks(Qt::BottomDockWidgetArea,dockWidgetPlot2D);
 
     dockWidgetUndo = new CDTUndoWidget(this,NULL);
     registerDocks(Qt::BottomDockWidgetArea,dockWidgetUndo);
 
+    //Qt::LeftDockWidgetArea
     dockWidgetLayerInfo = new CDTLayerInfoWidget(this);
     dockWidgetLayerInfo->setObjectName("dockWidgetLayerInfo");
     registerDocks(Qt::LeftDockWidgetArea,dockWidgetLayerInfo);
@@ -266,6 +275,8 @@ void MainWindow::initDockWidgets()
     dockWidgetTask = new CDTTaskDockWidget(this);
 //    dockWIdgetTask->setObjectName("dockWIdgetTask");
 //    registerDocks(Qt::AllDockWidgetAreas,dockWIdgetTask);
+
+    logger()->info("Docks initialized");
 }
 
 void MainWindow::initConsole()
@@ -276,11 +287,13 @@ void MainWindow::initConsole()
     this->addAction(actionConsole);
     connect(actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(show()));
     connect(actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(updateDatabases()));
+
+    logger()->info("Console initialized");
 }
 
 void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
 {
-    connect(this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)),dock,SLOT(onDockClear()));
+//    connect(this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)),dock,SLOT(onDockClear()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),dock,SLOT(onDockClear()));
     this->addDockWidget(area, dock);
     dock->raise();

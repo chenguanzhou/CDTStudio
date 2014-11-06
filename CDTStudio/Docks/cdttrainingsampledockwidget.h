@@ -36,12 +36,9 @@ private:
 public slots:
     void setCurrentLayer(CDTBaseLayer* layer);
     void onDockClear();
-
     void updateListView();
-    void clear();
 
 private slots:
-//    void on_toolButtonEditSample_toggled(bool checked);
     void onActionRename();
     void onActionAdd();
     void onActionRemove();
@@ -49,15 +46,14 @@ private slots:
     void onGroupBoxToggled(bool toggled);
 
 private:
-//    Ui::CDTSampleAbstractDockWidget *ui;
-    QGroupBox *groupBoxSamples;
-    QListView *listView;
-    QSqlQueryModel *sampleModel;
-    QToolBar *toolBar;
-    QUuid   segmentationID;
+    QGroupBox       *groupBoxSamples;
+    QListView       *listView;
+    QToolBar        *toolBar;
+    QSqlQueryModel  *sampleModel;
+    QUuid           segmentationID;
 
-    QgsMapTool *lastMapTool;
-    CDTMapToolSelectTrainingSamples* currentMapTool;
+    QgsMapTool      *lastMapTool;
+    CDTMapToolSelectTrainingSamples *currentMapTool;
 };
 
 #endif // CDTTRAININGSAMPLEDOCKWIDGET_H

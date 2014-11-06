@@ -11,12 +11,13 @@ CDTPlot2DDockWidget::CDTPlot2DDockWidget(QWidget *parent) :
     qwtPlot->setObjectName(QString::fromUtf8("qwtPlot"));
     qwtPlot->setProperty("autoReplot", false);
     qwtPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
-    qwtPlot->setMinimumHeight(200);
+//    qwtPlot->setMinimumHeight(200);
 
     QWidget *widget = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout(widget);
     vbox->addWidget(qwtPlot);
     this->setWidget(widget);
+    logger()->info("Constructed");
 }
 
 CDTPlot2DDockWidget::~CDTPlot2DDockWidget()
@@ -58,5 +59,4 @@ void CDTPlot2DDockWidget::setDataSource(QSqlDatabase db, QString tableName, QStr
     qwtPlot->setTableName(tableName);
     qwtPlot->setFieldName(fieldName);
     qwtPlot->replot();
-
 }

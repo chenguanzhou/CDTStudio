@@ -31,7 +31,7 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
 
     //tableView
     tableView->setModel(categoryModel);
-        tableView->setEditTriggers(QTableView::DoubleClicked|QTableView::AnyKeyPressed);
+    tableView->setEditTriggers(QTableView::DoubleClicked|QTableView::AnyKeyPressed);
     tableView->setSelectionBehavior(QTableView::SelectRows);
     tableView->setSelectionMode(QTableView::SingleSelection);
     categoryModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Category Name"));
@@ -49,6 +49,7 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     connect(actionRemove_All,SIGNAL(triggered()),SLOT(on_actionRemove_All_triggered()));
     connect(actionRevert,SIGNAL(triggered()),SLOT(on_actionRevert_triggered()));
     connect(actionSubmit,SIGNAL(triggered()),SLOT(on_actionSubmit_triggered()));
+    logger()->info("Constructed");
 }
 
 void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)

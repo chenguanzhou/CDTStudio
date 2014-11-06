@@ -183,10 +183,12 @@ void CDTProjectWidget::appendLayers(QList<QgsMapLayer *> layers)
 void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
 {
     foreach (QgsMapLayer *lyr, layer) {
-        int index = activeLayers.indexOf(lyr);
-        if (index!=-1)
+        if (activeLayers.contains(lyr))
+//        int index = activeLayers.indexOf(lyr);
+//        if (index!=-1)
         {
-            activeLayers.removeAt(index);
+//            activeLayers.removeAt(index);
+            activeLayers.removeAll(lyr);
             QgsMapLayerRegistry::instance()->removeMapLayer(lyr->id());
         }
     }

@@ -288,7 +288,7 @@ bool CDTApplication::initDatabase()
         return false;
     }
 
-/// Create table object_samples
+    /// Create table object_samples
     ret = query.exec("CREATE TABLE object_samples"
                      "(objectid text NOT NULL, "
                      "categoryid text NOT NULL,"
@@ -301,7 +301,7 @@ bool CDTApplication::initDatabase()
         return false;
     }
 
-///create table image_validation_samples
+    ///create table image_validation_samples
     ret = query.exec("Create table image_validation_samples"
                      "(id text NOT NULL,"
                      "name text NOT NULL,"
@@ -314,7 +314,19 @@ bool CDTApplication::initDatabase()
         Log4Qt::Logger::rootLogger()->error("create table image_validation_samples failed!\nmsg:%1",query.lastError().text());
     }
 
-///create table points
+    ///create table points_project
+    ret = query.exec("Create table points_project"
+                     "(pointset_name text not null,"
+                     "projectid text not null,"
+                     "Primary Key(pointset_name))");
+    if (ret == false)
+    {
+        QMessageBox::critical(NULL,tr("Error"),tr("create table points_project failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table points_project failed!\nerror msg:%1",query.lastError().text());
+        return false;
+    }
+
+    ///create table points
     ret = query.exec("Create table points"
                      "(x double not null,"
                      "y double not null,"

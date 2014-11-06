@@ -595,3 +595,4 @@ bool CDTAttributeGenerator::addAttributesToTables(QMap<QString,QList<QVector<dou
     return true;
 }
 
+//BUG: rollback
