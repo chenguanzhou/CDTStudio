@@ -169,16 +169,19 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(QVector<QPointF> points, 
         return false;
     }
 
-    if (query.prepare("insert into points values(?,?,?)")==false)
+    if (query.prepare("insert into points values(?,?,?,?)")==false)
     {
         logger()->error("Prepare SQL failed!");
         db.rollback();
         return false;
     }
+
+    int i=1;
     foreach (QPointF pt, points) {
-        query.bindValue(0,pt.x());
-        query.bindValue(1,pt.y());
-        query.bindValue(2,pointsSetName);
+        query.bindValue(0,i++);
+        query.bindValue(1,pt.x());
+        query.bindValue(2,pt.y());
+        query.bindValue(3,pointsSetName);
         if (query.exec()==false)
         {
             logger()->error("Insert point:(%1,%2) into DB failed. Reason:%3"

@@ -328,10 +328,11 @@ bool CDTApplication::initDatabase()
 
     ///create table points
     ret = query.exec("Create table points"
-                     "(x double not null,"
+                     "(id int not null,"
+                     "x double not null,"
                      "y double not null,"
                      "pointset_name text not null,"
-                     "Primary Key(x,y,pointset_name))");
+                     "Primary Key(id,x,y,pointset_name))");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table points failed!\nerror:")+query.lastError().text());

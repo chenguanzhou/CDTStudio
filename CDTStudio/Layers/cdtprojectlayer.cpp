@@ -276,13 +276,13 @@ QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project)
         pointsetNames<<query.value(0).toString();
     }
 
-    QMap<QString,QVector<QPointF> > pointsMap;
+    QMap<QString,QVector<QPair<int,QPointF> > > pointsMap;
     foreach (QString pointSetName, pointsetNames) {
-        QVector<QPointF> points;
-        query.exec(QString("select x,y from points where pointset_name='%1'").arg(pointSetName));
+        QVector<QPair<int,QPointF> > points;
+        query.exec(QString("select id,x,y from points where pointset_name='%1'").arg(pointSetName));
         while(query.next())
         {
-            points<<QPointF(query.value(0).toDouble(),query.value(1).toDouble());
+            points<<qMakePair(query.value(0).toInt(),QPointF(query.value(1).toDouble(),query.value(2).toDouble())) ;
         }
         pointsMap.insert(pointSetName,points);
     }
@@ -321,7 +321,7 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
         project.changes.push_back(layer);
     }
 
-    QMap<QString,QVector<QPointF> > pointsMap;
+    QMap<QString,QVector<QPair<int,QPointF> > > pointsMap;
     in>>pointsMap;
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -335,18 +335,21 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
             db.rollback();
             break;
         }
-        QVector<QPointF> points = pointsMap.value(pointSetName);
-        foreach (QPointF pt, points) {
-            ret = query.prepare("insert into points values(?,?,?)");
+
+        QVector<QPair<int,QPointF> > points = pointsMap.value(pointSetName);
+        typedef QPair<int,QPointF > PointWithID;
+        foreach (PointWithID  pair, points) {
+            ret = query.prepare("insert into points values(?,?,?,?)");
             if (ret == false)
             {
                 QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("Prepare insert into points failed"));
                 db.rollback();
                 return in;
             }
-            query.bindValue(0,pt.x());
-            query.bindValue(1,pt.y());
-            query.bindValue(2,pointSetName);
+            query.bindValue(0,pair.first);
+            query.bindValue(1,pair.second.x());
+            query.bindValue(2,pair.second.y());
+            query.bindValue(3,pointSetName);
             ret = query.exec();
             if (ret == false)
             {
