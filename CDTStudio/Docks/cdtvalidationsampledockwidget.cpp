@@ -58,23 +58,21 @@ void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 
     onDockClear();
     CDTImageLayer *imageLayer = qobject_cast<CDTImageLayer *>(layer->getAncestor("CDTImageLayer"));
-    if (imageLayer == NULL)
-    {
-        logger()->info("No CDTImageLayer ancestor!");        
-        return;
-    }
-    else
+    if (imageLayer)
     {
         this->setEnabled(true);
         imageID = imageLayer->id();
         logger()->info("Find CDTImageLayer ancestor");
+        updateListView();
     }
+    else
+        logger()->info("No CDTImageLayer ancestor!");
 }
 
 void CDTValidationSampleDockWidget::onDockClear()
 {
     this->setEnabled(false);
-//    sampleModel->clear();
+    sampleModel->clear();
     if (currentMapTool)
     {
         delete currentMapTool;
@@ -113,6 +111,15 @@ void CDTValidationSampleDockWidget::onActionAdd()
     if (name.isEmpty())
         return;
 
+    for(int i=0;i<sampleModel->rowCount();++i)
+    {
+        if (sampleModel->data(sampleModel->index(i,0)).toString() == name)
+        {
+            QMessageBox::critical(this,tr("Error"),tr("The name:'%1' has already exist!").arg(name));
+            return;
+        }
+    }
+
     QString pointsSetName = QInputDialog::getText(this,tr("Name of new points set"),
                           tr("Name:"),QLineEdit::Normal,tr("New points set"));
     if (pointsSetName.isEmpty())
@@ -132,9 +139,15 @@ void CDTValidationSampleDockWidget::onActionAdd()
 
     QgsRectangle extent = imageLayer->canvasLayer()->extent();
     QVector<QPointF> points = generatePoints(pointsCount,extent);
-    if (insertPointsIntoDB(points,pointsSetName)==false)
+    if (insertPointsIntoDB(points,pointsSetName,id,name)==false)
         return;
     MainWindow::getCurrentProjectWidget()->setWindowModified(true);
+}
+
+void CDTValidationSampleDockWidget::updateListView()
+{
+    sampleModel->setQuery(QString("select name from image_validation_samples where imageid = '%1'")
+                          .arg(imageID.toString()),QSqlDatabase::database("category"));
 }
 
 QVector<QPointF> CDTValidationSampleDockWidget::generatePoints(int pointsCount, const QgsRectangle &extent)
@@ -153,7 +166,11 @@ QVector<QPointF> CDTValidationSampleDockWidget::generatePoints(int pointsCount, 
     return points;
 }
 
-bool CDTValidationSampleDockWidget::insertPointsIntoDB(QVector<QPointF> points, const QString &pointsSetName)
+bool CDTValidationSampleDockWidget::insertPointsIntoDB(
+        QVector<QPointF> points,
+        const QString &pointsSetName,
+        const QString &validationSampleID,
+        const QString &validationSampleName)
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
@@ -190,6 +207,25 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(QVector<QPointF> points, 
             return false;
         }
     }
+
+    if (query.prepare("insert into image_validation_samples values(?,?,?,?)")==false)
+    {
+        logger()->error("Prepare SQL failed!");
+        db.rollback();
+        return false;
+    }
+
+    query.addBindValue(validationSampleID);
+    query.addBindValue(validationSampleName);
+    query.addBindValue(imageID.toString());
+    query.addBindValue(pointsSetName);
+    if (query.exec()==false)
+    {
+        logger()->error("Insert into DB failed. Reason:%1",query.lastError().text());
+        db.rollback();
+        return false;
+    }
+
     db.commit();
     logger()->info("Insert points set %1 into DB succeeded!",pointsSetName);
     return true;

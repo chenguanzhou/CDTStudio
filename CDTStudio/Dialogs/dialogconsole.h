@@ -27,6 +27,7 @@ private slots:
     void onQuery();
     void onQueryTextChanged();
     void onDatabaseChanged(QString connName);
+    void onContextMenu(QPoint pt);
 
 private:
     Ui::DialogConsole *ui;

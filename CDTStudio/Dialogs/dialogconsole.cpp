@@ -3,6 +3,7 @@
 #include <QtCore>
 #include <QMessageBox>
 #include <QStringListModel>
+#include <QMenu>
 
 DialogConsole::DialogConsole(QWidget *parent) :
     QDialog(parent),
@@ -17,6 +18,7 @@ DialogConsole::DialogConsole(QWidget *parent) :
     connect(ui->pushButtonRefresh,SIGNAL(clicked()),SLOT(updateDatabases()));
     connect(ui->comboBox,SIGNAL(currentIndexChanged(QString)),SLOT(onDatabaseChanged(QString)));
     connect(ui->listView,SIGNAL(clicked(QModelIndex)),SLOT(onTableSelected(QModelIndex)));
+    connect(ui->listView,SIGNAL(customContextMenuRequested(QPoint)),SLOT(onContextMenu(QPoint)));
     connect(ui->pushButtonQuery,SIGNAL(clicked()),SLOT(onQuery()));
     connect(ui->plainTextEditQuery,SIGNAL(textChanged()),SLOT(onQueryTextChanged()));
 }
@@ -80,4 +82,14 @@ void DialogConsole::onDatabaseChanged(QString connName)
     }
     QStringList list = db.tables();
     listModel->setStringList(list);
+}
+
+void DialogConsole::onContextMenu(QPoint pt)
+{
+    int row = ui->listView->indexAt(pt).row();
+    QStringList list = listModel->stringList();
+    if (row>=list.size())
+        return;
+
+    QMenu menu;
 }

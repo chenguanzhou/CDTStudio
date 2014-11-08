@@ -28,10 +28,11 @@ public slots:
 private slots:
     void onGroupBoxToggled(bool toggled);
     void onActionAdd();
+    void updateListView();
 
 private:
     QVector<QPointF> generatePoints(int pointsCount, const QgsRectangle &extent);
-    bool insertPointsIntoDB(QVector<QPointF> points,const QString &pointsSetName);
+    bool insertPointsIntoDB(QVector<QPointF> points, const QString &pointsSetName, const QString &validationSampleID, const QString &validationSampleName);
 private:
     QGroupBox       *groupBox;
     QToolBar        *toolBar;

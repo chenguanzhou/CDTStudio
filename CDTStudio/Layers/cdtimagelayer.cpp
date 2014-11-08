@@ -348,6 +348,16 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
     }
 
     out<<categoryInfo;
+
+    query.exec(QString("select * from image_validation_samples where imageid = '%1'").arg(image.id()));
+    QList<QVariantList> validationPoints;
+    while(query.next())
+    {
+        QVariantList record;
+        record<<query.value(0)<<query.value(1)<<query.value(3);
+        validationPoints.push_back(record);
+    }
+    out<<validationPoints;
     return out ;
 }
 
@@ -382,6 +392,19 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
     CDTCategoryInformationList info;
     in>>info;
     image.setCategoryInfo(info);
+
+    QList<QVariantList> validationPoints;
+    in>>validationPoints;
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare(QString("insert into image_validation_samples values(?,?,?,?)"));
+    foreach (QVariantList record, validationPoints) {
+        query.bindValue(0,record[0]);
+        query.bindValue(1,record[1]);
+        query.bindValue(2,image.id().toString());
+        query.bindValue(3,record[2]);
+        query.exec();
+    }
+
     return in;
 }
 

@@ -7,14 +7,13 @@
 CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *canvas, bool isReadOnly) :
     QgsMapTool(canvas),
     mapCanvas(canvas),
-//    mReadOnly(isReadOnly),
     toolBar(new CDTCategoryToolBar(tr("Select training samples"),MainWindow::getMainWindow())),
-    model(new QSqlQueryModel(this)),
-    comboBoxCategory(new QComboBox(toolBar))
-{
+    model(new QSqlQueryModel(this))
+{    
     toolBar->setFloatable(true);
     toolBar->setMovable(true);
-    MainWindow::getMainWindow()->addToolBar(Qt::NoToolBarArea,toolBar);
+    toolBar->show();
+    toolBar->raise();
 
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("CDTCategoryToolBar");
@@ -28,16 +27,17 @@ CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *c
     else
         toolBar->restoreGeometry(geometry);
 
+    comboBoxCategory = new QComboBox(toolBar);
     comboBoxCategory->setModel(model);
 
-    QWidgetAction *actionLabel = new QWidgetAction(toolBar);
-    QWidgetAction *actionCombo = new QWidgetAction(toolBar);
+    QWidgetAction *actionLabel = new QWidgetAction(this);
+    QWidgetAction *actionCombo = new QWidgetAction(this);
     actionLabel->setDefaultWidget(new QLabel(tr("Category"),toolBar));
     actionCombo->setDefaultWidget(comboBoxCategory);
 
     toolBar->addAction(actionLabel);
     toolBar->addAction(actionCombo);
-    toolBar->show();
+    MainWindow::getMainWindow()->addToolBar(toolBar);
 }
 
 CDTMapToolSelectTrainingSamples::~CDTMapToolSelectTrainingSamples()

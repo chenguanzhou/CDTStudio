@@ -20,14 +20,12 @@ signals:
 
 public slots:
     void setSampleID(QUuid layerID);
-//    void setReadOnly(bool readOnly);
     void clearRubberBand();
 private:
     QUuid sampleID;    
     QgsMapCanvas *mapCanvas;
     QMap<qint64,QgsRubberBand*> rubberBands;
     bool mDragging;
-//    bool mReadOnly;
     
     QToolBar *toolBar;
     QComboBox *comboBoxCategory;
