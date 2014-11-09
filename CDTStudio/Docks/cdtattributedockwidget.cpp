@@ -4,6 +4,7 @@
 #include "cdtsegmentationlayer.h"
 #include "dialoggenerateattributes.h"
 #include "cdtplot2ddockwidget.h"
+#include "cdttableexporter.h"
 
 #include "mainwindow.h"
 
@@ -20,12 +21,20 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     setWidget(widget);
     layout->addWidget(tabWidget);
     tabWidget->setMovable(true);
+    tabWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    QAction *actionExportCurrentTable = new QAction(QIcon(":/Icon/Save.png"),tr("Export current table to file"), this);
+    QAction *actionExportAllTables = new QAction(QIcon(":/Icon/Save.png"),tr("Export all tables to file"), this);
+    connect(actionExportCurrentTable,SIGNAL(triggered()),SLOT(onActionExportCurrentTable()));
+    connect(actionExportAllTables,SIGNAL(triggered()),SLOT(onActionExportAllTables()));
+    tabWidget->addAction(actionExportCurrentTable);
+    tabWidget->addAction(actionExportAllTables);
+
     logger()->info("Constructed");
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()
 {
-//    delete ui;
 }
 
 CDTSegmentationLayer *CDTAttributeDockWidget::segmLayer() const
@@ -37,8 +46,6 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     if (segmentationLayer == layer)
         return;
-
-    //TODO  Process other layer type;
 
     clear();
     segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer->getAncestor("CDTSegmentationLayer"));
@@ -101,6 +108,34 @@ void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
         return;
 
     MainWindow::getPlot2DDockWidget()->setDataSource(QSqlDatabase::database("attribute"),tableName,featureName);
+}
+
+void CDTAttributeDockWidget::onActionExportCurrentTable()
+{
+    if (tabWidget->currentIndex()<0)
+        return;
+
+    QString path = QFileDialog::getSaveFileName(this,tr("Export current table to"),QString(),tr("CSV Files(*.csv);;Text Files(*.txt)"));
+    if (path.isEmpty())
+        return;
+
+    QSqlDatabase db = QSqlDatabase::database("attribute");
+    QString tableName = tabWidget->tabText(tabWidget->currentIndex());
+
+    QString errorText;
+    if (CDTTableExporter::exportSingleTable(db,tableName,path,true,errorText)==false)
+    {
+        QMessageBox::critical(this,tr("Error"),tr("Fialed! Error:%1").arg(errorText));
+        return;
+    }
+}
+
+void CDTAttributeDockWidget::onActionExportAllTables()
+{
+    if (tabWidget->count()<0)
+        return;
+
+    QString path = QFileDialog::getSaveFileName(this,tr("Export all tables to"),QString(),tr(""));
 }
 
 void CDTAttributeDockWidget::clearTables()

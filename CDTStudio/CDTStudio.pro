@@ -62,7 +62,8 @@ INCLUDEPATH += \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
     ../Tools\
-    ../Tools/CDTClassifierAssessmentWidget
+    ../Tools/CDTClassifierAssessmentWidget\
+    ../Tools/CDTTableExporter
 
 
 DEPENDPATH += \
@@ -71,8 +72,8 @@ DEPENDPATH += \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
     ../Tools/log4qt\
-    ../Tools/CDTClassifierAssessmentWidget
-
+    ../Tools/CDTClassifierAssessmentWidget\
+    ../Tools/CDTTableExporter
 
 #Libraries
 unix{
@@ -93,7 +94,7 @@ LIBS += -lgdal_i -lgdi32
 }
 
 LIBS +=     -L../lib -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
-             -lCDTFileSystem -llog4qt\
+             -lCDTFileSystem -llog4qt -lCDTTableExporter\
             -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 #opencv

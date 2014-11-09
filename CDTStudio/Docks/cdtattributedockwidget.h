@@ -59,8 +59,9 @@ public slots:
 private slots:
     void setTableModels(QList<QAbstractTableModel*> models);
     void onItemClicked(QModelIndex index);
+    void onActionExportCurrentTable();
+    void onActionExportAllTables();
 private:
-//    Ui::CDTAttributeDockWidget *ui;
     CDTDatabaseConnInfo     dbConnInfo;
     CDTSegmentationLayer*   segmentationLayer;
     QTabWidget *tabWidget;
