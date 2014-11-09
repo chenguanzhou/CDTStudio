@@ -47,8 +47,11 @@ CDTMapToolSelectTrainingSamples::~CDTMapToolSelectTrainingSamples()
     setting.beginGroup("CDTCategoryToolBar");
     setting.setValue("Geometry",toolBar->saveGeometry());
     setting.endGroup();
-    delete comboBoxCategory;
-    delete toolBar;
+    if (toolBar)
+    {
+        MainWindow::getMainWindow()->removeToolBar(toolBar);
+        delete toolBar;
+    }
 }
 
 void CDTMapToolSelectTrainingSamples::canvasMoveEvent(QMouseEvent *e)

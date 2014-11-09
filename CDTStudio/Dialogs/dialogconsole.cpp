@@ -17,7 +17,7 @@ DialogConsole::DialogConsole(QWidget *parent) :
 
     connect(ui->pushButtonRefresh,SIGNAL(clicked()),SLOT(updateDatabases()));
     connect(ui->comboBox,SIGNAL(currentIndexChanged(QString)),SLOT(onDatabaseChanged(QString)));
-    connect(ui->listView,SIGNAL(clicked(QModelIndex)),SLOT(onTableSelected(QModelIndex)));
+    connect(ui->listView,SIGNAL(clicked(QModelIndex)),SLOT(updateCurrentTable(QModelIndex)));
     connect(ui->listView,SIGNAL(customContextMenuRequested(QPoint)),SLOT(onContextMenu(QPoint)));
     connect(ui->pushButtonQuery,SIGNAL(clicked()),SLOT(onQuery()));
     connect(ui->plainTextEditQuery,SIGNAL(textChanged()),SLOT(onQueryTextChanged()));
@@ -34,7 +34,7 @@ void DialogConsole::updateDatabases()
     ui->comboBox->addItems(QSqlDatabase::connectionNames());
 }
 
-void DialogConsole::onTableSelected(const QModelIndex &index)
+void DialogConsole::updateCurrentTable(const QModelIndex &index)
 {
     QString tableName = listModel->data(index,Qt::DisplayRole).toString();
     QSqlTableModel* tableModel = new QSqlTableModel(ui->tableView,db);
@@ -90,6 +90,22 @@ void DialogConsole::onContextMenu(QPoint pt)
     QStringList list = listModel->stringList();
     if (row>=list.size())
         return;
+    ui->listView->setCurrentIndex(ui->listView->indexAt(pt));
+    updateCurrentTable(ui->listView->currentIndex());
 
     QMenu menu;
+    menu.addAction(tr("Delete all data in table '%1'").arg(list[row]),this,SLOT(deleteDataInCurrentTable()));
+    menu.exec(QCursor::pos());
+}
+
+void DialogConsole::deleteDataInCurrentTable()
+{
+    int row = ui->listView->currentIndex().row();
+    QStringList list = listModel->stringList();
+    if (row>=list.size())
+        return;
+
+    QSqlQuery query(db);
+    query.exec(QString("Delete from %1").arg(list[row]));
+    updateCurrentTable(ui->listView->currentIndex());
 }

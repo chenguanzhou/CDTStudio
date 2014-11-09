@@ -23,11 +23,12 @@ public slots:
     void updateDatabases();
 
 private slots:
-    void onTableSelected(const QModelIndex &index);
+    void updateCurrentTable(const QModelIndex &index);
     void onQuery();
     void onQueryTextChanged();
     void onDatabaseChanged(QString connName);
     void onContextMenu(QPoint pt);
+    void deleteDataInCurrentTable();
 
 private:
     Ui::DialogConsole *ui;
