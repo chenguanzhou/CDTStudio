@@ -119,11 +119,12 @@ void CDTAttributeDockWidget::onActionExportCurrentTable()
     if (path.isEmpty())
         return;
 
+    bool isHeader = QMessageBox::information(this,tr("Write headers?"),tr("Write first line as headers?"),QMessageBox::Ok|QMessageBox::No)==QMessageBox::Ok;
     QSqlDatabase db = QSqlDatabase::database("attribute");
     QString tableName = tabWidget->tabText(tabWidget->currentIndex());
 
     QString errorText;
-    if (CDTTableExporter::exportSingleTable(db,tableName,path,true,errorText)==false)
+    if (CDTTableExporter::exportSingleTable(db,tableName,path,isHeader,errorText)==false)
     {
         QMessageBox::critical(this,tr("Error"),tr("Fialed! Error:%1").arg(errorText));
         return;

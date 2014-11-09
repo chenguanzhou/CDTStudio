@@ -28,6 +28,32 @@ private:
     QTextStream out;
 };
 
+class TXTWriter:public CDTTableExporterWriter
+{
+public:
+    TXTWriter(const QString &path)
+        :CDTTableExporterWriter(path)
+    {
+        file.setFileName(path);
+        if (file.open(QFile::WriteOnly)==false) valid = false;
+        out.setDevice(&file);
+    }
+    ~TXTWriter()
+    {
+        file.close();
+    }
+
+    void writeLine(QStringList record)
+    {
+        if (valid == true)
+            out<<record.join(" ")<<endl;
+    }
+
+private:
+    QFile file;
+    QTextStream out;
+};
+
 bool CDTTableExporter::exportSingleTable(QSqlDatabase &db, const QString &tableName, const QString &exportPath, bool isHeader, QString &error)
 {
     QSqlQuery query(db);
@@ -52,7 +78,10 @@ bool CDTTableExporter::exportSingleTable(QSqlDatabase &db, const QString &tableN
     //Header
     if (isHeader)
     {
-
+        QStringList fields;
+        for(int i=0;i<query.record().count();++i)
+            fields<<query.record().fieldName(i);
+        writer->writeLine(fields);
     }
 
     while (query.next())
@@ -85,7 +114,12 @@ CDTTableExporterWriter *CDTTableExporter::getWriterByName(const QString &path)
         if (!writer->isValid())
             return NULL;
     }
-
+    else if (suffix == "txt")
+    {
+        writer = new TXTWriter(path);
+        if (!writer->isValid())
+            return NULL;
+    }
     return writer;
 }
 
