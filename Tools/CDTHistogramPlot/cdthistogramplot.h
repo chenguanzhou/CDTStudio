@@ -14,7 +14,7 @@ class CDTHistogramPlotPrivate;
 
 class CDTHISTOGRAMPLOT_EXPORT CDTHistogramPlot:public QwtPlot
 {
-//    Q_OBJECT
+    Q_OBJECT
 public:
     explicit CDTHistogramPlot(QWidget * parent = NULL );
     ~CDTHistogramPlot();
@@ -28,6 +28,7 @@ public slots:
     void setFieldName(const QString &name);
     void replot();
     void clear();
+    void exportAsImage();
 
 private:
     void initHistogram();

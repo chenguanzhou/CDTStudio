@@ -1,4 +1,6 @@
 #include "cdthistogramplot.h"
+#include <QAction>
+#include <QtSql>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_canvas.h>
 #include <qwt_plot_picker.h>
@@ -10,7 +12,8 @@
 #include <qwt_picker_machine.h>
 #include <qwt_scale_widget.h>
 #include <qwt_symbol.h>
-#include <QtSql>
+#include <qwt_plot_renderer.h>
+
 
 class CDTHistogramPlotPrivate
 {
@@ -34,6 +37,11 @@ CDTHistogramPlot::CDTHistogramPlot(QWidget *parent)
     QFont font("Courier");
     this->setAxisFont(QwtPlot::xBottom,font);
     this->setAxisFont(QwtPlot::yLeft,font);
+
+    QAction *action = new QAction(QIcon(":/Save.png"),tr("Save as image"),this);
+    connect(action,SIGNAL(triggered()),SLOT(exportAsImage()));
+    this->setContextMenuPolicy(Qt::ActionsContextMenu);
+    this->addAction(action);
 }
 
 CDTHistogramPlot::~CDTHistogramPlot()
@@ -90,6 +98,12 @@ void CDTHistogramPlot::clear()
     histogram->setSamples(datas);
     this->setTitle(QString::null);
     QwtPlot::replot();
+}
+
+void CDTHistogramPlot::exportAsImage()
+{
+    QwtPlotRenderer renderer;
+    renderer.exportTo(this,pData->tableName+":"+pData->fieldName);
 }
 
 void CDTHistogramPlot::initHistogram()

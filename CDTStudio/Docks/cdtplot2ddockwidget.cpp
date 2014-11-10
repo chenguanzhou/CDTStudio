@@ -6,6 +6,7 @@ CDTPlot2DDockWidget::CDTPlot2DDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
     qwtPlot(new CDTHistogramPlot(this))
 {        
+    this->setEnabled(false);
     this->setWindowTitle(tr("Plot2D Panel"));
 
     qwtPlot->setObjectName(QString::fromUtf8("qwtPlot"));
@@ -33,6 +34,7 @@ void CDTPlot2DDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 void CDTPlot2DDockWidget::onDockClear()
 {
     qwtPlot->clear();
+    this->setEnabled(false);
 }
 
 void CDTPlot2DDockWidget::setDataSource(QSqlDatabase db, QString tableName, QString fieldName)
@@ -59,4 +61,5 @@ void CDTPlot2DDockWidget::setDataSource(QSqlDatabase db, QString tableName, QStr
     qwtPlot->setTableName(tableName);
     qwtPlot->setFieldName(fieldName);
     qwtPlot->replot();
+    this->setEnabled(true);
 }

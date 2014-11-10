@@ -22,3 +22,6 @@ else{
 include(../Config/win.pri)
 }
 LIBS += -lqwt
+
+RESOURCES += \
+    resource.qrc
