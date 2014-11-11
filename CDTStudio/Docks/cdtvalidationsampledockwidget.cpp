@@ -1,5 +1,7 @@
 #include "cdtvalidationsampledockwidget.h"
 #include <ctime>
+#include <qgslabel.h>
+#include <qgslabelattributes.h>
 #include "stable.h"
 #include "cdtvariantconverter.h"
 #include "mainwindow.h"
@@ -45,7 +47,8 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
 
 CDTValidationSampleDockWidget::~CDTValidationSampleDockWidget()
 {
-//    onDockClear();
+        onDockClear();
+        if (pointsLayer)delete pointsLayer;
 }
 
 void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
@@ -56,10 +59,12 @@ void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (layer->id()==imageID)
         return;
 
-    onDockClear();
     CDTImageLayer *imageLayer = qobject_cast<CDTImageLayer *>(layer->getAncestor("CDTImageLayer"));
     if (imageLayer)
     {
+        if (imageLayer->id()==imageID)
+            return;
+        onDockClear();
         imageID = imageLayer->id();
         this->setEnabled(true);
         this->setVisible(true);
@@ -75,7 +80,7 @@ void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 void CDTValidationSampleDockWidget::onDockClear()
 {
     this->setEnabled(false);
-    this->setVisible(false);    
+    this->setVisible(false);
     sampleModel->clear();
     imageID = QUuid();
     clearPointsLayer();
@@ -86,7 +91,7 @@ void CDTValidationSampleDockWidget::onGroupBoxToggled(bool toggled)
     toolBar->setEnabled(toggled);
     listView->setEnabled(toggled);
     if (toggled)
-    {        
+    {
         createPointsLayer();
     }
     else
@@ -99,7 +104,7 @@ void CDTValidationSampleDockWidget::onActionAdd()
 {
     QUuid id = QUuid::createUuid();
     QString name = QInputDialog::getText(this,tr("New validation sample name"),
-                          tr("Name:"),QLineEdit::Normal,tr("New Sample"));
+                                         tr("Name:"),QLineEdit::Normal,tr("New Sample"));
     if (name.isEmpty())
         return;
 
@@ -113,7 +118,7 @@ void CDTValidationSampleDockWidget::onActionAdd()
     }
 
     QString pointsSetName = QInputDialog::getText(this,tr("Name of new points set"),
-                          tr("Name:"),QLineEdit::Normal,tr("New points set"));
+                                                  tr("Name:"),QLineEdit::Normal,tr("New points set"));
     if (pointsSetName.isEmpty())
         return;
 
@@ -214,7 +219,7 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(
     query.addBindValue(validationSampleID);
     query.addBindValue(validationSampleName);
     query.addBindValue(imageID.toString());
-    query.addBindValue(pointsSetName);    
+    query.addBindValue(pointsSetName);
     query.addBindValue(dataToVariant(point_category));
     if (query.exec()==false)
     {
@@ -240,20 +245,18 @@ void CDTValidationSampleDockWidget::createPointsLayer()
     QString validationName = sampleModel->data(listView->currentIndex()).toString();
     QSqlQuery query(QSqlDatabase::database("category"));
     query.exec(QString("select pointset_name,point_category from image_validation_samples where name = '%1'")
-                .arg(validationName));
+               .arg(validationName));
     query.next();
 
     QString pointset_name = query.value(0).toString();
     QMap<int,QString> point_category = variantToData<QMap<int,QString> >(query.value(2));
 
     query.exec(QString("select id,x,y from points where pointset_name = '%1'")
-                .arg(pointset_name));
+               .arg(pointset_name));
 
 
     QString uri = "point?field=id:integer";
     pointsLayer = new QgsVectorLayer(uri,tr("Validations points layer"), "memory");
-//    QString uri = "/home/cgz/data/temp.shp";
-//    pointsLayer = new QgsVectorLayer(uri,tr("Validations points layer"), "ogr");
     pointsLayer->addAttribute(QgsField("id",QVariant::Int));
     pointsLayer->startEditing();
     pointsLayer->beginEditCommand(tr("Add validations to the tampory layer"));
@@ -263,29 +266,41 @@ void CDTValidationSampleDockWidget::createPointsLayer()
         f.setGeometry(QgsGeometry::fromPoint(QgsPoint(query.value(1).toDouble(),query.value(2).toDouble())));
         f.setAttribute("id",query.value(0));
         pointsLayer->addFeature(f);
-        pointsLayer->lastError();
     }
     pointsLayer->endEditCommand();
     pointsLayer->commitChanges();
 
+    //Set label
+    pointsLayer->enableLabels(true);
+    QgsLabel *label = pointsLayer->label();
+    label->setLabelField(QgsLabel::Text,0);
+    QgsLabelAttributes *attributes= label->labelAttributes();
+    attributes->setColor(Qt::white);
+    attributes->setBufferEnabled(true);
+    attributes->setBufferColor(Qt::black);
+    attributes->setOffset(10,10,1);
 
-//    QgsPolygon snakePolygon = snake(polygon,imagePath);
-//    QgsGeometry* newPolygonGeom = QgsGeometry::fromPolygon(snakePolygon);
-//    QgsFeature f(vectorLayer->pendingFields(),0);
-//    f.setGeometry(newPolygonGeom);
-//    vectorLayer->beginEditCommand( "snake" );
-//    qDebug()<<vectorLayer->addFeature(f);
+    QgsMapLayerRegistry::instance()->addMapLayer(pointsLayer);
+    auto layers = MainWindow::getCurrentMapCanvas()->layers();
+    QList<QgsMapCanvasLayer> mapLayers;
+    mapLayers<<pointsLayer;
+    foreach (QgsMapLayer *layer, layers) {
+        mapLayers<<QgsMapCanvasLayer(layer);
+    }
+    MainWindow::getCurrentMapCanvas()->setLayerSet(mapLayers);
+    MainWindow::getCurrentMapCanvas()->refresh();
 
-
-//    pointsLayer->beginEditCommand("Add points to the tempory layer");
-
-
-
+    //Make a Dialog to set category
 
 }
 
 void CDTValidationSampleDockWidget::clearPointsLayer()
 {
-    if (pointsLayer) delete pointsLayer;
-    pointsLayer = NULL;
+    if (pointsLayer)
+    {
+        QgsMapLayerRegistry::instance()->removeMapLayer(pointsLayer->id());
+        MainWindow::getCurrentProjectWidget()->refreshMapCanvas(false);
+        //        delete pointsLayer;
+        pointsLayer = NULL;
+    }
 }
