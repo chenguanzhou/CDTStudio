@@ -69,14 +69,8 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
 }
 
 CDTApplication::~CDTApplication()
-{
-    QSqlDatabase db = QSqlDatabase::database("category");
-    QString databaseName = db.databaseName();
-    db.removeDatabase("category");
-    if (databaseName != ":memory:")
-    {
-        QFile::remove(databaseName);
-    }
+{    
+    QSqlDatabase::removeDatabase("category");
 }
 
 QString CDTApplication::getStyleSheetByName(QString styleName)
@@ -307,6 +301,7 @@ bool CDTApplication::initDatabase()
                      "name text NOT NULL,"
                      "imageid text not null,"
                      "pointset_name text not null,"
+                     "point_category blob not null,"
                      "Primary Key(id) )");
     if (ret == false)
     {

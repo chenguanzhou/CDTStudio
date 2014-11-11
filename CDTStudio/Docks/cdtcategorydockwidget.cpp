@@ -49,8 +49,6 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     connect(actionSubmit,SIGNAL(triggered()),SLOT(on_actionSubmit_triggered()));
 
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-//    tableView->setSizePolicy(this->sizePolicy());
-//    panel->setSizePolicy(this->sizePolicy());
 
     logger()->info("Constructed");
 }
@@ -68,23 +66,25 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (imgLayer)
     {
         logger()->info("Find ancestor class of CDTImageLayer");
+        if (imgLayer->id()==imageLayerID)
+            return;
         this->updateImageID(imgLayer->id());
         this->setEnabled(true);
         this->setVisible(true);
         this->raise();
-        this->adjustSize();
+//        this->adjustSize();
     }
 }
 
 void CDTCategoryDockWidget::onDockClear()
 {
-    CDTImageLayer* layer = CDTImageLayer::getLayer(imageLayerID);
-    if (layer) disconnect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-                          layer,SIGNAL(layerChanged()));
-    if (layer) disconnect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
-                          layer,SIGNAL(layerChanged()));
-    if (layer) disconnect(categoryModel,SIGNAL(beforeDelete(int)),
-                          layer,SIGNAL(layerChanged()));
+//    CDTImageLayer* layer = CDTImageLayer::getLayer(imageLayerID);
+//    if (layer) disconnect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+//                          layer,SIGNAL(layerChanged()));
+//    if (layer) disconnect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
+//                          layer,SIGNAL(layerChanged()));
+//    if (layer) disconnect(categoryModel,SIGNAL(beforeDelete(int)),
+//                          layer,SIGNAL(layerChanged()));
     if (categoryModel)
     {
         delete categoryModel;
@@ -98,23 +98,8 @@ void CDTCategoryDockWidget::onDockClear()
 
 void CDTCategoryDockWidget::updateImageID(QUuid id)
 {
-    if (id==imageLayerID)
-        return;
-
     imageLayerID = id;
-    updateTable();
-    CDTImageLayer *imgLayer = CDTImageLayer::getLayer(id);
-    connect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-            imgLayer,SIGNAL(layerChanged()));
-    connect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
-            imgLayer,SIGNAL(layerChanged()));
-    connect(categoryModel,SIGNAL(beforeDelete(int)),
-            imgLayer,SIGNAL(layerChanged()));
 
-}
-
-void CDTCategoryDockWidget::updateTable()
-{
     if (categoryModel == NULL)
     {
         QAbstractItemModel *model = tableView->model();
@@ -129,15 +114,20 @@ void CDTCategoryDockWidget::updateTable()
     categoryModel->setFilter("imageID='"+imageLayerID.toString()+"'");
     categoryModel->select();
 
-    //    if (categoryModel->rowCount()>0)
-    //        tableView->setCurrentIndex(categoryModel->index(0,0));
-
     tableView->setItemDelegateForColumn(2,delegateColor);
     tableView->hideColumn(0);
     tableView->hideColumn(3);
     tableView->resizeColumnsToContents();
     tableView->resizeRowsToContents();
-    this->adjustSize();
+
+    CDTImageLayer *imgLayer = CDTImageLayer::getLayer(id);
+    connect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            imgLayer,SIGNAL(layerChanged()));
+    connect(categoryModel,SIGNAL(beforeInsert(QSqlRecord&)),
+            imgLayer,SIGNAL(layerChanged()));
+    connect(categoryModel,SIGNAL(beforeDelete(int)),
+            imgLayer,SIGNAL(layerChanged()));
+
 }
 
 void CDTCategoryDockWidget::on_actionInsert_triggered()

@@ -179,8 +179,7 @@ void CDTTrainingSampleDockWidget::onGroupBoxToggled(bool toggled)
     if (toggled)
     {
         lastMapTool = MainWindow::getCurrentMapCanvas()->mapTool();
-        currentMapTool =
-                new CDTMapToolSelectTrainingSamples(MainWindow::getCurrentMapCanvas(),!groupBoxSamples->isChecked());
+        currentMapTool = new CDTMapToolSelectTrainingSamples(MainWindow::getCurrentMapCanvas());
         connect(MainWindow::getCurrentMapCanvas(),SIGNAL(destroyed()),currentMapTool,SLOT(clearRubberBand()));
         MainWindow::getCurrentMapCanvas()->setMapTool(currentMapTool);
         MainWindow::getCurrentProjectWidget()->menuBar()->setEnabled(false);

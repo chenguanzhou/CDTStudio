@@ -11,7 +11,7 @@ class CDTMapToolSelectTrainingSamples : public QgsMapTool
 {
     Q_OBJECT
 public:
-    explicit CDTMapToolSelectTrainingSamples(QgsMapCanvas *canvas,bool isReadOnly);
+    explicit CDTMapToolSelectTrainingSamples(QgsMapCanvas *canvas);
     ~CDTMapToolSelectTrainingSamples();
 
     void canvasMoveEvent( QMouseEvent * e );

@@ -62,6 +62,23 @@ CDTProjectLayer::~CDTProjectLayer()
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
 
+    ret = query.exec(QString("select pointset_name from points_project where projectid = '%1'").arg(uuid.toString()));
+    if (!ret)
+        qWarning()<<"prepare:"<<query.lastError().text();
+    QStringList list;
+    while (query.next()) {
+        list<<query.value(0).toString();
+    }
+    foreach (QString pointset_name, list) {
+        ret = query.exec(QString("delete from points where pointset_name = '%1'").arg(pointset_name));
+        if (!ret)
+            qWarning()<<"prepare:"<<query.lastError().text();
+    }
+
+    ret = query.exec(QString("delete from points_project where projectid = '%1'").arg(uuid.toString()));
+    if (!ret)
+        qWarning()<<"prepare:"<<query.lastError().text();
+
     if (fileSystem) delete fileSystem;
 }
 

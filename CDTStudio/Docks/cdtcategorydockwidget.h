@@ -21,7 +21,7 @@ public slots:
     void onDockClear();
 private slots:
     void updateImageID(QUuid id);
-    void updateTable();
+//    void updateTable();
     void on_actionInsert_triggered();
     void on_actionRemove_triggered();
     void on_actionRemove_All_triggered();

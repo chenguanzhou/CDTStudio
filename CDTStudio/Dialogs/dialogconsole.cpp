@@ -17,10 +17,16 @@ DialogConsole::DialogConsole(QWidget *parent) :
 
     connect(ui->pushButtonRefresh,SIGNAL(clicked()),SLOT(updateDatabases()));
     connect(ui->comboBox,SIGNAL(currentIndexChanged(QString)),SLOT(onDatabaseChanged(QString)));
-    connect(ui->listView,SIGNAL(clicked(QModelIndex)),SLOT(updateCurrentTable(QModelIndex)));
+//    connect(ui->listView,SIGNAL(clicked(QModelIndex)),SLOT(updateCurrentTable(QModelIndex)));
+    connect(ui->listView->selectionModel(),SIGNAL(selectionChanged(QItemSelection,QItemSelection)),SLOT(onSelectionChanged(QItemSelection)));
     connect(ui->listView,SIGNAL(customContextMenuRequested(QPoint)),SLOT(onContextMenu(QPoint)));
     connect(ui->pushButtonQuery,SIGNAL(clicked()),SLOT(onQuery()));
     connect(ui->plainTextEditQuery,SIGNAL(textChanged()),SLOT(onQueryTextChanged()));
+
+    QAction *actionClose = new QAction(this);
+    this->addAction(actionClose);
+    actionClose->setShortcut(QKeySequence(Qt::Key_F12));
+    connect(actionClose,SIGNAL(triggered()),SLOT(hide()));
 }
 
 DialogConsole::~DialogConsole()
@@ -30,21 +36,30 @@ DialogConsole::~DialogConsole()
 
 void DialogConsole::updateDatabases()
 {
+    //Get current state;
+    QString currentConnectionName = ui->comboBox->currentText();
+    int index = ui->listView->currentIndex().row();
+    QStringList list = listModel->stringList();
+
+    //update
     ui->comboBox->clear();
     ui->comboBox->addItems(QSqlDatabase::connectionNames());
-}
 
-void DialogConsole::updateCurrentTable(const QModelIndex &index)
-{
-    QString tableName = listModel->data(index,Qt::DisplayRole).toString();
-    QSqlTableModel* tableModel = new QSqlTableModel(ui->tableView,db);
-    if (ui->tableView->model())
-        delete ui->tableView->model();
-    ui->tableView->setModel(tableModel);
-    tableModel->setTable(tableName);
-    tableModel->select();
-    ui->tableView->resizeColumnsToContents();
-    ui->tableView->resizeRowsToContents();
+    //Continue getting preview state;
+    if (index<0)
+        return;
+    QString currentTableName = list[index];
+
+    index = ui->comboBox->findText(currentConnectionName);
+    if (index == -1)
+        return;
+    ui->comboBox->setCurrentIndex(index);
+
+    if (listModel->stringList().contains(currentTableName))
+    {
+        index = listModel->stringList().indexOf(currentTableName);
+        ui->listView->selectionModel()->select(listModel->index(index,0),QItemSelectionModel::Select);
+    }
 }
 
 void DialogConsole::onQuery()
@@ -108,4 +123,22 @@ void DialogConsole::deleteDataInCurrentTable()
     QSqlQuery query(db);
     query.exec(QString("Delete from %1").arg(list[row]));
     updateCurrentTable(ui->listView->currentIndex());
+}
+
+void DialogConsole::onSelectionChanged(QItemSelection selection)
+{
+    updateCurrentTable(selection[0].indexes()[0]);
+}
+
+void DialogConsole::updateCurrentTable(const QModelIndex &index)
+{
+    QString tableName = listModel->data(index,Qt::DisplayRole).toString();
+    QSqlTableModel* tableModel = new QSqlTableModel(ui->tableView,db);
+    if (ui->tableView->model())
+        delete ui->tableView->model();
+    ui->tableView->setModel(tableModel);
+    tableModel->setTable(tableName);
+    tableModel->select();
+    ui->tableView->resizeColumnsToContents();
+    ui->tableView->resizeRowsToContents();
 }

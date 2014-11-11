@@ -60,6 +60,12 @@ CDTImageLayer::~CDTImageLayer()
     ret = query.exec("delete from imagelayer where id = '"+uuid.toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
+    ret = query.exec("delete from category where imageID = '"+uuid.toString()+"'");
+    if (!ret)
+        qWarning()<<"prepare:"<<query.lastError().text();
+    ret = query.exec("delete from image_validation_samples where imageID = '"+uuid.toString()+"'");
+    if (!ret)
+        qWarning()<<"prepare:"<<query.lastError().text();
     layers.removeAll(this);
 }
 
@@ -349,12 +355,13 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
 
     out<<categoryInfo;
 
-    query.exec(QString("select * from image_validation_samples where imageid = '%1'").arg(image.id()));
+    query.exec(QString("select id,name,pointset_name,point_category from image_validation_samples where imageid = '%1'").arg(image.id()));
     QList<QVariantList> validationPoints;
     while(query.next())
     {
         QVariantList record;
-        record<<query.value(0)<<query.value(1)<<query.value(3);
+        for (int i=0;i<query.record().count();++i)
+            record<<query.value(i);
         validationPoints.push_back(record);
     }
     out<<validationPoints;
@@ -396,12 +403,13 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
     QList<QVariantList> validationPoints;
     in>>validationPoints;
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare(QString("insert into image_validation_samples values(?,?,?,?)"));
+    query.prepare(QString("insert into image_validation_samples values(?,?,?,?,?)"));
     foreach (QVariantList record, validationPoints) {
         query.bindValue(0,record[0]);
         query.bindValue(1,record[1]);
         query.bindValue(2,image.id().toString());
         query.bindValue(3,record[2]);
+        query.bindValue(4,record[3]);
         query.exec();
     }
 

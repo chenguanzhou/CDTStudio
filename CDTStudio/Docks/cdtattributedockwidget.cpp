@@ -79,7 +79,7 @@ void CDTAttributeDockWidget::clear()
     this->setEnabled(false);
     dbConnInfo = CDTDatabaseConnInfo();
     clearTables();
-    QSqlDatabase::removeDatabase("attribute");
+//    QSqlDatabase::removeDatabase("attribute");
     segmentationLayer =NULL;
 }
 

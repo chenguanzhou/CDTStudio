@@ -23,14 +23,16 @@ public slots:
     void updateDatabases();
 
 private slots:
-    void updateCurrentTable(const QModelIndex &index);
     void onQuery();
     void onQueryTextChanged();
     void onDatabaseChanged(QString connName);
     void onContextMenu(QPoint pt);
     void deleteDataInCurrentTable();
+    void onSelectionChanged(QItemSelection selection);
 
 private:
+    void updateCurrentTable(const QModelIndex &index);
+
     Ui::DialogConsole *ui;
     QSqlDatabase db;
     QStringListModel* listModel;

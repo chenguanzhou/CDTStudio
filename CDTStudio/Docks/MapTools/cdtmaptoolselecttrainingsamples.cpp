@@ -4,7 +4,7 @@
 #include "mainwindow.h"
 #include "cdtcategorytoolbar.h"
 
-CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *canvas, bool isReadOnly) :
+CDTMapToolSelectTrainingSamples::CDTMapToolSelectTrainingSamples(QgsMapCanvas *canvas) :
     QgsMapTool(canvas),
     mapCanvas(canvas),
     toolBar(new CDTCategoryToolBar(tr("Select training samples"),MainWindow::getMainWindow())),

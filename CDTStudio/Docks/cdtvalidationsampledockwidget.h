@@ -10,6 +10,7 @@ class QListView;
 class QgsMapTool;
 class QSqlQueryModel;
 class QgsRectangle;
+class QgsVectorLayer;
 
 class CDTValidationSampleDockWidget : public CDTDockWidget
 {
@@ -33,6 +34,8 @@ private slots:
 private:
     QVector<QPointF> generatePoints(int pointsCount, const QgsRectangle &extent);
     bool insertPointsIntoDB(QVector<QPointF> points, const QString &pointsSetName, const QString &validationSampleID, const QString &validationSampleName);
+    void createPointsLayer();
+    void clearPointsLayer();
 private:
     QGroupBox       *groupBox;
     QToolBar        *toolBar;
@@ -40,8 +43,7 @@ private:
     QSqlQueryModel  *sampleModel;
     QUuid           imageID;
 
-    QgsMapTool      *lastMapTool;
-    QgsMapTool      *currentMapTool;
+    QgsVectorLayer  *pointsLayer;
 };
 
 #endif // CDTVALIDATIONSAMPLEDOCKWIDGET_H

@@ -74,6 +74,23 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
 
+    ret = query.exec(QString("select id from sample_segmentation where segmentationid = '%1'").arg(uuid.toString()));
+    if (!ret)
+        qWarning()<<"prepare:"<<query.lastError().text();
+    QStringList list;
+    while (query.next()) {
+        list<<query.value(0).toString();
+    }
+    foreach (QString sampleid, list) {
+        ret = query.exec(QString("delete from object_samples where sampleid = '%1'").arg(sampleid));
+        if (!ret)
+            qWarning()<<"prepare:"<<query.lastError().text();
+    }
+
+    ret = query.exec(QString("delete from sample_segmentation where segmentationid = '%1'").arg(uuid.toString()));
+    if (!ret)
+        qWarning()<<"prepare:"<<query.lastError().text();
+
     layers.removeAll(this);
 }
 
