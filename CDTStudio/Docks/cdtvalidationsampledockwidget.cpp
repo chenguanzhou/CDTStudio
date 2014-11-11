@@ -60,8 +60,10 @@ void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     CDTImageLayer *imageLayer = qobject_cast<CDTImageLayer *>(layer->getAncestor("CDTImageLayer"));
     if (imageLayer)
     {
-        this->setEnabled(true);
         imageID = imageLayer->id();
+        this->setEnabled(true);
+        this->setVisible(true);
+        this->raise();
         logger()->info("Find CDTImageLayer ancestor");
         updateListView();
     }
@@ -72,6 +74,7 @@ void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 void CDTValidationSampleDockWidget::onDockClear()
 {
     this->setEnabled(false);
+    this->setVisible(false);
     sampleModel->clear();
     if (currentMapTool)
     {

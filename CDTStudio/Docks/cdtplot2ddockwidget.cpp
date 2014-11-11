@@ -29,12 +29,14 @@ CDTPlot2DDockWidget::~CDTPlot2DDockWidget()
 void CDTPlot2DDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     Q_UNUSED(layer);
+    onDockClear();
 }
 
 void CDTPlot2DDockWidget::onDockClear()
 {
     qwtPlot->clear();
     this->setEnabled(false);
+    this->setVisible(false);
 }
 
 void CDTPlot2DDockWidget::setDataSource(QSqlDatabase db, QString tableName, QString fieldName)
@@ -62,4 +64,6 @@ void CDTPlot2DDockWidget::setDataSource(QSqlDatabase db, QString tableName, QStr
     qwtPlot->setFieldName(fieldName);
     qwtPlot->replot();
     this->setEnabled(true);
+    this->setVisible(true);
+    this->raise();
 }

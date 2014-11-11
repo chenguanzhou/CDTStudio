@@ -8,7 +8,8 @@
 CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
     tableView(new QTableView(this)),
-    categoryModel(new QSqlRelationalTableModel(this,QSqlDatabase::database("category"))),
+    //    categoryModel(new QSqlRelationalTableModel(this,QSqlDatabase::database("category"))),
+    categoryModel(NULL),
     delegateColor(new CDTCategoryDelegate(this)),
     actionEdit(new QAction(QIcon(":/Icon/Edit.png"),tr("Edit"),this)),
     actionRevert(new QAction(QIcon(":/Icon/Undo.png"),tr("Revert"),this)),
@@ -21,22 +22,19 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     this->setEnabled(false);
     QWidget *panel = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout(panel);
-//    vbox->setMargin(2);
     QToolBar* toolBar = new QToolBar(this);
     toolBar->setIconSize(MainWindow::getIconSize());
+    vbox->setSpacing(1);
     vbox->addWidget(toolBar);
     vbox->addWidget(tableView);
     this->setWidget(panel);
     this->setWindowTitle(tr("Categories"));
 
+
     //tableView
-    tableView->setModel(categoryModel);
     tableView->setEditTriggers(QTableView::DoubleClicked|QTableView::AnyKeyPressed);
     tableView->setSelectionBehavior(QTableView::SelectRows);
     tableView->setSelectionMode(QTableView::SingleSelection);
-    categoryModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Category Name"));
-    categoryModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Color"));
-    connect(categoryModel,SIGNAL(primeInsert(int,QSqlRecord&)),SLOT(onPrimeInsert(int,QSqlRecord&)));
 
     //toolbar
     toolBar->addActions(QList<QAction*>()
@@ -49,6 +47,11 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     connect(actionRemove_All,SIGNAL(triggered()),SLOT(on_actionRemove_All_triggered()));
     connect(actionRevert,SIGNAL(triggered()),SLOT(on_actionRevert_triggered()));
     connect(actionSubmit,SIGNAL(triggered()),SLOT(on_actionSubmit_triggered()));
+
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+//    tableView->setSizePolicy(this->sizePolicy());
+//    panel->setSizePolicy(this->sizePolicy());
+
     logger()->info("Constructed");
 }
 
@@ -65,33 +68,12 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (imgLayer)
     {
         logger()->info("Find ancestor class of CDTImageLayer");
-        updateImageID(imgLayer->id());
-        setEnabled(true);
+        this->updateImageID(imgLayer->id());
+        this->setEnabled(true);
+        this->setVisible(true);
+        this->raise();
+        this->adjustSize();
     }
-
-//    CDTImageLayer *imgLayer = qobject_cast<CDTImageLayer*>(layer);
-//    if (imgLayer)
-//    {
-//        updateImageID(imgLayer->id());
-//        setEnabled(true);
-//        return;
-//    }
-
-//    CDTSegmentationLayer *segLayer =  qobject_cast<CDTSegmentationLayer*>(layer);
-//    if (segLayer)
-//    {
-//        updateImageID(qobject_cast<CDTImageLayer*>(segLayer->parent())->id());
-//        setEnabled(true);
-//        return;
-//    }
-
-//    CDTClassificationLayer *clsLayer =  qobject_cast<CDTClassificationLayer*>(layer);
-//    if (clsLayer)
-//    {
-//        updateImageID(qobject_cast<CDTImageLayer*>(clsLayer->parent()->parent())->id());
-//        setEnabled(true);
-//        return;
-//    }
 }
 
 void CDTCategoryDockWidget::onDockClear()
@@ -103,18 +85,24 @@ void CDTCategoryDockWidget::onDockClear()
                           layer,SIGNAL(layerChanged()));
     if (layer) disconnect(categoryModel,SIGNAL(beforeDelete(int)),
                           layer,SIGNAL(layerChanged()));
+    if (categoryModel)
+    {
+        delete categoryModel;
+        categoryModel = NULL;
+    }
+    tableView->setModel(new QSqlTableModel(this));
+    imageLayerID = QUuid();
     this->setEnabled(false);
+    this->setVisible(false);
 }
 
 void CDTCategoryDockWidget::updateImageID(QUuid id)
 {
     if (id==imageLayerID)
-    {
-        qDebug()<<"same imageLayerID";
         return;
-    }
 
     imageLayerID = id;
+    updateTable();
     CDTImageLayer *imgLayer = CDTImageLayer::getLayer(id);
     connect(categoryModel,SIGNAL(dataChanged(QModelIndex,QModelIndex)),
             imgLayer,SIGNAL(layerChanged()));
@@ -123,12 +111,20 @@ void CDTCategoryDockWidget::updateImageID(QUuid id)
     connect(categoryModel,SIGNAL(beforeDelete(int)),
             imgLayer,SIGNAL(layerChanged()));
 
-    updateTable();
-    this->setEnabled(true);
 }
 
 void CDTCategoryDockWidget::updateTable()
 {
+    if (categoryModel == NULL)
+    {
+        QAbstractItemModel *model = tableView->model();
+        if (model) delete model;
+        categoryModel = new QSqlTableModel(this,QSqlDatabase::database("category"));
+        categoryModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Category Name"));
+        categoryModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Color"));
+        connect(categoryModel,SIGNAL(primeInsert(int,QSqlRecord&)),SLOT(onPrimeInsert(int,QSqlRecord&)));
+        tableView->setModel(categoryModel);
+    }
     categoryModel->setTable("category");
     categoryModel->setFilter("imageID='"+imageLayerID.toString()+"'");
     categoryModel->select();
@@ -141,6 +137,7 @@ void CDTCategoryDockWidget::updateTable()
     tableView->hideColumn(3);
     tableView->resizeColumnsToContents();
     tableView->resizeRowsToContents();
+    this->adjustSize();
 }
 
 void CDTCategoryDockWidget::on_actionInsert_triggered()

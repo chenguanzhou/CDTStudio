@@ -65,6 +65,8 @@ class CDTUndoWidget : public CDTDockWidget
     void setCurrentLayer(CDTBaseLayer* layer);
     void onDockClear();
 
+    void setLayer(CDTBaseLayer* layer);
+
     void setMapCanvas(QgsMapCanvas* mapCanvas);
     void setMapLayer( QgsMapLayer * layer );
     void undoChanged( bool value );

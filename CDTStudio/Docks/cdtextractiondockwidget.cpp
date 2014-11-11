@@ -80,8 +80,10 @@ void CDTExtractionDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (extLayer)
     {
         logger()->info("Find ancestor class of CDTExtractionLayer");
-        this->setEnabled(true);
         setExtractionLayer(layer->id());
+        this->setEnabled(true);
+        this->setVisible(true);
+        this->raise();
     }
     else
         logger()->info("Ancestor class of CDTExtractionLayer is not found");
@@ -97,6 +99,7 @@ void CDTExtractionDockWidget::onDockClear()
     currentImagePath.clear();
     currentExtractionID.clear();
     this->setEnabled(false);
+    this->setVisible(false);
 }
 
 void CDTExtractionDockWidget::updateDescription(int )

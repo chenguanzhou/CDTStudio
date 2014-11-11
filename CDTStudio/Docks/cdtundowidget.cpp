@@ -87,16 +87,30 @@ void CDTUndoWidget::destroyStack()
 
 void CDTUndoWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
-    if (qobject_cast<CDTSegmentationLayer*>(layer) ||
-        qobject_cast<CDTExtractionLayer*>(layer) ||
-        qobject_cast<CDTClassificationLayer*>(layer) )
-    setMapCanvas(layer->canvas());
-    setMapLayer(layer->canvasLayer());
+    onDockClear();
 }
 
 void CDTUndoWidget::onDockClear()
 {
     destroyStack();
+    this->setEnabled(false);
+    this->setVisible(false);
+}
+
+void CDTUndoWidget::setLayer(CDTBaseLayer *layer)
+{
+    onDockClear();
+    if (qobject_cast<CDTSegmentationLayer*>(layer) ||
+        qobject_cast<CDTExtractionLayer*>(layer) ||
+        qobject_cast<CDTClassificationLayer*>(layer) )
+    {
+        setMapCanvas(layer->canvas());
+        setMapLayer(layer->canvasLayer());
+        this->setEnabled(true);
+        this->setVisible(true);
+        this->raise();
+        this->adjustSize();
+    }
 }
 
 void CDTUndoWidget::setMapLayer( QgsMapLayer * layer )

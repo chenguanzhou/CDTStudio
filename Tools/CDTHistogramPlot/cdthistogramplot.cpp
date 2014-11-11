@@ -33,8 +33,8 @@ CDTHistogramPlot::CDTHistogramPlot(QWidget *parent)
     histogram->setRenderHint(QwtPlotItem::RenderAntialiased, true);
 
     QFrame *frame = (QFrame *)(this->canvas());
-    frame->setFrameStyle(QFrame::NoFrame);
-    QFont font("Courier");
+    frame->setFrameStyle(QFrame::StyledPanel);
+    QFont font("Helvetica");
     this->setAxisFont(QwtPlot::xBottom,font);
     this->setAxisFont(QwtPlot::yLeft,font);
 

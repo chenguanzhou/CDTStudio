@@ -20,10 +20,13 @@ CDTLayerInfoWidget::CDTLayerInfoWidget(QWidget *parent) :
 void CDTLayerInfoWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
     propertyWidget->setObject(layer);
+    this->setVisible(true);
+    this->raise();
     logger()->info("Layer %1 is selected",layer->metaObject()->className());
 }
 
 void CDTLayerInfoWidget::onDockClear()
 {
     propertyWidget->clear();
+    this->setVisible(false);
 }

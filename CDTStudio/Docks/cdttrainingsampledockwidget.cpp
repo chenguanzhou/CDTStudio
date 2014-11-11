@@ -82,8 +82,10 @@ void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (segLayer)
     {
         setSegmentationID(segLayer->id());
-        this->setEnabled(true);
         groupBoxSamples->setChecked(false);
+        this->setEnabled(true);
+        this->setVisible(true);
+        this->raise();
         logger()->info("Find the ancestor class CDTSegmentationLayer");
     }
     else
@@ -95,6 +97,7 @@ void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 void CDTTrainingSampleDockWidget::onDockClear()
 {
     this->setEnabled(false);
+    this->setVisible(false);
     segmentationID = QUuid();
     if (sampleModel) sampleModel->clear();
     if (currentMapTool)

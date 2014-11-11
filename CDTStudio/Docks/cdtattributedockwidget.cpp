@@ -17,8 +17,8 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
 
     QWidget *widget = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(widget);
-    widget->setLayout(layout);    
-    setWidget(widget);
+    widget->setLayout(layout);
+    this->setWidget(widget);
     layout->addWidget(tabWidget);
     tabWidget->setMovable(true);
     tabWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -30,6 +30,9 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     tabWidget->addAction(actionExportCurrentTable);
     tabWidget->addAction(actionExportAllTables);
 
+    this->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+//    tabWidget->setSizePolicy(this->sizePolicy());
+//    widget->setSizePolicy(this->sizePolicy());
     logger()->info("Constructed");
 }
 
@@ -47,13 +50,16 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     if (segmentationLayer == layer)
         return;
 
-    clear();
+    onDockClear();
     segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer->getAncestor("CDTSegmentationLayer"));
     if (segmentationLayer)
     {
         logger()->info("Find ancestor class of CDTSegmentationLayer");
-        setTableModels(segmentationLayer->tableModels());
-        setEnabled(true);
+        this->setTableModels(segmentationLayer->tableModels());
+        this->setEnabled(true);
+        this->setVisible(true);
+        this->raise();
+        this->adjustSize();
     }
     else
     {
@@ -65,6 +71,7 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 void CDTAttributeDockWidget::onDockClear()
 {
     clear();
+    this->setVisible(false);
 }
 
 void CDTAttributeDockWidget::clear()
@@ -84,12 +91,14 @@ void CDTAttributeDockWidget::setTableModels(QList<QAbstractTableModel *> models)
         model->setParent(widget);
         widget->setAlternatingRowColors(true);
         widget->setModel(model);
+        widget->setSelectionBehavior(QTableView::SelectColumns);
         widget->setSelectionMode(QTableView::SingleSelection);
         widget->setEditTriggers(QTableView::NoEditTriggers);
         widget->setItemDelegateForColumn(0,new CDTObjectIDDelegate(this));
         widget->verticalHeader()->hide();
         widget->resizeColumnsToContents();
         widget->resizeRowsToContents();
+//        widget->setSizePolicy(this->sizePolicy());
 
         tabWidget->addTab(widget,model->property("name").toString());
         connect(widget,SIGNAL(clicked(QModelIndex)),SLOT(onItemClicked(QModelIndex)));
