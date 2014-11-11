@@ -1,5 +1,6 @@
 #include "cdthistogramplot.h"
 #include <QAction>
+#include <QMessageBox>
 #include <QtSql>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_canvas.h>
@@ -103,7 +104,10 @@ void CDTHistogramPlot::clear()
 void CDTHistogramPlot::exportAsImage()
 {
     QwtPlotRenderer renderer;
-    renderer.exportTo(this,pData->tableName+":"+pData->fieldName);
+    if (renderer.exportTo(this,pData->tableName+"_"+pData->fieldName+".pdf")==false)
+        QMessageBox::critical(this,tr("Error"),tr("Export failed!"));
+    else
+        QMessageBox::information(this,tr("Succeed"),tr("Export completed!"));
 }
 
 void CDTHistogramPlot::initHistogram()
