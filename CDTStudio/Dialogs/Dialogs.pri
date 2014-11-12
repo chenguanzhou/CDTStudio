@@ -24,7 +24,8 @@ HEADERS += \
     $$PWD/dialogpbcdbinary.h \
     $$PWD/dialogpbcdaddbandpair.h \
     $$PWD/cdtclassifierassessmentform.h \
-    $$PWD/dialogdecisionfusion.h
+    $$PWD/dialogdecisionfusion.h\
+    $$PWD/dialogvalidationpoints.h
 
 SOURCES += \
     $$PWD/dialoggenerateattributes.cpp \
@@ -38,6 +39,7 @@ SOURCES += \
     $$PWD/dialogpbcdbinary.cpp \
     $$PWD/dialogpbcdaddbandpair.cpp \
     $$PWD/cdtclassifierassessmentform.cpp \
-    $$PWD/dialogdecisionfusion.cpp
+    $$PWD/dialogdecisionfusion.cpp\
+    $$PWD/dialogvalidationpoints.cpp
 
 INCLUDEPATH += $$PWD

@@ -355,7 +355,7 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
 
     out<<categoryInfo;
 
-    query.exec(QString("select id,name,pointset_name,point_category from image_validation_samples where imageid = '%1'").arg(image.id()));
+    query.exec(QString("select id,name,pointset_name from image_validation_samples where imageid = '%1'").arg(image.id()));
     QList<QVariantList> validationPoints;
     while(query.next())
     {
@@ -365,6 +365,18 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
         validationPoints.push_back(record);
     }
     out<<validationPoints;
+
+    foreach (QVariantList list, validationPoints) {
+        QString validationID = list[0].toString();
+        query.exec(QString("select id,categoryid from point_category where validationid = '%1'").arg(validationID));
+        QMap<int,QString> point_category;
+        while(query.next())
+        {
+            point_category.insert(query.value(0).toInt(),query.value(1).toString());
+        }
+        out<<point_category;
+        qDebug()<<point_category;
+    }
     return out ;
 }
 
@@ -403,14 +415,26 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
     QList<QVariantList> validationPoints;
     in>>validationPoints;
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare(QString("insert into image_validation_samples values(?,?,?,?,?)"));
+    query.prepare(QString("insert into image_validation_samples values(?,?,?,?)"));
     foreach (QVariantList record, validationPoints) {
         query.bindValue(0,record[0]);
         query.bindValue(1,record[1]);
         query.bindValue(2,image.id().toString());
         query.bindValue(3,record[2]);
-        query.bindValue(4,record[3]);
         query.exec();
+    }
+
+    for (int i=0;i<validationPoints.size();++i)
+    {
+        QMap<int,QString> point_category;
+        in >>point_category;
+        query.prepare(QString("insert into point_category values(?,?,?)"));
+        foreach (int id, point_category.keys()) {
+            query.bindValue(0,id);
+            query.bindValue(1,point_category.value(id));
+            query.bindValue(2,validationPoints[i][0].toString());
+            query.exec();
+        }
     }
 
     return in;

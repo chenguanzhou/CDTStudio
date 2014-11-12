@@ -36,6 +36,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
     friend class RecentFileSupervisor;
+    friend class CDTProjectWidget;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();       
@@ -95,6 +96,7 @@ private slots:
     void on_treeViewObjects_clicked(const QModelIndex &index);
 
     void updateTaskDock();
+    void clearAllDocks();
 
 protected:
     void moveEvent(QMoveEvent *e);

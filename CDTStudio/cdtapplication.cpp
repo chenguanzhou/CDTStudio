@@ -301,7 +301,7 @@ bool CDTApplication::initDatabase()
                      "name text NOT NULL,"
                      "imageid text not null,"
                      "pointset_name text not null,"
-                     "point_category blob not null,"
+//                     "point_category blob not null,"
                      "Primary Key(id) )");
     if (ret == false)
     {
@@ -332,6 +332,19 @@ bool CDTApplication::initDatabase()
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table points failed!\nerror:")+query.lastError().text());
         Log4Qt::Logger::rootLogger()->error("create table points failed!\nerror msg:%1",query.lastError().text());
+        return false;
+    }
+
+    ///create table point_category
+    ret = query.exec("Create table point_category"
+                     "(id int not null,"
+                     "categoryID text not null,"
+                     "validationID text not null,"
+                     "Primary Key(id,validationID))");
+    if (ret == false)
+    {
+        QMessageBox::critical(NULL,tr("Error"),tr("create table point_category failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table point_category failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 

@@ -8,6 +8,7 @@
 #include "cdtprojectwidget.h"
 #include "cdtprojectlayer.h"
 #include "cdtimagelayer.h"
+#include "dialogvalidationpoints.h"
 
 CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
@@ -47,8 +48,9 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
 
 CDTValidationSampleDockWidget::~CDTValidationSampleDockWidget()
 {
-        onDockClear();
-        if (pointsLayer)delete pointsLayer;
+    logger()->info("Deconstruct");
+    onDockClear();
+    logger()->info("Deconstructed");
 }
 
 void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
@@ -143,7 +145,7 @@ void CDTValidationSampleDockWidget::onActionAdd()
 
 void CDTValidationSampleDockWidget::updateListView()
 {
-    sampleModel->setQuery(QString("select name from image_validation_samples where imageid = '%1'")
+    sampleModel->setQuery(QString("select name,id from image_validation_samples where imageid = '%1'")
                           .arg(imageID.toString()),QSqlDatabase::database("category"));
 }
 
@@ -175,6 +177,23 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(
     CDTProjectLayer *prj = qobject_cast<CDTProjectLayer*>(CDTImageLayer::getLayer(imageID)->parent());
 
     db.transaction();
+
+    if (query.exec(QString("select id from category where imageid ='%1'").arg(imageID))==false)
+    {
+        logger()->error("Execute SQL of 'insert into points_project' failed!",imageID);
+        db.rollback();
+        return false;
+    }
+
+    if (query.next() == false)
+    {
+        QMessageBox::critical(this,tr("Error"),tr("Please set category information first"));
+        db.rollback();
+        return false;
+    }
+    QString categoryID = query.value(0).toString();
+
+
     if (query.exec(QString("insert into points_project values('%1','%2')")
                    .arg(pointsSetName).arg(prj->id().toString()))==false)
     {
@@ -190,12 +209,8 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(
         return false;
     }
 
-    int i=1;
-    QMap<int,QString> point_category;
-
+    int i=0;
     foreach (QPointF pt, points) {
-        point_category.insert(i,QUuid().toString());
-
         query.bindValue(0,i++);
         query.bindValue(1,pt.x());
         query.bindValue(2,pt.y());
@@ -209,7 +224,28 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(
         }
     }
 
-    if (query.prepare("insert into image_validation_samples values(?,?,?,?,?)")==false)
+    if (query.prepare("insert into point_category values(?,?,?)")==false)
+    {
+        logger()->error("Prepare SQL failed!");
+        db.rollback();
+        return false;
+    }
+
+    i=0;
+    foreach (QPointF pt, points) {
+        query.bindValue(0,i++);
+        query.bindValue(1,categoryID);
+        query.bindValue(2,validationSampleID);
+        if (query.exec()==false)
+        {
+            logger()->error("Insert point_category into DB failed. Reason:%3"
+                            ,pt.x(),pt.y(),query.lastError().text());
+            db.rollback();
+            return false;
+        }
+    }
+
+    if (query.prepare("insert into image_validation_samples values(?,?,?,?)")==false)
     {
         logger()->error("Prepare SQL failed!");
         db.rollback();
@@ -220,7 +256,7 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(
     query.addBindValue(validationSampleName);
     query.addBindValue(imageID.toString());
     query.addBindValue(pointsSetName);
-    query.addBindValue(dataToVariant(point_category));
+//    query.addBindValue(dataToVariant(point_category));
     if (query.exec()==false)
     {
         logger()->error("Insert into DB failed. Reason:%1",query.lastError().text());
@@ -243,20 +279,20 @@ void CDTValidationSampleDockWidget::createPointsLayer()
         listView->setCurrentIndex(sampleModel->index(0,0));
 
     QString validationName = sampleModel->data(listView->currentIndex()).toString();
+    QString validationID = sampleModel->data(sampleModel->index(listView->currentIndex().row(),1)).toString();
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.exec(QString("select pointset_name,point_category from image_validation_samples where name = '%1'")
+    query.exec(QString("select pointset_name from image_validation_samples where name = '%1'")
                .arg(validationName));
     query.next();
-
     QString pointset_name = query.value(0).toString();
-    QMap<int,QString> point_category = variantToData<QMap<int,QString> >(query.value(2));
+//    QMap<int,QString> point_category = variantToData<QMap<int,QString> >(query.value(2));
 
     query.exec(QString("select id,x,y from points where pointset_name = '%1'")
                .arg(pointset_name));
 
 
     QString uri = "point?field=id:integer";
-    pointsLayer = new QgsVectorLayer(uri,tr("Validations points layer"), "memory");
+    pointsLayer = new QgsVectorLayer(uri,validationName, "memory");
     pointsLayer->addAttribute(QgsField("id",QVariant::Int));
     pointsLayer->startEditing();
     pointsLayer->beginEditCommand(tr("Add validations to the tampory layer"));
@@ -291,7 +327,9 @@ void CDTValidationSampleDockWidget::createPointsLayer()
     MainWindow::getCurrentMapCanvas()->refresh();
 
     //Make a Dialog to set category
-
+    DialogValidationPoints *dlg = new DialogValidationPoints(validationID,this);
+    connect(pointsLayer,SIGNAL(destroyed()),dlg,SLOT(close()));
+    dlg->show();
 }
 
 void CDTValidationSampleDockWidget::clearPointsLayer()
@@ -299,8 +337,8 @@ void CDTValidationSampleDockWidget::clearPointsLayer()
     if (pointsLayer)
     {
         QgsMapLayerRegistry::instance()->removeMapLayer(pointsLayer->id());
-        MainWindow::getCurrentProjectWidget()->refreshMapCanvas(false);
-        //        delete pointsLayer;
+        if (MainWindow::getCurrentMapCanvas())
+            MainWindow::getCurrentMapCanvas()->refresh();
         pointsLayer = NULL;
     }
 }

@@ -15,7 +15,7 @@ public:
 signals:
     void menuRecentChanged(QString path);
     void treeModelUpdated();
-    void beforeTabClosed(CDTProjectLayer*);
+//    void beforeTabClosed(CDTProjectLayer*);
 public slots:
     void createNewProject();
     void openProject(const QString &filepath);

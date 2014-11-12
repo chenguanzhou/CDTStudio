@@ -34,6 +34,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 
 CDTProjectWidget::~CDTProjectWidget()
 {
+    MainWindow::getMainWindow()->clearAllDocks();
     project->removeAllImageLayers();
     if(project) delete project;
     file.close();
@@ -184,10 +185,7 @@ void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
 {
     foreach (QgsMapLayer *lyr, layer) {
         if (activeLayers.contains(lyr))
-//        int index = activeLayers.indexOf(lyr);
-//        if (index!=-1)
         {
-//            activeLayers.removeAt(index);
             activeLayers.removeAll(lyr);
             QgsMapLayerRegistry::instance()->removeMapLayer(lyr->id());
         }

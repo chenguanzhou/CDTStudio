@@ -77,10 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {    
-    emit updateSetting();
-    foreach (CDTDockWidget *dock, docks) {
-        dock->onDockClear();
-    }
+    emit updateSetting();    
     delete ui;
     logger()->info("MainWindow destruct");
 }
@@ -599,6 +596,13 @@ void MainWindow::updateTaskDock()
     dockWidgetTask->move(QPoint( rect.left()+rect.width()/2,rect.top()+rect.height()*2/3- ui->statusBar->height()));
 }
 
+void MainWindow::clearAllDocks()
+{
+    foreach (CDTDockWidget *dock, docks) {
+        dock->onDockClear();
+    }
+}
+
 void MainWindow::moveEvent(QMoveEvent *e)
 {
     updateTaskDock();
@@ -617,5 +621,6 @@ void MainWindow::closeEvent(QCloseEvent *e)
     QSettings setting("WHU","CDTStudio");
     setting.setValue("geometry", saveGeometry());
     setting.setValue("windowState", saveState());
+    logger()->info("The state of Widgets has been saved!");
     QMainWindow::closeEvent(e);
 }
