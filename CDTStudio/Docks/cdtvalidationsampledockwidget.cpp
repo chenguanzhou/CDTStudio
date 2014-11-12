@@ -42,6 +42,7 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     toolBar->setIconSize(MainWindow::getIconSize());
 
     connect(groupBox,SIGNAL(toggled(bool)),SLOT(onGroupBoxToggled(bool)));
+    connect(listView,SIGNAL(clicked(QModelIndex)),SLOT(onSelectionChanged()));
     connect(actionAddNew,SIGNAL(triggered()),SLOT(onActionAdd()));
     logger()->info("Constructed");
 }
@@ -86,6 +87,12 @@ void CDTValidationSampleDockWidget::onDockClear()
     sampleModel->clear();
     imageID = QUuid();
     clearPointsLayer();
+}
+
+void CDTValidationSampleDockWidget::onSelectionChanged()
+{
+    clearPointsLayer();
+    createPointsLayer();
 }
 
 void CDTValidationSampleDockWidget::onGroupBoxToggled(bool toggled)
@@ -151,17 +158,22 @@ void CDTValidationSampleDockWidget::updateListView()
 
 QVector<QPointF> CDTValidationSampleDockWidget::generatePoints(int pointsCount, const QgsRectangle &extent)
 {
-    const int PRECISE = 1000000;
+    const int PRECISE = 10000;
     qsrand(std::clock());
 
     QVector<QPointF> points;
     for (int i=0;i<pointsCount;++i)
     {
-        double x = static_cast<double>(qrand()%PRECISE)/PRECISE*extent.width();
-        double y = static_cast<double>(qrand()%PRECISE)/PRECISE*extent.height();
+        double x_dot = static_cast<double>(qrand()%PRECISE)/PRECISE;
+        double y_dot = static_cast<double>(qrand()%PRECISE)/PRECISE;
+        qDebug()<<"x:"<<x_dot<<"y:"<<y_dot;
+        double x = x_dot*extent.width();
+        double y = y_dot*extent.height();
         points.push_back(QPointF(x+extent.xMinimum(),y+extent.yMinimum()));
     }
-
+    qDebug()<<"extent.height():"<<extent.height();
+    qDebug()<<"extent.yMinimum():"<<extent.yMinimum();
+    qDebug()<<"extent.yMaximum():"<<extent.yMaximum();
     return points;
 }
 

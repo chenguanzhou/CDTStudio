@@ -1,5 +1,7 @@
 #include "dialogvalidationpoints.h"
 #include "stable.h"
+#include "mainwindow.h"
+#include "cdtprojectwidget.h"
 
 DialogValidationPoints::DialogValidationPoints(const QString validationID, QWidget *parent) :
     QDialog(parent),
@@ -23,8 +25,11 @@ DialogValidationPoints::DialogValidationPoints(const QString validationID, QWidg
     tableView->setItemDelegate(new QSqlRelationalDelegate(this));
     tableView->setSelectionBehavior(QTableView::SelectRows);
     tableView->setSelectionMode(QTableView::SingleSelection);
+    tableView->resizeRowsToContents();
+    tableView->resizeColumnsToContents();
 
     connect(tableView->selectionModel(),SIGNAL(selectionChanged(QItemSelection,QItemSelection)),SLOT(onSelectionChanged(QItemSelection)));
+    connect(model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),MainWindow::getCurrentProjectWidget(),SIGNAL(projectChanged()));
 }
 
 void DialogValidationPoints::onSelectionChanged(const QItemSelection &items)

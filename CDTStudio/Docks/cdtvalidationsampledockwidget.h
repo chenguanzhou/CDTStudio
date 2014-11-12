@@ -27,6 +27,7 @@ public slots:
     void onDockClear();
 
 private slots:
+    void onSelectionChanged();
     void onGroupBoxToggled(bool toggled);
     void onActionAdd();
     void updateListView();
