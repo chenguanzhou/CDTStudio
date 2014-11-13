@@ -34,10 +34,32 @@ DialogValidationPoints::DialogValidationPoints(const QString validationID, QWidg
 
 void DialogValidationPoints::onSelectionChanged(const QItemSelection &items)
 {
-//    int row = items[0].indexes()[0].row();
-//    int id = model->data(model->index(row,0)).toInt();
-//    QString validationID = model->data(model->index(row,2)).toString();
+    if (items.size()==0)
+        return;
+    if (items[0].indexes().size()==0)
+        return;
 
-//    QSqlQuery query(QSqlDatabase::database("category"));
-//    query.exec("select x,y from points ");
+    int row = items[0].indexes()[0].row();
+    int id = model->data(model->index(row,0)).toInt();
+    QString validationID = model->data(model->index(row,2)).toString();
+
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.exec(QString("select x,y from points where id = '%1' and pointset_name=(select pointset_name from image_validation_samples where id = '%2')").arg(id).arg(validationID));
+    query.next();
+    double x = query.value(0).toDouble();
+    double y = query.value(1).toDouble();
+
+
+    QgsMapCanvas* mapCanvas = MainWindow::getCurrentMapCanvas();
+    if (!mapCanvas)
+        return;
+
+    QgsRectangle r = mapCanvas->extent();
+    mapCanvas->setExtent(
+                QgsRectangle(
+                    x - r.width() / 2.0,  y - r.height() / 2.0,
+                    x + r.width() / 2.0, y + r.height() / 2.0
+                    )
+                );
+    mapCanvas->refresh();
 }

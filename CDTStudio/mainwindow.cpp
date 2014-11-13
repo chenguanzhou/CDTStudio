@@ -186,7 +186,7 @@ void MainWindow::initStatusBar()
     lineEditCoord = new QLineEdit( QString(), statusBar() );
     lineEditCoord->setObjectName( "lineEditCoord" );
     lineEditCoord->setMinimumWidth( 10 );
-    lineEditCoord->setMaximumWidth( 300 );
+//    lineEditCoord->setMaximumWidth( 500 );
 //    lineEditCoord->setMaximumHeight( 20 );
     lineEditCoord->setAlignment( Qt::AlignCenter );
     QRegExp coordValidator( "[+-]?\\d+\\.?\\d*\\s*,\\s*[+-]?\\d+\\.?\\d*" );
@@ -213,7 +213,7 @@ void MainWindow::initStatusBar()
     scaleEdit = new QgsScaleComboBox( statusBar() );
     scaleEdit->setObjectName( "scaleEdit" );
     scaleEdit->setMinimumWidth( 10 );
-    scaleEdit->setMaximumWidth( 200 );
+//    scaleEdit->setMaximumWidth( 200 );
 //    scaleEdit->setMaximumHeight( 20 );
     scaleEdit->lineEdit()->setAlignment(Qt::AlignCenter);
     scaleEdit->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
