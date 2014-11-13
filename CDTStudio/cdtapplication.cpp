@@ -63,14 +63,17 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     udpReceiver->bind(QHostAddress::LocalHost,portDownload);
     connect(udpReceiver,SIGNAL(readyRead()),SLOT(readMessage()));
 
-    processor->setStandardOutputFile(qApp->applicationDirPath()+"/task.log");
-    processor->setStandardErrorFile(qApp->applicationDirPath()+"/error.log");
-    processor->start("Processor");
+//    processor->setStandardOutputFile(qApp->applicationDirPath()+"/task.log");
+//    processor->setStandardErrorFile(qApp->applicationDirPath()+"/error.log");
+
+//    QProcess *processor = new QProcess(this);
+    processor->start("CDTProcessor");
 }
 
 CDTApplication::~CDTApplication()
 {    
     QSqlDatabase::removeDatabase("category");
+    processor->terminate();
 }
 
 QString CDTApplication::getStyleSheetByName(QString styleName)

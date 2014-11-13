@@ -5,12 +5,13 @@
 #-------------------------------------------------
 
 QT       += core network xml xmlpatterns
+
+!win32{
 QT       -= gui
-
 CONFIG   += console
-CONFIG   -= app_bundle
+}
 
-TARGET = Processor
+TARGET = CDTProcessor
 DESTDIR = ../bin
 
 TEMPLATE = app
@@ -47,8 +48,8 @@ INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
 !unix{
-include(../Tools/Config/win.pri)
-LIBS += -lgdal_i
+INCLUDEPATH += $(GDAL_ROOT)/include
+LIBS += -L$(GDAL_ROOT)/lib  -lgdal_i
 }
 
 LIBS += -L../lib -llog4qt

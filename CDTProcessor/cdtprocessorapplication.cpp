@@ -1,6 +1,9 @@
 #include "cdtprocessorapplication.h"
 #include <QtNetwork>
 #include <QtXml>
+#ifdef Q_OS_WIN//Windows GUI
+#include <QtGui>
+#endif
 
 #include "cdtpluginloader.h"
 #include "cdtpbcddiffinterface.h"
@@ -14,7 +17,11 @@ QList<CDTPBCDMergeInterface *>      pbcdMergePlugins;
 QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
 
 CDTProcessorApplication::CDTProcessorApplication(int &argc, char **argv) :
+#ifdef Q_OS_WIN//Windows GUI
+    QApplication(argc,argv),
+#else
     QCoreApplication(argc,argv),
+#endif
     udpReceiver(new QUdpSocket(this)),
     udpSender(new QUdpSocket(this)),
     taskManager(new CDTTaskManager(this))

@@ -1,17 +1,26 @@
- #ifndef CDTPROCESSORAPPLICATION_H
+#ifndef CDTPROCESSORAPPLICATION_H
 #define CDTPROCESSORAPPLICATION_H
 
 #include <QCoreApplication>
 #include "cdttask.h"
 
-#if defined(qApp)
-#undef qApp
-#endif
-#define qApp (static_cast<CDTProcessorApplication *>(QCoreApplication::instance()))
-
 class QUdpSocket;
 class CDTTaskManager;
-class CDTProcessorApplication : public QCoreApplication
+
+#ifdef Q_OS_WIN//Windows GUI
+    #include <QApplication>
+    #if defined(qApp)
+    #undef qApp
+    #endif
+    #define qApp (static_cast<CDTProcessorApplication *>(QApplication::instance()))
+    class CDTProcessorApplication : public QApplication
+#else
+    #if defined(qApp)
+    #undef qApp
+    #endif
+    #define qApp (static_cast<CDTProcessorApplication *>(QCoreApplication::instance()))
+    class CDTProcessorApplication : public QCoreApplication
+#endif
 {
     Q_OBJECT
 public:
@@ -34,7 +43,6 @@ public slots:
     void onTaskAppended(QString id);
     void onTaskInfoUpdated(QString id,CDTTaskInfo info);
     void onTaskCompleted(QString id,QByteArray result);
-
 private:
     qint16 portUpload;
     qint16 portDownload;
