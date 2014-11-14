@@ -30,6 +30,11 @@ DialogValidationPoints::DialogValidationPoints(const QString validationID, QWidg
 
     connect(tableView->selectionModel(),SIGNAL(selectionChanged(QItemSelection,QItemSelection)),SLOT(onSelectionChanged(QItemSelection)));
     connect(model,SIGNAL(dataChanged(QModelIndex,QModelIndex)),MainWindow::getCurrentProjectWidget(),SIGNAL(projectChanged()));
+
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("DialogValidationPoints");
+    this->restoreGeometry(setting.value("geometry").toByteArray());
+    setting.endGroup();
 }
 
 void DialogValidationPoints::onSelectionChanged(const QItemSelection &items)
@@ -62,4 +67,12 @@ void DialogValidationPoints::onSelectionChanged(const QItemSelection &items)
                     )
                 );
     mapCanvas->refresh();
+}
+
+void DialogValidationPoints::closeEvent(QCloseEvent *e)
+{
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("DialogValidationPoints");
+    setting.setValue("geometry",this->saveGeometry());
+    setting.endGroup();
 }

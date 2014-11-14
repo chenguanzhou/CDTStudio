@@ -16,6 +16,9 @@ signals:
 
 protected slots:
     void onSelectionChanged(const QItemSelection &items);
+
+private:
+    void closeEvent(QCloseEvent *e);
 private:
     QTableView *tableView;
     QSqlRelationalTableModel *model;
