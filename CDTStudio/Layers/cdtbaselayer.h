@@ -37,6 +37,9 @@ signals:
     void layerChanged();
 public slots:
     void setMapCanvas(QgsMapCanvas* canvas);
+
+private slots:
+    void onMenuAboutToHide();
 protected:
     QUuid               uuid;
     CDTProjectTreeItem  *keyItem;

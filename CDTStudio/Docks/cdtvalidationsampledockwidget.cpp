@@ -49,7 +49,6 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
 
 CDTValidationSampleDockWidget::~CDTValidationSampleDockWidget()
 {
-    logger()->info("Deconstruct");
     onDockClear();
     logger()->info("Deconstructed");
 }

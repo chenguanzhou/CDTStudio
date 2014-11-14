@@ -46,6 +46,7 @@ public:
     static CDTClassificationLayer *getLayer(QUuid id);
 signals:
     void removeClassification(CDTClassificationLayer*);
+    void layerTransparencyChanged(int);
 
 public slots:
     void rename();

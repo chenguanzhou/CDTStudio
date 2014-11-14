@@ -17,13 +17,24 @@ CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this);    
 
     //actions
+    QWidgetAction *actionSetLayerTransparency = new QWidgetAction(this);
     QAction *actionRename               = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this);
     QAction *actionAccuracyAssessment   = new QAction(tr("Accuracy Assessment"),this);
     QAction* actionRemoveClassification = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this);
 
 
-    actions <<(QList<QAction*>()<<actionRename<<actionAccuracyAssessment)
+    actions <<(QList<QAction*>()<<actionSetLayerTransparency<<actionRename<<actionAccuracyAssessment)
             <<(QList<QAction*>()<<actionRemoveClassification);
+
+    //Transparency
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
+    sliderTransparency->setMinimum(0);
+    sliderTransparency->setMaximum(100);
+    sliderTransparency->setToolTip(tr("Layer transparency"));
+    connect(sliderTransparency,SIGNAL(valueChanged(int)),parent,SLOT(setLayerTransparency(int)));
+    connect(parent,SIGNAL(layerTransparencyChanged(int)),sliderTransparency,SLOT(setValue(int)));
+    connect(this,SIGNAL(destroyed()),sliderTransparency,SLOT(deleteLater()));
+    actionSetLayerTransparency->setDefaultWidget(sliderTransparency);
 
     connect(this,SIGNAL(removeClassification(CDTClassificationLayer*)),this->parent(),SLOT(removeClassification(CDTClassificationLayer*)));
     connect(actionRemoveClassification,SIGNAL(triggered()),SLOT(remove()));
@@ -218,6 +229,8 @@ void CDTClassificationLayer::initClassificationLayer(const QString &name,
     foreach (QString key, params.keys()) {
         this->setProperty((QString("   ")+key).toLocal8Bit().constData(),params.value(key.toLocal8Bit().constData()));
     }
+
+
 }
 
 QList<CDTClassificationLayer *> CDTClassificationLayer::getLayers()

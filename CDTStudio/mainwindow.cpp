@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initStatusBar();    
     initConsole();
 
-    connect(ui->tabWidgetProject,SIGNAL(beforeTabClosed(CDTProjectLayer*)),this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)));
+//    connect(ui->tabWidgetProject,SIGNAL(beforeTabClosed(CDTProjectLayer*)),this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)));
 
     recentFileToolButton->setText(tr("&Recent"));
     recentFileToolButton->setToolButtonStyle(ui->mainToolBar->toolButtonStyle());

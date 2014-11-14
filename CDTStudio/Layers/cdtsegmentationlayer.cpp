@@ -31,16 +31,17 @@ QDataStream &operator>>(QDataStream &in, SampleElement &sample)
 }
 
 CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
-    : CDTBaseLayer(uuid,parent),
-      actionGenerateAttributes(new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),this)),
-      actionAddClassifications(new QAction(QIcon(":/Icon/Add.png"),tr("Add Classification"),this)),
-      actionRemoveSegmentation(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Segmentation"),this)),
-      actionAddDecisionFusion(new QAction(tr("Run Decision Fusion"),this)),
-      actionExportShapefile(new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this)),
-      actionRemoveAllClassifications(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Classifications"),this)),
-      actionRename(new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Segmentation"),this)),
-      actionEditDBInfo(new QAction(QIcon(":/Icon/DataSource.png"),tr("Edit Attribute DB Source"),this)),
-      actionChangeBorderColor(new QWidgetAction(this))
+    : CDTBaseLayer(uuid,parent)
+//      actionGenerateAttributes(),
+//      actionAddClassifications(),
+//      actionRemoveSegmentation(),
+//      actionAddDecisionFusion(),
+//      actionExportShapefile(),
+//      actionRemoveAllClassifications(),
+//      actionRename(),
+//      actionEditDBInfo(),
+//      actionChangeBorderColor(),
+//      actionSetLayerTransparency()
 {
     layers.push_back(this);
 
@@ -48,11 +49,44 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     classificationRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::EMPTY,tr("Classification"),this);
     keyItem->appendRow(classificationRootItem);
 
-    connect(this,SIGNAL(nameChanged()),this,SIGNAL(layerChanged()));
-    connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(layerChanged()));
-    connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
-    //    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
 
+    //Actions
+    QWidgetAction *actionChangeBorderColor = new QWidgetAction(this);
+    QWidgetAction *actionSetLayerTransparency = new QWidgetAction(this);
+    QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Segmentation"),this);
+    QAction *actionGenerateAttributes = new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),this);
+    QAction *actionEditDBInfo = new QAction(QIcon(":/Icon/DataSource.png"),tr("Edit Attribute DB Source"),this);
+    QAction *actionExportShapefile = new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this);
+    QAction *actionRemoveSegmentation = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Segmentation"),this);
+    QAction *actionAddClassifications = new QAction(QIcon(":/Icon/Add.png"),tr("Add Classification"),this);
+    QAction *actionRemoveAllClassifications = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Classifications"),this);
+    QAction *actionAddDecisionFusion = new QAction(tr("Run Decision Fusion"),this);
+
+    actions <<(QList<QAction *>()<<actionChangeBorderColor<<actionSetLayerTransparency<<actionRename
+                                <<actionEditDBInfo<<actionGenerateAttributes<<actionExportShapefile)
+            <<(QList<QAction *>()<<actionRemoveSegmentation)
+            <<(QList<QAction *>()<<actionAddClassifications<<actionRemoveAllClassifications<<actionAddDecisionFusion);
+
+    //Widgets for context menu
+    QtColorPicker *borderColorPicker = new QtColorPicker(NULL);
+    borderColorPicker->setStandardColors();
+    borderColorPicker->setToolTip(tr("Border color"));
+    connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
+    connect(this,SIGNAL(borderColorChanged(QColor)),borderColorPicker,SLOT(setCurrentColor(QColor)));
+    connect(this,SIGNAL(destroyed()),borderColorPicker,SLOT(deleteLater()));
+    actionChangeBorderColor->setDefaultWidget(borderColorPicker);
+
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
+    sliderTransparency->setMinimum(0);
+    sliderTransparency->setMaximum(100);
+    sliderTransparency->setToolTip(tr("Layer transparency"));
+    connect(sliderTransparency,SIGNAL(valueChanged(int)),SLOT(setLayerTransparency(int)));
+    connect(this,SIGNAL(layerTransparencyChanged(int)),sliderTransparency,SLOT(setValue(int)));
+    connect(this,SIGNAL(destroyed()),sliderTransparency,SLOT(deleteLater()));
+    actionSetLayerTransparency->setDefaultWidget(sliderTransparency);
+
+
+    //Connections
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
     connect(actionEditDBInfo,SIGNAL(triggered()),SLOT(editDBInfo()));
     connect(actionGenerateAttributes,SIGNAL(triggered()),SLOT(generateAttributes()));
@@ -61,6 +95,12 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(actionAddClassifications,SIGNAL(triggered()),SLOT(addClassification()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));
     connect(actionAddDecisionFusion,SIGNAL(triggered()),SLOT(decisionFusion()));
+
+    connect(this,SIGNAL(nameChanged()),this,SIGNAL(layerChanged()));
+    connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(layerChanged()));
+    connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
+    //    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
+
 }
 
 CDTSegmentationLayer::~CDTSegmentationLayer()
@@ -94,16 +134,27 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
     layers.removeAll(this);
 }
 
+/*
 void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
 {    
-    QtColorPicker *borderColorPicker = new QtColorPicker();
+    QtColorPicker *borderColorPicker = new QtColorPicker(parent);
     borderColorPicker->setStandardColors();
     borderColorPicker->setCurrentColor(borderColor());
+    borderColorPicker->setToolTip(tr("Border color"));
     connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
     actionChangeBorderColor->setDefaultWidget(borderColorPicker);
 
-    QMenu *menu =new QMenu(parent);
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,parent);
+    sliderTransparency->setMinimum(0);
+    sliderTransparency->setMaximum(100);
+    sliderTransparency->setValue(this->layerTransparency());
+    sliderTransparency->setToolTip(tr("Layer transparency"));
+    connect(sliderTransparency,SIGNAL(valueChanged(int)),SLOT(setLayerTransparency(int)));
+    actionSetLayerTransparency->setDefaultWidget(sliderTransparency);
+
+    QMenu *menu =new QMenu(parent);    
     menu->addAction(actionChangeBorderColor);
+    menu->addAction(actionSetLayerTransparency);
     menu->addAction(actionRename);
     menu->addAction(actionEditDBInfo);
     menu->addAction(actionGenerateAttributes);
@@ -118,8 +169,9 @@ void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
     menu->exec(QCursor::pos());
 
     actionChangeBorderColor->releaseWidget(borderColorPicker);
+    actionSetLayerTransparency->releaseWidget(sliderTransparency);
     delete borderColorPicker;
-}
+}*/
 
 void CDTSegmentationLayer::rename()
 {
@@ -325,6 +377,15 @@ QString CDTSegmentationLayer::imagePath() const
     return ((CDTImageLayer*)parent())->path();
 }
 
+int CDTSegmentationLayer::layerTransparency() const
+{
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(mapCanvasLayer);
+    if (p)
+        return p->layerTransparency();
+    else
+        return -1;
+}
+
 QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
 {
     QList<QAbstractTableModel *> models;
@@ -361,11 +422,9 @@ QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
 
 void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
 {
-    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
-    if (p!=NULL)
-    {
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(mapCanvasLayer);
+    if (p)
         p->setRendererV2(r);
-    }
 }
 
 void CDTSegmentationLayer::setOriginRenderer()
@@ -403,7 +462,7 @@ void CDTSegmentationLayer::setName(const QString &name)
     query.exec();
 
     keyItem->setText(name);
-    emit nameChanged();
+    emit nameChanged(name);
 }
 
 void CDTSegmentationLayer::setBorderColor(const QColor &clr)
@@ -418,7 +477,18 @@ void CDTSegmentationLayer::setBorderColor(const QColor &clr)
 
     setOriginRenderer();
     this->mapCanvas->refresh();
+    emit borderColorChanged(clr);
     emit layerChanged();
+}
+
+void CDTSegmentationLayer::setLayerTransparency(int transparency)
+{
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(mapCanvasLayer);
+    if (p)
+    {
+        p->setLayerTransparency(transparency);
+        mapCanvas->refresh();
+    }
 }
 
 void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
@@ -445,6 +515,7 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
         delete mapCanvasLayer;
     }
     mapCanvasLayer = newLayer;
+    connect(newLayer,SIGNAL(layerTransparencyChanged(int)),this,SIGNAL(layerTransparencyChanged(int)));
 
     keyItem->setText(name);
 
@@ -474,6 +545,8 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
 
     setOriginRenderer();
 
+    emit nameChanged(name);
+    emit borderColorChanged(color);
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
     emit layerChanged();
 }

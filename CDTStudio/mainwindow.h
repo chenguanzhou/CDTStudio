@@ -73,7 +73,7 @@ public:
 signals:
     void loadSetting();
     void updateSetting();
-    void beforeProjectClosed(CDTProjectLayer*);
+//    void beforeProjectClosed(CDTProjectLayer*);
 public slots:
     void onCurrentTabChanged(int i);
     void showMouseCoordinate(const QgsPoint & p);

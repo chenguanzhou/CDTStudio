@@ -29,6 +29,7 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
 
 
     //actions
+    QWidgetAction *actionOpacity            = new QWidgetAction(this);
     QAction *actionRename                   = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Image"),this);
     QAction *actionRemoveImage              = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Image"),this);
     QAction *actionAddExtractionLayer       = new QAction(QIcon(":/Icon/Add.png"),tr("Add Extraction"),this);
@@ -36,10 +37,22 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     QAction *actionRemoveAllExtractions     = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Extractions"),this);
     QAction *actionRemoveAllSegmentations   = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Segmentations"),this);
 
-
-    actions <<(QList<QAction *>()<<actionRename<<actionRemoveImage)
+    actions <<(QList<QAction *>()<<actionOpacity<<actionRename<<actionRemoveImage)
             <<(QList<QAction *>()<<actionAddExtractionLayer<<actionRemoveAllExtractions)
             <<(QList<QAction *>()<<actionAddSegmentationLayer<<actionRemoveAllSegmentations);
+
+    //Opacity slider
+    QSlider *slider = new QSlider(NULL);
+    slider->setOrientation(Qt::Horizontal);
+    slider->setToolTip(tr("Layer opacity"));
+    slider->setMinimum(0);
+    slider->setMaximum(100);
+    slider->setValue(100);
+    actionOpacity->setDefaultWidget(slider);
+
+    connect(slider,SIGNAL(valueChanged(int)),SLOT(setLayerOpacity(int)));
+//    connect(this,SIGNAL(layerOpacityChanged(int)),slider,SLOT(setValue(int)));
+    connect(this,SIGNAL(destroyed()),slider,SLOT(deleteLater()));
 
     connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
     connect(actionRemoveImage,SIGNAL(triggered()),this,SLOT(remove()));
@@ -47,7 +60,6 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     connect(actionRemoveAllSegmentations,SIGNAL(triggered()),this,SLOT(removeAllSegmentationLayers()));
     connect(actionAddExtractionLayer,SIGNAL(triggered()),this,SLOT(addExtraction()));
     connect(actionRemoveAllExtractions,SIGNAL(triggered()),this,SLOT(removeAllExtractionLayers()));
-
 }
 
 CDTImageLayer::~CDTImageLayer()
@@ -296,6 +308,16 @@ void CDTImageLayer::rename()
     if (ok && !text.isEmpty())
     {
         setName(text);
+    }
+}
+
+void CDTImageLayer::setLayerOpacity(int opacity)
+{
+    QgsRasterLayer *rasterLayer =  qobject_cast<QgsRasterLayer*>(mapCanvasLayer);
+    if (rasterLayer)
+    {
+        rasterLayer->renderer()->setOpacity(opacity/100.);
+        mapCanvas->refresh();
     }
 }
 

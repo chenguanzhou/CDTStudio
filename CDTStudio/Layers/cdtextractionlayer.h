@@ -57,9 +57,9 @@ signals:
 
 private:
     QWidgetAction   *actionChangeParams;
-    QAction         *actionRemoveExtraction;
     QAction         *actionRename;
     QAction         *actionExportShapefile;
+    QAction         *actionRemoveExtraction;
 
     static QList<CDTExtractionLayer *> layers;
 };

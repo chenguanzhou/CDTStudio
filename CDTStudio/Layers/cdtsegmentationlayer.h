@@ -47,6 +47,7 @@ public:
     CDTDatabaseConnInfo databaseURL() const;
     QColor  borderColor()const;
     QString imagePath()const;
+    int     layerTransparency() const;
     QList<QAbstractTableModel *> tableModels();
 
     void setRenderer(QgsFeatureRendererV2 *r);
@@ -57,11 +58,13 @@ public:
 
 signals:
     void methodParamsChanged();
-    void nameChanged();
+    void nameChanged(QString);
+    void borderColorChanged(QColor);
+    void layerTransparencyChanged(int);
     void removeSegmentation(CDTSegmentationLayer*);
 
 public slots:
-    void onContextMenuRequest(QWidget *parent);
+//    void onContextMenuRequest(QWidget *parent);
     void rename();
     void editDBInfo();
     void generateAttributes();
@@ -75,6 +78,7 @@ public slots:
 
     void setName(const QString& name);
     void setBorderColor(const QColor &clr);
+    void setLayerTransparency(int transparency);
     void initSegmentationLayer(const QString& name,
             const QString &shpPath,
             const QString &mkPath,
@@ -94,15 +98,16 @@ private:
 private:
     QVector<CDTClassificationLayer *> classifications;
 
-    QWidgetAction *actionChangeBorderColor;
-    QAction *actionRename;
-    QAction *actionGenerateAttributes;
-    QAction *actionEditDBInfo;
-    QAction *actionExportShapefile;
-    QAction *actionRemoveSegmentation;    
-    QAction *actionAddClassifications;
-    QAction *actionRemoveAllClassifications;
-    QAction *actionAddDecisionFusion;
+//    QWidgetAction *actionChangeBorderColor;
+//    QWidgetAction *actionSetLayerTransparency;
+//    QAction *actionRename;
+//    QAction *actionGenerateAttributes;
+//    QAction *actionEditDBInfo;
+//    QAction *actionExportShapefile;
+//    QAction *actionRemoveSegmentation;
+//    QAction *actionAddClassifications;
+//    QAction *actionRemoveAllClassifications;
+//    QAction *actionAddDecisionFusion;
 
     CDTProjectTreeItem* classificationRootItem;
 

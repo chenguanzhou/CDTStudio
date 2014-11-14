@@ -23,7 +23,8 @@ CDTBaseLayer::~CDTBaseLayer()
 
 void CDTBaseLayer::onContextMenuRequest(QWidget *parent)
 {
-    QMenu* menu =new QMenu(parent);
+    QMenu* menu =new QMenu(parent);    
+    connect(menu,SIGNAL(aboutToHide()),SLOT(onMenuAboutToHide()));
     foreach (QList<QAction *> list, actions) {
         menu->addActions(list);
         menu->addSeparator();
@@ -79,4 +80,22 @@ QObject *CDTBaseLayer::getAncestor(const char *className)
 void CDTBaseLayer::setMapCanvas(QgsMapCanvas *canvas)
 {
     mapCanvas = canvas;
+}
+
+void CDTBaseLayer::onMenuAboutToHide()
+{
+    QMenu *menu = qobject_cast<QMenu *>(sender());
+    if (menu)
+    {
+        foreach (QAction *action, menu->actions()) {
+            QWidgetAction *wAction = qobject_cast<QWidgetAction*>(action);
+            if (wAction)
+            {
+                wAction->requestWidget(NULL);
+                QWidget *widget = wAction->defaultWidget();
+                menu->removeAction(wAction);
+                wAction->setDefaultWidget(widget);
+            }
+        }
+    }
 }

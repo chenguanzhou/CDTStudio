@@ -121,6 +121,7 @@ void CDTExtractionLayer::onContextMenuRequest(QWidget *parent)
     QWidget* menuWidget = new QWidget(NULL);
     QFormLayout* layout = new QFormLayout(menuWidget);
     menuWidget->setLayout(layout);
+    layout->setSpacing(1);
 
     QtColorPicker *colorPicker = new QtColorPicker(menuWidget);
     colorPicker->setStandardColors();
@@ -237,6 +238,11 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into extractionlayer VALUES(?,?,?,?,?,?,?)");
+    if (ret==false)
+    {
+        qDebug()<<"Prepare 'insert into extractionlayer failed!'";
+        return;
+    }
     query.addBindValue(uuid.toString());
     query.addBindValue(name);
     query.addBindValue(shpID);
@@ -245,6 +251,11 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
     query.addBindValue(opacity);
     query.addBindValue(((CDTImageLayer*)parent())->id().toString());
     ret = query.exec();
+    if (ret==false)
+    {
+        qDebug()<<"insert into extractionlayer failed!";
+        return;
+    }
 
     setOriginRenderer();
 

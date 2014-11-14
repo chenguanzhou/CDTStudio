@@ -37,6 +37,7 @@ public:
 
 signals:
 //    void imageLayerChanged();
+//    void layerOpacityChanged(int);
     void removeImageLayer(CDTImageLayer*);
 
 public slots:        
@@ -50,6 +51,8 @@ public slots:
     void rename();
 //    void onContextMenuRequest(QWidget *parent);
 
+    //from 0 to 100
+    void setLayerOpacity(int opacity);
 private:        
     void addExtraction(CDTExtractionLayer* extraction);
     void addSegmentation(CDTSegmentationLayer* segmentation);
