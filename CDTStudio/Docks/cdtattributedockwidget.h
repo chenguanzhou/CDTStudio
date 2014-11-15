@@ -5,6 +5,7 @@
 #include "dialogdbconnection.h"
 #include "log4qt/logger.h"
 
+struct QUuid;
 class QPainter;
 class QWidget;
 class QTabWidget;
@@ -47,7 +48,7 @@ public:
     explicit CDTAttributeDockWidget(QWidget *parent = 0);
     ~CDTAttributeDockWidget();
 
-    CDTSegmentationLayer *segmLayer()const;
+//    CDTSegmentationLayer *segmLayer()const;
 
 public slots:    
     void setCurrentLayer(CDTBaseLayer* layer);
@@ -63,7 +64,8 @@ private slots:
     void onActionExportAllTables();
 private:
     CDTDatabaseConnInfo     dbConnInfo;
-    CDTSegmentationLayer*   segmentationLayer;
+//    CDTSegmentationLayer*   segmentationLayer;
+    QUuid segmentationID;
     QTabWidget *tabWidget;
 };
 

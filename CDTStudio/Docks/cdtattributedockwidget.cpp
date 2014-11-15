@@ -10,8 +10,8 @@
 
 CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
-    tabWidget(new QTabWidget(this)),
-    segmentationLayer(NULL)
+    tabWidget(new QTabWidget(this))
+//    segmentationLayer(NULL)
 {
     setWindowTitle(tr("Attributes Manager"));
 
@@ -40,21 +40,25 @@ CDTAttributeDockWidget::~CDTAttributeDockWidget()
 {
 }
 
-CDTSegmentationLayer *CDTAttributeDockWidget::segmLayer() const
-{
-    return segmentationLayer;
-}
+//CDTSegmentationLayer *CDTAttributeDockWidget::segmLayer() const
+//{
+//    return segmentationLayer;
+//}
 
 void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
-    if (segmentationLayer == layer)
+//    if (segmentationLayer == layer)
+//        return;
+    if (layer==NULL)
         return;
 
-    onDockClear();
-    segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer->getAncestor("CDTSegmentationLayer"));
+    CDTSegmentationLayer *segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer->getAncestor("CDTSegmentationLayer"));
     if (segmentationLayer)
     {
         logger()->info("Find ancestor class of CDTSegmentationLayer");
+        if (segmentationLayer->id()==segmentationID)
+            return;
+        onDockClear();
         this->setTableModels(segmentationLayer->tableModels());
         this->setEnabled(true);
         this->setVisible(true);
@@ -64,6 +68,7 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     else
     {
         logger()->info("No ancestor class of CDTSegmentationLayer found");
+        onDockClear();
         return;
     }
 }
@@ -80,7 +85,8 @@ void CDTAttributeDockWidget::clear()
     dbConnInfo = CDTDatabaseConnInfo();
     clearTables();
 //    QSqlDatabase::removeDatabase("attribute");
-    segmentationLayer =NULL;
+//    segmentationLayer =NULL;
+    segmentationID = QUuid();
 }
 
 void CDTAttributeDockWidget::setTableModels(QList<QAbstractTableModel *> models)
