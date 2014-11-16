@@ -84,7 +84,8 @@ void CDTAttributeDockWidget::clear()
     this->setEnabled(false);
     dbConnInfo = CDTDatabaseConnInfo();
     clearTables();
-//    QSqlDatabase::removeDatabase("attribute");
+    MainWindow::getPlot2DDockWidget()->onDockClear();
+    QSqlDatabase::removeDatabase("attribute");
 //    segmentationLayer =NULL;
     segmentationID = QUuid();
 }

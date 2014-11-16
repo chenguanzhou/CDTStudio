@@ -75,6 +75,18 @@ CDTImageLayer::~CDTImageLayer()
     ret = query.exec("delete from category where imageID = '"+uuid.toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
+
+    query.exec("select id from image_validation_samples where imageID = '"+uuid.toString()+"'");
+    QStringList list;
+    while (query.next())
+    {
+        list.push_back(query.value(0).toString());
+    }
+    foreach (QString string, list) {
+        ret = query.exec("delete from point_category where validationid = '"+string+"'");
+        if (!ret)
+            qWarning()<<"prepare:"<<query.lastError().text();
+    }
     ret = query.exec("delete from image_validation_samples where imageID = '"+uuid.toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
