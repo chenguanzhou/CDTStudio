@@ -233,7 +233,7 @@ void CDTProjectWidget::onObjectItemChanged(QStandardItem *item)
 QToolBar *CDTProjectWidget::initToolBar()
 {
     QToolBar* toolBar = new QToolBar(tr("Navigate"),this);
-    toolBar->setIconSize(QSize(16,16));
+    toolBar->setIconSize(MainWindow::getIconSize());
 
     actionZoomOut  = new QAction(QIcon(":/Icon/ZoomOut.png"),tr("Zoom Out"),this);
     actionZoomIn   = new QAction(QIcon(":/Icon/ZoomIn.png"),tr("Zoom In"),this);
