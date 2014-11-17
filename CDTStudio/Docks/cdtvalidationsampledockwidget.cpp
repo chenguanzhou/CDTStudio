@@ -33,6 +33,8 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     groupBox->setCheckable(true);
     groupBox->setChecked(false);
 
+    listView->setSelectionMode(QListView::SingleSelection);
+    listView->setSelectionBehavior(QListView::SelectRows);
     listView->setModel(sampleModel);
 
     QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this);
@@ -42,8 +44,9 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     toolBar->setIconSize(MainWindow::getIconSize());
 
     connect(groupBox,SIGNAL(toggled(bool)),SLOT(onGroupBoxToggled(bool)));
-    connect(listView,SIGNAL(clicked(QModelIndex)),SLOT(onSelectionChanged()));
+//    connect(listView,SIGNAL(clicked(QModelIndex)),SLOT(onSelectionChanged()));
     connect(actionAddNew,SIGNAL(triggered()),SLOT(onActionAdd()));
+    connect(actionRemove,SIGNAL(triggered()),SLOT(onActionRemove()));
     logger()->info("Constructed");
 }
 
@@ -88,8 +91,12 @@ void CDTValidationSampleDockWidget::onDockClear()
     clearPointsLayer();
 }
 
-void CDTValidationSampleDockWidget::onSelectionChanged()
+void CDTValidationSampleDockWidget::onSelectionChanged(QModelIndex current, QModelIndex)
 {
+    if (current.isValid()==false)
+        return;
+    if (current.row()<0)
+        return;
     clearPointsLayer();
     createPointsLayer();
 }
@@ -101,10 +108,12 @@ void CDTValidationSampleDockWidget::onGroupBoxToggled(bool toggled)
     if (toggled)
     {
         createPointsLayer();
+        connect(listView->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),SLOT(onSelectionChanged(QModelIndex,QModelIndex)));
     }
     else
     {
         clearPointsLayer();
+        disconnect(listView->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(onSelectionChanged(QModelIndex,QModelIndex)));
     }
 }
 
@@ -149,6 +158,38 @@ void CDTValidationSampleDockWidget::onActionAdd()
     MainWindow::getCurrentProjectWidget()->setWindowModified(true);
 }
 
+void CDTValidationSampleDockWidget::onActionRemove()
+{
+    if (QMessageBox::information(this,tr("Remove"),tr("Remove the current validation pointset?")
+                                 ,QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes)
+    {
+        QString id = sampleModel->data(sampleModel->
+                                       index(listView->currentIndex().row(),1)).toString();
+        QSqlDatabase db = QSqlDatabase::database("category");
+        db.transaction();
+        try
+        {
+            QSqlQuery query(db);
+            if (query.exec(QString("delete from point_category where validationid='%1'").arg(id))==false)
+                throw std::runtime_error(QString("delete database point_category failed, error:%1")
+                                         .arg(query.lastError().text()).toLocal8Bit().constData());
+            if (query.exec(QString("delete from image_validation_samples where id='%1'").arg(id))==false)
+                throw std::runtime_error(QString("delete database image_validation_samples failed, error:%1")
+                                         .arg(query.lastError().text()).toLocal8Bit().constData());
+        }
+        catch (std::runtime_error e)
+        {
+            logger()->warn(e.what());
+            db.rollback();
+            return;
+        }
+        clearPointsLayer();
+        db.commit();
+        updateListView();
+        MainWindow::getCurrentProjectWidget()->setWindowModified(true);
+    }
+}
+
 void CDTValidationSampleDockWidget::updateListView()
 {
     sampleModel->setQuery(QString("select name,id from image_validation_samples where imageid = '%1'")
@@ -165,14 +206,10 @@ QVector<QPointF> CDTValidationSampleDockWidget::generatePoints(int pointsCount, 
     {
         double x_dot = static_cast<double>(qrand()%PRECISE)/PRECISE;
         double y_dot = static_cast<double>(qrand()%PRECISE)/PRECISE;
-        qDebug()<<"x:"<<x_dot<<"y:"<<y_dot;
         double x = x_dot*extent.width();
         double y = y_dot*extent.height();
         points.push_back(QPointF(x+extent.xMinimum(),y+extent.yMinimum()));
     }
-    qDebug()<<"extent.height():"<<extent.height();
-    qDebug()<<"extent.yMinimum():"<<extent.yMinimum();
-    qDebug()<<"extent.yMaximum():"<<extent.yMaximum();
     return points;
 }
 
@@ -267,7 +304,7 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(
     query.addBindValue(validationSampleName);
     query.addBindValue(imageID.toString());
     query.addBindValue(pointsSetName);
-//    query.addBindValue(dataToVariant(point_category));
+    //    query.addBindValue(dataToVariant(point_category));
     if (query.exec()==false)
     {
         logger()->error("Insert into DB failed. Reason:%1",query.lastError().text());
@@ -296,7 +333,7 @@ void CDTValidationSampleDockWidget::createPointsLayer()
                .arg(validationName));
     query.next();
     QString pointset_name = query.value(0).toString();
-//    QMap<int,QString> point_category = variantToData<QMap<int,QString> >(query.value(2));
+    //    QMap<int,QString> point_category = variantToData<QMap<int,QString> >(query.value(2));
 
     query.exec(QString("select id,x,y from points where pointset_name = '%1'")
                .arg(pointset_name));

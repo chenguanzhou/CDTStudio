@@ -27,9 +27,10 @@ public slots:
     void onDockClear();
 
 private slots:
-    void onSelectionChanged();
+    void onSelectionChanged(QModelIndex,QModelIndex);
     void onGroupBoxToggled(bool toggled);
     void onActionAdd();
+    void onActionRemove();
     void updateListView();
 
 private:
