@@ -96,7 +96,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));
     connect(actionAddDecisionFusion,SIGNAL(triggered()),SLOT(decisionFusion()));
 
-    connect(this,SIGNAL(nameChanged()),this,SIGNAL(layerChanged()));
+    connect(this,SIGNAL(nameChanged(QString)),this,SIGNAL(layerChanged()));
     connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(layerChanged()));
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
     //    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
@@ -267,6 +267,8 @@ void CDTSegmentationLayer::removeClassification(CDTClassificationLayer* clf)
         emit removeLayer(QList<QgsMapLayer*>()<<clf->canvasLayer());
         delete clf;
         emit layerChanged();
+        this->setOriginRenderer();
+        this->mapCanvas->refresh();
     }
 }
 

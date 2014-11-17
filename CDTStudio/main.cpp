@@ -2,7 +2,6 @@
 #include "cdtapplication.h"
 #include <QObject>
 
-//TODO  Some QButtonGroup
 //TODO  Project tree Checkbox
 //TODO  Translation
 //TODO  CDTBaseLayer more independent

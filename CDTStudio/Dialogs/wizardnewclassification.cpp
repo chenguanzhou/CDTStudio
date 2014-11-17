@@ -42,6 +42,7 @@ WizardNewClassification::WizardNewClassification(QUuid segmentationID, QWidget *
     this->setButtonText(CustomButton1,tr("Start Classification"));
 
     initClassifiers();
+    logger()->debug("WizardNewClassification constructed");
 }
 
 WizardNewClassification::~WizardNewClassification()
@@ -371,7 +372,6 @@ void WizardNewClassification::onClassifierChanged(int index)
 {    
     if (index<0) return;
     CDTClassifierInterface *interface = classifierPlugins[index];
-
     ui->propertyEditWidget->setObject(interface);
 }
 

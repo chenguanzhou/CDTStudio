@@ -20,7 +20,7 @@ public:
     QStringList selectedFeatures;
     //ConfusionMat
     QStringList categories;
-    QList<QPair<QString,QString> > confusionParams;//<result,test sample>
+    QList<QPair<QString,QString> > confusionParams;//<result, validation sample>
 };
 
 

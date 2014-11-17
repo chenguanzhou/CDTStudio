@@ -1,7 +1,7 @@
 #include "cdtclassifierassessmentform.h"
 #include "ui_cdtclassifierassessmentform.h"
 #include "stable.h"
-
+#include <qgsrasteridentifyresult.h>
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtclassificationlayer.h"
@@ -53,14 +53,18 @@ void CDTClassifierAssessmentForm::onComboBoxClassificationChanged(int index)
     CDTSegmentationLayer *segLayer = CDTSegmentationLayer::getLayer(segmentationID);
     QString segmentationName = segLayer->name();
     QString imageName = static_cast<CDTImageLayer *>(segLayer->parent())->name();
+    QString iamgeID = static_cast<CDTImageLayer *>(segLayer->parent())->id();
 
     ui->plainTextEdit->clear();
     ui->plainTextEdit->appendPlainText(tr("Image name:    ")+imageName);
     ui->plainTextEdit->appendPlainText(tr("Segmentation name:    ")+segmentationName);
 
 
-    modelSample->setQuery(QString("Select name,id from sample_segmentation where segmentationid = '%1'")
-                          .arg(segmentationID),QSqlDatabase::database("category"));
+//    modelSample->setQuery(QString("Select name,id from sample_segmentation where segmentationid = '%1'")
+//                          .arg(segmentationID),QSqlDatabase::database("category"));
+
+    modelSample->setQuery(QString("Select name,id from image_validation_samples where imageid = '%1'")
+                          .arg(iamgeID),QSqlDatabase::database("category"));
 }
 
 void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
@@ -100,18 +104,50 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
         index_CategoryName.insert(i.value().toInt(),categoryID_Name[i.key()]);
     }
 
+    CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer->parent());
+    if (segLayer == NULL)
+        return;
+    QString markFIlePath = segLayer->markfileTempPath();
+    QgsRasterLayer *imgMarkLayer = new QgsRasterLayer(markFIlePath);
+    if (!imgMarkLayer->isValid())
+        return;
+
     QMap<int,QString> testSamples;
     QList<QVariant> label = layer->data();
-    query.exec(QString("select objectid,categoryid from object_samples where sampleid ='%1'").arg(sampleID));
+//    query.exec(QString("select objectid,categoryid from object_samples where sampleid ='%1'").arg(sampleID));
+
+//    while(query.next())
+//    {
+//        testSamples.insert(query.value(0).toInt(),query.value(1).toString());
+//    }
+//    foreach (int objID, testSamples.keys()) {
+//        QString clsIndex = testSamples.value(objID);
+//        info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[objID].toInt()],categoryID_Name[clsIndex]));
+//    }
+
+    query.exec(QString("select x,y,categoryid from "
+                       "(select id,x,y from points where pointset_name= "
+                       "(select pointset_name from image_validation_samples where id = '%1' )) "
+                       "INNER JOIN point_category "
+                       "USING (id)").arg(sampleID));
 
     while(query.next())
     {
-        testSamples.insert(query.value(0).toInt(),query.value(1).toString());
+        double x = query.value(0).toDouble();
+        double y = query.value(1).toDouble();
+        QString categoryID = query.value(2).toString();
+        QgsRasterIdentifyResult result = imgMarkLayer->dataProvider()->identify(QgsPoint(x,y),QgsRaster::IdentifyFormatValue);
+        int objID = result.results().value(1).toInt();
+        testSamples.insert(objID,categoryID);
     }
+
+
     foreach (int objID, testSamples.keys()) {
         QString clsIndex = testSamples.value(objID);
         info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[objID].toInt()],categoryID_Name[clsIndex]));
     }
+
+
     this->setInfo(info);
 
 }
@@ -226,7 +262,7 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
     {
         correctCount += matrixData.at<int>(i,i);
     }
-    qDebug()<<"info.confusionParams.size():"<<info.confusionParams.size();
+//    qDebug()<<"info.confusionParams.size():"<<info.confusionParams.size();
     double overall = correctCount*100/info.confusionParams.size();
     ui->overallAcuraccyLineEdit->setText(QString::number(overall)+"%");
 
