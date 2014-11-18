@@ -19,6 +19,8 @@ protected slots:
 
 private:
     void closeEvent(QCloseEvent *e);
+    void enterEvent(QEvent *);
+    void leaveEvent(QEvent *);
 private:
     QTableView *tableView;
     QSqlRelationalTableModel *model;

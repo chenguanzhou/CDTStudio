@@ -76,3 +76,13 @@ void DialogValidationPoints::closeEvent(QCloseEvent *e)
     setting.setValue("geometry",this->saveGeometry());
     setting.endGroup();
 }
+
+void DialogValidationPoints::enterEvent(QEvent *)
+{
+    this->setWindowOpacity(1);
+}
+
+void DialogValidationPoints::leaveEvent(QEvent *)
+{
+    this->setWindowOpacity(0.7);
+}

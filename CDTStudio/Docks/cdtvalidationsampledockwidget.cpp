@@ -286,6 +286,7 @@ void CDTValidationSampleDockWidget::createPointsLayer()
     //Make a Dialog to set category
     DialogValidationPoints *dlg = new DialogValidationPoints(validationID,this);
     connect(pointsLayer,SIGNAL(destroyed()),dlg,SLOT(close()));
+    dlg->setWindowOpacity(0.7);
     dlg->show();
 }
 
