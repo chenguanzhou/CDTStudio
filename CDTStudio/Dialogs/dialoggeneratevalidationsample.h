@@ -15,18 +15,21 @@ class DialogGenerateValidationSample : public QDialog
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 private:
-    explicit DialogGenerateValidationSample(QString projectID,QWidget *parent = 0);
+    explicit DialogGenerateValidationSample(QString imageID,QWidget *parent = 0);
     ~DialogGenerateValidationSample();
 
 public:
     //return a stringlist (name,pointset_name)
-    static QStringList getGeneratedValidationPointsetName(QString projectID,QWidget *parent);
+    static QStringList getGeneratedValidationPointsetName(QString imageID,QWidget *parent);
 
 private slots:
     void onComboBoxChanged(QString pointsetName);
+    void onAddPointset();
 
 private:
     void updateCombobox();
+    QVector<QPointF> generatePoints(int pointsCount, const QgsRectangle &extent);
+    bool insertPointsIntoDB(QVector<QPointF> points,QString pointset_name);
     QStringList getValidationNames() const;
 
     Ui::DialogGenerateValidationSample *ui;

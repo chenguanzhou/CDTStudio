@@ -45,7 +45,6 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     toolBar->setIconSize(MainWindow::getIconSize());
 
     connect(groupBox,SIGNAL(toggled(bool)),SLOT(onGroupBoxToggled(bool)));
-//    connect(listView,SIGNAL(clicked(QModelIndex)),SLOT(onSelectionChanged()));
     connect(actionAddNew,SIGNAL(triggered()),SLOT(onActionAdd()));
     connect(actionRemove,SIGNAL(triggered()),SLOT(onActionRemove()));
     logger()->info("Constructed");
@@ -126,42 +125,8 @@ void CDTValidationSampleDockWidget::onActionAdd()
     QUuid id = QUuid::createUuid();
     QString name = info[0];
     QString pointsSetName = info[1];
-/*  QString name = QInputDialog::getText(this,tr("New validation sample name"),
-                                         tr("Name:"),QLineEdit::Normal,tr("New Sample"));
-    if (name.isEmpty())
-        return;
 
-    for(int i=0;i<sampleModel->rowCount();++i)
-    {
-        if (sampleModel->data(sampleModel->index(i,0)).toString() == name)
-        {
-            QMessageBox::critical(this,tr("Error"),tr("The name:'%1' has already exist!").arg(name));
-            return;
-        }
-    }
-
-    QString pointsSetName = QInputDialog::getText(this,tr("Name of new points set"),
-                                                  tr("Name:"),QLineEdit::Normal,tr("New points set"));
-    if (pointsSetName.isEmpty())
-        return;
-
-    bool ok;
-    int pointsCount = QInputDialog::getInt(this,tr("Count of validation points"),tr("Points count"),30,1,10000,1,&ok);
-    if (ok==false)
-        return;
-
-    if (imageID.isNull())
-        return;
-
-    CDTImageLayer *imageLayer = CDTImageLayer::getLayer(imageID);
-    if (imageLayer==NULL)
-        return;
-
-    QgsRectangle extent = imageLayer->canvasLayer()->extent();
-    QVector<QPointF> points = generatePoints(pointsCount,extent);
-    if (insertPointsIntoDB(points,pointsSetName,id,name)==false)
-        return;
-    MainWindow::getCurrentProjectWidget()->setWindowModified(true);*/
+    insertPointsIntoDB(pointsSetName,id,name);
 }
 
 void CDTValidationSampleDockWidget::onActionRemove()
@@ -202,123 +167,61 @@ void CDTValidationSampleDockWidget::updateListView()
                           .arg(imageID.toString()),QSqlDatabase::database("category"));
 }
 
-QVector<QPointF> CDTValidationSampleDockWidget::generatePoints(int pointsCount, const QgsRectangle &extent)
-{
-    const int PRECISE = 10000;
-    qsrand(std::clock());
-
-    QVector<QPointF> points;
-    for (int i=0;i<pointsCount;++i)
-    {
-        double x_dot = static_cast<double>(qrand()%PRECISE)/PRECISE;
-        double y_dot = static_cast<double>(qrand()%PRECISE)/PRECISE;
-        double x = x_dot*extent.width();
-        double y = y_dot*extent.height();
-        points.push_back(QPointF(x+extent.xMinimum(),y+extent.yMinimum()));
-    }
-    return points;
-}
-
 bool CDTValidationSampleDockWidget::insertPointsIntoDB(
-        QVector<QPointF> points,
         const QString &pointsSetName,
         const QString &validationSampleID,
         const QString &validationSampleName)
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
-
-    CDTProjectLayer *prj = qobject_cast<CDTProjectLayer*>(CDTImageLayer::getLayer(imageID)->parent());
-
     db.transaction();
+    try{
+        if (query.exec(QString("select id from category where imageid ='%1'").arg(imageID))==false)
+            throw "Execute SQL of 'insert into points_project' failed!";
 
-    if (query.exec(QString("select id from category where imageid ='%1'").arg(imageID))==false)
-    {
-        logger()->error("Execute SQL of 'insert into points_project' failed!",imageID);
-        db.rollback();
-        return false;
-    }
-
-    if (query.next() == false)
-    {
-        QMessageBox::critical(this,tr("Error"),tr("Please set category information first"));
-        db.rollback();
-        return false;
-    }
-    QString categoryID = query.value(0).toString();
-
-
-    if (query.exec(QString("insert into points_project values('%1','%2')")
-                   .arg(pointsSetName).arg(prj->id().toString()))==false)
-    {
-        logger()->error("Execute SQL of 'insert into points_project' failed!");
-        db.rollback();
-        return false;
-    }
-
-    if (query.prepare("insert into points values(?,?,?,?)")==false)
-    {
-        logger()->error("Prepare SQL failed!");
-        db.rollback();
-        return false;
-    }
-
-    int i=0;
-    foreach (QPointF pt, points) {
-        query.bindValue(0,i++);
-        query.bindValue(1,pt.x());
-        query.bindValue(2,pt.y());
-        query.bindValue(3,pointsSetName);
-        if (query.exec()==false)
+        if (query.next() == false)
         {
-            logger()->error("Insert point:(%1,%2) into DB failed. Reason:%3"
-                            ,pt.x(),pt.y(),query.lastError().text());
-            db.rollback();
+            QMessageBox::critical(this,tr("Error"),tr("Please set category information first"));
             return false;
         }
-    }
 
-    if (query.prepare("insert into point_category values(?,?,?)")==false)
-    {
-        logger()->error("Prepare SQL failed!");
-        db.rollback();
-        return false;
-    }
+        QString categoryID = query.value(0).toString();
 
-    i=0;
-    foreach (QPointF pt, points) {
-        query.bindValue(0,i++);
-        query.bindValue(1,categoryID);
-        query.bindValue(2,validationSampleID);
+        if (query.prepare("insert into image_validation_samples values(?,?,?,?)")==false)
+            throw "Prepare SQL failed!";
+
+        query.addBindValue(validationSampleID);
+        query.addBindValue(validationSampleName);
+        query.addBindValue(imageID.toString());
+        query.addBindValue(pointsSetName);
         if (query.exec()==false)
-        {
-            logger()->error("Insert point_category into DB failed. Reason:%3"
-                            ,pt.x(),pt.y(),query.lastError().text());
-            db.rollback();
-            return false;
+            throw QString("Insert into DB failed. Reason:%1").arg(query.lastError().text());
+
+        QList<int> ids;
+        if (query.exec(QString("select id from points where pointset_name='%1'").arg(pointsSetName))==false)
+            throw QString("Execute SQL of 'select id from points where pointset_name='%1' 'failed!").arg(pointsSetName);
+        while (query.next()) {
+            ids<<query.value(0).toInt();
         }
-    }
 
-    if (query.prepare("insert into image_validation_samples values(?,?,?,?)")==false)
-    {
-        logger()->error("Prepare SQL failed!");
+        if (query.prepare("insert into point_category values(?,?,?)")==false)
+            throw "Prepare SQL failed!";
+
+        foreach (int id, ids) {
+            query.bindValue(0,id);
+            query.bindValue(1,categoryID);
+            query.bindValue(2,validationSampleID);
+            if (query.exec()==false)
+                throw QString("Insert point_category into DB failed. Reason:%1").arg(query.lastError().text());
+        }
+        db.commit();
+    }
+    catch (const QString &e){
+        logger()->error(e);
         db.rollback();
         return false;
     }
 
-    query.addBindValue(validationSampleID);
-    query.addBindValue(validationSampleName);
-    query.addBindValue(imageID.toString());
-    query.addBindValue(pointsSetName);
-    //    query.addBindValue(dataToVariant(point_category));
-    if (query.exec()==false)
-    {
-        logger()->error("Insert into DB failed. Reason:%1",query.lastError().text());
-        db.rollback();
-        return false;
-    }
-
-    db.commit();
     updateListView();
     logger()->info("Insert points set %1 into DB succeeded!",pointsSetName);
     return true;

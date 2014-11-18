@@ -34,8 +34,8 @@ private slots:
     void updateListView();
 
 private:
-    QVector<QPointF> generatePoints(int pointsCount, const QgsRectangle &extent);
-    bool insertPointsIntoDB(QVector<QPointF> points, const QString &pointsSetName, const QString &validationSampleID, const QString &validationSampleName);
+
+    bool insertPointsIntoDB(const QString &pointsSetName, const QString &validationSampleID, const QString &validationSampleName);
     void createPointsLayer();
     void clearPointsLayer();
 private:
