@@ -9,6 +9,7 @@
 #include "cdtprojectlayer.h"
 #include "cdtimagelayer.h"
 #include "dialogvalidationpoints.h"
+#include "dialoggeneratevalidationsample.h"
 
 CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
@@ -119,8 +120,13 @@ void CDTValidationSampleDockWidget::onGroupBoxToggled(bool toggled)
 
 void CDTValidationSampleDockWidget::onActionAdd()
 {
+    QStringList info = DialogGenerateValidationSample::
+            getGeneratedValidationPointsetName(imageID,this);
+
     QUuid id = QUuid::createUuid();
-    QString name = QInputDialog::getText(this,tr("New validation sample name"),
+    QString name = info[0];
+    QString pointsSetName = info[1];
+/*  QString name = QInputDialog::getText(this,tr("New validation sample name"),
                                          tr("Name:"),QLineEdit::Normal,tr("New Sample"));
     if (name.isEmpty())
         return;
@@ -155,7 +161,7 @@ void CDTValidationSampleDockWidget::onActionAdd()
     QVector<QPointF> points = generatePoints(pointsCount,extent);
     if (insertPointsIntoDB(points,pointsSetName,id,name)==false)
         return;
-    MainWindow::getCurrentProjectWidget()->setWindowModified(true);
+    MainWindow::getCurrentProjectWidget()->setWindowModified(true);*/
 }
 
 void CDTValidationSampleDockWidget::onActionRemove()
