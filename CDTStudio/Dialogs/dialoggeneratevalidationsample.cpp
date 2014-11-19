@@ -147,8 +147,7 @@ bool DialogGenerateValidationSample::insertPointsIntoDB(QVector<QPointF> points,
         if (query.prepare("insert into points values(?,?,?,?)")==false)
             throw "prepare insert into points failed!";
         int i=0;
-        for(QPointF pt:points)
-        {
+        foreach (QPointF pt, points) {
             query.addBindValue(i++);
             query.addBindValue(pt.x());
             query.addBindValue(pt.y());

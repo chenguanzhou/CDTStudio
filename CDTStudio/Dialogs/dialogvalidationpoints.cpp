@@ -84,5 +84,5 @@ void DialogValidationPoints::enterEvent(QEvent *)
 
 void DialogValidationPoints::leaveEvent(QEvent *)
 {
-    this->setWindowOpacity(0.7);
+    this->setWindowOpacity(0.8);
 }

@@ -46,6 +46,7 @@ public:
 
     State validate(QString &input, int &pos) const
     {
+        Q_UNUSED(pos);
         if (blackLst.contains(input))
         {
             return Invalid;
