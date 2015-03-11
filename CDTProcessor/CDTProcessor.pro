@@ -48,6 +48,7 @@ INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
 !unix{
+include(../Tools/Config/win.pri)
 INCLUDEPATH += $(GDAL_ROOT)/include
 LIBS += -L$(GDAL_ROOT)/lib  -lgdal_i
 }
