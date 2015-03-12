@@ -51,9 +51,10 @@ HEADERS  += \
 FORMS    += \
     mainwindow.ui \
 
-include(Docks/Docks.pri)
 include(Dialogs/Dialogs.pri)
+include(Docks/Docks.pri)
 include(Layers/Layers.pri)
+include(Wizards/Wizards.pri)
 
 INCLUDEPATH += \
     ../Interfaces \
