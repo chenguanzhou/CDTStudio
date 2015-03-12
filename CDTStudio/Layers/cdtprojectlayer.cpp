@@ -10,6 +10,7 @@
 #include "cdtpbcdbinarylayer.h"
 #include "dialognewimage.h"
 #include "dialogpbcdbinary.h"
+#include "wizardvectorchangedetection.h"
 
 CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     CDTBaseLayer(uuid,parent),
@@ -29,8 +30,9 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     QAction *actiobRemoveAllImages = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove all images"),this);
     QAction *actionAddPBCDBinary = new QAction(QIcon(":/Icon/2.png"),tr("Add pixel-based change detection(binary) layer"),this);
     QAction *actionAddPBCDFromTo = new QAction(QIcon(":/Icon/2p.png"),tr("Add pixel-based change detection(from-to) layer"),this);
-    QAction *actionAddOBCDBinary = new QAction(QIcon(":/Icon/2.png"),tr("Add object-based change detection(binary) layer"),this);
-    QAction *actionAddOBCDFromTo = new QAction(QIcon(":/Icon/2p.png"),tr("Add object-based change detection(from-to) layer"),this);
+//    QAction *actionAddOBCDBinary = new QAction(QIcon(":/Icon/2.png"),tr("Add object-based change detection(binary) layer"),this);
+//    QAction *actionAddOBCDFromTo = new QAction(QIcon(":/Icon/2p.png"),tr("Add object-based change detection(from-to) layer"),this);
+    QAction *actionAddVectorCDLayer = new QAction(QIcon(":/Icon/OBCD.png"),tr("Add vector change detection layer"),this);
     QAction *actiobRemoveAllChanges = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove all change layers"),this);
     QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Project"),this);
 
@@ -38,15 +40,17 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
            <<(QList<QAction *>()
               <<actionAddPBCDBinary
               <<actionAddPBCDFromTo
-              <<actionAddOBCDBinary
-              <<actionAddOBCDFromTo
+              <<actionAddVectorCDLayer
+//              <<actionAddOBCDBinary
+//              <<actionAddOBCDFromTo
               <<actiobRemoveAllChanges)
           <<(QList<QAction *>()<<actionRename);
 
     connect(actionAddImage,SIGNAL(triggered()),SLOT(addImageLayer()));
     connect(actiobRemoveAllImages,SIGNAL(triggered()),SLOT(removeAllImageLayers()));
     connect(actionAddPBCDBinary,SIGNAL(triggered()),SLOT(addPBCDBinaryLayer()));
-    connect(actionAddOBCDBinary,SIGNAL(triggered()),SLOT(addOBCDBinaryLayer()));
+//    connect(actionAddOBCDBinary,SIGNAL(triggered()),SLOT(addOBCDBinaryLayer()));
+    connect(actionAddVectorCDLayer,SIGNAL(triggered()),SLOT(addVectorChangeDetectionLayer()));
     connect(actiobRemoveAllChanges,SIGNAL(triggered()),SLOT(removeAllChangeLayers()));
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
 }
@@ -151,10 +155,16 @@ void CDTProjectLayer::addPBCDBinaryLayer()
     connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));
 }
 
-void CDTProjectLayer::addOBCDBinaryLayer()
+void CDTProjectLayer::addVectorChangeDetectionLayer()
 {
-
+    WizardVectorChangeDetection wizard;
+    wizard.exec();
 }
+
+//void CDTProjectLayer::addOBCDBinaryLayer()
+//{
+
+//}
 
 void CDTProjectLayer::addImageLayer(CDTImageLayer *image)
 {

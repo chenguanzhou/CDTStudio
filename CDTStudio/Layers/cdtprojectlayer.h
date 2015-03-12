@@ -33,7 +33,8 @@ signals:
 public slots:    
     void addImageLayer();
     void addPBCDBinaryLayer();
-    void addOBCDBinaryLayer();
+    void addVectorChangeDetectionLayer();
+//    void addOBCDBinaryLayer();
 
     void addImageLayer(CDTImageLayer *image);
     void removeImageLayer(CDTImageLayer *image);
