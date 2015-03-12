@@ -13,6 +13,7 @@
 //TODO  Attribute Widget Closable
 //TODO  Make accuracy assessment as a property of classification layer
 //TODO  Read & write project in another thread
+//TODO  Category table import & export
 
 //BUG   Same name
 

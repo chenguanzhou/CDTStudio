@@ -12,11 +12,19 @@ DialogValidationPoints::DialogValidationPoints(const QString validationID, QWidg
     this->setLayout(vbox);
     vbox->addWidget(tableView);
 
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.exec(QString("select imageid from image_validation_samples where id = '%1'").arg(validationID));
+    query.next();
+    QString imageID = query.value(0).toString();
+
+    query.exec(QString("create temp table category_temp as "
+               "select id,name from category where imageid='%1'").arg(imageID));
 
     model->setTable("point_category");
-    model->setFilter(QString("validationid = '%1'").arg(validationID));
+    model->setRelation(1,QSqlRelation("category_temp","id","name"));
+    model->setFilter(QString("validationid = '%1'")
+                     .arg(validationID));
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
-    model->setRelation(1,QSqlRelation("category","id","name"));
     model->setHeaderData(0, Qt::Horizontal, QObject::tr("ID"));
     model->setHeaderData(1, Qt::Horizontal, QObject::tr("Category"));
     model->select();
@@ -35,6 +43,11 @@ DialogValidationPoints::DialogValidationPoints(const QString validationID, QWidg
     setting.beginGroup("DialogValidationPoints");
     this->restoreGeometry(setting.value("geometry").toByteArray());
     setting.endGroup();
+}
+
+DialogValidationPoints::~DialogValidationPoints()
+{
+
 }
 
 void DialogValidationPoints::onSelectionChanged(const QItemSelection &items)
@@ -71,6 +84,9 @@ void DialogValidationPoints::onSelectionChanged(const QItemSelection &items)
 
 void DialogValidationPoints::closeEvent(QCloseEvent *e)
 {
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.exec("drop table category_temp");
+
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("DialogValidationPoints");
     setting.setValue("geometry",this->saveGeometry());

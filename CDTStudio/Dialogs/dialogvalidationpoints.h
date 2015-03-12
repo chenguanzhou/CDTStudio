@@ -11,7 +11,7 @@ class DialogValidationPoints : public QDialog
     Q_OBJECT
 public:
     explicit DialogValidationPoints(const QString validationID,QWidget *parent = 0);
-
+    ~DialogValidationPoints();
 signals:
 
 protected slots:
