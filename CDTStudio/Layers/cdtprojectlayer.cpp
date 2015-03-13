@@ -157,7 +157,7 @@ void CDTProjectLayer::addPBCDBinaryLayer()
 
 void CDTProjectLayer::addVectorChangeDetectionLayer()
 {
-    WizardVectorChangeDetection wizard;
+    WizardVectorChangeDetection wizard(id());
     wizard.exec();
 }
 
