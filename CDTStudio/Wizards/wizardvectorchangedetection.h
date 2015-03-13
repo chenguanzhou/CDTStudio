@@ -13,9 +13,9 @@ class QSqlQueryModel;
 
 class WizardVectorChangeDetection : public QWizard
 {
-/********************************************/
-/*                  Wizard                  */
-/********************************************/
+    /********************************************/
+    /*                  Wizard                  */
+    /********************************************/
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
@@ -23,15 +23,16 @@ public:
     ~WizardVectorChangeDetection();
 
 private:
+    void closeEvent(QCloseEvent* );
     bool validateCurrentPage();
 private:
     Ui::WizardVectorChangeDetection *ui;
     QUuid prjID;
     bool isValid_Page1;
 
-/********************************************/
-/*                  Page 1                  */
-/********************************************/
+    /********************************************/
+    /*                  Page 1                  */
+    /********************************************/
 private:
     void initPage1();
     void updateCombobox(QComboBox *sender,QString IDFieldName,QSqlQueryModel *currentModel,QString tableName);
@@ -42,15 +43,23 @@ private slots:
     void updateT2ClsLayer();
     void onButtonShpT1Clicked();
     void onButtonShpT2Clicked();
+    void updateShpFieldsT1();
+    void updateShpFieldsT2();
     void updateReport_Page1();
     void showErrorText_Page1(QString msg);
-    void showCorrectText_Page1(QString name, QString imageid_t1, QString segid_t1, QString clsid_t1, QString imageid_t2, QString segid_t2, QString clsid_t2, QString shapefile_t1, QString shapefile_t2, bool isUseLayer_t1, bool isUseLayer_t2);
+    void showCorrectText_Page1(QString name, QString imageid_t1, QString segid_t1, QString clsid_t1, QString imageid_t2, QString segid_t2, QString clsid_t2, QString shapefile_t1, QString shapefile_t2,QString shapefileFieldName_t1, QString shapefileFieldName_t2, bool isUseLayer_t1, bool isUseLayer_t2);
 private:
     QSqlQueryModel *model_ImageLayer;
     QSqlQueryModel *modelT1_SegLayer;
     QSqlQueryModel *modelT1_ClsLayer;
     QSqlQueryModel *modelT2_SegLayer;
     QSqlQueryModel *modelT2_ClsLayer;
+
+    /********************************************/
+    /*                  Page 2                  */
+    /********************************************/
+private:
+    void updateMatchingPairs(QStringList t1,QStringList t2);
 };
 
 #endif // WIZARDVECTORCHANGEDETECTION_H

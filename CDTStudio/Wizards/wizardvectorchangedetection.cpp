@@ -4,6 +4,8 @@
 #include <QtCore>
 #include <QtSql>
 #include <QFileDialog>
+#include <qgsvectorlayer.h>
+#include <qgsvectordataprovider.h>
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtclassificationlayer.h"
@@ -16,12 +18,25 @@ WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidge
 {
     ui->setupUi(this);
     initPage1();
-    ui->wizardPage1_DataSource->adjustSize();
+
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("WizardVectorChangeDetection");
+    this->restoreGeometry(setting.value("geometry").toByteArray());
+    setting.endGroup();
 }
 
 WizardVectorChangeDetection::~WizardVectorChangeDetection()
 {
+    QSettings setting("WHU","CDTStudio");
+    setting.beginGroup("WizardVectorChangeDetection");
+    setting.setValue("geometry",this->saveGeometry());
+    setting.endGroup();
     delete ui;
+}
+
+void WizardVectorChangeDetection::closeEvent(QCloseEvent *)
+{
+
 }
 
 bool WizardVectorChangeDetection::validateCurrentPage()
@@ -77,10 +92,12 @@ void WizardVectorChangeDetection::initPage1()
         ui->comboBoxT2_ImageLayer->setCurrentIndex(1);
 
     //Data Source (From Shapefile)
-    connect(ui->lineEditT1_ShpPath,SIGNAL(textChanged(QString)),SLOT(updateReport_Page1()));
-    connect(ui->lineEditT2_ShpPath,SIGNAL(textChanged(QString)),SLOT(updateReport_Page1()));
+    connect(ui->lineEditT1_ShpPath,SIGNAL(textChanged(QString)),SLOT(updateShpFieldsT1()));
+    connect(ui->lineEditT2_ShpPath,SIGNAL(textChanged(QString)),SLOT(updateShpFieldsT2()));
     connect(ui->pushButtonT1_ShpPath,SIGNAL(clicked()),SLOT(onButtonShpT1Clicked()));
     connect(ui->pushButtonT2_ShpPath,SIGNAL(clicked()),SLOT(onButtonShpT2Clicked()));
+    connect(ui->comboBoxT1_ShpField,SIGNAL(currentIndexChanged(int)),SLOT(updateReport_Page1()));
+    connect(ui->comboBoxT2_ShpField,SIGNAL(currentIndexChanged(int)),SLOT(updateReport_Page1()));
 
     updateReport_Page1();
 }
@@ -143,6 +160,29 @@ void WizardVectorChangeDetection::onButtonShpT2Clicked()
     ui->lineEditT2_ShpPath->setText(path);
 }
 
+void WizardVectorChangeDetection::updateShpFieldsT1()
+{
+    ui->comboBoxT1_ShpField->clear();
+    QString path = ui->lineEditT1_ShpPath->text();
+    if (path.isEmpty()) return;
+    QgsVectorLayer *layer = new QgsVectorLayer(path,QFileInfo(path).completeBaseName(),"ogr");
+    if (!layer->isValid()) return;
+    QgsFields fields = layer->dataProvider()->fields();
+    for (int i=0;i<fields.count();++i) ui->comboBoxT1_ShpField->addItem(fields.at(i).name());
+}
+
+void WizardVectorChangeDetection::updateShpFieldsT2()
+{
+    ui->comboBoxT2_ShpField->clear();
+    QString path = ui->lineEditT2_ShpPath->text();
+    if (path.isEmpty()) return;
+    QgsVectorLayer *layer = new QgsVectorLayer(path,QFileInfo(path).completeBaseName(),"ogr");
+    if (!layer->isValid()) return;
+    QgsFields fields = layer->dataProvider()->fields();
+    for (int i=0;i<fields.count();++i) ui->comboBoxT2_ShpField->addItem(fields.at(i).name());
+
+}
+
 void WizardVectorChangeDetection::updateReport_Page1()
 {
     isValid_Page1 = false;
@@ -164,6 +204,8 @@ void WizardVectorChangeDetection::updateReport_Page1()
 
     QString shapefile_t1 = ui->lineEditT1_ShpPath->text();
     QString shapefile_t2 = ui->lineEditT2_ShpPath->text();
+    QString shapefileFieldName_t1 = ui->comboBoxT1_ShpField->currentText();
+    QString shapefileFieldName_t2 = ui->comboBoxT2_ShpField->currentText();
 
     bool isUseLayer_t1 = ui->tabWidgetT1->currentIndex()==0;
     bool isUseLayer_t2 = ui->tabWidgetT2->currentIndex()==0;
@@ -189,6 +231,7 @@ void WizardVectorChangeDetection::updateReport_Page1()
         {
             //shapefile
             isText_Empty(shapefile_t1,tr("Shapefile of epoch 1"));
+            isText_Empty(shapefileFieldName_t1,tr("Field name for shapefile of epoch 1"));
         }
 
         if (isUseLayer_t2)
@@ -202,11 +245,15 @@ void WizardVectorChangeDetection::updateReport_Page1()
         {
             //shapefile
             isText_Empty(shapefile_t2,tr("Shapefile of epoch 2"));
+            isText_Empty(shapefileFieldName_t2,tr("Field name for shapefile of epoch 2"));
         }
 
         //Same image when both use layers
         if (isUseLayer_t1 == true && isUseLayer_t2==true && imageid_t1 == imageid_t2)
             throw tr("The images of 2 epoch looks the same!");
+
+        if (isUseLayer_t1 == false && isUseLayer_t2==false && shapefile_t1 == shapefile_t2)
+            throw tr("The shapefiles of 2 epoch looks the same!");
     }
     catch(QString msg)
     {
@@ -217,7 +264,9 @@ void WizardVectorChangeDetection::updateReport_Page1()
     }
     isValid_Page1 = true;
     showCorrectText_Page1(name ,imageid_t1,segid_t1,clsid_t1,
-        imageid_t2,segid_t2,clsid_t2,shapefile_t1,shapefile_t2,
+        imageid_t2,segid_t2,clsid_t2,
+        shapefile_t1,shapefile_t2,
+        shapefileFieldName_t1,shapefileFieldName_t2,
         isUseLayer_t1,isUseLayer_t2);
 }
 
@@ -230,12 +279,12 @@ void WizardVectorChangeDetection::showErrorText_Page1(QString msg)
     ui->textEditDataSource->setStyleSheet("border: 3px solid red");
 }
 
-void WizardVectorChangeDetection::showCorrectText_Page1(
-        QString name ,
-        QString imageid_t1,QString segid_t1,QString clsid_t1,
-        QString imageid_t2,QString segid_t2,QString clsid_t2,
-        QString shapefile_t1,QString shapefile_t2,
-        bool isUseLayer_t1,bool isUseLayer_t2)
+void WizardVectorChangeDetection::showCorrectText_Page1(QString name ,
+        QString imageid_t1, QString segid_t1, QString clsid_t1,
+        QString imageid_t2, QString segid_t2, QString clsid_t2,
+        QString shapefile_t1, QString shapefile_t2,
+        QString shapefileFieldName_t1, QString shapefileFieldName_t2,
+        bool isUseLayer_t1, bool isUseLayer_t2)
 {
     ui->textEditDataSource->clear();
     QString t1,t2;
@@ -255,24 +304,27 @@ void WizardVectorChangeDetection::showCorrectText_Page1(
                 .arg(tr("Segmentation layer")).arg(segName)
                 .arg(tr("Classification layer")).arg(clsName);
     };
-    auto shapefileHtml = [=](QString path)->QString
+    auto shapefileHtml = [=](QString path,QString fieldName)->QString
     {
         return QString(
                     "<tr><td>%1<br /></td><td>Shapefile<br /></td></tr>"
-                    "<tr><td>%2<br /></td><td>%3<br /></td></tr>")
-                .arg(tr("Source type")).arg(tr("Path")).arg(path);
+                    "<tr><td>%2<br /></td><td>%3<br /></td></tr>"
+                    "<tr><td>%4<br /></td><td>%5<br /></td></tr>")
+                .arg(tr("Source type"))
+                .arg(tr("Path")).arg(path)
+                .arg(tr("Field name")).arg(fieldName);
     };
 
     const QString htmlTable = "<p><table bordercolor=\"#000000\" width=\"95%\" border=\"1\" cellspacing=\"0\" cellpadding=\"2\"><tbody>%1</tbody></table></p>";
     if (isUseLayer_t1)
         t1=htmlTable.arg(layerHtml(imageid_t1,segid_t1,clsid_t1));
     else
-        t1=htmlTable.arg(shapefileHtml(shapefile_t1));
+        t1=htmlTable.arg(shapefileHtml(shapefile_t1,shapefileFieldName_t1));
 
     if (isUseLayer_t2)
         t2=htmlTable.arg(layerHtml(imageid_t2,segid_t2,clsid_t2));
     else
-        t2=htmlTable.arg(shapefileHtml(shapefile_t2));
+        t2=htmlTable.arg(shapefileHtml(shapefile_t2,shapefileFieldName_t2));
 
     ui->textEditDataSource->setHtml(QString(
         "<h3><font face=verdana>%4</font></h3>"
@@ -284,6 +336,58 @@ void WizardVectorChangeDetection::showCorrectText_Page1(
             .arg(tr("Source of epoch 1 :"))
             .arg(tr("Source of epoch 2 :")));
     ui->textEditDataSource->setStyleSheet("border: 3px solid green;");
+
+    //Update Page 2 & Get categories
+    auto getCategoriesFromLayer = [](QString imageID)->QStringList
+    {
+        QSqlQuery query(QSqlDatabase::database("category"));
+        query.exec(QString("select name from category where imageID = '%1'").arg(imageID));
+        QStringList list;
+        while (query.next()) {
+            list<<query.value(0).toString();
+        }
+        return list;
+    };
+
+    auto getCategoriesFromShapefile = [](QString shpPath,QString fieldName)->QStringList
+    {
+        QSet<QString> categories;
+        QgsVectorLayer *layer = new QgsVectorLayer(shpPath,QFileInfo(shpPath).completeBaseName(),"ogr");
+        QgsFeatureIterator iter = layer->getFeatures();
+        QgsFeature f;
+        while (iter.nextFeature(f)) {
+            categories.insert( f.attribute(fieldName).toString() );
+        }
+        QStringList list = QStringList::fromSet(categories);
+        return list;
+    };
+
+    QStringList categories_t1,categories_t2;
+    if (isUseLayer_t1)
+        categories_t1 = getCategoriesFromLayer(imageid_t1);
+    else
+        categories_t1 = getCategoriesFromShapefile(shapefile_t1,shapefileFieldName_t1);
+    if (isUseLayer_t2)
+        categories_t2 = getCategoriesFromLayer(imageid_t2);
+    else
+        categories_t2 = getCategoriesFromShapefile(shapefile_t2,shapefileFieldName_t2);
+
+    updateMatchingPairs(categories_t1,categories_t2);
+}
+
+
+/********************************************/
+/*                  Page 2                  */
+/********************************************/
+
+void WizardVectorChangeDetection::updateMatchingPairs(QStringList t1, QStringList t2)
+{
+    ui->listWidgetCategoryT1->clear();
+    ui->listWidgetCategoryT2->clear();
+    ui->listWidgetCategoryPairs->clear();
+
+    ui->listWidgetCategoryT1->addItems(t1);
+    ui->listWidgetCategoryT2->addItems(t2);
 }
 
 

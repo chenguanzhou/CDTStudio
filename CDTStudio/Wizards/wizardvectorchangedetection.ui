@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>855</width>
-    <height>379</height>
+    <width>1244</width>
+    <height>780</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,6 +28,12 @@
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
+   </property>
+   <property name="title">
+    <string>Step 1. Data Source</string>
+   </property>
+   <property name="subTitle">
+    <string>Choose data source of the two epoch for change detection.</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
@@ -59,7 +65,7 @@
            <item>
             <widget class="QTabWidget" name="tabWidgetT1">
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab">
               <attribute name="title">
@@ -114,23 +120,51 @@
               <attribute name="title">
                <string>Shapefile</string>
               </attribute>
-              <layout class="QHBoxLayout" name="horizontalLayout_8">
-               <item>
+              <layout class="QGridLayout" name="gridLayout">
+               <property name="leftMargin">
+                <number>5</number>
+               </property>
+               <property name="topMargin">
+                <number>5</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <property name="bottomMargin">
+                <number>5</number>
+               </property>
+               <property name="horizontalSpacing">
+                <number>8</number>
+               </property>
+               <property name="verticalSpacing">
+                <number>3</number>
+               </property>
+               <item row="0" column="0">
                 <widget class="QLabel" name="label_7">
                  <property name="text">
                   <string>Shapefile Path</string>
                  </property>
                 </widget>
                </item>
-               <item>
+               <item row="0" column="1">
                 <widget class="QLineEdit" name="lineEditT1_ShpPath"/>
                </item>
-               <item>
+               <item row="0" column="2">
                 <widget class="QPushButton" name="pushButtonT1_ShpPath">
                  <property name="text">
                   <string>Browse</string>
                  </property>
                 </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Field Name</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="2">
+                <widget class="QComboBox" name="comboBoxT1_ShpField"/>
                </item>
               </layout>
              </widget>
@@ -148,7 +182,7 @@
            <item>
             <widget class="QTabWidget" name="tabWidgetT2">
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_3">
               <attribute name="title">
@@ -203,23 +237,51 @@
               <attribute name="title">
                <string>Shapefile</string>
               </attribute>
-              <layout class="QHBoxLayout" name="horizontalLayout_9">
-               <item>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <property name="leftMargin">
+                <number>5</number>
+               </property>
+               <property name="topMargin">
+                <number>5</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <property name="bottomMargin">
+                <number>5</number>
+               </property>
+               <property name="horizontalSpacing">
+                <number>8</number>
+               </property>
+               <property name="verticalSpacing">
+                <number>3</number>
+               </property>
+               <item row="0" column="0">
                 <widget class="QLabel" name="label_8">
                  <property name="text">
                   <string>Shapefile Path</string>
                  </property>
                 </widget>
                </item>
-               <item>
+               <item row="0" column="1">
                 <widget class="QLineEdit" name="lineEditT2_ShpPath"/>
                </item>
-               <item>
+               <item row="0" column="2">
                 <widget class="QPushButton" name="pushButtonT2_ShpPath">
                  <property name="text">
                   <string>Browse</string>
                  </property>
                 </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Field Name</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="2">
+                <widget class="QComboBox" name="comboBoxT2_ShpField"/>
                </item>
               </layout>
              </widget>
@@ -232,12 +294,6 @@
       </item>
       <item>
        <widget class="QTextEdit" name="textEditDataSource">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="minimumSize">
          <size>
           <width>450</width>
@@ -254,11 +310,17 @@
    </layout>
   </widget>
   <widget class="QWizardPage" name="wizardPage2_Matching">
-   <layout class="QVBoxLayout" name="verticalLayout_6">
+   <property name="title">
+    <string>Step 2. Category matching</string>
+   </property>
+   <property name="subTitle">
+    <string>Select matching category pair between 2 epochs</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_13">
     <item>
      <widget class="QGroupBox" name="groupBox_5">
       <property name="title">
-       <string>Method</string>
+       <string>Detection Type</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
@@ -269,7 +331,7 @@
             <string>Single Category</string>
            </property>
            <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
+            <string notr="true">buttonGroupDetectionType</string>
            </attribute>
           </widget>
          </item>
@@ -279,7 +341,7 @@
             <string>Multiple Categories</string>
            </property>
            <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
+            <string notr="true">buttonGroupDetectionType</string>
            </attribute>
           </widget>
          </item>
@@ -297,15 +359,57 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QListView" name="listView"/>
+          <widget class="QListWidget" name="listWidgetCategoryT1"/>
          </item>
          <item>
-          <widget class="QListView" name="listView_2"/>
+          <widget class="QListWidget" name="listWidgetCategoryT2"/>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QTextEdit" name="textEdit"/>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QPushButton" name="pushButtonMatching">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <family>Verdana</family>
+             <pointsize>40</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>›</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonUnmatching">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <family>Verdana</family>
+             <pointsize>40</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>‹</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QListWidget" name="listWidgetCategoryPairs"/>
        </item>
       </layout>
      </widget>
@@ -316,6 +420,6 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroupDetectionType"/>
  </buttongroups>
 </ui>
