@@ -16,6 +16,7 @@ WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidge
 {
     ui->setupUi(this);
     initPage1();
+    ui->wizardPage1_DataSource->adjustSize();
 }
 
 WizardVectorChangeDetection::~WizardVectorChangeDetection()
@@ -80,6 +81,8 @@ void WizardVectorChangeDetection::initPage1()
     connect(ui->lineEditT2_ShpPath,SIGNAL(textChanged(QString)),SLOT(updateReport_Page1()));
     connect(ui->pushButtonT1_ShpPath,SIGNAL(clicked()),SLOT(onButtonShpT1Clicked()));
     connect(ui->pushButtonT2_ShpPath,SIGNAL(clicked()),SLOT(onButtonShpT2Clicked()));
+
+    updateReport_Page1();
 }
 
 void WizardVectorChangeDetection::updateCombobox(QComboBox *sender,QString IDFieldName,QSqlQueryModel *currentModel,QString tableName)
@@ -180,7 +183,7 @@ void WizardVectorChangeDetection::updateReport_Page1()
             //layers
             isText_Empty(imageid_t1,tr("Image layer of epoch 1"));
             isText_Empty(segid_t1,tr("Segmentation layer of epoch 1"));
-            isText_Empty(clsid_t1,tr("Image layer of epoch 1"));
+            isText_Empty(clsid_t1,tr("Classification layer of epoch 1"));
         }
         else
         {
@@ -193,7 +196,7 @@ void WizardVectorChangeDetection::updateReport_Page1()
             //layers
             isText_Empty(imageid_t2,tr("Image layer of epoch 2"));
             isText_Empty(segid_t2,tr("Segmentation layer of epoch 2"));
-            isText_Empty(clsid_t2,tr("Image layer of epoch 2"));
+            isText_Empty(clsid_t2,tr("Classification layer of epoch 2"));
         }
         else
         {
@@ -202,7 +205,7 @@ void WizardVectorChangeDetection::updateReport_Page1()
         }
 
         //Same image when both use layers
-        if (isUseLayer_t1 == isUseLayer_t2 && imageid_t1 == imageid_t2)
+        if (isUseLayer_t1 == true && isUseLayer_t2==true && imageid_t1 == imageid_t2)
             throw tr("The images of 2 epoch looks the same!");
     }
     catch(QString msg)
