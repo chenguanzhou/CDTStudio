@@ -169,7 +169,11 @@ void CDTCategoryDockWidget::on_actionRevert_triggered()
 void CDTCategoryDockWidget::on_actionSubmit_triggered()
 {
     if (categoryModel->submitAll()==false)
+    {
+        QMessageBox::critical(this,tr("Submit failed!"),tr("Error message: %1").arg(categoryModel->lastError().text()));
         qDebug()<<"Submit failed:"<<categoryModel->lastError();
+        categoryModel->revertAll();
+    }
     actionInsert->setEnabled(true);
     tableView->resizeColumnsToContents();
     tableView->resizeRowsToContents();

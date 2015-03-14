@@ -65,7 +65,7 @@
            <item>
             <widget class="QTabWidget" name="tabWidgetT1">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab">
               <attribute name="title">
@@ -182,7 +182,7 @@
            <item>
             <widget class="QTabWidget" name="tabWidgetT2">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab_3">
               <attribute name="title">
@@ -336,9 +336,12 @@
           </widget>
          </item>
          <item>
-          <widget class="QRadioButton" name="radioButton_2">
+          <widget class="QRadioButton" name="radioButtonultipleCategories">
            <property name="text">
             <string>Multiple Categories</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
            <attribute name="buttonGroup">
             <string notr="true">buttonGroupDetectionType</string>
@@ -355,23 +358,60 @@
       <property name="title">
        <string>Categories Matching</string>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QListWidget" name="listWidgetCategoryT1"/>
+          <widget class="QGroupBox" name="groupBox_6">
+           <property name="title">
+            <string>Categories in Epoch 1</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QListWidget" name="listWidgetCategoryT1"/>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
-          <widget class="QListWidget" name="listWidgetCategoryT2"/>
+          <widget class="QGroupBox" name="groupBox_7">
+           <property name="title">
+            <string>Categories in Epoch 2</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QListWidget" name="listWidgetCategoryT2"/>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
+          <widget class="QPushButton" name="pushButtonMatchingDefault">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <family>Verdana</family>
+             <pointsize>40</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>››</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButtonMatching">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -390,7 +430,7 @@
          <item>
           <widget class="QPushButton" name="pushButtonUnmatching">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -403,6 +443,25 @@
            </property>
            <property name="text">
             <string>‹</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonUnmatchingAll">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <family>Verdana</family>
+             <pointsize>40</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>‹‹</string>
            </property>
           </widget>
          </item>

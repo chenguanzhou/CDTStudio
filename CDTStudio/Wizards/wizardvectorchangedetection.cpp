@@ -9,6 +9,10 @@
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtclassificationlayer.h"
+#ifdef Q_OS_WIN
+#include "Windows.h"
+#endif
+
 
 WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidget *parent) :
     QWizard(parent),
@@ -18,6 +22,13 @@ WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidge
 {
     ui->setupUi(this);
     initPage1();
+    initPage2();
+
+#ifdef Q_OS_WIN
+    int dpiX = GetDeviceCaps(this->getDC(),LOGPIXELSX);
+    if(dpiX == 96)
+        this->adjustSize();
+#endif
 
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("WizardVectorChangeDetection");
@@ -375,10 +386,20 @@ void WizardVectorChangeDetection::showCorrectText_Page1(QString name ,
     updateMatchingPairs(categories_t1,categories_t2);
 }
 
-
 /********************************************/
 /*                  Page 2                  */
 /********************************************/
+
+void WizardVectorChangeDetection::initPage2()
+{
+    connect(ui->pushButtonMatchingDefault,SIGNAL(clicked()),SLOT(defaultMatching()));
+    connect(ui->pushButtonMatching,SIGNAL(clicked()),SLOT(onButtonMatching()));
+    connect(ui->pushButtonUnmatching,SIGNAL(clicked()),SLOT(onButtonUnmatching()));
+    connect(ui->pushButtonUnmatchingAll,SIGNAL(clicked()),SLOT(unmatchingAll()));
+
+    //updateButtonState()
+    connect(ui->radioButtonultipleCategories,SIGNAL(toggled(bool)),SLOT(updateButtonState()));
+}
 
 void WizardVectorChangeDetection::updateMatchingPairs(QStringList t1, QStringList t2)
 {
@@ -388,6 +409,96 @@ void WizardVectorChangeDetection::updateMatchingPairs(QStringList t1, QStringLis
 
     ui->listWidgetCategoryT1->addItems(t1);
     ui->listWidgetCategoryT2->addItems(t2);
+    ui->listWidgetCategoryT1->sortItems();
+    ui->listWidgetCategoryT2->sortItems();
+
+    defaultMatching();
+}
+
+void WizardVectorChangeDetection::makeCategoryPair(int t1_index, int t2_index)
+{
+    if (t1_index>=ui->listWidgetCategoryT1->count() || t1_index<0) return;
+    if (t2_index>=ui->listWidgetCategoryT2->count() || t2_index<0) return;
+
+    auto t1_item = ui->listWidgetCategoryT1->takeItem(t1_index);
+    auto t2_item = ui->listWidgetCategoryT2->takeItem(t2_index);
+
+    QString t1 = t1_item->text();
+    QString t2 = t2_item->text();
+    QString newPair = t1 + "<->" + t2;
+
+    delete t1_item;
+    delete t2_item;
+
+
+    ui->listWidgetCategoryPairs->addItem(newPair);
+    ui->listWidgetCategoryPairs->sortItems();
+}
+
+void WizardVectorChangeDetection::removeCategoryPair(int index)
+{
+    if (index>=ui->listWidgetCategoryPairs->count() || index<0) return;
+
+    auto item = ui->listWidgetCategoryPairs->takeItem(index);
+    QString pair = item->text();
+    delete item;
+
+    QStringList pairItems = pair.split("<->");
+    Q_ASSERT(pairItems.count()==2);
+    ui->listWidgetCategoryT1->addItem(pairItems[0]);
+    ui->listWidgetCategoryT2->addItem(pairItems[1]);
+
+    ui->listWidgetCategoryT1->sortItems();
+    ui->listWidgetCategoryT2->sortItems();
+}
+
+void WizardVectorChangeDetection::updateButtonState()
+{
+    qDebug()<<"hrhr";
+}
+
+void WizardVectorChangeDetection::defaultMatching()
+{
+    if (ui->radioButtonultipleCategories->isChecked())
+    {
+        for (int i=0;i<ui->listWidgetCategoryT1->count();++i)
+        {
+            QString name = ui->listWidgetCategoryT1->item(i)->text();
+            QList<QListWidgetItem*> list = ui->listWidgetCategoryT2->findItems(name,Qt::MatchExactly);
+            if (list.size()>0)
+            {
+                makeCategoryPair(i,ui->listWidgetCategoryT2->row(list[0]));
+                i--;
+            }
+        }
+    }
+    updateButtonState();
+}
+
+void WizardVectorChangeDetection::onButtonMatching()
+{
+    if (ui->listWidgetCategoryT1->count() == 0 || ui->listWidgetCategoryT2->count() == 0 )
+        return;
+
+    makeCategoryPair(ui->listWidgetCategoryT1->currentIndex().row(),ui->listWidgetCategoryT2->currentIndex().row());
+    updateButtonState();
+}
+
+void WizardVectorChangeDetection::onButtonUnmatching()
+{
+    if (ui->listWidgetCategoryPairs->count() == 0)
+        return;
+
+    removeCategoryPair(ui->listWidgetCategoryPairs->currentIndex().row());
+    updateButtonState();
+}
+
+void WizardVectorChangeDetection::unmatchingAll()
+{
+    while (ui->listWidgetCategoryPairs->count()>0) {
+        removeCategoryPair(0);
+    }
+    updateButtonState();
 }
 
 

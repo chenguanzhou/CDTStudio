@@ -59,7 +59,18 @@ private:
     /*                  Page 2                  */
     /********************************************/
 private:
+    void initPage2();
     void updateMatchingPairs(QStringList t1,QStringList t2);
+    void makeCategoryPair(int t1_index,int t2_index);
+    void removeCategoryPair(int index);
+
+private slots:
+    void updateButtonState();
+    void defaultMatching();
+    void onButtonMatching();
+    void onButtonUnmatching();
+    void unmatchingAll();
+
 };
 
 #endif // WIZARDVECTORCHANGEDETECTION_H
