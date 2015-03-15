@@ -29,6 +29,7 @@ private:
     Ui::WizardVectorChangeDetection *ui;
     QUuid prjID;
     bool isValid_Page1;
+    bool isValid_Page2;
 
     /********************************************/
     /*                  Page 1                  */
@@ -65,11 +66,12 @@ private:
     void removeCategoryPair(int index);
 
 private slots:
-    void updateButtonState();
+    void updatePage2State();
     void defaultMatching();
     void onButtonMatching();
     void onButtonUnmatching();
     void unmatchingAll();
+    void onDetectionTypeChanged();
 
 };
 

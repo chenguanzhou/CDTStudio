@@ -18,6 +18,7 @@ WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidge
     QWizard(parent),
     prjID(projectID),
     isValid_Page1(false),
+    isValid_Page2(false),
     ui(new Ui::WizardVectorChangeDetection)
 {
     ui->setupUi(this);
@@ -53,10 +54,11 @@ void WizardVectorChangeDetection::closeEvent(QCloseEvent *)
 bool WizardVectorChangeDetection::validateCurrentPage()
 {
     if (currentId()==0)
-    {
         //Page1
         return isValid_Page1;
-    }
+    if (currentId()==1)
+        //Page2
+        return isValid_Page2;
     return true;
 }
 
@@ -397,8 +399,8 @@ void WizardVectorChangeDetection::initPage2()
     connect(ui->pushButtonUnmatching,SIGNAL(clicked()),SLOT(onButtonUnmatching()));
     connect(ui->pushButtonUnmatchingAll,SIGNAL(clicked()),SLOT(unmatchingAll()));
 
-    //updateButtonState()
-    connect(ui->radioButtonultipleCategories,SIGNAL(toggled(bool)),SLOT(updateButtonState()));
+    //radioButtonChecked()
+    connect(ui->buttonGroupDetectionType,SIGNAL(buttonClicked(int)),SLOT(onDetectionTypeChanged()));
 }
 
 void WizardVectorChangeDetection::updateMatchingPairs(QStringList t1, QStringList t2)
@@ -452,27 +454,49 @@ void WizardVectorChangeDetection::removeCategoryPair(int index)
     ui->listWidgetCategoryT2->sortItems();
 }
 
-void WizardVectorChangeDetection::updateButtonState()
+void WizardVectorChangeDetection::updatePage2State()
 {
-    qDebug()<<"hrhr";
+    bool isPairEmpty = ui->listWidgetCategoryPairs->count()==0;
+    ui->pushButtonUnmatchingAll->setEnabled(!isPairEmpty);
+    ui->pushButtonUnmatching->setEnabled(!isPairEmpty);
+
+    if (ui->radioButtonMultipleCategories->isChecked())
+    {
+        ui->pushButtonMatching->setEnabled(
+                    ui->listWidgetCategoryT1->count()!=0 &&
+                    ui->listWidgetCategoryT2->count()!=0);
+    }
+    else
+        ui->pushButtonMatching->setEnabled(
+                    ui->listWidgetCategoryT1->count()!=0 &&
+                    ui->listWidgetCategoryT2->count()!=0 &&
+                    isPairEmpty);
+
+    if (isPairEmpty)
+        ui->listWidgetCategoryPairs->setStyleSheet("border: 3px solid red");
+    else
+        ui->listWidgetCategoryPairs->setStyleSheet("border: 3px solid green");
+    isValid_Page2 = !isPairEmpty;
 }
 
 void WizardVectorChangeDetection::defaultMatching()
 {
-    if (ui->radioButtonultipleCategories->isChecked())
+    unmatchingAll();
+
+    for (int i=0;i<ui->listWidgetCategoryT1->count();++i)
     {
-        for (int i=0;i<ui->listWidgetCategoryT1->count();++i)
+        QString name = ui->listWidgetCategoryT1->item(i)->text();
+        QList<QListWidgetItem*> list = ui->listWidgetCategoryT2->findItems(name,Qt::MatchExactly);
+        if (list.size()>0)
         {
-            QString name = ui->listWidgetCategoryT1->item(i)->text();
-            QList<QListWidgetItem*> list = ui->listWidgetCategoryT2->findItems(name,Qt::MatchExactly);
-            if (list.size()>0)
-            {
-                makeCategoryPair(i,ui->listWidgetCategoryT2->row(list[0]));
-                i--;
-            }
+            makeCategoryPair(i,ui->listWidgetCategoryT2->row(list[0]));
+            i--;
+            if (!ui->radioButtonMultipleCategories->isChecked())
+                break;
         }
     }
-    updateButtonState();
+
+    updatePage2State();
 }
 
 void WizardVectorChangeDetection::onButtonMatching()
@@ -481,7 +505,7 @@ void WizardVectorChangeDetection::onButtonMatching()
         return;
 
     makeCategoryPair(ui->listWidgetCategoryT1->currentIndex().row(),ui->listWidgetCategoryT2->currentIndex().row());
-    updateButtonState();
+    updatePage2State();
 }
 
 void WizardVectorChangeDetection::onButtonUnmatching()
@@ -490,7 +514,7 @@ void WizardVectorChangeDetection::onButtonUnmatching()
         return;
 
     removeCategoryPair(ui->listWidgetCategoryPairs->currentIndex().row());
-    updateButtonState();
+    updatePage2State();
 }
 
 void WizardVectorChangeDetection::unmatchingAll()
@@ -498,7 +522,19 @@ void WizardVectorChangeDetection::unmatchingAll()
     while (ui->listWidgetCategoryPairs->count()>0) {
         removeCategoryPair(0);
     }
-    updateButtonState();
+    updatePage2State();
+}
+
+void WizardVectorChangeDetection::onDetectionTypeChanged()
+{
+    if (!ui->radioButtonMultipleCategories->isChecked())
+    {
+        while (ui->listWidgetCategoryPairs->count()>1)
+        {
+            removeCategoryPair(1);
+        }
+    }
+    updatePage2State();
 }
 
 
