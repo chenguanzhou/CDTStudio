@@ -25,11 +25,14 @@ public:
 private:
     void closeEvent(QCloseEvent* );
     bool validateCurrentPage();
+private slots:
+    void onPageChanged(int pageID);
 private:
     Ui::WizardVectorChangeDetection *ui;
     QUuid prjID;
     bool isValid_Page1;
     bool isValid_Page2;
+    bool isValid_Page3;
 
     /********************************************/
     /*                  Page 1                  */
@@ -72,6 +75,15 @@ private slots:
     void onButtonUnmatching();
     void unmatchingAll();
     void onDetectionTypeChanged();
+
+
+    /********************************************/
+    /*                  Page 3                  */
+    /********************************************/
+private:
+    void initPage3();
+
+private slots:
 
 };
 

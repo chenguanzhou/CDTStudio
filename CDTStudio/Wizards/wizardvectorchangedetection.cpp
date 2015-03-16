@@ -19,11 +19,15 @@ WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidge
     prjID(projectID),
     isValid_Page1(false),
     isValid_Page2(false),
+    isValid_Page3(false),
     ui(new Ui::WizardVectorChangeDetection)
 {
     ui->setupUi(this);
     initPage1();
     initPage2();
+    initPage3();
+
+    connect(this,SIGNAL(currentIdChanged(int)),SLOT(onPageChanged(int)));
 
 #ifdef Q_OS_WIN
     int dpiX = GetDeviceCaps(this->getDC(),LOGPIXELSX);
@@ -60,6 +64,11 @@ bool WizardVectorChangeDetection::validateCurrentPage()
         //Page2
         return isValid_Page2;
     return true;
+}
+
+void WizardVectorChangeDetection::onPageChanged(int pageID)
+{
+    this->setOption(HaveCustomButton1,pageID == 2);
 }
 
 /********************************************/
@@ -535,6 +544,15 @@ void WizardVectorChangeDetection::onDetectionTypeChanged()
         }
     }
     updatePage2State();
+}
+
+/********************************************/
+/*                  Page 3                  */
+/********************************************/
+
+void WizardVectorChangeDetection::initPage3()
+{
+    this->setButtonText(CustomButton1,tr("Start Detection"));
 }
 
 

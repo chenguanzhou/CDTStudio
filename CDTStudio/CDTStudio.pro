@@ -46,6 +46,7 @@ HEADERS  += \
     ../Interfaces/cdtpbcddiffinterface.h \
     ../Interfaces/cdtpbcdmergeinterface.h \
     ../Interfaces/cdtsegmentationinterface.h \
+    ../Interfaces/cdtvectorchangedetectioninterface.h \
     cdtclassificationhelper.h
 
 FORMS    += \
