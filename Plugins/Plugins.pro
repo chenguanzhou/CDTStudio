@@ -6,5 +6,6 @@ SUBDIRS += \
     Classifier\
     Extraction \
     PBCDDiffMethod\
-	PBCDMergeMethod\
-	AutoThreshold
+    PBCDMergeMethod\
+    AutoThreshold\
+    VectorChangeDetection

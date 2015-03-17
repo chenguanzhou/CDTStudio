@@ -9,9 +9,12 @@
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtclassificationlayer.h"
+#include "cdtvectorchangedetectioninterface.h"
 #ifdef Q_OS_WIN
 #include "Windows.h"
 #endif
+
+extern QList<CDTVectorChangeDetectionInterface *> vectorDetectionPlugins;
 
 
 WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidget *parent) :
@@ -553,6 +556,9 @@ void WizardVectorChangeDetection::onDetectionTypeChanged()
 void WizardVectorChangeDetection::initPage3()
 {
     this->setButtonText(CustomButton1,tr("Start Detection"));
+    foreach (CDTVectorChangeDetectionInterface* plugin, vectorDetectionPlugins) {
+        ui->comboBoxAlgo->addItem(plugin->methodName());
+    }
 }
 
 

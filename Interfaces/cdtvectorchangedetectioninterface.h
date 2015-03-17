@@ -13,7 +13,7 @@ public:
     explicit CDTVectorChangeDetectionInterface(QObject* parent = 0):QObject(parent){}
 
     virtual QString methodName()const =0;
-    virtual void startDetection(QString shapefileT1,QString shapefileT2, QProgressBar *progressBar,QLabel *label) =0;
+    virtual void startDetection(QProgressBar *progressBar,QLabel *label) =0;
 
     QVariantMap params() const
     {

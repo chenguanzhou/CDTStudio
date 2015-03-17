@@ -11,6 +11,7 @@
 #include "cdtautothresholdinterface.h"
 #include "cdtchangelayer.h"
 #include "cdtpbcdbinarylayer.h"
+#include "cdtvectorchangedetectioninterface.h"
 
 QList<CDTSegmentationInterface *>   segmentationPlugins;
 QList<CDTAttributesInterface *>     attributesPlugins;
@@ -20,6 +21,7 @@ QList<CDTExtractionInterface *>     extractionPlugins;
 QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
 QList<CDTPBCDMergeInterface *>      pbcdMergePlugins;
 QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
+QList<CDTVectorChangeDetectionInterface *> vectorDetectionPlugins;
 
 CDTApplication::CDTApplication(int & argc, char ** argv) :
     QgsApplication(argc, argv,true),
@@ -147,6 +149,7 @@ void CDTApplication::initPlugins()
     pbcdDiffPlugins     = CDTPluginLoader<CDTPBCDDiffInterface>::getPlugins();
     pbcdMergePlugins    = CDTPluginLoader<CDTPBCDMergeInterface>::getPlugins();
     autoThresholdPlugins= CDTPluginLoader<CDTAutoThresholdInterface>::getPlugins();
+    vectorDetectionPlugins = CDTPluginLoader<CDTVectorChangeDetectionInterface>::getPlugins();
 }
 
 bool CDTApplication::initDatabase()
