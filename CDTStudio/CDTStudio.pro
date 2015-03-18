@@ -24,9 +24,7 @@ SOURCES += main.cpp\
     cdtprojecttreeitem.cpp \
     recentfilesupervisor.cpp \    
     cdtattributegenerator.cpp \
-    cdtapplication.cpp \
-    cdtclassificationhelper.cpp
-
+    cdtapplication.cpp    
 
 HEADERS  += \    
     mainwindow.h \
@@ -38,9 +36,8 @@ HEADERS  += \
     cdtattributegenerator.h \
     cdtbasethread.h \
     cdtvariantconverter.h \
-    cdtapplication.h \
-    cdtclassificationhelper.h
-
+    cdtapplication.h 
+	
 FORMS    += \
     mainwindow.ui \
 
