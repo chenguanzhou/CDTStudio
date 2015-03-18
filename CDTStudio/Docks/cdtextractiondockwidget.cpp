@@ -128,7 +128,6 @@ void CDTExtractionDockWidget::setGeometryModified(bool modified)
 
 void CDTExtractionDockWidget::onFeatureChanged()
 {
-    qDebug()<<"Changed";
     setGeometryModified(true);
 }
 

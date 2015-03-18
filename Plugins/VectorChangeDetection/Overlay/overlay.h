@@ -24,6 +24,9 @@ public:
             QString fieldNameT1,
             QString fieldNameT2
     );
+
+private:
+    void getPolygonList(QgsGeometry *g, std::vector<QgsGeometry *> &list);
 };
 
 #endif // OVERLAY_H

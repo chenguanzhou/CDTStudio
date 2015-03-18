@@ -663,9 +663,12 @@ void WizardVectorChangeDetection::startDetect()
         QgsFeature f;
         while(iter.nextFeature(f))
         {
-            f.setAttribute(DefaultFieldName,nameList[f.attribute("GridCode").toInt()]);
+            QString name = nameList[f.attribute("GridCode").toInt()];
+            f.setAttribute(DefaultFieldName,name);
+            layer.updateFeature(f);
         }
         layer.commitChanges();
+
         return true;
     };
 
