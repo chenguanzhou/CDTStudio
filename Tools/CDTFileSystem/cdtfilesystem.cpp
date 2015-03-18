@@ -213,10 +213,12 @@ QDataStream &operator>>(QDataStream &in, CDTFileSystem &files)
     in>>files.pData->files;
 
     foreach (QString id, files.pData->files.keys()) {
+        qDebug()<<id;
         QStringList list;
         CDTFileInfo info = files.pData->files.value(id);
         QDir dir(QDir::temp());
-        dir.mkdir(id);
+        if (dir.mkdir(id)==false)
+           qCritical()<<"Create folder failed!";
         dir.cd(id);
 
         info.path = dir.absolutePath()+"/"+QFileInfo(info.path).fileName();

@@ -1,13 +1,13 @@
-#ifndef CDTCHANGELAYER_H
-#define CDTCHANGELAYER_H
+#ifndef CDTPIXELCHANGELAYER_H
+#define CDTPIXELCHANGELAYER_H
 
 #include "cdtbaselayer.h"
 #include <QMap>
 
-class CDTChangeLayer : public CDTBaseLayer
+class CDTPixelChangeLayer : public CDTBaseLayer
 {
     Q_OBJECT
-    Q_CLASSINFO("CDTChangeLayer",tr("Change Detection Layer"))
+    Q_CLASSINFO("CDTPixelChangeLayer",tr("Change Detection Layer"))
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
     Q_PROPERTY(QString T1_Image READ image_t1 DESIGNABLE true USER true)
     Q_PROPERTY(QString T2_Image READ image_t2 DESIGNABLE true USER true)
@@ -15,15 +15,13 @@ class CDTChangeLayer : public CDTBaseLayer
 public:
     enum ChangeType{
         PBCD_BINARY,
-        PBCD_FROMTO,
-        OBCD_BINARY,
-        OBCD_FROMTO
+        PBCD_FROMTO
     };
-    explicit CDTChangeLayer(QUuid uuid,QObject *parent = 0);
-    virtual ~CDTChangeLayer();
+    explicit CDTPixelChangeLayer(QUuid uuid,QObject *parent = 0);
+    virtual ~CDTPixelChangeLayer();
 
-    friend QDataStream &operator<<(QDataStream &out, const CDTChangeLayer &layer);
-    friend QDataStream &operator>>(QDataStream &in, CDTChangeLayer &layer);
+    friend QDataStream &operator<<(QDataStream &out, const CDTPixelChangeLayer &layer);
+    friend QDataStream &operator>>(QDataStream &in, CDTPixelChangeLayer &layer);
 
     QString name()const;
     QString image_t1()  const;
@@ -45,4 +43,4 @@ public:
     static QMap<QString,QMetaObject> changeLayerMetaObjects;
 };
 
-#endif // CDTCHANGELAYER_H
+#endif // CDTPIXELCHANGELAYER_H

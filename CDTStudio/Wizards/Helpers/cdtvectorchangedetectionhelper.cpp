@@ -56,7 +56,8 @@ CDTVectorCHangeDetectionHelper::CDTVectorCHangeDetectionHelper(
            shapefilePathResult,
            interface,
            fieldNameT1,
-           fieldNameT2))
+           fieldNameT2)),
+      shpfilePath(shapefilePathResult)
 {    
 }
 
@@ -77,4 +78,9 @@ void CDTVectorCHangeDetectionHelper::run()
     {
         logger()->error(msg);
     }
+}
+
+QString CDTVectorCHangeDetectionHelper::shapefilePath() const
+{
+    return shpfilePath;
 }

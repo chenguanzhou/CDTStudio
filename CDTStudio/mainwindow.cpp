@@ -18,7 +18,7 @@
 #include "cdtextractionlayer.h"
 #include "cdtsegmentationlayer.h"
 #include "cdtclassificationlayer.h"
-#include "cdtchangelayer.h"
+#include "cdtpixelchangelayer.h"
 #include "cdtundowidget.h"
 #include "cdtlayerinfowidget.h"
 #include "cdttaskdockwidget.h"
@@ -577,9 +577,9 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
             getCurrentMapCanvas()->refresh();
         }
     }    
-    else if (type == CDTProjectTreeItem::CHANGE)
+    else if (type == CDTProjectTreeItem::PIXELCHANGE)
     {
-        CDTChangeLayer *layer = qobject_cast<CDTChangeLayer *>(item->correspondingObject());
+        CDTPixelChangeLayer *layer = qobject_cast<CDTPixelChangeLayer *>(item->correspondingObject());
         if (layer != NULL)
         {
             getCurrentMapCanvas()->setCurrentLayer(layer->canvasLayer());

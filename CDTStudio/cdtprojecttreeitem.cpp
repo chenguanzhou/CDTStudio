@@ -43,7 +43,8 @@ void CDTProjectTreeItem::initFont()
         font.setPointSize(font.pointSize()+2);
         break;
     case IMAGE_ROOT:
-    case CHANGE_ROOT:
+    case PIXEL_CHANGE_ROOT:
+    case VECTOR_CHANGE_ROOT:
     case EXTRACTION_ROOT:
     case SEGMENTION_ROOT:
         font.setBold(true);

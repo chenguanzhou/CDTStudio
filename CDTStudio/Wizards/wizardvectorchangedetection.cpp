@@ -720,7 +720,7 @@ void WizardVectorChangeDetection::startDetect()
                 vectorDetectionPlugins[ui->comboBoxAlgo->currentIndex()]);
     connect(helper,SIGNAL(finished()),SLOT(onDetectionFinished()));
     helper->start();
-    this->button(CustomButton1)->setEnabled(false);
+    this->setEnabled(false);
 }
 
 void WizardVectorChangeDetection::showErrorText_Page3(QString msg)
@@ -764,8 +764,55 @@ void WizardVectorChangeDetection::updatePage3State()
 
 void WizardVectorChangeDetection::onDetectionFinished()
 {
-    this->button(CustomButton1)->setEnabled(true);
-    qDebug()<<"Finished!";
+    this->setEnabled(true);
+
+    CDTVectorCHangeDetectionHelper *helper = qobject_cast<CDTVectorCHangeDetectionHelper*>(sender());
+    shpID = QUuid::createUuid().toString();
+    shpPath = helper->shapefilePath();
+
+}
+
+QString WizardVectorChangeDetection::name() const
+{
+    return ui->lineEditName->text();
+}
+
+QString WizardVectorChangeDetection::shapefileID() const
+{
+    return shpID;
+}
+
+QString WizardVectorChangeDetection::shapefilePath() const
+{
+    return shpPath;
+}
+
+QString WizardVectorChangeDetection::clsID1() const
+{
+    auto getCurrentBoxID = [](QComboBox* box)->QString
+    {
+        return box->model()->data(box->model()->index(box->currentIndex(),1))
+                .toString();
+    };
+
+    return getCurrentBoxID(ui->comboBoxT1_ClsLayer);
+}
+
+
+QString WizardVectorChangeDetection::clsID2() const
+{
+    auto getCurrentBoxID = [](QComboBox* box)->QString
+    {
+        return box->model()->data(box->model()->index(box->currentIndex(),1))
+                .toString();
+    };
+
+    return getCurrentBoxID(ui->comboBoxT2_ClsLayer);
+}
+
+QVariantMap WizardVectorChangeDetection::params() const
+{
+    return vectorDetectionPlugins[ui->comboBoxAlgo->currentIndex()]->params();
 }
 
 

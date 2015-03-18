@@ -4,7 +4,7 @@
 #include "cdtprojecttreeitem.h"
 
 CDTPBCDBinaryLayer::CDTPBCDBinaryLayer(QUuid id, QObject *parent) :
-    CDTChangeLayer(id,parent)
+    CDTPixelChangeLayer(id,parent)
 {
     type = PBCD_BINARY;
 }
@@ -55,7 +55,7 @@ void CDTPBCDBinaryLayer::initLayer(const QString &name, const QString &image_t1,
     QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
     keyItem->setMapLayer(mapCanvasLayer);
 
-    CDTChangeLayer::initLayer(name,image_t1,image_t2,params);
+    CDTPixelChangeLayer::initLayer(name,image_t1,image_t2,params);
 
     emit layerChanged();
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);

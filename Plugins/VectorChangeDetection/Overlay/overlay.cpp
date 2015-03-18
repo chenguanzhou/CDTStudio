@@ -82,7 +82,7 @@ void Overlay::getPolygonList(QgsGeometry *g,std::vector<QgsGeometry *> &list)
             list.insert(list.end(),geos.begin(),geos.end());
         }
         break;
-    case QGis::WKBUnknown:
+    case QGis::WKBUnknown://Collection
         foreach (QgsGeometry *p, g->asGeometryCollection()) {
             std::vector<QgsGeometry *> geos;
             getPolygonList(p,geos);

@@ -79,7 +79,8 @@ public slots:
     void setName(const QString& name);
     void setBorderColor(const QColor &clr);
     void setLayerTransparency(int transparency);
-    void initSegmentationLayer(const QString& name,
+    void initSegmentationLayer(
+            const QString& name,
             const QString &shpPath,
             const QString &mkPath,
             const QString &method,

@@ -1,71 +1,71 @@
-#include "cdtchangelayer.h"
+#include "cdtpixelchangelayer.h"
 #include "stable.h"
 #include "cdtfilesystem.h"
 #include "cdtvariantconverter.h"
 #include "cdtprojecttreeitem.h"
 
 
-QMap<QString,QMetaObject> CDTChangeLayer::changeLayerMetaObjects;
-CDTChangeLayer::CDTChangeLayer(QUuid uuid, QObject *parent) :
+QMap<QString,QMetaObject> CDTPixelChangeLayer::changeLayerMetaObjects;
+CDTPixelChangeLayer::CDTPixelChangeLayer(QUuid uuid, QObject *parent) :
     CDTBaseLayer(uuid,parent)
 {
-    keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::CHANGE,CDTProjectTreeItem::RASTER,QString(),this);
+    keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::PIXELCHANGE,CDTProjectTreeItem::RASTER,QString(),this);
 
 }
 
-CDTChangeLayer::~CDTChangeLayer()
+CDTPixelChangeLayer::~CDTPixelChangeLayer()
 {
 
 }
 
-QString CDTChangeLayer::name() const
+QString CDTPixelChangeLayer::name() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
-    query.exec("select name from changes where id ='" + this->id().toString() +"'");
+    query.exec("select name from pbcd_binary where id ='" + this->id().toString() +"'");
     query.next();
     return query.value(0).toString();
 }
 
-QString CDTChangeLayer::image_t1() const
+QString CDTPixelChangeLayer::image_t1() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
-    query.exec("select image_t1 from changes where id ='" + this->id().toString() +"'");
+    query.exec("select image_t1 from pbcd_binary where id ='" + this->id().toString() +"'");
     query.next();
     return query.value(0).toString();
 }
 
-QString CDTChangeLayer::image_t2() const
+QString CDTPixelChangeLayer::image_t2() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
-    query.exec("select image_t2 from changes where id ='" + this->id().toString() +"'");
+    query.exec("select image_t2 from pbcd_binary where id ='" + this->id().toString() +"'");
     query.next();
     return query.value(0).toString();
 }
 
-QVariantMap CDTChangeLayer::params() const
+QVariantMap CDTPixelChangeLayer::params() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
-    query.exec("select params from changes where id ='" + this->id().toString() +"'");
+    query.exec("select params from pbcd_binary where id ='" + this->id().toString() +"'");
     query.next();
 
     return variantToData<QVariantMap>(query.value(0));
 }
 
-QStringList CDTChangeLayer::files() const
+QStringList CDTPixelChangeLayer::files() const
 {
     return QStringList();
 }
 
-void CDTChangeLayer::setName(const QString &name)
+void CDTPixelChangeLayer::setName(const QString &name)
 {
     if (this->name() == name)
         return;
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE changes set name = ? where id =?");
+    query.prepare("UPDATE pbcd_binary set name = ? where id =?");
     query.bindValue(0,name);
     query.bindValue(1,this->id().toString());
     query.exec();
@@ -74,13 +74,13 @@ void CDTChangeLayer::setName(const QString &name)
     //    emit nameChanged();
 }
 
-void CDTChangeLayer::initLayer(const QString &name, const QString &image_t1, const QString &image_t2, const QVariantMap &params)
+void CDTPixelChangeLayer::initLayer(const QString &name, const QString &image_t1, const QString &image_t2, const QVariantMap &params)
 {
     keyItem->setText(name);
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
-    ret = query.prepare("insert into changes VALUES(?,?,?,?,?)");
+    ret = query.prepare("insert into pbcd_binary VALUES(?,?,?,?,?)");
     query.bindValue(0,uuid.toString());
     query.bindValue(1,name);
     query.bindValue(2,image_t1);
@@ -90,10 +90,10 @@ void CDTChangeLayer::initLayer(const QString &name, const QString &image_t1, con
 }
 
 
-QDataStream &operator<<(QDataStream &out, const CDTChangeLayer &layer)
+QDataStream &operator<<(QDataStream &out, const CDTPixelChangeLayer &layer)
 {
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.exec("select * from changes where id ='" + layer.id().toString() +"'");
+    query.exec("select * from pbcd_binary where id ='" + layer.id().toString() +"'");
     query.next();
     out <<layer.id()                 //id
         <<layer.type               //type
@@ -104,11 +104,11 @@ QDataStream &operator<<(QDataStream &out, const CDTChangeLayer &layer)
     return out;
 }
 
-QDataStream &operator>>(QDataStream &in, CDTChangeLayer &layer)
+QDataStream &operator>>(QDataStream &in, CDTPixelChangeLayer &layer)
 {
     int type;
     in>>layer.uuid>>type;
-    layer.type = static_cast<CDTChangeLayer::ChangeType>(type);
+    layer.type = static_cast<CDTPixelChangeLayer::ChangeType>(type);
 
     QString name,image_t1,image_t2;
     QVariant params;

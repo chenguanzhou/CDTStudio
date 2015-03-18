@@ -22,8 +22,11 @@ public:
 
     bool isValid() const;
     void run();
+
+    QString shapefilePath()const;
 private:
     CDTVectorCHangeDetectionHelperPrivate *p;
+    QString shpfilePath;
 };
 
 #endif // CDTVECTORCHANGEDETECTIONHELPER_H

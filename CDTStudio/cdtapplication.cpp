@@ -9,7 +9,7 @@
 #include "cdtpbcddiffinterface.h"
 #include "cdtpbcdmergeinterface.h"
 #include "cdtautothresholdinterface.h"
-#include "cdtchangelayer.h"
+#include "cdtpixelchangelayer.h"
 #include "cdtpbcdbinarylayer.h"
 #include "cdtvectorchangedetectioninterface.h"
 
@@ -355,7 +355,7 @@ bool CDTApplication::initDatabase()
     }
 
     ///  Create pbcd_binary
-    ret = query.exec("CREATE TABLE changes"
+    ret = query.exec("CREATE TABLE pbcd_binary"
                      "(id text NOT NULL, "
                      "name text NOT NULL,"
                      "image_t1 text NOT NULL,"
@@ -369,7 +369,23 @@ bool CDTApplication::initDatabase()
         return false;
     }
 
-    CDTChangeLayer::changeLayerMetaObjects.insert("CDTPBCDBinaryLayer",CDTPBCDBinaryLayer::staticMetaObject);
+    ///  Create vector_change
+    ret = query.exec("CREATE TABLE vector_change"
+                     "(id text NOT NULL, "
+                     "name text NOT NULL,"
+                     "shapefileID text NOT NULL,"
+                     "cls_t1 text NOT NULL,"
+                     "cls_t2 text NOT NULL,"
+                     "params blob,"
+                     "Primary Key(id) )");
+    if (ret == false)
+    {
+        QMessageBox::critical(NULL,tr("Error"),tr("create table vector_change failed!\nerror:")+query.lastError().text());
+        Log4Qt::Logger::rootLogger()->error("create table vector_change failed!\nerror msg:%1",query.lastError().text());
+        return false;
+    }
+
+    CDTPixelChangeLayer::changeLayerMetaObjects.insert("CDTPBCDBinaryLayer",CDTPBCDBinaryLayer::staticMetaObject);
 
     Log4Qt::Logger::rootLogger()->info("Program database initialized!");
     return true;

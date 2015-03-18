@@ -1,9 +1,9 @@
 #ifndef CDTPBCDBINARYLAYER_H
 #define CDTPBCDBINARYLAYER_H
 
-#include "cdtchangelayer.h"
+#include "cdtpixelchangelayer.h"
 
-class CDTPBCDBinaryLayer : public CDTChangeLayer
+class CDTPBCDBinaryLayer : public CDTPixelChangeLayer
 {
     Q_OBJECT
     Q_CLASSINFO("CDTPBCDBinaryLayer",tr("Pixel-based Change Detection(Binary) Layer"))

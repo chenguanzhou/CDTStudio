@@ -5,7 +5,8 @@
 
 class QAction;
 class CDTImageLayer;
-class CDTChangeLayer;
+class CDTPixelChangeLayer;
+class CDTVectorChangeLayer;
 class CDTFileSystem;
 
 class CDTProjectLayer: public CDTBaseLayer
@@ -40,8 +41,9 @@ public slots:
     void removeImageLayer(CDTImageLayer *image);
     void removeAllImageLayers();
     void addPBCDBinaryLayer(QByteArray result);
-    void removeChangeLayer(CDTChangeLayer *layer);
+    void removeChangeLayer(CDTPixelChangeLayer *layer);
     void removeAllChangeLayers();
+    void addVectorChangeLayer(CDTVectorChangeLayer *layer);
 
     void rename();
     void setName(const QString& name);
@@ -49,11 +51,14 @@ public slots:
 private:
     bool    isFileExsit;
     QVector<CDTImageLayer *>    images;
-    QVector<CDTChangeLayer *>   changes;
+    QVector<CDTPixelChangeLayer *>   pixelChanges;
+    QVector<CDTVectorChangeLayer *>   vectorChanges;
     CDTFileSystem *fileSystem;
 
     CDTProjectTreeItem *imagesRoot;
-    CDTProjectTreeItem *changesRoot;
+    CDTProjectTreeItem *pixelChangesRoot;
+    CDTProjectTreeItem *vectorChangesRoot;
+
 };
 
 #endif // CDTPROJECT_H

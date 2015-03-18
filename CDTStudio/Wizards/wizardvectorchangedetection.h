@@ -91,6 +91,21 @@ private slots:
     void updatePage3State();
     void onDetectionFinished();
 
+    /********************************************/
+    /*                  Export                  */
+    /********************************************/
+
+public:
+    QString name()const;
+    QString shapefileID()const;
+    QString shapefilePath()const;
+    QString clsID1()const;
+    QString clsID2()const;
+    QVariantMap params() const;
+
+private:
+    QString shpID;
+    QString shpPath;
 };
 
 #endif // WIZARDVECTORCHANGEDETECTION_H

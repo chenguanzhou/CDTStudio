@@ -6,7 +6,8 @@ HEADERS += \
     $$PWD/cdtclassificationlayer.h \
     $$PWD/cdtprojectlayer.h \
     $$PWD/cdtpbcdbinarylayer.h \
-    $$PWD/cdtchangelayer.h
+    $$PWD/cdtpixelchangelayer.h \
+    $$PWD/cdtvectorchangelayer.h
 
 SOURCES += \
     $$PWD/cdtbaselayer.cpp \
@@ -16,6 +17,7 @@ SOURCES += \
     $$PWD/cdtclassificationlayer.cpp \
     $$PWD/cdtprojectlayer.cpp \
     $$PWD/cdtpbcdbinarylayer.cpp \
-    $$PWD/cdtchangelayer.cpp
+    $$PWD/cdtpixelchangelayer.cpp \
+    $$PWD/cdtvectorchangelayer.cpp
 
 INCLUDEPATH += $$PWD

@@ -4,10 +4,11 @@
 #include "mainwindow.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtimagelayer.h"
-#include "cdtchangelayer.h"
+#include "cdtpixelchangelayer.h"
 #include "cdtfilesystem.h"
 #include "cdttaskdockwidget.h"
 #include "cdtpbcdbinarylayer.h"
+#include "cdtvectorchangelayer.h"
 #include "dialognewimage.h"
 #include "dialogpbcdbinary.h"
 #include "wizardvectorchangedetection.h"
@@ -19,11 +20,16 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);
     imagesRoot = new CDTProjectTreeItem
             (CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::GROUP,tr("Images"),this);
-    changesRoot = new CDTProjectTreeItem
-            (CDTProjectTreeItem::CHANGE_ROOT,CDTProjectTreeItem::GROUP,tr("Changes"),this);
+    pixelChangesRoot = new CDTProjectTreeItem
+            (CDTProjectTreeItem::PIXEL_CHANGE_ROOT,CDTProjectTreeItem::GROUP,tr("Pixel-based Changes"),this);
+
+    vectorChangesRoot = new CDTProjectTreeItem
+            (CDTProjectTreeItem::VECTOR_CHANGE_ROOT,CDTProjectTreeItem::GROUP,tr("Vector-based Changes"),this);
 
     keyItem->appendRow(imagesRoot);
-    keyItem->appendRow(changesRoot);
+    keyItem->appendRow(pixelChangesRoot);
+    keyItem->appendRow(vectorChangesRoot);
+
 
     //actions
     QAction *actionAddImage = new QAction(QIcon(":/Icon/Add.png"),tr("Add image layer"),this);
@@ -88,12 +94,15 @@ CDTProjectLayer::~CDTProjectLayer()
 
 void CDTProjectLayer::insertToTable(QString name)
 {
-    setName(name);
+//    setName(name);
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("insert into project values(?,?)");
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.exec();
+
+    keyItem->setText(name);
+    emit layerChanged();
 }
 
 QString CDTProjectLayer::name() const
@@ -158,7 +167,21 @@ void CDTProjectLayer::addPBCDBinaryLayer()
 void CDTProjectLayer::addVectorChangeDetectionLayer()
 {
     WizardVectorChangeDetection wizard(id());
-    wizard.exec();
+    if (wizard.exec()==QDialog::Accepted)
+    {
+        fileSystem->registerFile( wizard.shapefileID(),wizard.shapefilePath(),QString(),QString()
+                                 ,CDTFileSystem::getShapefileAffaliated(wizard.shapefilePath()));
+
+        CDTVectorChangeLayer *layer = new CDTVectorChangeLayer(QUuid::createUuid(),this);
+        layer->initVectorChangeLayer(
+                    wizard.name(),
+                    wizard.shapefileID(),
+                    wizard.clsID1(),
+                    wizard.clsID2(),
+                    wizard.params());
+        vectorChangesRoot->appendRow(layer->standardKeyItem());
+        addVectorChangeLayer(layer);
+    }
 }
 
 //void CDTProjectLayer::addOBCDBinaryLayer()
@@ -221,20 +244,20 @@ void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
                 reply->property("image_t1").toString(),
                 reply->property("image_t2").toString(),
                 params);
-    changesRoot->appendRow(layer->standardKeyItem());
-    changes.push_back(layer);
+    pixelChangesRoot->appendRow(layer->standardKeyItem());
+    pixelChanges.push_back(layer);
 
     emit layerChanged();
 }
 
-void CDTProjectLayer::removeChangeLayer(CDTChangeLayer *layer)
+void CDTProjectLayer::removeChangeLayer(CDTPixelChangeLayer *layer)
 {
-    int index = changes.indexOf(layer);
+    int index = pixelChanges.indexOf(layer);
     if (index>=0)
     {
         QStandardItem* item = layer->standardKeyItem();
         item->parent()->removeRow(item->index().row());
-        changes.remove(index);
+        pixelChanges.remove(index);
         qDebug()<<"files:"<<layer->files();
         foreach (QString fileID, layer->files()) {
             fileSystem->removeFile(fileID);
@@ -247,9 +270,15 @@ void CDTProjectLayer::removeChangeLayer(CDTChangeLayer *layer)
 
 void CDTProjectLayer::removeAllChangeLayers()
 {
-    foreach (CDTChangeLayer* layer, changes) {
+    foreach (CDTPixelChangeLayer* layer, pixelChanges) {
         removeChangeLayer(layer);
     }
+}
+
+void CDTProjectLayer::addVectorChangeLayer(CDTVectorChangeLayer *layer)
+{
+    vectorChanges.push_back(layer);
+    emit layerChanged();
 }
 
 void CDTProjectLayer::setName(const QString &name)
@@ -283,13 +312,15 @@ QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project)
 {
     out<<project.id()<<project.name()<<*(project.fileSystem);
 
+    //Images
     out<<project.images.size();
     foreach (CDTImageLayer* layer, project.images) {
         out<<*layer;
     }
 
-    out<<project.changes.size();
-    foreach (CDTChangeLayer* layer, project.changes) {
+    //Pixel-based changes
+    out<<project.pixelChanges.size();
+    foreach (CDTPixelChangeLayer* layer, project.pixelChanges) {
         out<<QString(layer->metaObject()->className())<<*layer;
     }
 
@@ -314,14 +345,22 @@ QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project)
         pointsMap.insert(pointSetName,points);
     }
     out<<pointsMap;
+
+    //Vector-based changes
+    out<<project.vectorChanges.size();
+    foreach (CDTVectorChangeLayer* layer, project.vectorChanges) {
+        out<<*layer;
+    }
     return out;
 }
 
 QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
 {
     QString name;
-    in>>project.uuid>>name>>*(project.fileSystem);
-    project.setName(name);
+    in>>project.uuid;
+    in>>name;
+    in>>*(project.fileSystem);
+//    project.setName(name);
 
     project.insertToTable(name);
 
@@ -339,13 +378,13 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
     {
         QString clsName;
         in>>clsName;
-        QMetaObject obj =  CDTChangeLayer::changeLayerMetaObjects.value(clsName);
+        QMetaObject obj =  CDTPixelChangeLayer::changeLayerMetaObjects.value(clsName);
 
-        CDTChangeLayer *layer = qobject_cast<CDTChangeLayer *>(obj.newInstance(Q_ARG(QUuid,QUuid()),Q_ARG(QObject*,&project)));
+        CDTPixelChangeLayer *layer = qobject_cast<CDTPixelChangeLayer *>(obj.newInstance(Q_ARG(QUuid,QUuid()),Q_ARG(QObject*,&project)));
 
         in>>*layer;
-        project.changesRoot->appendRow(layer->standardKeyItem());
-        project.changes.push_back(layer);
+        project.pixelChangesRoot->appendRow(layer->standardKeyItem());
+        project.pixelChanges.push_back(layer);
     }
 
     QMap<QString,QVector<QPair<int,QPointF> > > pointsMap;
@@ -387,6 +426,15 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
         }
 
         db.commit();
+    }
+
+    in>>count;
+    for (int i=0;i<count;++i)
+    {
+        CDTVectorChangeLayer* change = new CDTVectorChangeLayer(QUuid(),&project);
+        in>>*change;
+        project.vectorChangesRoot->appendRow(change->standardKeyItem());
+        project.vectorChanges.push_back(change);
     }
     return in;
 }
