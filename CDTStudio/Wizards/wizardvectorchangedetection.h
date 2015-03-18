@@ -81,9 +81,11 @@ private slots:
     /*                  Page 3                  */
     /********************************************/
 private:
-    void initPage3();
+    void initPage3();    
+    void startDetect();
 
 private slots:
+    void onCustomButtonClicked(int buttonID);
 
 };
 

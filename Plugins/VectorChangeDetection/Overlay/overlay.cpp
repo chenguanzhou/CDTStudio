@@ -14,7 +14,7 @@ QString Overlay::methodName() const
     return tr("Overlay");
 }
 
-void Overlay::startDetection(QProgressBar *progressBar, QLabel *label)
+void Overlay::detect(QgsFeatureIterator iteratorT1, QgsFeatureIterator iteratorT2, QString fieldNameT1, QString fieldNameT2, QProgressBar *progressBar, QLabel *label)
 {
 
 }

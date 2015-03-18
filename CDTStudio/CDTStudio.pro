@@ -39,14 +39,6 @@ HEADERS  += \
     cdtbasethread.h \
     cdtvariantconverter.h \
     cdtapplication.h \
-    ../Interfaces/cdtattributesinterface.h \
-    ../Interfaces/cdtautothresholdinterface.h \
-    ../Interfaces/cdtclassifierinterface.h \
-    ../Interfaces/cdtextractioninterface.h \
-    ../Interfaces/cdtpbcddiffinterface.h \
-    ../Interfaces/cdtpbcdmergeinterface.h \
-    ../Interfaces/cdtsegmentationinterface.h \
-    ../Interfaces/cdtvectorchangedetectioninterface.h \
     cdtclassificationhelper.h
 
 FORMS    += \
@@ -56,6 +48,7 @@ include(Dialogs/Dialogs.pri)
 include(Docks/Docks.pri)
 include(Layers/Layers.pri)
 include(Wizards/Wizards.pri)
+include(../Interfaces/Interfaces.pri)
 
 INCLUDEPATH += \
     ../Interfaces \

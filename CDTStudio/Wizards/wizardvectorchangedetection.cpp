@@ -559,6 +559,21 @@ void WizardVectorChangeDetection::initPage3()
     foreach (CDTVectorChangeDetectionInterface* plugin, vectorDetectionPlugins) {
         ui->comboBoxAlgo->addItem(plugin->methodName());
     }
+
+    connect(this,SIGNAL(customButtonClicked(int)),SLOT(onCustomButtonClicked(int)));
+}
+
+void WizardVectorChangeDetection::startDetect()
+{
+
+}
+
+void WizardVectorChangeDetection::onCustomButtonClicked(int buttonID)
+{
+    if (buttonID == CustomButton1)
+    {
+        startDetect();
+    }
 }
 
 
