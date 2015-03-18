@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core xml
 
 TARGET = Overlay
 TEMPLATE = lib
@@ -40,4 +40,6 @@ INCLUDEPATH += /usr/include/gdal \
 include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
+
+LIBS += -lqgis_core
 

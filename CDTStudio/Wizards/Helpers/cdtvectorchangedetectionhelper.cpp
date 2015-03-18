@@ -71,14 +71,10 @@ void CDTVectorCHangeDetectionHelper::run()
     {
         if (isValid()==false) throw tr("Params of detection is invalid!");
 
-        QgsFeatureIterator iterT1 = p->layerT1->getFeatures();
-        QgsFeatureIterator iterT2 = p->layerT1->getFeatures();
-        p->plugin->detect(iterT1,iterT2,p->fieldNameT1,p->fieldNameT2,NULL,NULL);
+        p->plugin->detect(p->layerT1,p->layerT2,p->layerResult,p->fieldNameT1,p->fieldNameT2);
     }
     catch(QString msg)
     {
-
+        logger()->error(msg);
     }
-
-
 }

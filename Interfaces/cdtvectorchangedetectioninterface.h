@@ -3,9 +3,7 @@
 
 #include <QtCore>
 #include <QtPlugin>
-#include <QProgressBar>
-#include <QLabel>
-#include <qgsfeatureiterator.h>
+#include <qgsvectorlayer.h>
 
 class CDTVectorChangeDetectionInterface:public QObject
 {
@@ -14,7 +12,13 @@ public:
     explicit CDTVectorChangeDetectionInterface(QObject* parent = 0):QObject(parent){}
 
     virtual QString methodName()const =0;
-    virtual void detect(QgsFeatureIterator iteratorT1,QgsFeatureIterator iteratorT2,QString fieldNameT1,QString fieldNameT2,QProgressBar *progressBar,QLabel *label) =0;
+    virtual void detect(
+            QgsVectorLayer *layerT1,
+            QgsVectorLayer *layerT2,
+            QgsVectorLayer *layerResult,
+            QString fieldNameT1,
+            QString fieldNameT2
+    ) =0;
 
     QVariantMap params() const
     {

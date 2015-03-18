@@ -83,9 +83,13 @@ private slots:
 private:
     void initPage3();    
     void startDetect();
+    void showErrorText_Page3(QString msg);
+    void showCorrectText_Page3();
 
 private slots:
     void onCustomButtonClicked(int buttonID);
+    void updatePage3State();
+    void onDetectionFinished();
 
 };
 

@@ -17,7 +17,13 @@ public:
     ~Overlay();
 
     QString methodName()const ;
-    void detect(QgsFeatureIterator iteratorT1,QgsFeatureIterator iteratorT2,QString fieldNameT1,QString fieldNameT2,QProgressBar *progressBar,QLabel *label);
+    void detect(
+            QgsVectorLayer *layerT1,
+            QgsVectorLayer *layerT2,
+            QgsVectorLayer *layerResult,
+            QString fieldNameT1,
+            QString fieldNameT2
+    );
 };
 
 #endif // OVERLAY_H
