@@ -619,6 +619,8 @@ void WizardVectorChangeDetection::startDetect()
                 categoryNamesT2,
                 vectorDetectionPlugins[ui->comboBoxAlgo->currentIndex()]);
     connect(helper,SIGNAL(finished()),SLOT(onDetectionFinished()));
+    connect(helper,SIGNAL(currentProgressChanged(QString)),this,SLOT(updateProgressLabel(QString)));
+    connect(helper,SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
     helper->start();
     this->setEnabled(false);
 }
@@ -635,6 +637,11 @@ void WizardVectorChangeDetection::showErrorText_Page3(QString msg)
 void WizardVectorChangeDetection::showCorrectText_Page3()
 {
 
+}
+
+void WizardVectorChangeDetection::updateProgressLabel(QString text)
+{
+    ui->groupBoxProgressLabel->setTitle(text);
 }
 
 void WizardVectorChangeDetection::onCustomButtonClicked(int buttonID)

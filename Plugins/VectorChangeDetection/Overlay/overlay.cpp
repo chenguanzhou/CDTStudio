@@ -39,6 +39,9 @@ void Overlay::detect(
 
     layerResult->startEditing();
 
+    long count = layerT1->featureCount();
+    int gap = count/100+1;
+    int idx = 0;
     foreach (QgsFeature f1, featuresT1) {
         auto gT1 = f1.geometry();
         auto rectT1 = gT1->boundingBox();
@@ -63,10 +66,14 @@ void Overlay::detect(
                 }
             }
         }
+        ++idx;
+        if (idx%gap==0) emit progressBarValueChanged(idx*100/count);
     }
 
     layerResult->updateExtents();
     layerResult->commitChanges();
+
+    emit progressBarValueChanged(100);
 }
 
 void Overlay::getPolygonList(QgsGeometry *g,std::vector<QgsGeometry *> &list)

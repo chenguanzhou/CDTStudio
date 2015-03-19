@@ -36,8 +36,8 @@ public:
     }
 
 signals:
-    void finished();
-
+    void progressBarValueChanged(int);
+    void currentProgressChanged(QString);
 };
 
 Q_DECLARE_INTERFACE(CDTVectorChangeDetectionInterface,"cn.edu.WHU.CDTStudio.CDTVectorChangeDetectionInterface/1.0")

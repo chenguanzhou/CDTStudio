@@ -114,6 +114,7 @@ void CDTVectorChangeDetectionHelper::run()
         valid = false;
         if (p->isUseLayer_t1)
         {
+            emit currentProgressChanged(tr("Add category information to the shapefile of segmentation layer 1"));
             valid = addClsInfoToShp(
                         p->imageid_t1,
                         p->segid_t1,
@@ -127,6 +128,7 @@ void CDTVectorChangeDetectionHelper::run()
         }
         if (p->isUseLayer_t2)
         {
+            emit currentProgressChanged(tr("Add category information to the shapefile of segmentation layer 2"));
             valid = addClsInfoToShp(
                         p->imageid_t2,
                         p->segid_t2,
@@ -141,7 +143,6 @@ void CDTVectorChangeDetectionHelper::run()
         resultShpPath = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".shp";
         createShapefile(resultShpPath);
 
-//        if (isValid()==false) throw tr("Params of detection is invalid!");
         auto isLayerValid = [](QgsVectorLayer *l)
         {
             if (l==NULL) throw "Layer is null";
@@ -160,12 +161,18 @@ void CDTVectorChangeDetectionHelper::run()
             return;
         }
 
+        emit currentProgressChanged(tr("Start detection"));
+        connect(p->plugin,SIGNAL(currentProgressChanged(QString)),this,SIGNAL(currentProgressChanged(QString)));
+        connect(p->plugin,SIGNAL(progressBarValueChanged(int)),this,SIGNAL(progressBarValueChanged(int)));
         p->plugin->detect(
                     layerT1,
                     layerT2,
                     layerResult,
                     p->shapefileFieldName_t1,
                     p->shapefileFieldName_t2);
+        disconnect(p->plugin,SIGNAL(currentProgressChanged(QString)),this,SIGNAL(currentProgressChanged(QString)));
+        disconnect(p->plugin,SIGNAL(progressBarValueChanged(int)),this,SIGNAL(progressBarValueChanged(int)));
+        emit currentProgressChanged(tr("Completed!"));
         valid = true;
     }
     catch(QString msg)
@@ -244,6 +251,10 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
 
     QgsFeatureIterator iter = layer.getFeatures();
     QgsFeature f;
+    long count = layer.featureCount();
+    int gap = count/100+1;
+    int i=0;
+    emit progressBarValueChanged(0);
     while(iter.nextFeature(f))
     {
         QString name = nameList[f.attribute("GridCode").toInt()];
@@ -253,8 +264,11 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
             return false;
         }
         layer.updateFeature(f);
+        i ++;
+        if (i%gap==0) emit progressBarValueChanged(i*100/count);
     }
     layer.commitChanges();
+    emit progressBarValueChanged(100);
 
     return true;
 }

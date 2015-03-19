@@ -87,6 +87,7 @@ private:
     void showCorrectText_Page3();
 
 private slots:
+    void updateProgressLabel(QString text);
     void onCustomButtonClicked(int buttonID);
     void updatePage3State();
     void onDetectionFinished();

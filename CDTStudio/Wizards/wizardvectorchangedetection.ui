@@ -528,10 +528,16 @@
      </layout>
     </item>
     <item>
-     <widget class="QProgressBar" name="progressBar">
-      <property name="value">
-       <number>24</number>
-      </property>
+     <widget class="QGroupBox" name="groupBoxProgressLabel">
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <item>
+        <widget class="QProgressBar" name="progressBar">
+         <property name="value">
+          <number>24</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
