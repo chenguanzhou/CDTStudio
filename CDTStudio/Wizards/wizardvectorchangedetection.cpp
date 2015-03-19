@@ -274,10 +274,10 @@ void WizardVectorChangeDetection::updateReport_Page1()
 
         //Same image when both use layers
         if (isUseLayer_t1 == true && isUseLayer_t2==true && imageid_t1 == imageid_t2)
-            throw tr("The images of 2 epoch looks the same!");
+            throw tr("The images of 2 epochs looks the same!");
 
         if (isUseLayer_t1 == false && isUseLayer_t2==false && shapefile_t1 == shapefile_t2)
-            throw tr("The shapefiles of 2 epoch looks the same!");
+            throw tr("The shapefiles of 2 epochs looks the same!");
     }
     catch(QString msg)
     {
@@ -650,15 +650,20 @@ void WizardVectorChangeDetection::startDetect()
             logger()->error(layer.error().message(QgsErrorMessage::Text));
             return false;
         }
-        QgsField field(DefaultFieldName);
-        field.setType(QVariant::String);
-        if (layer.dataProvider()->addAttributes(QList<QgsField>()<<field))
-        {
-            logger()->warn("Add attribute failed!");
-//            return false;
-        }
 
         layer.startEditing();
+
+        if(layer.fieldNameIndex(DefaultFieldName)==-1)
+        {
+            QgsField field(DefaultFieldName);
+            field.setType(QVariant::String);
+            if (layer.addAttribute(field))
+            {
+                logger()->warn("Add attribute failed!");
+    //            return false;
+            }
+        }
+
         QgsFeatureIterator iter = layer.getFeatures();
         QgsFeature f;
         while(iter.nextFeature(f))
