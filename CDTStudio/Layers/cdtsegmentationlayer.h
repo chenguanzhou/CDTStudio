@@ -64,7 +64,6 @@ signals:
     void removeSegmentation(CDTSegmentationLayer*);
 
 public slots:
-//    void onContextMenuRequest(QWidget *parent);
     void rename();
     void editDBInfo();
     void generateAttributes();
@@ -98,17 +97,6 @@ private:
 
 private:
     QVector<CDTClassificationLayer *> classifications;
-
-//    QWidgetAction *actionChangeBorderColor;
-//    QWidgetAction *actionSetLayerTransparency;
-//    QAction *actionRename;
-//    QAction *actionGenerateAttributes;
-//    QAction *actionEditDBInfo;
-//    QAction *actionExportShapefile;
-//    QAction *actionRemoveSegmentation;
-//    QAction *actionAddClassifications;
-//    QAction *actionRemoveAllClassifications;
-//    QAction *actionAddDecisionFusion;
 
     CDTProjectTreeItem* classificationRootItem;
 

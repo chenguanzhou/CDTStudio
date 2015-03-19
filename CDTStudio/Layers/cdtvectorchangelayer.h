@@ -16,12 +16,15 @@ public:
     friend QDataStream &operator>>(QDataStream &in, CDTVectorChangeLayer &change);
 
     QString name()const;
+    QString shapefileID()const;
 
 signals:
     void nameChanged(QString);
+    void removeVectorChangeLayer(CDTVectorChangeLayer*);
 
 public slots:
     void rename();
+    void remove();
 
     void setName(const QString& name);
 

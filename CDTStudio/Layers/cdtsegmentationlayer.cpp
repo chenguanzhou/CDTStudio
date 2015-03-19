@@ -32,16 +32,6 @@ QDataStream &operator>>(QDataStream &in, SampleElement &sample)
 
 CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent)
-//      actionGenerateAttributes(),
-//      actionAddClassifications(),
-//      actionRemoveSegmentation(),
-//      actionAddDecisionFusion(),
-//      actionExportShapefile(),
-//      actionRemoveAllClassifications(),
-//      actionRename(),
-//      actionEditDBInfo(),
-//      actionChangeBorderColor(),
-//      actionSetLayerTransparency()
 {
     layers.push_back(this);
 
@@ -133,45 +123,6 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
 
     layers.removeAll(this);
 }
-
-/*
-void CDTSegmentationLayer::onContextMenuRequest(QWidget *parent)
-{    
-    QtColorPicker *borderColorPicker = new QtColorPicker(parent);
-    borderColorPicker->setStandardColors();
-    borderColorPicker->setCurrentColor(borderColor());
-    borderColorPicker->setToolTip(tr("Border color"));
-    connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
-    actionChangeBorderColor->setDefaultWidget(borderColorPicker);
-
-    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,parent);
-    sliderTransparency->setMinimum(0);
-    sliderTransparency->setMaximum(100);
-    sliderTransparency->setValue(this->layerTransparency());
-    sliderTransparency->setToolTip(tr("Layer transparency"));
-    connect(sliderTransparency,SIGNAL(valueChanged(int)),SLOT(setLayerTransparency(int)));
-    actionSetLayerTransparency->setDefaultWidget(sliderTransparency);
-
-    QMenu *menu =new QMenu(parent);    
-    menu->addAction(actionChangeBorderColor);
-    menu->addAction(actionSetLayerTransparency);
-    menu->addAction(actionRename);
-    menu->addAction(actionEditDBInfo);
-    menu->addAction(actionGenerateAttributes);
-    menu->addAction(actionExportShapefile);
-    menu->addSeparator();
-    menu->addAction(actionRemoveSegmentation);
-    menu->addSeparator();
-    menu->addAction(actionAddClassifications);
-    menu->addAction(actionRemoveAllClassifications);
-    menu->addAction(actionAddDecisionFusion);
-    menu->addSeparator();
-    menu->exec(QCursor::pos());
-
-    actionChangeBorderColor->releaseWidget(borderColorPicker);
-    actionSetLayerTransparency->releaseWidget(sliderTransparency);
-    delete borderColorPicker;
-}*/
 
 void CDTSegmentationLayer::rename()
 {

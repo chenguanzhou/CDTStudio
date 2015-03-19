@@ -36,28 +36,28 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     QAction *actiobRemoveAllImages = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove all images"),this);
     QAction *actionAddPBCDBinary = new QAction(QIcon(":/Icon/2.png"),tr("Add pixel-based change detection(binary) layer"),this);
     QAction *actionAddPBCDFromTo = new QAction(QIcon(":/Icon/2p.png"),tr("Add pixel-based change detection(from-to) layer"),this);
-//    QAction *actionAddOBCDBinary = new QAction(QIcon(":/Icon/2.png"),tr("Add object-based change detection(binary) layer"),this);
-//    QAction *actionAddOBCDFromTo = new QAction(QIcon(":/Icon/2p.png"),tr("Add object-based change detection(from-to) layer"),this);
-    QAction *actionAddVectorCDLayer = new QAction(QIcon(":/Icon/OBCD.png"),tr("Add vector change detection layer"),this);
-    QAction *actiobRemoveAllChanges = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove all change layers"),this);
+    QAction *actiobRemoveAllPixelChanges = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove all pixel-based change layers"),this);
+    QAction *actionAddVectorCDLayer = new QAction(QIcon(":/Icon/OBCD.png"),tr("Add vector-based change detection layer"),this);
+    QAction *actiobRemoveAllVectorChanges = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove all vector-based change layers"),this);
     QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Project"),this);
 
     actions <<(QList<QAction *>()<<actionAddImage<<actiobRemoveAllImages)
            <<(QList<QAction *>()
               <<actionAddPBCDBinary
               <<actionAddPBCDFromTo
-              <<actionAddVectorCDLayer
-//              <<actionAddOBCDBinary
-//              <<actionAddOBCDFromTo
-              <<actiobRemoveAllChanges)
+              <<actiobRemoveAllPixelChanges)
+            <<(QList<QAction *>()
+               <<actionAddVectorCDLayer
+               <<actiobRemoveAllVectorChanges)
           <<(QList<QAction *>()<<actionRename);
 
     connect(actionAddImage,SIGNAL(triggered()),SLOT(addImageLayer()));
     connect(actiobRemoveAllImages,SIGNAL(triggered()),SLOT(removeAllImageLayers()));
     connect(actionAddPBCDBinary,SIGNAL(triggered()),SLOT(addPBCDBinaryLayer()));
 //    connect(actionAddOBCDBinary,SIGNAL(triggered()),SLOT(addOBCDBinaryLayer()));
+    connect(actiobRemoveAllPixelChanges,SIGNAL(triggered()),SLOT(removeAllPixelChangeLayers()));
     connect(actionAddVectorCDLayer,SIGNAL(triggered()),SLOT(addVectorChangeDetectionLayer()));
-    connect(actiobRemoveAllChanges,SIGNAL(triggered()),SLOT(removeAllChangeLayers()));
+    connect(actiobRemoveAllVectorChanges,SIGNAL(triggered()),SLOT(removeAllVectorChangeLayers()));
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
 }
 
@@ -154,46 +154,6 @@ void CDTProjectLayer::addImageLayer()
     }
 }
 
-void CDTProjectLayer::addPBCDBinaryLayer()
-{
-    QUuid prjID = MainWindow::getCurrentProjectID();
-    if (isCDEnabled(prjID)==false)
-        return;
-
-    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
-    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));
-}
-
-void CDTProjectLayer::addVectorChangeDetectionLayer()
-{
-    WizardVectorChangeDetection wizard(id());
-    if (wizard.exec()==QDialog::Accepted)
-    {
-        qDebug()<<fileSystem->registerFile( wizard.shapefileID(),wizard.shapefilePath(),QString(),QString()
-                                 ,CDTFileSystem::getShapefileAffaliated(wizard.shapefilePath()));
-        qDebug()<<wizard.name()<<
-                  wizard.shapefilePath()<<
-                wizard.shapefileID()<<
-                wizard.clsID1()<<
-                wizard.clsID2()<<
-                wizard.params();
-        CDTVectorChangeLayer *layer = new CDTVectorChangeLayer(QUuid::createUuid(),this);
-        layer->initVectorChangeLayer(
-                    wizard.name(),
-                    wizard.shapefileID(),
-                    wizard.clsID1(),
-                    wizard.clsID2(),
-                    wizard.params());
-        vectorChangesRoot->appendRow(layer->standardKeyItem());
-        addVectorChangeLayer(layer);
-    }
-}
-
-//void CDTProjectLayer::addOBCDBinaryLayer()
-//{
-
-//}
-
 void CDTProjectLayer::addImageLayer(CDTImageLayer *image)
 {
     images.push_back(image);
@@ -223,6 +183,16 @@ void CDTProjectLayer::removeAllImageLayers()
     foreach (CDTImageLayer* image, images) {
         removeImageLayer(image);
     }
+}
+
+void CDTProjectLayer::addPBCDBinaryLayer()
+{
+    QUuid prjID = MainWindow::getCurrentProjectID();
+    if (isCDEnabled(prjID)==false)
+        return;
+
+    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
+    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));
 }
 
 void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
@@ -255,7 +225,7 @@ void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
     emit layerChanged();
 }
 
-void CDTProjectLayer::removeChangeLayer(CDTPixelChangeLayer *layer)
+void CDTProjectLayer::removePixelChangeLayer(CDTPixelChangeLayer *layer)
 {
     int index = pixelChanges.indexOf(layer);
     if (index>=0)
@@ -263,7 +233,6 @@ void CDTProjectLayer::removeChangeLayer(CDTPixelChangeLayer *layer)
         QStandardItem* item = layer->standardKeyItem();
         item->parent()->removeRow(item->index().row());
         pixelChanges.remove(index);
-        qDebug()<<"files:"<<layer->files();
         foreach (QString fileID, layer->files()) {
             fileSystem->removeFile(fileID);
         }
@@ -273,10 +242,35 @@ void CDTProjectLayer::removeChangeLayer(CDTPixelChangeLayer *layer)
     }
 }
 
-void CDTProjectLayer::removeAllChangeLayers()
+void CDTProjectLayer::removeAllPixelChangeLayers()
 {
     foreach (CDTPixelChangeLayer* layer, pixelChanges) {
-        removeChangeLayer(layer);
+        removePixelChangeLayer(layer);
+    }
+}
+
+void CDTProjectLayer::addVectorChangeDetectionLayer()
+{
+    WizardVectorChangeDetection wizard(id());
+    if (wizard.exec()==QDialog::Accepted)
+    {
+        qDebug()<<fileSystem->registerFile( wizard.shapefileID(),wizard.shapefilePath(),QString(),QString()
+                                 ,CDTFileSystem::getShapefileAffaliated(wizard.shapefilePath()));
+        qDebug()<<wizard.name()<<
+                  wizard.shapefilePath()<<
+                wizard.shapefileID()<<
+                wizard.clsID1()<<
+                wizard.clsID2()<<
+                wizard.params();
+        CDTVectorChangeLayer *layer = new CDTVectorChangeLayer(QUuid::createUuid(),this);
+        layer->initVectorChangeLayer(
+                    wizard.name(),
+                    wizard.shapefileID(),
+                    wizard.clsID1(),
+                    wizard.clsID2(),
+                    wizard.params());
+        vectorChangesRoot->appendRow(layer->standardKeyItem());
+        addVectorChangeLayer(layer);
     }
 }
 
@@ -284,6 +278,28 @@ void CDTProjectLayer::addVectorChangeLayer(CDTVectorChangeLayer *layer)
 {
     vectorChanges.push_back(layer);
     emit layerChanged();
+}
+
+void CDTProjectLayer::removeVectorChangeLayer(CDTVectorChangeLayer *layer)
+{
+    int index = vectorChanges.indexOf(layer);
+    if (index>=0)
+    {
+        QStandardItem* item = layer->standardKeyItem();
+        item->parent()->removeRow(item->index().row());
+        vectorChanges.remove(index);
+        fileSystem->removeFile(layer->shapefileID());
+        emit removeLayer(QList<QgsMapLayer*>()<<layer->canvasLayer());
+        delete layer;
+        emit layerChanged();
+    }
+}
+
+void CDTProjectLayer::removeAllVectorChangeLayers()
+{
+    foreach (CDTVectorChangeLayer* layer, vectorChanges) {
+        removeVectorChangeLayer(layer);
+    }
 }
 
 void CDTProjectLayer::setName(const QString &name)

@@ -8,6 +8,19 @@ CDTVectorChangeLayer::CDTVectorChangeLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent)
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::VECTOR_CHANGE,CDTProjectTreeItem::VECTOR,QString(),this);
+
+    QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),
+                                        tr("Rename"),this);
+    QAction *actionRemoveLayer = new QAction(QIcon(":/Icon/Remove.png"),
+                                        tr("Remove Vector-based change detection layer"),this);
+
+    actions <<(QList<QAction *>()<<actionRename);
+    actions <<(QList<QAction *>()<<actionRemoveLayer);
+
+    connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
+    connect(actionRemoveLayer,SIGNAL(triggered()),SLOT(remove()));
+
+    connect(this,SIGNAL(removeVectorChangeLayer(CDTVectorChangeLayer*)),this->parent(),SLOT(removeVectorChangeLayer(CDTVectorChangeLayer*)));
 }
 
 CDTVectorChangeLayer::~CDTVectorChangeLayer()
@@ -24,6 +37,15 @@ QString CDTVectorChangeLayer::name() const
     return query.value(0).toString();
 }
 
+QString CDTVectorChangeLayer::shapefileID() const
+{
+    QSqlDatabase db = QSqlDatabase::database("category");
+    QSqlQuery query(db);
+    query.exec("select shapefileid from vector_change where id ='" + this->id().toString() +"'");
+    query.next();
+    return query.value(0).toString();
+}
+
 void CDTVectorChangeLayer::rename()
 {
     bool ok;
@@ -33,6 +55,11 @@ void CDTVectorChangeLayer::rename()
                 this->name(), &ok);
     if (ok && !text.isEmpty())
         setName(text);
+}
+
+void CDTVectorChangeLayer::remove()
+{
+    emit removeVectorChangeLayer(this);
 }
 
 void CDTVectorChangeLayer::setName(const QString &name)

@@ -28,22 +28,23 @@ public:
     QString name() const;
     bool    isCDEnabled(QUuid projectID);
 
-signals:
-//    void projectChanged();
-
-public slots:    
+public slots:
     void addImageLayer();
-    void addPBCDBinaryLayer();
-    void addVectorChangeDetectionLayer();
-//    void addOBCDBinaryLayer();
-
     void addImageLayer(CDTImageLayer *image);
     void removeImageLayer(CDTImageLayer *image);
     void removeAllImageLayers();
+
+
+    void addPBCDBinaryLayer();
     void addPBCDBinaryLayer(QByteArray result);
-    void removeChangeLayer(CDTPixelChangeLayer *layer);
-    void removeAllChangeLayers();
+    void removePixelChangeLayer(CDTPixelChangeLayer *layer);
+    void removeAllPixelChangeLayers();
+
+
+    void addVectorChangeDetectionLayer();
     void addVectorChangeLayer(CDTVectorChangeLayer *layer);
+    void removeVectorChangeLayer(CDTVectorChangeLayer *layer);
+    void removeAllVectorChangeLayers();
 
     void rename();
     void setName(const QString& name);
