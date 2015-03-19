@@ -64,6 +64,9 @@ bool WizardVectorChangeDetection::validateCurrentPage()
     if (currentId()==1)
         //Page2
         return isValid_Page2;
+    if (currentId()==2)
+        //Page3
+        return isValid_Page3;
     return true;
 }
 
@@ -564,10 +567,7 @@ void WizardVectorChangeDetection::initPage3()
 }
 
 void WizardVectorChangeDetection::startDetect()
-{    
-    const QString DefaultFieldName = "category";
-    const QString DefaultOtherName = tr("others");
-
+{
     auto getCurrentBoxID = [](QComboBox* box)->QString
     {
         return box->model()->data(box->model()->index(box->currentIndex(),1))
@@ -589,139 +589,34 @@ void WizardVectorChangeDetection::startDetect()
     bool isUseLayer_t1 = ui->tabWidgetT1->currentIndex()==0;
     bool isUseLayer_t2 = ui->tabWidgetT2->currentIndex()==0;
 
-    QStringList pairs;
+//    QStringList pairs;
     QStringList categoryNamesT1;
     QStringList categoryNamesT2;
     for (size_t i=0;i<ui->listWidgetCategoryPairs->count();++i)
     {
         QString pair = ui->listWidgetCategoryPairs->item(i)->text();
-        pairs<< pair;
+//        pairs<< pair;
         QStringList pairText = pair.split("<->");
         categoryNamesT1.push_back(pairText[0]);
         categoryNamesT2.push_back(pairText[1]);
     }
 
-    auto addClsInfoToShp = [=](QString imageID,QString segID,QString clsID,QStringList categoryNames,QString fieldName,QString &shapefilePath)->bool
-    {
-        CDTSegmentationLayer *segLayer =
-                CDTSegmentationLayer::getLayer(segID);
-        CDTClassificationLayer *clsLayer =
-                CDTClassificationLayer::getLayer(clsID);
-
-        if (segLayer==NULL || segLayer==NULL )
-            return false;
-
-        //Get categoryID_categoryName
-        QSqlQuery query(QSqlDatabase::database("category"));
-        query.prepare("select id,name from category where name = ? and imageid=?");
-        QMap<QString,QString> categoryID_Name;
-        foreach (QString name, categoryNames) {
-            query.addBindValue(name);
-            query.addBindValue(imageID);
-            query.exec();
-            query.next();
-            categoryID_Name.insert(query.value(0).toString(),
-                                   query.value(1).toString());
-        }
-
-        //Get category name for every object
-        QVariantList data = clsLayer->data();
-        QVariantMap clsInfo = clsLayer->clsInfo();
-
-        QMap<int,QString> id_Name;
-        foreach (QString key, clsInfo.keys()) {
-            int value = clsInfo.value(key).toInt();
-            if (categoryID_Name.keys().contains(key))
-                id_Name.insert(value,categoryID_Name[key]);
-            else
-                id_Name.insert(value,DefaultOtherName);
-        }
-
-        QStringList nameList;
-        foreach (QVariant id, data) {
-            nameList.push_back(id_Name[id.toInt()]);
-        }
-
-        //Write them to the shapefile
-        segLayer->fileSystem()->getFile(segLayer->shapefilePath(),shapefilePath);
-        QgsVectorLayer layer(shapefilePath,QFileInfo(shapefilePath).completeBaseName(),"ogr");
-        if (layer.isValid()==false)
-        {
-            logger()->error(layer.error().message(QgsErrorMessage::Text));
-            return false;
-        }
-
-        layer.startEditing();
-
-        if(layer.fieldNameIndex(DefaultFieldName)==-1)
-        {
-            QgsField field(DefaultFieldName);
-            field.setType(QVariant::String);
-            if (layer.addAttribute(field))
-            {
-                logger()->warn("Add attribute failed!");
-    //            return false;
-            }
-        }
-
-        QgsFeatureIterator iter = layer.getFeatures();
-        QgsFeature f;
-        while(iter.nextFeature(f))
-        {
-            QString name = nameList[f.attribute("GridCode").toInt()];
-            f.setAttribute(DefaultFieldName,name);
-            layer.updateFeature(f);
-        }
-        layer.commitChanges();
-
-        return true;
-    };
-
-    if (isUseLayer_t1)
-    {
-        addClsInfoToShp(imageid_t1,segid_t1,clsid_t1,categoryNamesT1,DefaultFieldName,shapefile_t1);
-        shapefileFieldName_t1 = DefaultFieldName;
-    }
-    if (isUseLayer_t2)
-    {
-        addClsInfoToShp(imageid_t2,segid_t2,clsid_t2,categoryNamesT2,DefaultFieldName,shapefile_t2);
-        shapefileFieldName_t2 = DefaultFieldName;
-    }
-
-    QString resultShpPath = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".shp";
-    GDALAllRegister();
-    OGRRegisterAll();
-
-
-    OGRSFDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
-    Q_ASSERT(poDriver);
-    OGRDataSource* poDS = poDriver->CreateDataSource(resultShpPath.toUtf8().constData(),NULL);
-    Q_ASSERT(poDS);
-//    OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
-    OGRLayer *layer = poDS->CreateLayer("change",NULL,wkbPolygon,NULL);
-    Q_ASSERT(layer);
-
-    OGRFieldDefn fieldBefore( "before", OFTString );
-    if( layer->CreateField( &fieldBefore ) != OGRERR_NONE )
-    {
-        logger()->error( "Creating field failed.") ;
-        return ;
-    }
-    OGRFieldDefn fieldAfter( "after", OFTString );
-    if( layer->CreateField( &fieldAfter ) != OGRERR_NONE )
-    {
-        logger()->error( "Creating field failed.") ;
-        return ;
-    }
-    OGRDataSource::DestroyDataSource(poDS);
-
-    CDTVectorCHangeDetectionHelper *helper =
-            new CDTVectorCHangeDetectionHelper(
+    CDTVectorChangeDetectionHelper *helper =
+            new CDTVectorChangeDetectionHelper(
+                imageid_t1,
+                imageid_t2,
+                segid_t1,
+                segid_t2,
+                clsid_t1,
+                clsid_t2,
                 shapefile_t1,
                 shapefile_t2,
-                resultShpPath,
                 shapefileFieldName_t1,
                 shapefileFieldName_t2,
+                isUseLayer_t1,
+                isUseLayer_t2,
+                categoryNamesT1,
+                categoryNamesT2,
                 vectorDetectionPlugins[ui->comboBoxAlgo->currentIndex()]);
     connect(helper,SIGNAL(finished()),SLOT(onDetectionFinished()));
     helper->start();
@@ -754,15 +649,33 @@ void WizardVectorChangeDetection::updatePage3State()
 {
     if (ui->comboBoxAlgo->count()==0)
     {
+        //No plugin
         showErrorText_Page3("No detection plugin found!");
         return;
     }
-    else
+    else if (isValid_Page3 == false)
     {
+        //Enable to detect change
         ui->textEditResult->clear();
         ui->textEditResult->setHtml(QString(
             "<div align=\"center\"><font size=10 face=verdana>%1</font></div>"
             "<p>%2</p>").arg(tr("Params are valid")).arg(tr("Detection process can be start!")));
+        ui->textEditResult->setStyleSheet("border: 3px solid green");
+    }
+    else
+    {
+        //det3ection completed
+        ui->textEditResult->clear();
+        ui->textEditResult->setHtml(QString(
+            "<div align=\"center\"><font size=10 face=verdana>%1</font></div>"
+            "<p>%2</p><p>%3</p>")
+            .arg(tr("Completed!"))
+            .arg(tr("Change detection process is completed!\n"))
+            .arg(tr("You can press \"%1\" button to close the wizard"
+                    ", or press \"%2\" to cancel.")).
+                                    arg(tr("Finish"))
+                                    .arg(tr("Close"))
+        );
         ui->textEditResult->setStyleSheet("border: 3px solid green");
     }
 }
@@ -771,10 +684,19 @@ void WizardVectorChangeDetection::onDetectionFinished()
 {
     this->setEnabled(true);
 
-    CDTVectorCHangeDetectionHelper *helper = qobject_cast<CDTVectorCHangeDetectionHelper*>(sender());
-    shpID = QUuid::createUuid().toString();
-    shpPath = helper->shapefilePath();
-
+    CDTVectorChangeDetectionHelper *helper = qobject_cast<CDTVectorChangeDetectionHelper*>(sender());
+    if (helper->isValid())
+    {
+        shpID = QUuid::createUuid().toString();
+        shpPath = helper->shapefilePath();
+        isValid_Page3 = true;
+    }
+    else
+    {
+        QMessageBox::critical(this,tr("Error"),tr("Change det3ection failed!"));
+        isValid_Page3 = false;
+    }
+    updatePage3State();
 }
 
 QString WizardVectorChangeDetection::name() const

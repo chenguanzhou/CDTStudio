@@ -1,78 +1,172 @@
 #include "cdtvectorchangedetectionhelper.h"
-#include <qgsvectorlayer.h>
+#include "stable.h"
 #include "cdtvectorchangedetectioninterface.h"
+#include "cdtsegmentationlayer.h"
+#include "cdtclassificationlayer.h"
+#include "cdtfilesystem.h"
+
 
 class CDTVectorCHangeDetectionHelperPrivate
 {
-    friend class CDTVectorCHangeDetectionHelper;
+    friend class CDTVectorChangeDetectionHelper;
 
     CDTVectorCHangeDetectionHelperPrivate (
-            QString shapefilePathT1,
-            QString shapefilePathT2,
-            QString shapefilePathResult,
-            CDTVectorChangeDetectionInterface *interface,
-            QString fieldNameT1,
-            QString fieldNameT2)
-        : layerT1(NULL),
-          layerT2(NULL),
-          layerResult(NULL),
-          plugin(interface)
+            QString imageid_t1,
+            QString imageid_t2,
+            QString segid_t1,
+            QString segid_t2,
+            QString clsid_t1,
+            QString clsid_t2,
+            QString shapefile_t1,
+            QString shapefile_t2,
+            QString shapefileFieldName_t1,
+            QString shapefileFieldName_t2,
+            bool isUseLayer_t1,
+            bool isUseLayer_t2,
+            QStringList categoryNamesT1,
+            QStringList categoryNamesT2,
+            CDTVectorChangeDetectionInterface *interface)
+        : plugin(interface)
     {
-        layerT1 = new QgsVectorLayer(shapefilePathT1,QFileInfo(shapefilePathT1).completeBaseName(),"ogr");
-        layerT2 = new QgsVectorLayer(shapefilePathT2,QFileInfo(shapefilePathT1).completeBaseName(),"ogr");
-        layerResult = new QgsVectorLayer(shapefilePathResult,QFileInfo(shapefilePathT1).completeBaseName(),"ogr");
-        this->fieldNameT1 = fieldNameT1;
-        this->fieldNameT2 = fieldNameT2;
+        this->imageid_t1 = imageid_t1;
+        this->imageid_t2 = imageid_t2;
+        this->segid_t1 = segid_t1;
+        this->segid_t2 = segid_t2;
+        this->clsid_t1 = clsid_t1;
+        this->clsid_t2 = clsid_t2;
+        this->shapefile_t1 = shapefile_t1;
+        this->shapefile_t2 = shapefile_t2;
+        this->shapefileFieldName_t1 = shapefileFieldName_t1;
+        this->shapefileFieldName_t2 = shapefileFieldName_t2;
+        this->isUseLayer_t1 = isUseLayer_t1;
+        this->isUseLayer_t2 = isUseLayer_t2;
+        this->categoryNamesT1 = categoryNamesT1;
+        this->categoryNamesT2 = categoryNamesT2;
     }
 
-    bool isValid()const
-    {
-        if (layerT1==NULL || layerT2==NULL ||
-                layerResult == NULL || plugin==NULL)
-            return false;
-        else
-            return layerT1->isValid() &&
-                    layerT2->isValid() &&
-                    layerResult->isValid();
-    }
-
-    QgsVectorLayer *layerT1;
-    QgsVectorLayer *layerT2;
-    QgsVectorLayer *layerResult;
+    QString imageid_t1;
+    QString imageid_t2;
+    QString segid_t1;
+    QString segid_t2;
+    QString clsid_t1;
+    QString clsid_t2;
+    QString shapefile_t1;
+    QString shapefile_t2;
+    QString shapefileFieldName_t1;
+    QString shapefileFieldName_t2;
+    bool isUseLayer_t1;
+    bool isUseLayer_t2;
+    QStringList categoryNamesT1;
+    QStringList categoryNamesT2;
     CDTVectorChangeDetectionInterface *plugin;
-    QString fieldNameT1,fieldNameT2;
 };
 
-CDTVectorCHangeDetectionHelper::CDTVectorCHangeDetectionHelper(
-        QString shapefilePathT1,
-        QString shapefilePathT2,
-        QString shapefilePathResult,
-        QString fieldNameT1,
-        QString fieldNameT2,
+const QString CDTVectorChangeDetectionHelper::DefaultFieldName = "category";
+const QString CDTVectorChangeDetectionHelper::DefaultOtherName = CDTVectorChangeDetectionHelper::tr("others");
+
+CDTVectorChangeDetectionHelper::CDTVectorChangeDetectionHelper(
+        QString imageid_t1,
+        QString imageid_t2,
+        QString segid_t1,
+        QString segid_t2,
+        QString clsid_t1,
+        QString clsid_t2,
+        QString shapefile_t1,
+        QString shapefile_t2,
+        QString shapefileFieldName_t1,
+        QString shapefileFieldName_t2,
+        bool isUseLayer_t1,
+        bool isUseLayer_t2,
+        QStringList categoryNamesT1,
+        QStringList categoryNamesT2,
         CDTVectorChangeDetectionInterface *interface)
-    :p(new CDTVectorCHangeDetectionHelperPrivate(
-           shapefilePathT1,
-           shapefilePathT2,
-           shapefilePathResult,
-           interface,
-           fieldNameT1,
-           fieldNameT2)),
-      shpfilePath(shapefilePathResult)
-{    
+    :valid(false),
+      p(new CDTVectorCHangeDetectionHelperPrivate(
+            imageid_t1,
+            imageid_t2,
+            segid_t1,
+            segid_t2,
+            clsid_t1,
+            clsid_t2,
+            shapefile_t1,
+            shapefile_t2,
+            shapefileFieldName_t1,
+            shapefileFieldName_t2,
+            isUseLayer_t1,
+            isUseLayer_t2,
+            categoryNamesT1,
+            categoryNamesT2,
+            interface))
+{        
 }
 
-bool CDTVectorCHangeDetectionHelper::isValid() const
+
+
+bool CDTVectorChangeDetectionHelper::isValid() const
 {
-    return p->isValid();
+    return valid;
 }
 
-void CDTVectorCHangeDetectionHelper::run()
+void CDTVectorChangeDetectionHelper::run()
 {
     try
     {
-        if (isValid()==false) throw tr("Params of detection is invalid!");
+        valid = false;
+        if (p->isUseLayer_t1)
+        {
+            valid = addClsInfoToShp(
+                        p->imageid_t1,
+                        p->segid_t1,
+                        p->clsid_t1,
+                        p->categoryNamesT1,
+                        DefaultFieldName,
+                        p->shapefile_t1);
+            if (valid == false)
+                return;
+            p->shapefileFieldName_t1 = DefaultFieldName;
+        }
+        if (p->isUseLayer_t2)
+        {
+            valid = addClsInfoToShp(
+                        p->imageid_t2,
+                        p->segid_t2,
+                        p->clsid_t2,
+                        p->categoryNamesT2,
+                        DefaultFieldName,
+                        p->shapefile_t2);
+            if (valid == false) return;
+            p->shapefileFieldName_t2 = DefaultFieldName;
+        }
 
-        p->plugin->detect(p->layerT1,p->layerT2,p->layerResult,p->fieldNameT1,p->fieldNameT2);
+        resultShpPath = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".shp";
+        createShapefile(resultShpPath);
+
+//        if (isValid()==false) throw tr("Params of detection is invalid!");
+        auto isLayerValid = [](QgsVectorLayer *l)
+        {
+            if (l==NULL) throw "Layer is null";
+            if (l->isValid()==false) throw "Layer is invalid";
+        };
+        QgsVectorLayer *layerT1 = new QgsVectorLayer(p->shapefile_t1,QFileInfo(p->shapefile_t1).completeBaseName(),"ogr");
+        QgsVectorLayer *layerT2 = new QgsVectorLayer(p->shapefile_t2,QFileInfo(p->shapefile_t2).completeBaseName(),"ogr");
+        QgsVectorLayer *layerResult = new QgsVectorLayer(resultShpPath,QFileInfo(resultShpPath).completeBaseName(),"ogr");
+        try{
+            isLayerValid(layerT1);
+            isLayerValid(layerT2);
+            isLayerValid(layerResult);
+        }
+        catch(QString msg){
+            valid = false;
+            return;
+        }
+
+        p->plugin->detect(
+                    layerT1,
+                    layerT2,
+                    layerResult,
+                    p->shapefileFieldName_t1,
+                    p->shapefileFieldName_t2);
+        valid = true;
     }
     catch(QString msg)
     {
@@ -80,7 +174,116 @@ void CDTVectorCHangeDetectionHelper::run()
     }
 }
 
-QString CDTVectorCHangeDetectionHelper::shapefilePath() const
+QString CDTVectorChangeDetectionHelper::shapefilePath() const
 {
-    return shpfilePath;
+    return resultShpPath;
+}
+
+bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString segID, QString clsID, QStringList categoryNames, QString fieldName, QString &shapefilePath)
+{
+    CDTSegmentationLayer *segLayer =
+            CDTSegmentationLayer::getLayer(segID);
+    CDTClassificationLayer *clsLayer =
+            CDTClassificationLayer::getLayer(clsID);
+
+    if (segLayer==NULL || segLayer==NULL )
+        return false;
+
+    //Get categoryID_categoryName
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare("select id,name from category where name = ? and imageid=?");
+    QMap<QString,QString> categoryID_Name;
+    foreach (QString name, categoryNames) {
+        query.addBindValue(name);
+        query.addBindValue(imageID);
+        query.exec();
+        query.next();
+        categoryID_Name.insert(query.value(0).toString(),
+                               query.value(1).toString());
+    }
+
+    //Get category name for every object
+    QVariantList data = clsLayer->data();
+    QVariantMap clsInfo = clsLayer->clsInfo();
+
+    QMap<int,QString> id_Name;
+    foreach (QString key, clsInfo.keys()) {
+        int value = clsInfo.value(key).toInt();
+        if (categoryID_Name.keys().contains(key))
+            id_Name.insert(value,categoryID_Name[key]);
+        else
+            id_Name.insert(value,DefaultOtherName);
+    }
+
+    QStringList nameList;
+    foreach (QVariant id, data) {
+        nameList.push_back(id_Name[id.toInt()]);
+    }
+
+    //Write them to the shapefile
+    segLayer->fileSystem()->getFile(segLayer->shapefilePath(),shapefilePath);
+    QgsVectorLayer layer(shapefilePath,QFileInfo(shapefilePath).completeBaseName(),"ogr");
+    if (layer.isValid()==false)
+    {
+        logger()->error(layer.error().message(QgsErrorMessage::Text));
+        return false;
+    }
+
+    int index = layer.fieldNameIndex(DefaultFieldName);
+    if(index==-1)
+    {
+        if (layer.dataProvider()->addAttributes((QList<QgsField>()<<QgsField(DefaultFieldName,QVariant::String)))==false)
+        {
+            logger()->warn("Add attribute failed!");
+            return false;
+        }
+        index = layer.fieldNameIndex(DefaultFieldName);
+    }
+
+    layer.startEditing();
+
+    QgsFeatureIterator iter = layer.getFeatures();
+    QgsFeature f;
+    while(iter.nextFeature(f))
+    {
+        QString name = nameList[f.attribute("GridCode").toInt()];
+        if (f.setAttribute(DefaultFieldName,name)==false)
+        {
+            logger()->error("Set classification info to the shapefile failed!");
+            return false;
+        }
+        layer.updateFeature(f);
+    }
+    layer.commitChanges();
+
+    return true;
+}
+
+void CDTVectorChangeDetectionHelper::createShapefile(QString path)
+{
+    GDALAllRegister();
+    OGRRegisterAll();
+
+
+    OGRSFDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
+    Q_ASSERT(poDriver);
+    OGRDataSource* poDS = poDriver->CreateDataSource(path.toUtf8().constData(),NULL);
+    Q_ASSERT(poDS);
+//    OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
+    OGRLayer *layer = poDS->CreateLayer("change",NULL,wkbPolygon,NULL);
+    Q_ASSERT(layer);
+
+    OGRFieldDefn fieldBefore( "before", OFTString );
+    if( layer->CreateField( &fieldBefore ) != OGRERR_NONE )
+    {
+        logger()->error( "Creating field failed.") ;
+        return ;
+    }
+    OGRFieldDefn fieldAfter( "after", OFTString );
+    if( layer->CreateField( &fieldAfter ) != OGRERR_NONE )
+    {
+        logger()->error( "Creating field failed.") ;
+        return ;
+    }
+    OGRDataSource::DestroyDataSource(poDS);
 }

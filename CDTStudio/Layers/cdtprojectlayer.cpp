@@ -169,9 +169,14 @@ void CDTProjectLayer::addVectorChangeDetectionLayer()
     WizardVectorChangeDetection wizard(id());
     if (wizard.exec()==QDialog::Accepted)
     {
-        fileSystem->registerFile( wizard.shapefileID(),wizard.shapefilePath(),QString(),QString()
+        qDebug()<<fileSystem->registerFile( wizard.shapefileID(),wizard.shapefilePath(),QString(),QString()
                                  ,CDTFileSystem::getShapefileAffaliated(wizard.shapefilePath()));
-
+        qDebug()<<wizard.name()<<
+                  wizard.shapefilePath()<<
+                wizard.shapefileID()<<
+                wizard.clsID1()<<
+                wizard.clsID2()<<
+                wizard.params();
         CDTVectorChangeLayer *layer = new CDTVectorChangeLayer(QUuid::createUuid(),this);
         layer->initVectorChangeLayer(
                     wizard.name(),
