@@ -15,12 +15,12 @@ QString Overlay::methodName() const
     return tr("Overlay");
 }
 
-void Overlay::detect(
-        QgsVectorLayer *layerT1,
+void Overlay::detect(QgsVectorLayer *layerT1,
         QgsVectorLayer *layerT2,
         QgsVectorLayer *layerResult,
         QString fieldNameT1,
-        QString fieldNameT2)
+        QString fieldNameT2,
+        QMap<QString, QString> pairs)
 {
     auto getAllFeatures = [](QgsVectorLayer *layer)->QList<QgsFeature>
     {
@@ -32,6 +32,11 @@ void Overlay::detect(
             features.push_back(f);
         }
         return features;
+    };
+
+    auto isSameCategory = [&](QString c1,QString c2)->bool
+    {
+        return pairs.keys().contains(c1) && pairs.value(c1)==c2;
     };
 
     QList<QgsFeature> featuresT1 = getAllFeatures(layerT1);
@@ -62,6 +67,8 @@ void Overlay::detect(
                     f.setGeometry(g);
                     f.setAttribute("before",beforeCategory);
                     f.setAttribute("after",afterCategory);
+                    QString isChanged = isSameCategory(beforeCategory,afterCategory)?tr("Unhanged"):tr("Changed");
+                    f.setAttribute("ischanged",isChanged);
                     layerResult->addFeature(f,false);
                 }
             }

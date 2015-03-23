@@ -17,7 +17,8 @@ public:
             QgsVectorLayer *layerT2,
             QgsVectorLayer *layerResult,
             QString fieldNameT1,
-            QString fieldNameT2
+            QString fieldNameT2,
+            QMap<QString, QString> pairs
     ) =0;
 
     QVariantMap params() const

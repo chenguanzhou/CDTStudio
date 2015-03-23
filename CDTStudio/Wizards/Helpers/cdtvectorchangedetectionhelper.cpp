@@ -23,8 +23,9 @@ class CDTVectorCHangeDetectionHelperPrivate
             QString shapefileFieldName_t2,
             bool isUseLayer_t1,
             bool isUseLayer_t2,
-            QStringList categoryNamesT1,
-            QStringList categoryNamesT2,
+//            QStringList categoryNamesT1,
+//            QStringList categoryNamesT2,
+            QMap<QString, QString> pairs,
             CDTVectorChangeDetectionInterface *interface)
         : plugin(interface)
     {
@@ -40,8 +41,9 @@ class CDTVectorCHangeDetectionHelperPrivate
         this->shapefileFieldName_t2 = shapefileFieldName_t2;
         this->isUseLayer_t1 = isUseLayer_t1;
         this->isUseLayer_t2 = isUseLayer_t2;
-        this->categoryNamesT1 = categoryNamesT1;
-        this->categoryNamesT2 = categoryNamesT2;
+        this->categoryNamesT1 = pairs.keys();
+        this->categoryNamesT2 = pairs.values();
+        this->pairs = pairs;
     }
 
     QString imageid_t1;
@@ -58,14 +60,14 @@ class CDTVectorCHangeDetectionHelperPrivate
     bool isUseLayer_t2;
     QStringList categoryNamesT1;
     QStringList categoryNamesT2;
+    QMap<QString, QString> pairs;
     CDTVectorChangeDetectionInterface *plugin;
 };
 
 const QString CDTVectorChangeDetectionHelper::DefaultFieldName = "category";
 const QString CDTVectorChangeDetectionHelper::DefaultOtherName = CDTVectorChangeDetectionHelper::tr("others");
 
-CDTVectorChangeDetectionHelper::CDTVectorChangeDetectionHelper(
-        QString imageid_t1,
+CDTVectorChangeDetectionHelper::CDTVectorChangeDetectionHelper(QString imageid_t1,
         QString imageid_t2,
         QString segid_t1,
         QString segid_t2,
@@ -77,8 +79,9 @@ CDTVectorChangeDetectionHelper::CDTVectorChangeDetectionHelper(
         QString shapefileFieldName_t2,
         bool isUseLayer_t1,
         bool isUseLayer_t2,
-        QStringList categoryNamesT1,
-        QStringList categoryNamesT2,
+//        QStringList categoryNamesT1,
+//        QStringList categoryNamesT2,
+        QMap<QString, QString> categoryPairs,
         CDTVectorChangeDetectionInterface *interface)
     :valid(false),
       p(new CDTVectorCHangeDetectionHelperPrivate(
@@ -94,8 +97,9 @@ CDTVectorChangeDetectionHelper::CDTVectorChangeDetectionHelper(
             shapefileFieldName_t2,
             isUseLayer_t1,
             isUseLayer_t2,
-            categoryNamesT1,
-            categoryNamesT2,
+//            categoryNamesT1,
+//            categoryNamesT2,
+            categoryPairs,
             interface))
 {        
 }
@@ -169,7 +173,8 @@ void CDTVectorChangeDetectionHelper::run()
                     layerT2,
                     layerResult,
                     p->shapefileFieldName_t1,
-                    p->shapefileFieldName_t2);
+                    p->shapefileFieldName_t2,
+                    p->pairs);
         disconnect(p->plugin,SIGNAL(currentProgressChanged(QString)),this,SIGNAL(currentProgressChanged(QString)));
         disconnect(p->plugin,SIGNAL(progressBarValueChanged(int)),this,SIGNAL(progressBarValueChanged(int)));
         emit currentProgressChanged(tr("Completed!"));
@@ -295,6 +300,12 @@ void CDTVectorChangeDetectionHelper::createShapefile(QString path)
     }
     OGRFieldDefn fieldAfter( "after", OFTString );
     if( layer->CreateField( &fieldAfter ) != OGRERR_NONE )
+    {
+        logger()->error( "Creating field failed.") ;
+        return ;
+    }
+    OGRFieldDefn fieldIsChangedd( "ischanged", OFTString );
+    if( layer->CreateField( &fieldIsChangedd ) != OGRERR_NONE )
     {
         logger()->error( "Creating field failed.") ;
         return ;

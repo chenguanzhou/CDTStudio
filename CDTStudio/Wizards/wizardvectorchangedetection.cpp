@@ -589,16 +589,16 @@ void WizardVectorChangeDetection::startDetect()
     bool isUseLayer_t1 = ui->tabWidgetT1->currentIndex()==0;
     bool isUseLayer_t2 = ui->tabWidgetT2->currentIndex()==0;
 
-//    QStringList pairs;
-    QStringList categoryNamesT1;
-    QStringList categoryNamesT2;
+    QMap<QString, QString> categoryPairs;
+//    QStringList categoryNamesT1;
+//    QStringList categoryNamesT2;
     for (size_t i=0;i<ui->listWidgetCategoryPairs->count();++i)
     {
         QString pair = ui->listWidgetCategoryPairs->item(i)->text();
-//        pairs<< pair;
         QStringList pairText = pair.split("<->");
-        categoryNamesT1.push_back(pairText[0]);
-        categoryNamesT2.push_back(pairText[1]);
+//        categoryNamesT1.push_back(pairText[0]);
+//        categoryNamesT2.push_back(pairText[1]);
+        categoryPairs.insert(pairText[0],pairText[1]);
     }
 
     CDTVectorChangeDetectionHelper *helper =
@@ -615,8 +615,9 @@ void WizardVectorChangeDetection::startDetect()
                 shapefileFieldName_t2,
                 isUseLayer_t1,
                 isUseLayer_t2,
-                categoryNamesT1,
-                categoryNamesT2,
+//                categoryNamesT1,
+//                categoryNamesT2,
+                categoryPairs,
                 vectorDetectionPlugins[ui->comboBoxAlgo->currentIndex()]);
     connect(helper,SIGNAL(finished()),SLOT(onDetectionFinished()));
     connect(helper,SIGNAL(currentProgressChanged(QString)),this,SLOT(updateProgressLabel(QString)));

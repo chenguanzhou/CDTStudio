@@ -24,6 +24,7 @@ signals:
 
 public slots:
     void rename();
+    void exportShapefile();
     void remove();
 
     void setName(const QString& name);

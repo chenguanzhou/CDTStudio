@@ -17,12 +17,12 @@ public:
     ~Overlay();
 
     QString methodName()const ;
-    void detect(
-            QgsVectorLayer *layerT1,
+    void detect(QgsVectorLayer *layerT1,
             QgsVectorLayer *layerT2,
             QgsVectorLayer *layerResult,
             QString fieldNameT1,
-            QString fieldNameT2
+            QString fieldNameT2,
+            QMap<QString, QString> pairs
     );
 
 private:

@@ -25,8 +25,9 @@ public:
             QString shapefileFieldName_t2,
             bool isUseLayer_t1,
             bool isUseLayer_t2,
-            QStringList categoryNamesT1,
-            QStringList categoryNamesT2,
+//            QStringList categoryNamesT1,
+//            QStringList categoryNamesT2,
+            QMap<QString,QString> categoryPairs,
             CDTVectorChangeDetectionInterface *interface);
 
     bool isValid() const;

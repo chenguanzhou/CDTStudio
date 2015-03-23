@@ -9,16 +9,19 @@ CDTVectorChangeLayer::CDTVectorChangeLayer(QUuid uuid, QObject *parent)
 {
     keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::VECTOR_CHANGE,CDTProjectTreeItem::VECTOR,QString(),this);
 
-    QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),
-                                        tr("Rename"),this);
-    QAction *actionRemoveLayer = new QAction(QIcon(":/Icon/Remove.png"),
-                                        tr("Remove Vector-based change detection layer"),this);
+    QAction *actionRename =
+            new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this);
+    QAction *actionRemoveLayer =
+            new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Vector-based change detection layer"),this);
+    QAction *actiobExport =
+            new QAction(QIcon(":/Icon/Export.png"),tr("Export shapefile"),this);
 
-    actions <<(QList<QAction *>()<<actionRename);
+    actions <<(QList<QAction *>()<<actionRename<<actiobExport);
     actions <<(QList<QAction *>()<<actionRemoveLayer);
 
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
     connect(actionRemoveLayer,SIGNAL(triggered()),SLOT(remove()));
+    connect(actiobExport,SIGNAL(triggered()),SLOT(exportShapefile()));
 
     connect(this,SIGNAL(removeVectorChangeLayer(CDTVectorChangeLayer*)),this->parent(),SLOT(removeVectorChangeLayer(CDTVectorChangeLayer*)));
 }
@@ -55,6 +58,11 @@ void CDTVectorChangeLayer::rename()
                 this->name(), &ok);
     if (ok && !text.isEmpty())
         setName(text);
+}
+
+void CDTVectorChangeLayer::exportShapefile()
+{
+    fileSystem()->exportFiles(shapefileID());
 }
 
 void CDTVectorChangeLayer::remove()

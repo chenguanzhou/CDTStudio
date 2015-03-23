@@ -106,12 +106,12 @@ void CDTFileSystem::removeFile(QString id, bool deleteFiles)
     }
 }
 
-bool CDTFileSystem::exportFiles(QString id)
+void CDTFileSystem::exportFiles(QString id)
 {
     if (!pData->files.contains(id))
     {
         QMessageBox::warning(NULL,tr("Warning"),tr("File not exist!"));
-        return false;
+        return ;
     }
 
     CDTFileInfo info = pData->files.value(id);
@@ -120,18 +120,20 @@ bool CDTFileSystem::exportFiles(QString id)
 
 
     QString dir = QFileDialog::getExistingDirectory(NULL,tr("Choose a directory to export"));
+    if(dir.isEmpty())
+        return;
+
     foreach (QString filePath, list) {
         QString newPath = dir + "/" + QFileInfo(filePath).fileName();
         if (QFile::copy(filePath,newPath)==false)
         {
             QMessageBox::warning(NULL,tr("Warning"),tr("Copy file from %1 to %2 failed!")
                                  .arg(filePath).arg(newPath));
-            return false;
+            return ;
         }
     }
 
     QMessageBox::information(NULL,tr("Completed"),tr("Export file completed!"));
-    return true;
 }
 
 QStringList CDTFileSystem::getShapefileAffaliated(const QString &srcPath)
