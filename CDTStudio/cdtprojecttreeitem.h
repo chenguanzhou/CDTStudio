@@ -35,7 +35,7 @@ public:
     };
 
     CDTProjectTreeItem(CDTItemType tp,LayerType ly, const QString &text,CDTBaseLayer *crspdObject );
-    CDTItemType getType()const {return _itemType;}
+    CDTItemType getType()const {return itemType;}
     CDTBaseLayer* correspondingObject()const {return corrObject;}
 
     QgsMapLayer *mapLayer()const;
@@ -47,7 +47,7 @@ private:
     void initFont();
     void initColor();
     void initCheckState();
-    CDTItemType _itemType;
+    CDTItemType itemType;
     LayerType layerType;
     CDTBaseLayer* corrObject;
     QgsMapLayer* qgsMapLayer;

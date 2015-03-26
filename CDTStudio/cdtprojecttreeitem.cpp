@@ -1,7 +1,7 @@
 #include "cdtprojecttreeitem.h"
 
 CDTProjectTreeItem::CDTProjectTreeItem(CDTItemType tp, LayerType ly, const QString &text, CDTBaseLayer *crspdObject)
-    :_itemType(tp),layerType(ly),corrObject(crspdObject),qgsMapLayer(NULL)
+    :itemType(tp),layerType(ly),corrObject(crspdObject),qgsMapLayer(NULL)
 {
     setText(text);
     initAlignment();
@@ -22,7 +22,7 @@ void CDTProjectTreeItem::setMapLayer(QgsMapLayer *layer)
 
 void CDTProjectTreeItem::initAlignment()
 {
-    switch (_itemType) {
+    switch (itemType) {
     case PARAM:
     case METHOD_PARAMS:
         this->setTextAlignment(Qt::AlignRight);
@@ -33,7 +33,7 @@ void CDTProjectTreeItem::initAlignment()
 void CDTProjectTreeItem::initFont()
 {
     QFont font= this->font();
-    switch (_itemType) {
+    switch (itemType) {
     case PROJECT_ROOT:
         font.setBold(true);
         font.setPointSize(font.pointSize()+3);        
@@ -69,7 +69,7 @@ void CDTProjectTreeItem::initFont()
 void CDTProjectTreeItem::initColor()
 {
     QBrush brush = this->foreground();
-    switch (_itemType) {
+    switch (itemType) {
     case PROJECT_ROOT:
         break;
     case IMAGE:

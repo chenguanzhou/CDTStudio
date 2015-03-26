@@ -35,6 +35,7 @@ public slots:
     void onZoomInTool(bool toggle);
     void onPanTool(bool toggle);
     void onFullExtent();
+    void setLayerVisible(QgsMapLayer* layer,bool visible);
     void appendLayers(QList<QgsMapLayer*> layers);
     void removeLayer(QList<QgsMapLayer*> layer);
     void refreshMapCanvas(bool zoomToFullExtent=true);
@@ -44,12 +45,11 @@ public slots:
 
 private slots:
     void untoggledToolBar();
-//    void onHehe();
 private:
     CDTProjectLayer *project;
     QFile file;
     QStandardItemModel *treeModelObject;
-    QStandardItemModel *treeModelChanges;
+//    QStandardItemModel *treeModelChanges;
 
     QgsMapCanvas* mapCanvas;
     QToolBar *initToolBar();

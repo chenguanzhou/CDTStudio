@@ -9,7 +9,7 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
     project(NULL),
     treeModelObject(new QStandardItemModel(this)),
-    treeModelChanges(new QStandardItemModel(this)),
+//    treeModelChanges(new QStandardItemModel(this)),
     mapCanvas(new QgsMapCanvas(this,"mapCanvas"))
 {
 //    treeModel->setHorizontalHeaderLabels(QStringList()<<tr("Layer")<<tr("Value"));
@@ -172,6 +172,14 @@ void CDTProjectWidget::onFullExtent()
     mapCanvas->zoomToFullExtent();
 }
 
+void CDTProjectWidget::setLayerVisible(QgsMapLayer *layer, bool visible)
+{
+    if (layer==NULL) return;
+
+    if (layersVisible.keys().contains(layer))
+        layersVisible[layer] = visible;
+}
+
 void CDTProjectWidget::appendLayers(QList<QgsMapLayer *> layers)
 {    
     activeLayers.append(layers);
@@ -196,18 +204,32 @@ void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
 void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
 {
     QList<QgsMapCanvasLayer> mapLayers;
+//    foreach (QgsMapLayer *lyr, activeLayers) {
+//        if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::VectorLayer)
+//        {
+//            mapLayers<<QgsMapCanvasLayer(lyr);
+//        }
+//    }
+//    foreach (QgsMapLayer *lyr, activeLayers) {
+//        if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::RasterLayer)
+//        {
+//            mapLayers<<QgsMapCanvasLayer(lyr);
+//        }
+//    }
+
     foreach (QgsMapLayer *lyr, activeLayers) {
-        if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::VectorLayer)
+        if (lyr->type()==QgsMapLayer::VectorLayer)
         {
-            mapLayers<<QgsMapCanvasLayer(lyr);
+            mapLayers<<QgsMapCanvasLayer(lyr,layersVisible.value(lyr));
         }
     }
     foreach (QgsMapLayer *lyr, activeLayers) {
-        if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::RasterLayer)
+        if (lyr->type()==QgsMapLayer::RasterLayer)
         {
-            mapLayers<<QgsMapCanvasLayer(lyr);
+            mapLayers<<QgsMapCanvasLayer(lyr,layersVisible.value(lyr));
         }
     }
+
 
     mapCanvas->setLayerSet(mapLayers);
     if (zoomToFullExtent)
@@ -239,7 +261,6 @@ QToolBar *CDTProjectWidget::initToolBar()
     actionZoomIn   = new QAction(QIcon(":/Icon/ZoomIn.png"),tr("Zoom In"),this);
     actionPan      = new QAction(QIcon(":/Icon/Pan.png"),tr("Pan"),this);
     actionFullExtent = new QAction(QIcon(":/Icon/FullExtent.png"),tr("Full Extent"),this);
-//    QAction* hehe = new QAction(tr("Hehe"),this);
 
     actionZoomOut->setCheckable(true);
     actionZoomIn->setCheckable(true);
@@ -249,13 +270,11 @@ QToolBar *CDTProjectWidget::initToolBar()
     toolBar->addAction(actionZoomIn );
     toolBar->addAction(actionPan);
     toolBar->addAction(actionFullExtent);
-//    toolBar->addAction(hehe);
 
     connect(actionZoomOut,SIGNAL(triggered(bool)),this,SLOT(onZoomOutTool(bool)));
     connect(actionZoomIn ,SIGNAL(triggered(bool)),this,SLOT(onZoomInTool(bool)));
     connect(actionPan,SIGNAL(triggered(bool)),this,SLOT(onPanTool(bool)));
     connect(actionFullExtent,SIGNAL(triggered()),this,SLOT(onFullExtent()));
-//    connect(hehe,SIGNAL(triggered()),this,SLOT(onHehe()));
 
     zoomOutTool = new QgsMapToolZoom(mapCanvas,TRUE);
     zoomInTool = new QgsMapToolZoom(mapCanvas,FALSE);
@@ -293,7 +312,7 @@ void CDTProjectWidget::createProject(QUuid id)
     connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
 
     treeModelObject->appendRow(project->standardKeyItem());
-    treeModelChanges->appendRow(project->standardKeyItem());
+//    treeModelChanges->appendRow(project->standardKeyItem());
 }
 
 void CDTProjectWidget::untoggledToolBar()
@@ -303,10 +322,6 @@ void CDTProjectWidget::untoggledToolBar()
     actionPan->setChecked(false);
 }
 
-//void CDTProjectWidget::onHehe()
-//{
-
-//}
 
 int CDTProjectWidget::maybeSave()
 {

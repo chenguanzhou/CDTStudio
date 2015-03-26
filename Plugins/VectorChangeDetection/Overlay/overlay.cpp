@@ -67,7 +67,7 @@ void Overlay::detect(QgsVectorLayer *layerT1,
                     f.setGeometry(g);
                     f.setAttribute("before",beforeCategory);
                     f.setAttribute("after",afterCategory);
-                    QString isChanged = isSameCategory(beforeCategory,afterCategory)?tr("Unhanged"):tr("Changed");
+                    QString isChanged = isSameCategory(beforeCategory,afterCategory)?"Unchanged":"Changed";
                     f.setAttribute("ischanged",isChanged);
                     layerResult->addFeature(f,false);
                 }

@@ -4,6 +4,13 @@
 #include "qgsscalecombobox.h"
 #include "stable.h"
 
+#include "cdtimagelayer.h"
+#include "cdtextractionlayer.h"
+#include "cdtsegmentationlayer.h"
+#include "cdtclassificationlayer.h"
+#include "cdtpixelchangelayer.h"
+#include "cdtvectorchangelayer.h"
+
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
 #include "cdtattributedockwidget.h"
@@ -14,11 +21,6 @@
 #include "cdtcategorydockwidget.h"
 #include "cdtextractiondockwidget.h"
 #include "cdtprojecttreeitem.h"
-#include "cdtimagelayer.h"
-#include "cdtextractionlayer.h"
-#include "cdtsegmentationlayer.h"
-#include "cdtclassificationlayer.h"
-#include "cdtpixelchangelayer.h"
 #include "cdtundowidget.h"
 #include "cdtlayerinfowidget.h"
 #include "cdttaskdockwidget.h"
@@ -586,6 +588,16 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
             getCurrentMapCanvas()->refresh();
         }
 
+    }
+    else if (type == CDTProjectTreeItem::VECTOR_CHANGE)
+    {
+        CDTVectorChangeLayer *layer = qobject_cast<CDTVectorChangeLayer *>(item->correspondingObject());
+        if (layer != NULL)
+        {
+            layer->setOriginRenderer();
+            getCurrentMapCanvas()->setCurrentLayer(layer->canvasLayer());
+            getCurrentMapCanvas()->refresh();
+        }
     }
 }
 

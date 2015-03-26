@@ -3,6 +3,8 @@
 
 #include "cdtbaselayer.h"
 
+class QgsFeatureRendererV2;
+
 class CDTVectorChangeLayer : public CDTBaseLayer
 {
     Q_OBJECT
@@ -28,6 +30,9 @@ public slots:
     void remove();
 
     void setName(const QString& name);
+    void setOriginRenderer();
+    void setRenderer(QgsFeatureRendererV2 *r);
+    QgsFeatureRendererV2 * changeViewRenderer();
 
     void initVectorChangeLayer(
             const QString& name,

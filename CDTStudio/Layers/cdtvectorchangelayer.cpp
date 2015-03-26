@@ -3,6 +3,8 @@
 #include "cdtprojecttreeitem.h"
 #include "cdtfilesystem.h"
 #include "cdtvariantconverter.h"
+#include "cdtprojectwidget.h"
+#include "mainwindow.h"
 
 CDTVectorChangeLayer::CDTVectorChangeLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent)
@@ -84,6 +86,42 @@ void CDTVectorChangeLayer::setName(const QString &name)
     emit nameChanged(name);
 }
 
+void CDTVectorChangeLayer::setOriginRenderer()
+{
+    setRenderer(changeViewRenderer());
+}
+
+void CDTVectorChangeLayer::setRenderer(QgsFeatureRendererV2* r)
+{
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(mapCanvasLayer);
+    if (p)
+        p->setRendererV2(r);
+}
+
+QgsFeatureRendererV2 *CDTVectorChangeLayer::changeViewRenderer()
+{
+    auto getCategorySymbol = [](QString value,QString label,QColor color)->QgsRendererCategoryV2
+    {
+        QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+        symbolLayer->setColor(color);
+        symbolLayer->setBorderColor(color);
+        QgsRendererCategoryV2 rend;
+        rend.setValue(value);
+        rend.setSymbol(new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer));
+        rend.setLabel(label);
+        return rend;
+    };
+
+    QgsCategoryList categoryList;
+    categoryList<<getCategorySymbol("Changed","Changed",QColor(255,0,0));
+    categoryList<<getCategorySymbol("Unchanged","Unchanged",QColor(0,0,255));
+
+    QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer =
+            new QgsCategorizedSymbolRendererV2("ischanged",categoryList);
+
+    return categorizedSymbolRenderer;
+}
+
 void CDTVectorChangeLayer::initVectorChangeLayer(
         const QString &name,
         const QString &shapefileID,
@@ -123,9 +161,11 @@ void CDTVectorChangeLayer::initVectorChangeLayer(
     query.bindValue(5,dataToVariant(params));
     query.exec();
 
+    setOriginRenderer();
+
     emit nameChanged(name);
     emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
-    emit layerChanged();
+    emit layerChanged();    
 }
 
 
