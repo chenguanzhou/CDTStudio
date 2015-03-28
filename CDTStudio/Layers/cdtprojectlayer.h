@@ -11,8 +11,9 @@ class CDTFileSystem;
 
 class CDTProjectLayer: public CDTBaseLayer
 {
-    Q_OBJECT
+    Q_OBJECT    
     Q_CLASSINFO("CDTProjectLayer",tr("Project"))
+    Q_CLASSINFO("tableName",tr("project"))
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
 public:
     explicit CDTProjectLayer(QUuid uuid,QObject *parent = 0);

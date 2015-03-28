@@ -108,9 +108,8 @@ CDTProjectLayer::~CDTProjectLayer()
 
 void CDTProjectLayer::insertToTable(QString name)
 {
-//    setName(name);
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("insert into project values(?,?)");
+    query.prepare(QString("insert into %1 values(?,?)").arg(tableName()));
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.exec();

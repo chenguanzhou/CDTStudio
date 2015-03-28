@@ -8,7 +8,8 @@ class QgsFeatureRendererV2;
 class CDTVectorChangeLayer : public CDTBaseLayer
 {
     Q_OBJECT
-    Q_CLASSINFO("CDTVectorCHangeLayer","Vector-based change detection")
+    Q_CLASSINFO("CDTVectorChangeLayer","Vector-based change detection")
+    Q_CLASSINFO("tableName","vector_change")
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
 public:
     explicit CDTVectorChangeLayer(QUuid uuid, QObject *parent = 0);

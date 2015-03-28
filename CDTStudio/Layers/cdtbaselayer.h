@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QUuid>
+#include <log4qt/logger.h>
 
 class QAction;
 class QStandardItem;
@@ -15,6 +16,7 @@ class CDTProjectLayer;
 class CDTBaseLayer : public QObject
 {
     Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit CDTBaseLayer(QUuid uuid,QObject *parent = 0);
     virtual ~CDTBaseLayer();
@@ -60,7 +62,6 @@ private slots:
 
 private:
     QUuid               uuid;
-    QString             tblName;
     CDTProjectTreeItem  *treeKeyItem;
     QgsMapLayer         *mapCanvasLayer;
     QgsMapCanvas        *mapCanvas;

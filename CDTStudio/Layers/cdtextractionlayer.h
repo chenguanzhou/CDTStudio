@@ -12,6 +12,8 @@ class CDTExtractionLayer : public CDTBaseLayer
 {
     Q_OBJECT    
     Q_CLASSINFO("CDTExtractionLayer","Extraction")
+    Q_CLASSINFO("tableName","extractionlayer")
+
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
     Q_PROPERTY(QColor Color READ color WRITE setColor DESIGNABLE true USER true)
     Q_PROPERTY(QColor Border_Color READ borderColor WRITE setBorderColor DESIGNABLE true USER true)

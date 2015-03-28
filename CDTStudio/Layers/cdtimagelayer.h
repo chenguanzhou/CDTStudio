@@ -15,6 +15,7 @@ class CDTImageLayer:public CDTBaseLayer
 {
     Q_OBJECT
     Q_CLASSINFO("CDTImageLayer","Image")
+    Q_CLASSINFO("tableName","imagelayer")
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
     Q_PROPERTY(QString Source READ path DESIGNABLE true USER true)
 public:

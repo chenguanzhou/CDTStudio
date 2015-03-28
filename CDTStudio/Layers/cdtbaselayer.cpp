@@ -65,14 +65,20 @@ CDTFileSystem *CDTBaseLayer::fileSystem() const
     return rootProject()->fileSystem;
 }
 
+QString CDTBaseLayer::tableName() const
+{
+    int index = metaObject()->indexOfClassInfo("tableName");
+    if (index == -1)
+    {
+        logger()->error("Get table name of layer:%1 failed!",metaObject()->className());
+        return 0;
+    }
+    return metaObject()->classInfo(index).value();
+}
+
 QList<QList<QAction *> > CDTBaseLayer::allActions() const
 {
     return actions;
-}
-
-QString CDTBaseLayer::tableName() const
-{
-    return tblName;
 }
 
 QObject *CDTBaseLayer::getAncestor(const char *className)

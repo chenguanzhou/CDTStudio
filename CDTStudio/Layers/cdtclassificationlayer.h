@@ -11,6 +11,7 @@ class CDTClassificationLayer:public CDTBaseLayer
 {
     Q_OBJECT   
     Q_CLASSINFO("CDTClassificationLayer","Classification")
+    Q_CLASSINFO("tableName",tr("classificationlayer"))
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
     Q_PROPERTY(QString Method READ method  DESIGNABLE true USER true)
     Q_PROPERTY(QString Normalization_Param READ normalizeMethod  DESIGNABLE true USER true)
