@@ -94,19 +94,19 @@ CDTImageLayer::~CDTImageLayer()
     layers.removeAll(this);
 }
 
-void CDTImageLayer::setName(const QString &name)
-{
-    if (this->name() == name)
-        return;
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE imageLayer set name = ? where id =?");
-    query.bindValue(0,name);
-    query.bindValue(1,this->id().toString());
-    query.exec();
+//void CDTImageLayer::setName(const QString &name)
+//{
+//    if (this->name() == name)
+//        return;
+//    QSqlQuery query(QSqlDatabase::database("category"));
+//    query.prepare("UPDATE imageLayer set name = ? where id =?");
+//    query.bindValue(0,name);
+//    query.bindValue(1,this->id().toString());
+//    query.exec();
 
-    standardKeyItem()->setText(name);
-    emit layerChanged();
-}
+//    standardKeyItem()->setText(name);
+//    emit layerChanged();
+//}
 
 void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
 {
@@ -183,14 +183,14 @@ QString CDTImageLayer::path() const
     return query.value(0).toString();
 }
 
-QString CDTImageLayer::name() const
-{
-    QSqlDatabase db = QSqlDatabase::database("category");
-    QSqlQuery query(db);
-    query.exec("select name from imageLayer where id ='" + this->id().toString() +"'");
-    query.next();
-    return query.value(0).toString();
-}
+//QString CDTImageLayer::name() const
+//{
+//    QSqlDatabase db = QSqlDatabase::database("category");
+//    QSqlQuery query(db);
+//    query.exec("select name from imageLayer where id ='" + this->id().toString() +"'");
+//    query.next();
+//    return query.value(0).toString();
+//}
 
 int CDTImageLayer::bandCount() const
 {
@@ -307,17 +307,17 @@ void CDTImageLayer::removeAllSegmentationLayers()
     emit layerChanged();
 }
 
-void CDTImageLayer::rename()
-{
-    bool ok;
-    QString text = QInputDialog::getText(NULL, tr("Input Image Name"),
-                                         tr("Image rename:"), QLineEdit::Normal,
-                                         this->name(), &ok);
-    if (ok && !text.isEmpty())
-    {
-        setName(text);
-    }
-}
+//void CDTImageLayer::rename()
+//{
+//    bool ok;
+//    QString text = QInputDialog::getText(NULL, tr("Input Image Name"),
+//                                         tr("Image rename:"), QLineEdit::Normal,
+//                                         this->name(), &ok);
+//    if (ok && !text.isEmpty())
+//    {
+//        setName(text);
+//    }
+//}
 
 void CDTImageLayer::setLayerOpacity(int opacity)
 {

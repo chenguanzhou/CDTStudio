@@ -17,6 +17,8 @@ class CDTBaseLayer : public QObject
 {
     Q_OBJECT
     LOG4QT_DECLARE_QCLASS_LOGGER
+    Q_CLASSINFO("CDTBaseLayer","Basic information")
+    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
 public:
     explicit CDTBaseLayer(QUuid uuid,QObject *parent = 0);
     virtual ~CDTBaseLayer();
@@ -30,17 +32,20 @@ public:
     QgsMapLayer         *canvasLayer()const;
     QgsMapCanvas        *canvas()const;
     CDTFileSystem       *fileSystem()const;
-    inline QUuid        id()const{return uuid;}
-    virtual QString     name()const = 0;
+    inline QUuid        id()const;
+    QString             name()const;
     QString             tableName() const;
 
     ///Find and return the ancestor object of the this class's instace, whose name is className.
     QObject *getAncestor(const char* className);
 
 protected:
+    QList<QList<QAction *> > allActions()const;
     virtual void        onContextMenuRequest(QWidget *parent);
 
-    QList<QList<QAction *> > allActions()const;
+public slots:
+    void setName(const QString &name);
+    void rename();
 
 protected slots:
     void setID(QUuid id);
@@ -53,8 +58,7 @@ signals:
     void appendLayers(QList<QgsMapLayer*> layer);
     void removeLayer(QList<QgsMapLayer*> layer);
     void layerChanged();
-public slots:
-
+    void nameChanged(QString);
 
 private slots:
     void onMenuAboutToHide();

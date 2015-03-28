@@ -96,7 +96,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));
     connect(actionAddDecisionFusion,SIGNAL(triggered()),SLOT(decisionFusion()));
 
-    connect(this,SIGNAL(nameChanged(QString)),this,SIGNAL(layerChanged()));
+//    connect(this,SIGNAL(nameChanged(QString)),this,SIGNAL(layerChanged()));
     connect(this,SIGNAL(methodParamsChanged()),this,SIGNAL(layerChanged()));
     connect(this,SIGNAL(removeSegmentation(CDTSegmentationLayer*)),this->parent(),SLOT(removeSegmentation(CDTSegmentationLayer*)));
     //    connect(this,SIGNAL(segmentationChanged()),this->parent(),SIGNAL(imageLayerChanged()));
@@ -132,17 +132,6 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
         qWarning()<<"prepare:"<<query.lastError().text();
 
     layers.removeAll(this);
-}
-
-void CDTSegmentationLayer::rename()
-{
-    bool ok;
-    QString text = QInputDialog::getText(
-                NULL, tr("Input Segmentation Name"),
-                tr("Segmentation rename:"), QLineEdit::Normal,
-                this->name(), &ok);
-    if (ok && !text.isEmpty())
-        setName(text);
 }
 
 void CDTSegmentationLayer::editDBInfo()
@@ -264,16 +253,6 @@ void CDTSegmentationLayer::decisionFusion()
     classificationRootItem->appendRow(classification->standardKeyItem());
     addClassification(classification);
 
-}
-
-
-QString CDTSegmentationLayer::name() const
-{
-    QSqlDatabase db = QSqlDatabase::database("category");
-    QSqlQuery query(db);
-    query.exec("select name from segmentationlayer where id ='" + this->id().toString() +"'");
-    query.next();
-    return query.value(0).toString();
 }
 
 QString CDTSegmentationLayer::shapefilePath() const
@@ -413,20 +392,6 @@ CDTSegmentationLayer *CDTSegmentationLayer::getLayer(QUuid id)
             return layer;
     }
     return NULL;
-}
-
-void CDTSegmentationLayer::setName(const QString &name)
-{
-    if (this->name() == name)
-        return;
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE segmentationlayer set name = ? where id =?");
-    query.bindValue(0,name);
-    query.bindValue(1,this->id().toString());
-    query.exec();
-
-    keyItem()->setText(name);
-    emit nameChanged(name);
 }
 
 void CDTSegmentationLayer::setBorderColor(const QColor &clr)

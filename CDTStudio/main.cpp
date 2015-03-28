@@ -6,10 +6,8 @@
 //TODO  Comment => Document
 //TODO  Translation
 
-//TODO  name(set,get,rename),tableName to CDTBaseLayer
 //TODO  Change Detection View
 //TODO  Recent file
-//TODO  Opacity for layers
 //TODO  Attribute Widget Closable(invisible)
 //TODO  Read & write project in another thread
 //TODO  FileSystem as a db

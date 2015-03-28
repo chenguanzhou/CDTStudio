@@ -56,17 +56,6 @@ CDTClassificationLayer::~CDTClassificationLayer()
     layers.removeAll(this);
 }
 
-void CDTClassificationLayer::rename()
-{
-    bool ok;
-    QString text = QInputDialog::getText(
-                NULL, tr("Input Classification Name"),
-                tr("Segmentation rename:"), QLineEdit::Normal,
-                this->name(), &ok);
-    if (ok && !text.isEmpty())
-        setName(text);
-}
-
 void CDTClassificationLayer::remove()
 {
     emit removeClassification(this);
@@ -86,14 +75,14 @@ void CDTClassificationLayer::showAccuracy()
     dlg.exec();
 }
 
-QString CDTClassificationLayer::name() const
-{
-    QSqlDatabase db = QSqlDatabase::database("category");
-    QSqlQuery query(db);
-    query.exec("select name from classificationlayer where id ='" + this->id().toString() +"'");
-    query.next();
-    return query.value(0).toString();
-}
+//QString CDTClassificationLayer::name() const
+//{
+//    QSqlDatabase db = QSqlDatabase::database("category");
+//    QSqlQuery query(db);
+//    query.exec("select name from classificationlayer where id ='" + this->id().toString() +"'");
+//    query.next();
+//    return query.value(0).toString();
+//}
 
 QString CDTClassificationLayer::method() const
 {
@@ -185,19 +174,6 @@ QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
 
     QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("GridCode",categoryList);
     return categorizedSymbolRenderer;
-}
-
-void CDTClassificationLayer::setName(const QString &name)
-{
-    if (this->name()==name)
-        return;
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE classificationlayer set name = ? where id =?");
-    query.bindValue(0,name);
-    query.bindValue(1,this->id().toString());
-    query.exec();
-
-    standardKeyItem()->setText(name);
 }
 
 void CDTClassificationLayer::initClassificationLayer(const QString &name,

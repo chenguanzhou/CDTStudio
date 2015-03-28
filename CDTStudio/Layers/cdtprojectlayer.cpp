@@ -68,7 +68,6 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     connect(actionAddImage,SIGNAL(triggered()),SLOT(addImageLayer()));
     connect(actiobRemoveAllImages,SIGNAL(triggered()),SLOT(removeAllImageLayers()));
     connect(actionAddPBCDBinary,SIGNAL(triggered()),SLOT(addPBCDBinaryLayer()));
-//    connect(actionAddOBCDBinary,SIGNAL(triggered()),SLOT(addOBCDBinaryLayer()));
     connect(actiobRemoveAllPixelChanges,SIGNAL(triggered()),SLOT(removeAllPixelChangeLayers()));
     connect(actionAddVectorCDLayer,SIGNAL(triggered()),SLOT(addVectorChangeDetectionLayer()));
     connect(actiobRemoveAllVectorChanges,SIGNAL(triggered()),SLOT(removeAllVectorChangeLayers()));
@@ -116,16 +115,6 @@ void CDTProjectLayer::insertToTable(QString name)
 
     keyItem()->setText(name);
     emit layerChanged();
-}
-
-QString CDTProjectLayer::name() const
-{
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("select name from project where id = ?");
-    query.bindValue(0,id().toString());
-    query.exec();
-    query.next();
-    return query.value(0).toString();
 }
 
 bool CDTProjectLayer::isCDEnabled(QUuid projectID)
@@ -312,33 +301,6 @@ void CDTProjectLayer::removeAllVectorChangeLayers()
 {
     foreach (CDTVectorChangeLayer* layer, vectorChanges) {
         removeVectorChangeLayer(layer);
-    }
-}
-
-void CDTProjectLayer::setName(const QString &name)
-{
-    if (this->name() == name)
-        return;
-
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE project set name = ? where id =?");
-    query.bindValue(0,name);
-    query.bindValue(1,this->id().toString());
-    query.exec();
-
-    keyItem()->setText(name);
-    emit layerChanged();
-}
-
-void CDTProjectLayer::rename()
-{
-    bool ok;
-    QString text = QInputDialog::getText(NULL, tr("Input Project Name"),
-                                         tr("Project rename:"), QLineEdit::Normal,
-                                         name(), &ok);
-    if (ok && !text.isEmpty())
-    {
-        setName(text);
     }
 }
 

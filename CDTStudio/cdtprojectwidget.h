@@ -27,7 +27,6 @@ public:
 signals:
     void projectChanged();
 public slots:
-//    void onContextMenu(QPoint, QModelIndex index);
     void onProjectChanged();
     bool saveProject(QString &path);
 
@@ -41,7 +40,6 @@ public slots:
     void refreshMapCanvas(bool zoomToFullExtent=true);
 
     void onObjectItemChanged(QStandardItem* item);
-//    void onChangesItemChanged(QStandardItem* item);
 
 private slots:
     void untoggledToolBar();
@@ -49,7 +47,6 @@ private:
     CDTProjectLayer *project;
     QFile file;
     QStandardItemModel *treeModelObject;
-//    QStandardItemModel *treeModelChanges;
 
     QgsMapCanvas* mapCanvas;
     QToolBar *initToolBar();

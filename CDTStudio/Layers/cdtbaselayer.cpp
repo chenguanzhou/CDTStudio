@@ -14,6 +14,8 @@ CDTBaseLayer::CDTBaseLayer(QUuid uuid, QObject *parent) :
     if (parent) connect(this,SIGNAL(removeLayer(QList<QgsMapLayer*> )),parent,SIGNAL(removeLayer(QList<QgsMapLayer*>)));
     if (parent) connect(this,SIGNAL(layerChanged()),parent,SIGNAL(layerChanged()));
     if (parent) mapCanvas = ((CDTBaseLayer*)parent)->mapCanvas;
+
+    connect(this,SIGNAL(nameChanged(QString)),this,SIGNAL(layerChanged()));
 }
 
 CDTBaseLayer::~CDTBaseLayer()
@@ -21,16 +23,14 @@ CDTBaseLayer::~CDTBaseLayer()
 
 }
 
-void CDTBaseLayer::onContextMenuRequest(QWidget *parent)
+CDTProjectLayer *CDTBaseLayer::rootProject() const
 {
-    QMenu* menu =new QMenu(parent);    
-    connect(menu,SIGNAL(aboutToHide()),SLOT(onMenuAboutToHide()));
-    foreach (QList<QAction *> list, actions) {
-        menu->addActions(list);
-        menu->addSeparator();
-    }
-    menu->exec(QCursor::pos());
+    QObject *obj = (QObject *)this;
+    while (obj->parent())
+        obj = obj->parent();
+    return (CDTProjectLayer *)obj;
 }
+
 
 CDTProjectTreeItem *CDTBaseLayer::keyItem() const
 {
@@ -52,17 +52,21 @@ QgsMapCanvas *CDTBaseLayer::canvas() const
     return mapCanvas;
 }
 
-CDTProjectLayer *CDTBaseLayer::rootProject() const
-{
-    QObject *obj = (QObject *)this;
-    while (obj->parent())
-        obj = obj->parent();
-    return (CDTProjectLayer *)obj;
-}
-
 CDTFileSystem *CDTBaseLayer::fileSystem() const
 {
     return rootProject()->fileSystem;
+}
+
+QUuid CDTBaseLayer::id() const{return uuid;}
+
+QString CDTBaseLayer::name() const
+{
+    QSqlQuery query(QSqlDatabase::database("category"));
+    qDebug()<<query.prepare(QString("select name from %1 where id =?").arg(tableName()));
+    query.addBindValue(id().toString());
+    qDebug()<<query.exec();
+    qDebug()<<query.next();
+    return query.value(0).toString();
 }
 
 QString CDTBaseLayer::tableName() const
@@ -76,11 +80,6 @@ QString CDTBaseLayer::tableName() const
     return metaObject()->classInfo(index).value();
 }
 
-QList<QList<QAction *> > CDTBaseLayer::allActions() const
-{
-    return actions;
-}
-
 QObject *CDTBaseLayer::getAncestor(const char *className)
 {
     QObject *obj = this;
@@ -91,6 +90,47 @@ QObject *CDTBaseLayer::getAncestor(const char *className)
         obj = obj->parent();
     }
     return NULL;
+}
+
+QList<QList<QAction *> > CDTBaseLayer::allActions() const
+{
+    return actions;
+}
+
+void CDTBaseLayer::onContextMenuRequest(QWidget *parent)
+{
+    QMenu* menu =new QMenu(parent);
+    connect(menu,SIGNAL(aboutToHide()),SLOT(onMenuAboutToHide()));
+    foreach (QList<QAction *> list, actions) {
+        menu->addActions(list);
+        menu->addSeparator();
+    }
+    menu->exec(QCursor::pos());
+}
+
+void CDTBaseLayer::setName(const QString &name)
+{
+    if (this->name() == name)
+        return;
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.prepare(QString("UPDATE %1 set name = ? where id =?").arg(tableName()));
+    query.bindValue(0,name);
+    query.bindValue(1,this->id().toString());
+    query.exec();
+
+    keyItem()->setText(name);
+    emit nameChanged(name);
+}
+
+void CDTBaseLayer::rename()
+{
+    bool ok;
+    QString text = QInputDialog::getText(
+                NULL, tr("Input New Name"),
+                tr("Rename:"), QLineEdit::Normal,
+                this->name(), &ok);
+    if (ok && !text.isEmpty())
+        setName(text);
 }
 
 void CDTBaseLayer::setID(QUuid id)

@@ -40,15 +40,6 @@ CDTExtractionLayer::~CDTExtractionLayer()
     layers.removeAll(this);
 }
 
-QString CDTExtractionLayer::name() const
-{
-    QSqlDatabase db = QSqlDatabase::database("category");
-    QSqlQuery query(db);
-    query.exec("select name from extractionlayer where id ='" + this->id().toString() +"'");
-    query.next();
-    return query.value(0).toString();
-}
-
 QString CDTExtractionLayer::shapefileID() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
@@ -152,20 +143,6 @@ void CDTExtractionLayer::onContextMenuRequest(QWidget *parent)
     delete menuWidget;
 }
 
-void CDTExtractionLayer::setName(const QString &name)
-{
-    if (this->name()==name)
-        return;
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE extractionlayer set name = ? where id =?");
-    query.bindValue(0,name);
-    query.bindValue(1,this->id().toString());
-    query.exec();
-
-    standardKeyItem()->setText(name);
-    emit nameChanged();
-}
-
 void CDTExtractionLayer::setColor(const QColor &clr)
 {
     if (this->color() == clr)
@@ -204,8 +181,6 @@ void CDTExtractionLayer::setOpacity(const double &val)
     query.bindValue(1,this->id().toString());
     query.exec();
 
-    //    setOriginRenderer();
-    //    this->mapCanvas->refresh();
     emit layerChanged();
 }
 
@@ -256,17 +231,6 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
 
     emit appendLayers(QList<QgsMapLayer*>()<<canvasLayer());
     emit layerChanged();
-}
-
-void CDTExtractionLayer::rename()
-{
-    bool ok;
-    QString text = QInputDialog::getText(
-                NULL, tr("Input Extraction Name"),
-                tr("Extraction rename:"), QLineEdit::Normal,
-                this->name(), &ok);
-    if (ok && !text.isEmpty())
-        setName(text);
 }
 
 void CDTExtractionLayer::remove()

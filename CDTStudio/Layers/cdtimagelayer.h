@@ -16,7 +16,6 @@ class CDTImageLayer:public CDTBaseLayer
     Q_OBJECT
     Q_CLASSINFO("CDTImageLayer","Image")
     Q_CLASSINFO("tableName","imagelayer")
-    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
     Q_PROPERTY(QString Source READ path DESIGNABLE true USER true)
 public:
     explicit CDTImageLayer(QUuid uuid, QObject *parent = 0);
@@ -26,19 +25,15 @@ public:
     friend QDataStream &operator>>(QDataStream &in, CDTImageLayer &image);
     friend class CDTSegmentationLayer;
 
-    void setName(const QString& name);
     void setNameAndPath(const QString& name,const QString& path);
     void setCategoryInfo(const CDTCategoryInformationList& info);
     QString path()const;
-    QString name()const;
     int bandCount()const;    
 
     static QList<CDTImageLayer *> getLayers();
     static CDTImageLayer *getLayer(const QUuid& id);
 
 signals:
-//    void imageLayerChanged();
-//    void layerOpacityChanged(int);
     void removeImageLayer(CDTImageLayer*);
 
 public slots:        
@@ -49,10 +44,6 @@ public slots:
     void removeAllExtractionLayers();
     void removeSegmentation(CDTSegmentationLayer*);
     void removeAllSegmentationLayers();
-    void rename();
-//    void onContextMenuRequest(QWidget *parent);
-
-    //from 0 to 100
     void setLayerOpacity(int opacity);
 private:        
     void addExtraction(CDTExtractionLayer* extraction);
@@ -61,13 +52,6 @@ private:
 private:
     QVector<CDTExtractionLayer *>   extractions;
     QVector<CDTSegmentationLayer *> segmentations;
-
-//    QAction *actionRename;
-//    QAction *actionRemoveImage;
-//    QAction *actionAddExtractionLayer;
-//    QAction *actionRemoveAllExtractions;
-//    QAction *actionAddSegmentationLayer;
-//    QAction *actionRemoveAllSegmentations;
 
     CDTProjectTreeItem *segmentationsRoot;
     CDTProjectTreeItem *extractionRoot;

@@ -36,15 +36,6 @@ CDTVectorChangeLayer::~CDTVectorChangeLayer()
 
 }
 
-QString CDTVectorChangeLayer::name() const
-{
-    QSqlDatabase db = QSqlDatabase::database("category");
-    QSqlQuery query(db);
-    query.exec("select name from vector_change where id ='" + this->id().toString() +"'");
-    query.next();
-    return query.value(0).toString();
-}
-
 QString CDTVectorChangeLayer::shapefileID() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
@@ -52,17 +43,6 @@ QString CDTVectorChangeLayer::shapefileID() const
     query.exec("select shapefileid from vector_change where id ='" + this->id().toString() +"'");
     query.next();
     return query.value(0).toString();
-}
-
-void CDTVectorChangeLayer::rename()
-{
-    bool ok;
-    QString text = QInputDialog::getText(
-                NULL, tr("Input Vector-based Change Layer Name"),
-                tr("Vector-based change layer rename:"), QLineEdit::Normal,
-                this->name(), &ok);
-    if (ok && !text.isEmpty())
-        setName(text);
 }
 
 void CDTVectorChangeLayer::exportShapefile()
@@ -73,20 +53,6 @@ void CDTVectorChangeLayer::exportShapefile()
 void CDTVectorChangeLayer::remove()
 {
     emit removeVectorChangeLayer(this);
-}
-
-void CDTVectorChangeLayer::setName(const QString &name)
-{
-    if (this->name() == name)
-        return;
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE vector_change set name = ? where id =?");
-    query.bindValue(0,name);
-    query.bindValue(1,this->id().toString());
-    query.exec();
-
-    standardKeyItem()->setText(name);
-    emit nameChanged(name);
 }
 
 void CDTVectorChangeLayer::setOriginRenderer()

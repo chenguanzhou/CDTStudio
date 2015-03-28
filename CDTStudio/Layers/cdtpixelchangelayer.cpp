@@ -19,15 +19,6 @@ CDTPixelChangeLayer::~CDTPixelChangeLayer()
 
 }
 
-QString CDTPixelChangeLayer::name() const
-{
-    QSqlDatabase db = QSqlDatabase::database("category");
-    QSqlQuery query(db);
-    query.exec("select name from pbcd_binary where id ='" + this->id().toString() +"'");
-    query.next();
-    return query.value(0).toString();
-}
-
 QString CDTPixelChangeLayer::image_t1() const
 {
     QSqlDatabase db = QSqlDatabase::database("category");
@@ -59,20 +50,6 @@ QVariantMap CDTPixelChangeLayer::params() const
 QStringList CDTPixelChangeLayer::files() const
 {
     return QStringList();
-}
-
-void CDTPixelChangeLayer::setName(const QString &name)
-{
-    if (this->name() == name)
-        return;
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE pbcd_binary set name = ? where id =?");
-    query.bindValue(0,name);
-    query.bindValue(1,this->id().toString());
-    query.exec();
-
-    standardKeyItem()->setText(name);
-    //    emit nameChanged();
 }
 
 void CDTPixelChangeLayer::initLayer(const QString &name, const QString &image_t1, const QString &image_t2, const QVariantMap &params)

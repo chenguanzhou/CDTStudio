@@ -51,8 +51,6 @@ MainWindow::MainWindow(QWidget *parent) :
     initStatusBar();    
     initConsole();
 
-//    connect(ui->tabWidgetProject,SIGNAL(beforeTabClosed(CDTProjectLayer*)),this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)));
-
     recentFileToolButton->setText(tr("&Recent"));
     recentFileToolButton->setToolButtonStyle(ui->mainToolBar->toolButtonStyle());
     recentFileToolButton->setIcon(QIcon(":/Icon/RecentFiles.png"));
@@ -127,17 +125,8 @@ void MainWindow::initActions()
     connect(actionSaveAs,SIGNAL(triggered()),SLOT(onActionSaveAs()));
 
     logger()->info("Actions initialized");
-
-//    actionPBCD = new QAction(QIcon(":/Icon/ChangePixel.png"),tr("&Pixel-based change detection"),this);
-////    actionPBCD->setShortcut(QKeySequence::SaveAs);
-//    actionPBCD->setStatusTip(tr("Pixel-based change detection"));
-//    connect(actionPBCD,SIGNAL(triggered()),SLOT(onActionPBCD()));
-
-//    actionOBCD = new QAction(QIcon(":/Icon/ChangeObject.png"),tr("O&bject-based change detection"),this);
-////    actionOBCD->setShortcut(QKeySequence::SaveAs);
-//    actionOBCD->setStatusTip(tr("Object-based change detection"));
-//    connect(actionOBCD,SIGNAL(triggered()),SLOT(onActionOBCD()));
 }
+
 
 void MainWindow::initMenuBar()
 {
@@ -165,11 +154,6 @@ void MainWindow::initToolBar()
                                 <<actionSaveAll
                                 <<actionSaveAs);
     logger()->info("ToolBar initialized");
-//    ui->mainToolBar->addSeparator();
-//    ui->mainToolBar->addActions(QList<QAction*>()
-//                                <<actionPBCD
-//                                <<actionOBCD);
-//    ui->mainToolBar->addSeparator();
 }
 
 void MainWindow::initStatusBar()
@@ -178,7 +162,6 @@ void MainWindow::initStatusBar()
     QLabel *labelCoord = new QLabel( QString(), statusBar() );
     labelCoord->setObjectName( "mCoordsLabel" );
     labelCoord->setMinimumWidth( 10 );
-//    labelCoord->setMaximumHeight( 20 );
     labelCoord->setAlignment( Qt::AlignCenter );
     labelCoord->setFrameStyle( QFrame::NoFrame );
     labelCoord->setText( tr( "Coordinate:" ) );
@@ -188,8 +171,6 @@ void MainWindow::initStatusBar()
     lineEditCoord = new QLineEdit( QString(), statusBar() );
     lineEditCoord->setObjectName( "lineEditCoord" );
     lineEditCoord->setMinimumWidth( 10 );
-//    lineEditCoord->setMaximumWidth( 500 );
-//    lineEditCoord->setMaximumHeight( 20 );
     lineEditCoord->setAlignment( Qt::AlignCenter );
     QRegExp coordValidator( "[+-]?\\d+\\.?\\d*\\s*,\\s*[+-]?\\d+\\.?\\d*" );
     new QRegExpValidator( coordValidator, lineEditCoord );
@@ -491,29 +472,12 @@ void MainWindow::onRecentFileTriggered()
     ui->tabWidgetProject->openProject(action->text());
 }
 
-//void MainWindow::onActionPBCD()
-//{
-//    if (ui->tabWidgetProject->count()==0)
-//    {
-//        QMessageBox::critical(this,tr("Error"),tr("No project opend!"));
-//        return;
-//    }
-
-//    QUuid prjID = getCurrentProjectID();
-//}
-
-//void MainWindow::onActionOBCD()
-//{
-
-//}
-
 void MainWindow::on_treeViewObjects_customContextMenuRequested(const QPoint &pos)
 {
     QModelIndex index =ui->treeViewObjects->indexAt(pos);
     CDTProjectWidget* curwidget =(CDTProjectWidget*) ui->tabWidgetProject->currentWidget();
     if(curwidget == NULL)
         return;
-//    curwidget->onContextMenu(pos,index);
 
     CDTProjectTreeItem *item =static_cast<CDTProjectTreeItem *>(static_cast<QStandardItemModel *>(ui->treeViewObjects->model())->itemFromIndex(index));
     if(item ==NULL)

@@ -14,7 +14,7 @@ class CDTExtractionLayer : public CDTBaseLayer
     Q_CLASSINFO("CDTExtractionLayer","Extraction")
     Q_CLASSINFO("tableName","extractionlayer")
 
-    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
+//    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
     Q_PROPERTY(QColor Color READ color WRITE setColor DESIGNABLE true USER true)
     Q_PROPERTY(QColor Border_Color READ borderColor WRITE setBorderColor DESIGNABLE true USER true)
 
@@ -25,7 +25,6 @@ public:
     friend QDataStream &operator<<(QDataStream &out,const CDTExtractionLayer &extraction);
     friend QDataStream &operator>>(QDataStream &in, CDTExtractionLayer &extraction);
 
-    QString name()          const;
     QString shapefileID()   const;
     QColor  color()         const;
     QColor  borderColor()   const;
@@ -39,7 +38,6 @@ public:
 
 public slots:
     void    onContextMenuRequest(QWidget *parent);
-    void    setName(const QString& name);
     void    setColor(const QColor &clr);
     void    setBorderColor(const QColor &clr);
     void    setOpacity(const double &val) ;
@@ -49,7 +47,6 @@ public slots:
             const QColor &color,
             const QColor &borderColor,
             double opacity);
-    void    rename();
     void    remove();
     void    exportShapefile();
 

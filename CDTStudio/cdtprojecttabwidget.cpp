@@ -118,8 +118,6 @@ bool CDTProjectTabWidget::closeTab(const int &index)
     if(ret == QMessageBox::Cancel  )
         return true;
 
-//    emit beforeTabClosed(tabItem->project);
-
     this->removeTab(index);
     delete tabItem;
     return true;

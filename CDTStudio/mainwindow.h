@@ -73,7 +73,6 @@ public:
 signals:
     void loadSetting();
     void updateSetting();
-//    void beforeProjectClosed(CDTProjectLayer*);
 public slots:
     void onCurrentTabChanged(int i);
     void showMouseCoordinate(const QgsPoint & p);
@@ -88,9 +87,6 @@ private slots:
     void onActionSaveAll();
     void onActionSaveAs();
     void onRecentFileTriggered();
-
-//    void onActionPBCD();
-//    void onActionOBCD();
 
     void on_treeViewObjects_customContextMenuRequested(const QPoint &pos);
     void on_treeViewObjects_clicked(const QModelIndex &index);
@@ -123,9 +119,6 @@ private:
     QAction *actionSaveAll;
     QAction *actionSaveAs;
     QAction *actionConsole;
-
-//    QAction *actionPBCD;//Pixel-based Change Detection
-//    QAction *actionOBCD;//Object-based Change Detection
 
     QMenu *menuFile;
     QMenu *menuRecent;

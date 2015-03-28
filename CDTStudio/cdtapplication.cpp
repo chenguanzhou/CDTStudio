@@ -65,10 +65,6 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
     udpReceiver->bind(QHostAddress::LocalHost,portDownload);
     connect(udpReceiver,SIGNAL(readyRead()),SLOT(readMessage()));
 
-//    processor->setStandardOutputFile(qApp->applicationDirPath()+"/task.log");
-//    processor->setStandardErrorFile(qApp->applicationDirPath()+"/error.log");
-
-//    QProcess *processor = new QProcess(this);
     processor->start("CDTProcessor");
 }
 
@@ -92,7 +88,6 @@ QString CDTApplication::getStyleSheetByName(QString styleName)
         }
         file.close();
     }
-//    qDebug()<<styleSheet;
     return styleSheet;
 }
 

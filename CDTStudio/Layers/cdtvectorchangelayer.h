@@ -18,19 +18,14 @@ public:
     friend QDataStream &operator<<(QDataStream &out,const CDTVectorChangeLayer &change);
     friend QDataStream &operator>>(QDataStream &in, CDTVectorChangeLayer &change);
 
-    QString name()const;
     QString shapefileID()const;
 
 signals:
-    void nameChanged(QString);
     void removeVectorChangeLayer(CDTVectorChangeLayer*);
 
 public slots:
-    void rename();
     void exportShapefile();
     void remove();
-
-    void setName(const QString& name);
     void setOriginRenderer();
     void setRenderer(QgsFeatureRendererV2 *r);
     QgsFeatureRendererV2 * changeViewRenderer();

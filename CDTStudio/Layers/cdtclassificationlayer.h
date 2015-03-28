@@ -12,7 +12,6 @@ class CDTClassificationLayer:public CDTBaseLayer
     Q_OBJECT   
     Q_CLASSINFO("CDTClassificationLayer","Classification")
     Q_CLASSINFO("tableName",tr("classificationlayer"))
-    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
     Q_PROPERTY(QString Method READ method  DESIGNABLE true USER true)
     Q_PROPERTY(QString Normalization_Param READ normalizeMethod  DESIGNABLE true USER true)
     Q_PROPERTY(QString PCA_Param READ pcaParams  DESIGNABLE true USER true)
@@ -23,7 +22,6 @@ public:
     friend QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification);
     friend QDataStream &operator>>(QDataStream &in, CDTClassificationLayer &classification);
 
-    QString         name()              const;
     QString         method()            const;
     QVariantMap     params()            const;
     QVariantList    data()              const;
@@ -50,12 +48,8 @@ signals:
     void layerTransparencyChanged(int);
 
 public slots:
-    void rename();
     void remove();
     void showAccuracy();
-
-private:
-    void setName(const QString& name);
 
 private:
     QStringList featuresList;

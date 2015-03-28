@@ -38,7 +38,6 @@ public:
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
     friend QDataStream &operator>>(QDataStream &in, CDTSegmentationLayer &segmentation);
 
-    QString name()const;
     QString shapefilePath() const;
     QString markfilePath() const;
     QString shapefileTempPath() const;
@@ -58,13 +57,11 @@ public:
 
 signals:
     void methodParamsChanged();
-    void nameChanged(QString);
     void borderColorChanged(QColor);
     void layerTransparencyChanged(int);
     void removeSegmentation(CDTSegmentationLayer*);
 
 public slots:
-    void rename();
     void editDBInfo();
     void generateAttributes();
     void exportShapefile();
@@ -75,7 +72,7 @@ public slots:
     void removeAllClassifications();
     void decisionFusion();
 
-    void setName(const QString& name);
+//    void setName(const QString& name);
     void setBorderColor(const QColor &clr);
     void setLayerTransparency(int transparency);
     void initSegmentationLayer(

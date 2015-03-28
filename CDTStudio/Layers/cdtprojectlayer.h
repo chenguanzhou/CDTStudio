@@ -14,7 +14,6 @@ class CDTProjectLayer: public CDTBaseLayer
     Q_OBJECT    
     Q_CLASSINFO("CDTProjectLayer",tr("Project"))
     Q_CLASSINFO("tableName",tr("project"))
-    Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
 public:
     explicit CDTProjectLayer(QUuid uuid,QObject *parent = 0);
     ~CDTProjectLayer();
@@ -26,7 +25,6 @@ public:
     friend class CDTSegmentationLayer;
 
     void    insertToTable(QString name);
-    QString name() const;
     bool    isCDEnabled(QUuid projectID);
 
 public slots:
@@ -46,9 +44,6 @@ public slots:
     void addVectorChangeLayer(CDTVectorChangeLayer *layer);
     void removeVectorChangeLayer(CDTVectorChangeLayer *layer);
     void removeAllVectorChangeLayers();
-
-    void rename();
-    void setName(const QString& name);
 
 private:
     bool    isFileExsit;

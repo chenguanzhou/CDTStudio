@@ -9,12 +9,9 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
     project(NULL),
     treeModelObject(new QStandardItemModel(this)),
-//    treeModelChanges(new QStandardItemModel(this)),
     mapCanvas(new QgsMapCanvas(this,"mapCanvas"))
 {
-//    treeModel->setHorizontalHeaderLabels(QStringList()<<tr("Layer")<<tr("Value"));
     connect(treeModelObject,SIGNAL(itemChanged(QStandardItem*)),SLOT(onObjectItemChanged(QStandardItem*)));
-//    connect(treeModelChanges,SIGNAL(itemChanged(QStandardItem*)),SLOT(onChangesItemChanged(QStandardItem*)));
 
     connect(this,SIGNAL(projectChanged()),this,SLOT(onProjectChanged()));
     connect(mapCanvas,SIGNAL(xyCoordinates(QgsPoint)),MainWindow::getMainWindow(),SLOT(showMouseCoordinate(QgsPoint)));
@@ -204,18 +201,6 @@ void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
 void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
 {
     QList<QgsMapCanvasLayer> mapLayers;
-//    foreach (QgsMapLayer *lyr, activeLayers) {
-//        if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::VectorLayer)
-//        {
-//            mapLayers<<QgsMapCanvasLayer(lyr);
-//        }
-//    }
-//    foreach (QgsMapLayer *lyr, activeLayers) {
-//        if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::RasterLayer)
-//        {
-//            mapLayers<<QgsMapCanvasLayer(lyr);
-//        }
-//    }
 
     foreach (QgsMapLayer *lyr, activeLayers) {
         if (lyr->type()==QgsMapLayer::VectorLayer)
@@ -246,11 +231,6 @@ void CDTProjectWidget::onObjectItemChanged(QStandardItem *item)
         refreshMapCanvas(false);
     }
 }
-
-//void CDTProjectWidget::onChangesItemChanged(QStandardItem *item)
-//{
-
-//}
 
 QToolBar *CDTProjectWidget::initToolBar()
 {
@@ -312,7 +292,6 @@ void CDTProjectWidget::createProject(QUuid id)
     connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
 
     treeModelObject->appendRow(project->standardKeyItem());
-//    treeModelChanges->appendRow(project->standardKeyItem());
 }
 
 void CDTProjectWidget::untoggledToolBar()
