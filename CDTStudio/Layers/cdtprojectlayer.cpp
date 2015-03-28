@@ -17,7 +17,8 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     CDTBaseLayer(uuid,parent),
     fileSystem(new CDTFileSystem)
 {
-    keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);
+
+    CDTProjectTreeItem *keyItem=new CDTProjectTreeItem(CDTProjectTreeItem::PROJECT_ROOT,CDTProjectTreeItem::GROUP,QString(),this);
     imagesRoot = new CDTProjectTreeItem
             (CDTProjectTreeItem::IMAGE_ROOT,CDTProjectTreeItem::GROUP,tr("Images"),this);
     pixelChangesRoot = new CDTProjectTreeItem
@@ -29,7 +30,7 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     keyItem->appendRow(imagesRoot);
     keyItem->appendRow(pixelChangesRoot);
     keyItem->appendRow(vectorChangesRoot);
-
+    setKeyItem(keyItem);
 
     //actions
     QAction *actionAddImage =
@@ -49,15 +50,20 @@ CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     QAction *actionRename =
             new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Project"),this);
 
-    actions <<(QList<QAction *>()<<actionAddImage<<actiobRemoveAllImages)
-           <<(QList<QAction *>()
-              <<actionAddPBCDBinary
-              <<actionAddPBCDFromTo
-              <<actiobRemoveAllPixelChanges)
-            <<(QList<QAction *>()
-               <<actionAddVectorCDLayer
-               <<actiobRemoveAllVectorChanges)
-          <<(QList<QAction *>()<<actionRename);
+    setActions(QList<QList<QAction *> >()
+               <<(QList<QAction *>()
+                  <<actionAddImage
+                  <<actiobRemoveAllImages)
+               <<(QList<QAction *>()
+                  <<actionAddPBCDBinary
+                  <<actionAddPBCDFromTo
+                  <<actiobRemoveAllPixelChanges)
+               <<(QList<QAction *>()
+                  <<actionAddVectorCDLayer
+                  <<actiobRemoveAllVectorChanges)
+               <<(QList<QAction *>()
+                  <<actionRename)
+    );
 
     connect(actionAddImage,SIGNAL(triggered()),SLOT(addImageLayer()));
     connect(actiobRemoveAllImages,SIGNAL(triggered()),SLOT(removeAllImageLayers()));
@@ -76,11 +82,11 @@ CDTProjectLayer::~CDTProjectLayer()
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret;
-    ret = query.exec("delete from project where id = '"+uuid.toString()+"'");
+    ret = query.exec("delete from project where id = '"+id().toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
 
-    ret = query.exec(QString("select pointset_name from points_project where projectid = '%1'").arg(uuid.toString()));
+    ret = query.exec(QString("select pointset_name from points_project where projectid = '%1'").arg(id().toString()));
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
     QStringList list;
@@ -93,7 +99,7 @@ CDTProjectLayer::~CDTProjectLayer()
             qWarning()<<"prepare:"<<query.lastError().text();
     }
 
-    ret = query.exec(QString("delete from points_project where projectid = '%1'").arg(uuid.toString()));
+    ret = query.exec(QString("delete from points_project where projectid = '%1'").arg(id().toString()));
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
 
@@ -109,7 +115,7 @@ void CDTProjectLayer::insertToTable(QString name)
     query.bindValue(1,name);
     query.exec();
 
-    keyItem->setText(name);
+    keyItem()->setText(name);
     emit layerChanged();
 }
 
@@ -167,7 +173,7 @@ void CDTProjectLayer::addImageLayer(CDTImageLayer *image)
     images.push_back(image);
     emit layerChanged();
     if (images.size()==1)
-        mapCanvas->zoomToFullExtent();
+        canvas()->zoomToFullExtent();
 }
 
 void CDTProjectLayer::removeImageLayer(CDTImageLayer* image)
@@ -321,7 +327,7 @@ void CDTProjectLayer::setName(const QString &name)
     query.bindValue(1,this->id().toString());
     query.exec();
 
-    keyItem->setText(name);
+    keyItem()->setText(name);
     emit layerChanged();
 }
 
@@ -385,9 +391,11 @@ QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project)
 
 QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
 {
+    QUuid id;
     QString name;
-    in>>project.uuid;
-    in>>name;
+    in>>id>>name;
+
+    project.setID(id);
     in>>*(project.fileSystem);
 //    project.setName(name);
 

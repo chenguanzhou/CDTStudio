@@ -15,7 +15,10 @@ CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
     actionRemoveExtraction(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Extraction"),this))
 {
     layers.push_back(this);
-    keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION,CDTProjectTreeItem::VECTOR,QString(),this);
+
+    CDTProjectTreeItem *keyItem =
+            new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION,CDTProjectTreeItem::VECTOR,QString(),this);
+    setKeyItem(keyItem);
 
     connect(this,SIGNAL(removeExtraction(CDTExtractionLayer*)),this->parent(),SLOT(removeExtraction(CDTExtractionLayer*)));
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(layerChanged()));
@@ -31,7 +34,7 @@ CDTExtractionLayer::~CDTExtractionLayer()
         return;
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret;
-    ret = query.exec("delete from extractionlayer where id = '"+uuid.toString()+"'");
+    ret = query.exec("delete from extractionlayer where id = '"+id().toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
     layers.removeAll(this);
@@ -85,7 +88,7 @@ double CDTExtractionLayer::opacity() const
 
 void CDTExtractionLayer::setRenderer(QgsFeatureRendererV2 *r)
 {
-    QgsVectorLayer*p = (QgsVectorLayer*)mapCanvasLayer;
+    QgsVectorLayer*p = (QgsVectorLayer*)canvasLayer();
     if (p!=NULL)
     {
         p->setRendererV2(r);
@@ -110,7 +113,7 @@ QList<CDTExtractionLayer *> CDTExtractionLayer::getLayers()
 CDTExtractionLayer *CDTExtractionLayer::getLayer(QUuid id)
 {
     foreach (CDTExtractionLayer *layer, layers) {
-        if (id == layer->uuid)
+        if (id == layer->id())
             return layer;
     }
     return NULL;
@@ -159,7 +162,7 @@ void CDTExtractionLayer::setName(const QString &name)
     query.bindValue(1,this->id().toString());
     query.exec();
 
-    keyItem->setText(name);
+    standardKeyItem()->setText(name);
     emit nameChanged();
 }
 
@@ -174,7 +177,7 @@ void CDTExtractionLayer::setColor(const QColor &clr)
     query.exec();
 
     setOriginRenderer();
-    this->mapCanvas->refresh();
+    this->canvas()->refresh();
     emit layerChanged();
 }
 
@@ -189,7 +192,7 @@ void CDTExtractionLayer::setBorderColor(const QColor &clr)
     query.exec();
 
     setOriginRenderer();
-    this->mapCanvas->refresh();
+    this->canvas()->refresh();
     emit layerChanged();
 }
 
@@ -224,16 +227,8 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
         return;
     }
 
-    if (mapCanvasLayer)
-    {
-        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
-        delete mapCanvasLayer;
-    }
-    mapCanvasLayer = newLayer;
-    keyItem->setText(name);
-
-    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
-    keyItem->setMapLayer(mapCanvasLayer);
+    setCanvasLayer(newLayer);
+    keyItem()->setText(name);
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
@@ -243,7 +238,7 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
         qDebug()<<"Prepare 'insert into extractionlayer failed!'";
         return;
     }
-    query.addBindValue(uuid.toString());
+    query.addBindValue(id().toString());
     query.addBindValue(name);
     query.addBindValue(shpID);
     query.addBindValue(color);
@@ -259,7 +254,7 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
 
     setOriginRenderer();
 
-    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    emit appendLayers(QList<QgsMapLayer*>()<<canvasLayer());
     emit layerChanged();
 }
 
@@ -304,7 +299,9 @@ QDataStream &operator<<(QDataStream &out, const CDTExtractionLayer &extraction)
 
 QDataStream &operator>>(QDataStream &in, CDTExtractionLayer &extraction)
 {
-    in>>extraction.uuid;
+    QUuid id;
+    in>>id;
+    extraction.setID(id);
     QString name,shp;
     in>>name>>shp;
     QColor color,borderColor;

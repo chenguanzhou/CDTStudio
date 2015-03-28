@@ -14,13 +14,13 @@ QList<CDTImageLayer *> CDTImageLayer::layers;
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent)
 {
-    keyItem = new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE,CDTProjectTreeItem::RASTER,QString(),this);
+    setKeyItem(new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE,CDTProjectTreeItem::RASTER,QString(),this));
     extractionRoot
             = new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION_ROOT,CDTProjectTreeItem::GROUP,tr("Extractions"),this);
     segmentationsRoot
             = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION_ROOT,CDTProjectTreeItem::GROUP,tr("Segmentations"),this);
-    keyItem->appendRow(extractionRoot);
-    keyItem->appendRow(segmentationsRoot);
+    standardKeyItem()->appendRow(extractionRoot);
+    standardKeyItem()->appendRow(segmentationsRoot);
 
     layers.push_back(this);
 
@@ -37,9 +37,10 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     QAction *actionRemoveAllExtractions     = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Extractions"),this);
     QAction *actionRemoveAllSegmentations   = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Segmentations"),this);
 
-    actions <<(QList<QAction *>()<<actionOpacity<<actionRename<<actionRemoveImage)
-            <<(QList<QAction *>()<<actionAddExtractionLayer<<actionRemoveAllExtractions)
-            <<(QList<QAction *>()<<actionAddSegmentationLayer<<actionRemoveAllSegmentations);
+    setActions(QList<QList<QAction *> >()
+               <<(QList<QAction *>()<<actionOpacity<<actionRename<<actionRemoveImage)
+               <<(QList<QAction *>()<<actionAddExtractionLayer<<actionRemoveAllExtractions)
+               <<(QList<QAction *>()<<actionAddSegmentationLayer<<actionRemoveAllSegmentations));
 
     //Opacity slider
     QSlider *slider = new QSlider(NULL);
@@ -69,14 +70,14 @@ CDTImageLayer::~CDTImageLayer()
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret;
-    ret = query.exec("delete from imagelayer where id = '"+uuid.toString()+"'");
+    ret = query.exec("delete from imagelayer where id = '"+id().toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
-    ret = query.exec("delete from category where imageID = '"+uuid.toString()+"'");
+    ret = query.exec("delete from category where imageID = '"+id().toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
 
-    query.exec("select id from image_validation_samples where imageID = '"+uuid.toString()+"'");
+    query.exec("select id from image_validation_samples where imageID = '"+id().toString()+"'");
     QStringList list;
     while (query.next())
     {
@@ -87,7 +88,7 @@ CDTImageLayer::~CDTImageLayer()
         if (!ret)
             qWarning()<<"prepare:"<<query.lastError().text();
     }
-    ret = query.exec("delete from image_validation_samples where imageID = '"+uuid.toString()+"'");
+    ret = query.exec("delete from image_validation_samples where imageID = '"+id().toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
     layers.removeAll(this);
@@ -103,7 +104,7 @@ void CDTImageLayer::setName(const QString &name)
     query.bindValue(1,this->id().toString());
     query.exec();
 
-    keyItem->setText(name);
+    standardKeyItem()->setText(name);
     emit layerChanged();
 }
 
@@ -117,15 +118,10 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
         return;
     }
 
-    keyItem->setText(name);
-    keyItem->setToolTip(path);
-//    valueItem->setText(path);
-    if (mapCanvasLayer)
-        delete mapCanvasLayer;
-    mapCanvasLayer = newCanvasLayer;
+    keyItem()->setText(name);
+    keyItem()->setToolTip(path);
 
-    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,TRUE);
-    keyItem->setMapLayer(mapCanvasLayer);
+    setCanvasLayer(newCanvasLayer);
 
     QSqlDatabase db = QSqlDatabase::database("category");
     if (db.isValid()==false)
@@ -141,13 +137,13 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
         QMessageBox::critical(NULL,tr("Error"),tr("insert image layer failed!\nerror:")+query.lastError().text());
         return ;
     }
-    query.bindValue(0,uuid.toString());
+    query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.bindValue(2,path);
     query.bindValue(3,((CDTProjectLayer*)parent())->id().toString());
     query.exec();
 
-    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    emit appendLayers(QList<QgsMapLayer*>()<<canvasLayer());
     emit layerChanged();
 }
 
@@ -173,7 +169,7 @@ void CDTImageLayer::setCategoryInfo(const CDTCategoryInformationList &info)
         query.bindValue(0,inf.id.toString());
         query.bindValue(1,inf.categoryName);
         query.bindValue(2,inf.color);
-        query.bindValue(3,uuid.toString());
+        query.bindValue(3,id().toString());
         query.exec();
     }
 }
@@ -198,7 +194,7 @@ QString CDTImageLayer::name() const
 
 int CDTImageLayer::bandCount() const
 {
-    QgsRasterLayer* layer = (QgsRasterLayer*)mapCanvasLayer;
+    QgsRasterLayer* layer = (QgsRasterLayer*)canvasLayer();
     if (layer==NULL) return 0;
     return layer->bandCount();
 }
@@ -211,7 +207,7 @@ QList<CDTImageLayer *> CDTImageLayer::getLayers()
 CDTImageLayer *CDTImageLayer::getLayer(const QUuid &id)
 {
     foreach (CDTImageLayer *layer, layers) {
-        if (id == layer->uuid)
+        if (id == layer->id())
             return layer;
     }
     return NULL;
@@ -249,7 +245,7 @@ void CDTImageLayer::addSegmentation()
 
 void CDTImageLayer::remove()
 {
-    emit removeLayer(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    emit removeLayer(QList<QgsMapLayer*>()<<canvasLayer());
     emit removeImageLayer(this);
 }
 
@@ -325,11 +321,11 @@ void CDTImageLayer::rename()
 
 void CDTImageLayer::setLayerOpacity(int opacity)
 {
-    QgsRasterLayer *rasterLayer =  qobject_cast<QgsRasterLayer*>(mapCanvasLayer);
+    QgsRasterLayer *rasterLayer =  qobject_cast<QgsRasterLayer*>(canvasLayer());
     if (rasterLayer)
     {
         rasterLayer->renderer()->setOpacity(opacity/100.);
-        mapCanvas->refresh();
+        canvas()->refresh();
     }
 }
 
@@ -417,7 +413,10 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
 
 QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
 {
-    in>>image.uuid;
+    QUuid id;
+    in>>id;
+    image.setID(id);
+
     QString name,path;
     in>>path;
     in>>name;

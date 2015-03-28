@@ -14,7 +14,7 @@ CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
 {
     layers.push_back(this);
 
-    keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this);    
+    setKeyItem(new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this));
 
     //actions
     QWidgetAction *actionSetLayerTransparency = new QWidgetAction(this);
@@ -22,9 +22,9 @@ CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
     QAction *actionAccuracyAssessment   = new QAction(tr("Accuracy Assessment"),this);
     QAction* actionRemoveClassification = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this);
 
-
-    actions <<(QList<QAction*>()<<actionSetLayerTransparency<<actionRename<<actionAccuracyAssessment)
-            <<(QList<QAction*>()<<actionRemoveClassification);
+    setActions(QList<QList<QAction *> >()
+               <<(QList<QAction*>()<<actionSetLayerTransparency<<actionRename<<actionAccuracyAssessment)
+               <<(QList<QAction*>()<<actionRemoveClassification));
 
     //Transparency
     QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
@@ -49,7 +49,7 @@ CDTClassificationLayer::~CDTClassificationLayer()
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret;
-    ret = query.exec("delete from classificationlayer where id = '"+uuid.toString()+"'");
+    ret = query.exec("delete from classificationlayer where id = '"+id().toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
 
@@ -197,7 +197,7 @@ void CDTClassificationLayer::setName(const QString &name)
     query.bindValue(1,this->id().toString());
     query.exec();
 
-    keyItem->setText(name);
+    standardKeyItem()->setText(name);
 }
 
 void CDTClassificationLayer::initClassificationLayer(const QString &name,
@@ -210,7 +210,7 @@ void CDTClassificationLayer::initClassificationLayer(const QString &name,
         const QStringList &selectedFeatures)
 {
     featuresList = selectedFeatures;
-    keyItem->setText(name);    
+    standardKeyItem()->setText(name);
 
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("insert into classificationlayer VALUES(?,?,?,?,?,?,?,?,?)");
@@ -241,7 +241,7 @@ QList<CDTClassificationLayer *> CDTClassificationLayer::getLayers()
 CDTClassificationLayer *CDTClassificationLayer::getLayer(QUuid id)
 {
     foreach (CDTClassificationLayer *layer, layers) {
-        if (id == layer->uuid)
+        if (id == layer->id())
             return layer;
     }
     return NULL;
@@ -249,7 +249,7 @@ CDTClassificationLayer *CDTClassificationLayer::getLayer(QUuid id)
 
 QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification)
 {
-    out<<classification.uuid
+    out<<classification.id()
       <<classification.name()
      <<classification.method()
     <<classification.params()
@@ -264,6 +264,7 @@ QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classifi
 
 QDataStream &operator>>(QDataStream &in, CDTClassificationLayer &classification)
 {
+    QUuid id;
     QString name;
     QString method;
     QMap<QString, QVariant> param;
@@ -273,7 +274,8 @@ QDataStream &operator>>(QDataStream &in, CDTClassificationLayer &classification)
     QString pca;
     QStringList selectedFeatures;
 
-    in>>classification.uuid>>name>>method>>param>>data>>clsInfo>>normalize>>pca>>selectedFeatures;
+    in>>id>>name>>method>>param>>data>>clsInfo>>normalize>>pca>>selectedFeatures;
+    classification.setID(id);
     classification.initClassificationLayer(name,method,param,data,clsInfo,normalize,pca,selectedFeatures);
 
     return in;

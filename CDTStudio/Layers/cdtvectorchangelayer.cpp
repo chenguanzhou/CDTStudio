@@ -9,7 +9,9 @@
 CDTVectorChangeLayer::CDTVectorChangeLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent)
 {
-    keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::VECTOR_CHANGE,CDTProjectTreeItem::VECTOR,QString(),this);
+    CDTProjectTreeItem *keyItem
+            = new CDTProjectTreeItem(CDTProjectTreeItem::VECTOR_CHANGE,CDTProjectTreeItem::VECTOR,QString(),this);
+    setKeyItem(keyItem);
 
     QAction *actionRename =
             new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this);
@@ -18,8 +20,9 @@ CDTVectorChangeLayer::CDTVectorChangeLayer(QUuid uuid, QObject *parent)
     QAction *actiobExport =
             new QAction(QIcon(":/Icon/Export.png"),tr("Export shapefile"),this);
 
-    actions <<(QList<QAction *>()<<actionRename<<actiobExport);
-    actions <<(QList<QAction *>()<<actionRemoveLayer);
+    setActions(QList<QList<QAction *> >()
+               <<(QList<QAction *>()<<actionRename<<actiobExport)
+               <<(QList<QAction *>()<<actionRemoveLayer));
 
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
     connect(actionRemoveLayer,SIGNAL(triggered()),SLOT(remove()));
@@ -82,7 +85,7 @@ void CDTVectorChangeLayer::setName(const QString &name)
     query.bindValue(1,this->id().toString());
     query.exec();
 
-    keyItem->setText(name);
+    standardKeyItem()->setText(name);
     emit nameChanged(name);
 }
 
@@ -93,7 +96,7 @@ void CDTVectorChangeLayer::setOriginRenderer()
 
 void CDTVectorChangeLayer::setRenderer(QgsFeatureRendererV2* r)
 {
-    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(mapCanvasLayer);
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
         p->setRendererV2(r);
 }
@@ -139,21 +142,14 @@ void CDTVectorChangeLayer::initVectorChangeLayer(
         return;
     }
 
-    if (mapCanvasLayer)
-    {
-        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
-        delete mapCanvasLayer;
-    }
-    mapCanvasLayer = newLayer;
+    setCanvasLayer(newLayer);
 
-    keyItem->setText(name);
-    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
-    keyItem->setMapLayer(mapCanvasLayer);
+    standardKeyItem()->setText(name);
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into vector_change VALUES(?,?,?,?,?,?)");
-    query.bindValue(0,uuid.toString());
+    query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.bindValue(2,shapefileID);
     query.bindValue(3,clsID_T1);
@@ -164,7 +160,7 @@ void CDTVectorChangeLayer::initVectorChangeLayer(
     setOriginRenderer();
 
     emit nameChanged(name);
-    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    emit appendLayers(QList<QgsMapLayer*>()<<canvasLayer());
     emit layerChanged();    
 }
 
@@ -187,7 +183,9 @@ QDataStream &operator<<(QDataStream &out, const CDTVectorChangeLayer &change)
 
 QDataStream &operator>>(QDataStream &in, CDTVectorChangeLayer &change)
 {
-    in>>change.uuid;
+    QUuid id;
+    in>>id;
+    change.setID(id);
     QString name,shp,cls1,cls2;
     in>>name>>shp>>cls1>>cls2;
     QVariant temp;

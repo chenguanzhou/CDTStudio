@@ -34,10 +34,11 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent)
 {
     layers.push_back(this);
-
-    keyItem   = new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
+    CDTProjectTreeItem *keyItem =
+            new CDTProjectTreeItem(CDTProjectTreeItem::SEGMENTION,CDTProjectTreeItem::VECTOR,QString(),this);
     classificationRootItem = new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION_ROOT,CDTProjectTreeItem::EMPTY,tr("Classification"),this);
     keyItem->appendRow(classificationRootItem);
+    setKeyItem(keyItem);
 
 
     //Actions
@@ -60,10 +61,11 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     QAction *actionAddDecisionFusion =
             new QAction(tr("Run Decision Fusion"),this);
 
-    actions <<(QList<QAction *>()<<actionChangeBorderColor<<actionSetLayerTransparency<<actionRename
-                                <<actionEditDBInfo<<actionGenerateAttributes<<actionExportShapefile)
-            <<(QList<QAction *>()<<actionRemoveSegmentation)
-            <<(QList<QAction *>()<<actionAddClassifications<<actionRemoveAllClassifications<<actionAddDecisionFusion);
+    setActions(QList<QList<QAction *> >()
+               <<(QList<QAction *>()<<actionChangeBorderColor<<actionSetLayerTransparency<<actionRename
+                  <<actionEditDBInfo<<actionGenerateAttributes<<actionExportShapefile)
+               <<(QList<QAction *>()<<actionRemoveSegmentation)
+               <<(QList<QAction *>()<<actionAddClassifications<<actionRemoveAllClassifications<<actionAddDecisionFusion));
 
     //Widgets for context menu
     QtColorPicker *borderColorPicker = new QtColorPicker(NULL);
@@ -108,11 +110,11 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret;
-    ret = query.exec("delete from segmentationlayer where id = '"+uuid.toString()+"'");
+    ret = query.exec("delete from segmentationlayer where id = '"+id().toString()+"'");
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
 
-    ret = query.exec(QString("select id from sample_segmentation where segmentationid = '%1'").arg(uuid.toString()));
+    ret = query.exec(QString("select id from sample_segmentation where segmentationid = '%1'").arg(id().toString()));
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
     QStringList list;
@@ -125,7 +127,7 @@ CDTSegmentationLayer::~CDTSegmentationLayer()
             qWarning()<<"prepare:"<<query.lastError().text();
     }
 
-    ret = query.exec(QString("delete from sample_segmentation where segmentationid = '%1'").arg(uuid.toString()));
+    ret = query.exec(QString("delete from sample_segmentation where segmentationid = '%1'").arg(id().toString()));
     if (!ret)
         qWarning()<<"prepare:"<<query.lastError().text();
 
@@ -226,8 +228,9 @@ void CDTSegmentationLayer::removeClassification(CDTClassificationLayer* clf)
         emit removeLayer(QList<QgsMapLayer*>()<<clf->canvasLayer());
         delete clf;
         emit layerChanged();
-        this->setOriginRenderer();
-        this->mapCanvas->refresh();
+
+        setOriginRenderer();
+        canvas()->refresh();
     }
 }
 
@@ -340,7 +343,7 @@ QString CDTSegmentationLayer::imagePath() const
 
 int CDTSegmentationLayer::layerTransparency() const
 {
-    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(mapCanvasLayer);
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
         return p->layerTransparency();
     else
@@ -383,7 +386,7 @@ QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
 
 void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
 {
-    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(mapCanvasLayer);
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
         p->setRendererV2(r);
 }
@@ -406,7 +409,7 @@ QList<CDTSegmentationLayer *> CDTSegmentationLayer::getLayers()
 CDTSegmentationLayer *CDTSegmentationLayer::getLayer(QUuid id)
 {
     foreach (CDTSegmentationLayer *layer, layers) {
-        if (id == layer->uuid)
+        if (id == layer->id())
             return layer;
     }
     return NULL;
@@ -422,7 +425,7 @@ void CDTSegmentationLayer::setName(const QString &name)
     query.bindValue(1,this->id().toString());
     query.exec();
 
-    keyItem->setText(name);
+    keyItem()->setText(name);
     emit nameChanged(name);
 }
 
@@ -437,18 +440,18 @@ void CDTSegmentationLayer::setBorderColor(const QColor &clr)
     query.exec();
 
     setOriginRenderer();
-    this->mapCanvas->refresh();
+    canvas()->refresh();
     emit borderColorChanged(clr);
     emit layerChanged();
 }
 
 void CDTSegmentationLayer::setLayerTransparency(int transparency)
 {
-    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(mapCanvasLayer);
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
     {
         p->setLayerTransparency(transparency);
-        mapCanvas->refresh();
+        canvas()->refresh();
     }
 }
 
@@ -470,24 +473,15 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
         return;
     }
 
-    if (mapCanvasLayer)
-    {
-        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
-        delete mapCanvasLayer;
-    }
-    mapCanvasLayer = newLayer;
+    setCanvasLayer(newLayer);
     connect(newLayer,SIGNAL(layerTransparencyChanged(int)),this,SIGNAL(layerTransparencyChanged(int)));
 
-    keyItem->setText(name);
-
-    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
-    keyItem->setMapLayer(mapCanvasLayer);
-
+    keyItem()->setText(name);
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?,?,?,?,?)");
-    query.bindValue(0,uuid.toString());
+    query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.bindValue(2,shpPath);
     query.bindValue(3,mkPath);
@@ -508,7 +502,7 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
 
     emit nameChanged(name);
     emit borderColorChanged(color);
-    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    emit appendLayers(QList<QgsMapLayer*>()<<canvasLayer());
     emit layerChanged();
 }
 
@@ -609,7 +603,9 @@ QDataStream &operator<<(QDataStream &out, const CDTSegmentationLayer &segmentati
 
 QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
 {
-    in>>segmentation.uuid;
+    QUuid id;
+    in>>id;
+    segmentation.setID(id);
 
     QString name,shp,mark,method;
     in>>name>>shp>>mark>>method;

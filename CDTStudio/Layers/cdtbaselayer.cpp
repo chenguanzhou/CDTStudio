@@ -32,15 +32,15 @@ void CDTBaseLayer::onContextMenuRequest(QWidget *parent)
     menu->exec(QCursor::pos());
 }
 
-QStandardItem *CDTBaseLayer::standardKeyItem() const
+CDTProjectTreeItem *CDTBaseLayer::keyItem() const
 {
-    return keyItem;
+    return treeKeyItem;
 }
 
-//QList<QStandardItem *> CDTBaseLayer::standardItems() const
-//{
-//    return QList<QStandardItem *>()<<(QStandardItem *)keyItem<<(QStandardItem *)valueItem;
-//}
+QStandardItem *CDTBaseLayer::standardKeyItem() const
+{
+    return treeKeyItem;
+}
 
 QgsMapLayer *CDTBaseLayer::canvasLayer() const
 {
@@ -65,6 +65,16 @@ CDTFileSystem *CDTBaseLayer::fileSystem() const
     return rootProject()->fileSystem;
 }
 
+QList<QList<QAction *> > CDTBaseLayer::allActions() const
+{
+    return actions;
+}
+
+QString CDTBaseLayer::tableName() const
+{
+    return tblName;
+}
+
 QObject *CDTBaseLayer::getAncestor(const char *className)
 {
     QObject *obj = this;
@@ -75,6 +85,37 @@ QObject *CDTBaseLayer::getAncestor(const char *className)
         obj = obj->parent();
     }
     return NULL;
+}
+
+void CDTBaseLayer::setID(QUuid id)
+{
+    uuid = id;
+}
+
+void CDTBaseLayer::setKeyItem(CDTProjectTreeItem *item)
+{
+    treeKeyItem = item;
+}
+
+void CDTBaseLayer::setActions(QList<QList<QAction *> > actions)
+{
+    this->actions = actions;
+}
+
+void CDTBaseLayer::setCanvasLayer(QgsMapLayer *layer)
+{
+    if(layer == NULL)
+        return;
+
+    if (mapCanvasLayer)
+    {
+        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
+        delete mapCanvasLayer;
+    }
+
+    mapCanvasLayer = layer;
+    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
+    treeKeyItem->setMapLayer(mapCanvasLayer);
 }
 
 void CDTBaseLayer::setMapCanvas(QgsMapCanvas *canvas)

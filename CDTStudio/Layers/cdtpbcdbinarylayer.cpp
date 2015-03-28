@@ -31,7 +31,7 @@ QStringList CDTPBCDBinaryLayer::files() const
 
 void CDTPBCDBinaryLayer::onContextMenuRequest(QWidget *parent)
 {
-
+    Q_UNUSED(parent);
 }
 
 void CDTPBCDBinaryLayer::initLayer(const QString &name, const QString &image_t1, const QString &image_t2, const QVariantMap &params)
@@ -46,18 +46,11 @@ void CDTPBCDBinaryLayer::initLayer(const QString &name, const QString &image_t1,
         return;
     }
 
-    if (mapCanvasLayer)
-    {
-        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
-        delete mapCanvasLayer;
-    }
-    mapCanvasLayer = newLayer;
-    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
-    keyItem->setMapLayer(mapCanvasLayer);
+    setCanvasLayer(newLayer);
 
     CDTPixelChangeLayer::initLayer(name,image_t1,image_t2,params);
 
     emit layerChanged();
-    emit appendLayers(QList<QgsMapLayer*>()<<mapCanvasLayer);
+    emit appendLayers(QList<QgsMapLayer*>()<<canvasLayer());
 }
 
