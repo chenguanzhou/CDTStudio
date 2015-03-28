@@ -2,18 +2,17 @@
 #include "cdtapplication.h"
 #include <QObject>
 
-//TODO  Project tree Checkbox
+//TODO  Unit Test
+//TODO  Comment => Document
 //TODO  Translation
-//TODO  CDTBaseLayer more independent
+
+//TODO  name(set,get,rename),tableName to CDTBaseLayer
+//TODO  Change Detection View
 //TODO  Recent file
-//TODO  Comment
-//TODO  Unit Test(Auto)
-//TODO  ORM
 //TODO  Opacity for layers
-//TODO  Attribute Widget Closable
-//TODO  Make accuracy assessment as a property of classification layer
+//TODO  Attribute Widget Closable(invisible)
 //TODO  Read & write project in another thread
-//TODO  Category table import & export
+//TODO  FileSystem as a db
 
 //BUG   Same name
 

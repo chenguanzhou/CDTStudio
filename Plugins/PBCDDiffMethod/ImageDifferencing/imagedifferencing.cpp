@@ -14,7 +14,6 @@ QString ImageDifferencing::methodName() const
 
 QString ImageDifferencing::generateDiffImage(QList<QPair<GDALRasterBand *, GDALRasterBand *> > poBands, GDALDataset *outDiffDS)
 {
-    //TODO:进度条
     for (int i=0;i<poBands.size();++i)
     {
         GDALRasterBand* poBand1 = poBands.value(i).first;

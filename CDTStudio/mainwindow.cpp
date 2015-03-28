@@ -231,7 +231,6 @@ void MainWindow::initStatusBar()
     connect(pushButtonTask,SIGNAL(toggled(bool)),SLOT(updateTaskDock()));
     connect(pushButtonTask,SIGNAL(toggled(bool)),dockWidgetTask,SLOT(setVisible(bool)));
     statusBar()->addPermanentWidget(pushButtonTask , 0 );
-    //TODO: Auto Show
 
     logger()->info("StatusBar initialized");
 }

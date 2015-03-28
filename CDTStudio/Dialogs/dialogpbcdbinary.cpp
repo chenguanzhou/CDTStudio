@@ -67,7 +67,7 @@ DialogPBCDBinary::~DialogPBCDBinary()
 
 CDTTaskReply* DialogPBCDBinary::startBinaryPBCD(QUuid prjID)
 {
-    DialogPBCDBinary dlg(prjID);//TODO: maybe a bug when dialog turn to unmodal dialog
+    DialogPBCDBinary dlg(prjID);
     dlg.exec();
     return dlg.reply;
 }
