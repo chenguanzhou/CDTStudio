@@ -59,11 +59,10 @@ bool CDTProjectWidget::readProject(const QString &filepath)
 
     QByteArray compressedData = file.readAll();
     QByteArray data = qUncompress(compressedData);
-    qDebug()<<data.size();
+
     QTemporaryFile tempFile;
     tempFile.open();
     tempFile.write(data);
-    qDebug()<<tempFile.size();
     tempFile.flush();
     tempFile.seek(0);
     QDataStream in(&(tempFile));

@@ -107,6 +107,10 @@ void CDTAttributeDockWidget::setTableModels(QList<QAbstractTableModel *> models)
         widget->resizeRowsToContents();
 //        widget->setSizePolicy(this->sizePolicy());
 
+        QHeaderView *headerView = widget->horizontalHeader();
+        headerView->addAction(new QAction("hehe",this));
+        headerView->setContextMenuPolicy(Qt::ActionsContextMenu);
+
         tabWidget->addTab(widget,model->property("name").toString());
         connect(widget,SIGNAL(clicked(QModelIndex)),SLOT(onItemClicked(QModelIndex)));
     }

@@ -45,6 +45,9 @@ void CDTProjectTabWidget::openProject(const QString &filepath)
             delete projectWidget;
             return;
         }
+        QThread t;
+        projectWidget->moveToThread(&t);
+        projectWidget->moveToThread(thread());
 
         if(!compareFilePath(QFileInfo(filepath).absoluteFilePath()))
             return;
