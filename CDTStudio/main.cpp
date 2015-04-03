@@ -13,6 +13,7 @@
 //TODO  FileSystem as a db
 
 //BUG   Same name
+//BUG   16bit Image Texture Bug
 
 int main(int argc, char *argv[])
 {

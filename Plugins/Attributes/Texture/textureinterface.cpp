@@ -3,6 +3,7 @@
 #include <QDebug>
 
 TextureInterface::TextureInterface( QObject *parent)
+    :CDTAttributesInterface(parent)
 {
     _mapHaralickNames.insert("GLCM",GetGlcmHaralickName());
     _mapHaralickNames.insert("GLDV",GetGldvHaralickName());
@@ -55,18 +56,21 @@ QVector<qreal> TextureInterface::GLCM(const AttributeParamsSingleAngleBand &para
     refValue.resize(_mapHaralickNames["GLCM"].size());
 
     QVector<QPoint> pointsAnother(param.pointsVecI.size());
-    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint pt)->QPoint
+    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint &pt)->QPoint
     { return QPoint(pt.x()+_offset.x(),pt.y()+_offset.y()); });
 
     QVector<double> glcm(SIXTEEN*SIXTEEN,0);
     int count = 0;
-    for (unsigned int i=0;i<param.pointsVecI.size();++i)
+    for (int i=0;i<param.pointsVecI.size();++i)
     {
         if (pointsAnother[i].x() >=0 && pointsAnother[i].x() < param.nXSize && pointsAnother[i].y() >=0 && pointsAnother[i].y() < param.nYSize)
         {
             int level_1 = SRCVAL(param.buffer.buf,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x() )     / SIXTEEN;
             int level_2 = SRCVAL(param.buffer.buf,param.dataType,pointsAnother[i].y() * param.nXSize + pointsAnother[i].x() ) / SIXTEEN;
-            ++glcm[level_1*SIXTEEN + level_2];
+            int index = level_1*SIXTEEN + level_2;
+            if (index<0) index = 0;
+            if (index>255) index = 255;
+            ++glcm[index];
             ++count;
         }
     }
@@ -76,7 +80,7 @@ QVector<qreal> TextureInterface::GLCM(const AttributeParamsSingleAngleBand &para
         return refValue;
     }
 
-    for (unsigned int i=0;i<glcm.size();++i)
+    for (int i=0;i<glcm.size();++i)
         glcm[i] /= count;
 
     double mean1 = 0.0;
@@ -130,12 +134,12 @@ QVector<qreal> TextureInterface::GLDV(const AttributeParamsSingleAngleBand &para
     refValue.resize(_mapHaralickNames["GLDV"].size());
 
     std::vector<QPoint> pointsAnother(param.pointsVecI.size());
-    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint pt)->QPoint
+    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint &pt)->QPoint
     { return QPoint(pt.x()+_offset.x(),pt.y()+_offset.y());   });
 
     std::vector<double> glcm(SIXTEEN*SIXTEEN,0);
     int count = 0;
-    for (unsigned int i=0;i<param.pointsVecI.size();++i)
+    for (int i=0;i<param.pointsVecI.size();++i)
     {
         if (pointsAnother[i].x() >=0 && pointsAnother[i].x() < param.nXSize && pointsAnother[i].y() >=0 && pointsAnother[i].y() < param.nYSize)
         {
