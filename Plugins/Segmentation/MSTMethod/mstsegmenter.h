@@ -122,6 +122,7 @@ private:
     bool _ObjectMerge(GraphKruskal *&graph, void *p, unsigned num_vertices, double threshold);
     bool _EliminateSmallArea(GraphKruskal *&graph, void *p, double _minObjectSize);
     bool _GenerateFlagImage(GraphKruskal *&graph,const QMap<unsigned, unsigned> &mapNodeidObjectid);
+    bool _Polygonize();
 
 signals:
    // void computeEdgeWeight(unsigned , unsigned , QVector<double> , QVector<double>, QVector<double>, void *);

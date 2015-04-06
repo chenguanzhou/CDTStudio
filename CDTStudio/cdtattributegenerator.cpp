@@ -312,6 +312,14 @@ bool CDTAttributeGenerator::computeAttributes(
     int progressGap = barSize/100;
     int index = 0;
 
+    QVector<double> minBandVal(_bandCount),maxBandVal(_bandCount);
+    for (int k=0;k<_bandCount;++k)
+    {
+        double dMinMax[2];
+        _poImageDS->GetRasterBand(k+1)->ComputeRasterMinMax(FALSE,dMinMax);
+        minBandVal[k] = dMinMax[0];
+        maxBandVal[k] = dMinMax[1];
+    }
 
     QMap<QString,int> timer;
     clock_t time_start =clock();
@@ -426,9 +434,9 @@ bool CDTAttributeGenerator::computeAttributes(
         for (int k=0;k<_bandCount;++k)
         {
             buffer[k] = new uchar[nXSize*nYSize*_dataSize];
-            _poImageDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,buffer[k],nXSize,nYSize,_dataType,0,0);
+            GDALRasterBand *poBand =  _poImageDS->GetRasterBand(k+1);
+            poBand->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,buffer[k],nXSize,nYSize,_dataType,0,0);
         }
-
 
         foreach (CDTAttributesInterface* plugin, _plugins) {
             QString tableName = plugin->tableName();
@@ -453,6 +461,8 @@ bool CDTAttributeGenerator::computeAttributes(
                         TextureParam textureparam;
                         textureparam.angle =angle;
                         textureparam.buf =buffer[bandID-1];
+                        textureparam.minVal = minBandVal[bandID-1];
+                        textureparam.maxVal = maxBandVal[bandID-1];
                         AttributeParamsSingleAngleBand params(
                                     pointsVecI,textureparam,_dataType,nXSize,nYSize,pointsVecF,
                                 rotatedPointsVec,ringPointsVec,area,border_lenghth,

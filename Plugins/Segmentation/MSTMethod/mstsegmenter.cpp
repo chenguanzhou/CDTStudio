@@ -3,9 +3,11 @@
 #include <algorithm>
 #include <iostream>
 #include <QtCore>
-#include "polygonizer.h"
-#include "graphkruskal.h"
 #include <gdal_priv.h>
+#include <gdal_alg.h>
+#include <ogrsf_frmts.h>
+#include <ogr_api.h>
+#include "graphkruskal.h"
 
 MSTSegmenter::MSTSegmenter(const QString &inputImagePath,
                            const QString &outputImagePath,
@@ -27,6 +29,7 @@ MSTSegmenter::MSTSegmenter(const QString &inputImagePath,
       CDTBaseThread(parent)
 {
     GDALAllRegister();
+    OGRRegisterAll();
     CPLSetConfigOption("GDAL_FILENAME_IS_UTF8","YES");
 
 #ifdef Q_OS_WIN
@@ -111,16 +114,21 @@ void MSTSegmenter::run()
     delete graph;
 
     qDebug()<<"Generate Flag Image cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
+    timer = clock();
 
     GDALClose(poSrcDS);
     GDALClose(poDstDS);
-    Polygonizer* polygonizer = new Polygonizer(_outputImagePath,_shapefilePath);
-    connect(polygonizer,SIGNAL(finished()),polygonizer,SLOT(deleteLater()));
-    connect(polygonizer,SIGNAL(currentProgressChanged(QString)),this,SIGNAL(currentProgressChanged(QString)));
-    connect(polygonizer,SIGNAL(progressBarSizeChanged(int,int)),this,SIGNAL(progressBarSizeChanged(int,int)));
-    connect(polygonizer,SIGNAL(showNormalMessage(QString)),this,SIGNAL(showNormalMessage(QString)));
-    connect(polygonizer,SIGNAL(showWarningMessage(QString)),this,SIGNAL(showWarningMessage(QString)));
-    polygonizer->run();
+
+    emit currentProgressChanged(tr("Polygonizing"));
+//    Polygonizer* polygonizer = new Polygonizer(_outputImagePath,_shapefilePath);
+//    connect(polygonizer,SIGNAL(finished()),polygonizer,SLOT(deleteLater()));
+//    connect(polygonizer,SIGNAL(currentProgressChanged(QString)),this,SIGNAL(currentProgressChanged(QString)));
+//    connect(polygonizer,SIGNAL(progressBarValueChanged(int)),this,SIGNAL(progressBarValueChanged(int)));
+//    connect(polygonizer,SIGNAL(progressBarSizeChanged(int,int)),this,SIGNAL(progressBarSizeChanged(int,int)));
+//    connect(polygonizer,SIGNAL(showNormalMessage(QString)),this,SIGNAL(showNormalMessage(QString)));
+//    connect(polygonizer,SIGNAL(showWarningMessage(QString)),this,SIGNAL(showWarningMessage(QString)));
+//    polygonizer->run();
+    _Polygonize();
 
     qDebug()<<"mst segmentation cost: "<<(clock()-tSatart)/(double)CLOCKS_PER_SEC<<"s";
     emit completed();
@@ -211,7 +219,7 @@ void MSTSegmenter::onComputeEdgeWeight(unsigned nodeID1, unsigned nodeID2, const
 {    
     EdgeVector* vecEdge = (EdgeVector*)p;
     double  difs=0;
-    for (unsigned k=0;k<data1.size();++k)
+    for (int k=0;k<data1.size();++k)
     {
         difs += ((data1[k]-data2[k])*layerWeight[k])*((data1[k]-data2[k])*layerWeight[k]);
     }
@@ -436,6 +444,78 @@ bool MSTSegmenter::_GenerateFlagImage(GraphKruskal *&graph,const QMap<unsigned, 
         //        ++pd;
     }
     emit progressBarValueChanged(height);
+    return true;
+}
+
+bool MSTSegmenter::_Polygonize()
+{
+    emit progressBarSizeChanged(0,0);
+    GDALDataset *poFlagDS = (GDALDataset *)GDALOpen(_outputImagePath.toUtf8().constData(),GA_ReadOnly);
+    if (poFlagDS == NULL)
+    {
+        emit showWarningMessage(tr("Open Flag Image ")+_outputImagePath+tr(" Failed!"));
+        return false;
+    }
+
+    OGRSFDriver* poOgrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
+    if (poOgrDriver == NULL)
+    {
+        emit showWarningMessage(tr("Get ESRI SHAPEFILE Driver Failed"));
+        GDALClose(poFlagDS);
+        return false;
+    }
+
+    QFileInfo info(_shapefilePath);
+    if (info.exists())
+        poOgrDriver->DeleteDataSource(_shapefilePath.toUtf8().constData());
+
+    OGRDataSource* poDstDataset = poOgrDriver->CreateDataSource(_shapefilePath.toUtf8().constData(),0);
+    if (poDstDataset == NULL)
+    {
+        emit showWarningMessage(tr("Create Shapefile ")+_shapefilePath+tr(" Failed!"));
+        GDALClose(poFlagDS);
+        return false;
+    }
+
+    OGRSpatialReference* pSpecialReference = new OGRSpatialReference(poFlagDS->GetProjectionRef());
+    const char* layerName = "polygon";
+    OGRLayer* poLayer = poDstDataset->CreateLayer(layerName,pSpecialReference,wkbPolygon,0);
+    if (poLayer == NULL)
+    {
+        emit showWarningMessage(tr("Create Layer Failed!"));
+        GDALClose(poFlagDS);
+        OGRDataSource::DestroyDataSource( poDstDataset );
+        return false;
+    }
+
+    OGRFieldDefn ofDef_DN( "GridCode", OFTInteger );
+    if ( (poLayer->CreateField(&ofDef_DN) != OGRERR_NONE) )
+    {
+        emit showWarningMessage(tr("Create Field Failed!"));
+        GDALClose(poFlagDS);
+        OGRDataSource::DestroyDataSource( poDstDataset );
+        return false;
+    }
+
+
+    char** papszOptions = NULL;
+    papszOptions = CSLSetNameValue(papszOptions,"8CONNECTED","8");
+    GDALRasterBand *poFlagBand = poFlagDS->GetRasterBand(1);
+    GDALRasterBand *poMaskBand = poFlagBand->GetMaskBand();
+    CPLErr err = GDALPolygonize((GDALRasterBandH)poFlagBand,(GDALRasterBandH)poMaskBand,(OGRLayerH)poLayer,0,papszOptions,0,0);
+    if (err != CE_None)
+    {
+        emit showWarningMessage(tr("Polygonization failed!"));
+        GDALClose(poFlagDS);
+        OGRDataSource::DestroyDataSource( poDstDataset );
+        if (pSpecialReference) delete pSpecialReference;
+        return false;
+    }
+
+    emit showNormalMessage(tr("Polygonization secceed!"));
+    if (pSpecialReference) delete pSpecialReference;
+    GDALClose(poFlagDS);
+    OGRDataSource::DestroyDataSource( poDstDataset );
     return true;
 }
 

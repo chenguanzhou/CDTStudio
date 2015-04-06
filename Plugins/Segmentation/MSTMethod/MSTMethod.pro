@@ -14,7 +14,6 @@ DESTDIR = ../../../bin/Plugins
 
 SOURCES += \
     mstmethodinterface.cpp \
-    polygonizer.cpp\
     mstsegmenter.cpp\
     graphkruskal.cpp
 
@@ -22,7 +21,6 @@ HEADERS +=\
     ../../../Interfaces/cdtsegmentationinterface.h \
     ../../../CDTStudio/cdtbasethread.h \
     mstmethodinterface.h \
-    polygonizer.h\
     mstsegmenter.h\
     graphkruskal.h
 
