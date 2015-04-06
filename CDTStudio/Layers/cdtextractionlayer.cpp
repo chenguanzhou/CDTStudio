@@ -73,7 +73,7 @@ double CDTExtractionLayer::opacity() const
     QSqlQuery query(db);
     query.exec("select opacity from extractionlayer where id ='" + this->id().toString() +"'");
     query.next();
-    qDebug()<<query.value(0);
+    query.value(0);
     return query.value(0).toDouble();
 }
 

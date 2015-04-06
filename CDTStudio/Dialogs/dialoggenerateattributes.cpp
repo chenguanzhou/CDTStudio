@@ -13,10 +13,11 @@ DialogGenerateAttributes::DialogGenerateAttributes(QUuid segmentationID, int ban
     QDialog(parent),
     segID(segmentationID),
     ui(new Ui::DialogGenerateAttributes),
-    _bandCount(bandCount)
+    _bandCount(bandCount),
+    attributeGenerator(NULL)
 {
     ui->setupUi(this);
-    loadPlugin();
+    showPlugins();
 }
 
 DialogGenerateAttributes::~DialogGenerateAttributes()
@@ -30,7 +31,7 @@ int DialogGenerateAttributes::bandCount() const
     return _bandCount;
 }
 
-void DialogGenerateAttributes::loadPlugin()
+void DialogGenerateAttributes::showPlugins()
 {
     foreach (CDTAttributesInterface* plugin, attributesPlugins) {
         QString typeName = plugin->attributesType();
@@ -140,16 +141,26 @@ void DialogGenerateAttributes::on_pushButtonAddAll_clicked()
 void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
 {
     QMap<QString,QStringList> attributes;
+    int attributeCount = 0;
     foreach (QString type, toolBoxWidgets.keys()) {
         QListWidget* widget = toolBoxWidgets.value(type);
         if (widget)
         {
             QStringList items;
             for (int i=0;i<widget->count();++i)
+            {
                 items<<widget->item(i)->text();
+                ++attributeCount ;
+            }
             attributes.insert(type,items);
         }
     }
+    if (attributeCount == 0)
+    {
+        QMessageBox::critical(this,tr("Error"),tr("No attribute is selected!"));
+        return;
+    }
+
     CDTSegmentationLayer* segmentationLayer =
             CDTSegmentationLayer::getLayer(segID);
 
@@ -158,7 +169,9 @@ void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
         QMessageBox::critical(this,tr("Error"),tr("Database \"attribute\" is not found"));
         return;
     }
-    CDTAttributeGenerator* attributeGenerator = new CDTAttributeGenerator(
+
+    if (attributeGenerator) delete attributeGenerator;
+    attributeGenerator = new CDTAttributeGenerator(
                 segmentationLayer->imagePath(),
                 segmentationLayer->markfileTempPath(),
                 segmentationLayer->shapefileTempPath(),
@@ -180,9 +193,22 @@ void DialogGenerateAttributes::on_pushButtonGenerate_clicked()
     connect(attributeGenerator, SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
     connect(attributeGenerator, SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
     attributeGenerator->start();
-    this->setEnabled(false);
+
+    ui->widget->setEnabled(false);
+    ui->pushButtonGenerate->setEnabled(false);
+    ui->pushButtonCancel->setEnabled(false);
+    ui->pushButtonCancel->setText(tr("Cancel"));
+
     connect(attributeGenerator,SIGNAL(finished()),this,SLOT(onFinished()));
     connect(attributeGenerator,SIGNAL(finished()),attributeGenerator,SLOT(deleteLater()));
+}
+
+void DialogGenerateAttributes::on_pushButtonCancel_clicked()
+{
+    if (attributeGenerator)
+        attributeGenerator->quit();
+
+    this->close();
 }
 
 void DialogGenerateAttributes::on_treeWidgetAll_itemSelectionChanged()
@@ -220,5 +246,11 @@ void DialogGenerateAttributes::onShowWarningMessage(QString msg)
 
 void DialogGenerateAttributes::onFinished()
 {
-    this->setEnabled(true);
+    ui->widget->setEnabled(true);
+    ui->pushButtonGenerate->setEnabled(true);
+    ui->pushButtonCancel->setEnabled(true);
+    ui->pushButtonCancel->setText(tr("Finish"));
+    attributeGenerator = NULL;
 }
+
+

@@ -148,7 +148,7 @@ void CDTSegmentationLayer::editDBInfo()
 
 void CDTSegmentationLayer::generateAttributes()
 {
-    MainWindow::getAttributesDockWidget()->clear();
+//    MainWindow::getAttributesDockWidget()->clear();
 
 
     CDTDatabaseConnInfo dbConnInfo = this->databaseURL();
@@ -353,11 +353,11 @@ QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
         if (attributes.contains(name))
             tableNames<<name;
     }
+
     foreach (QString tableName, tableNames) {
-        QSqlTableModel* model = new QSqlTableModel(NULL,db);
+        QSqlQueryModel* model = new QSqlQueryModel(NULL);
+        model->setQuery(QString("select * from ")+tableName,db);
         model->setProperty("name",tableName);
-        model->setTable(tableName);
-        model->select();
         models.append(model);
     }
     return models;

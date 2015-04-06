@@ -11,6 +11,7 @@ class DialogGenerateAttributes;
 class QModelIndex;
 class QTreeWidgetItem;
 class QListWidget;
+class CDTAttributeGenerator;
 struct QUuid;
 
 class DialogGenerateAttributes : public QDialog
@@ -30,20 +31,23 @@ private slots:
     void on_pushButtonAdd_clicked();
     void on_pushButtonAddAll_clicked();
     void on_pushButtonGenerate_clicked();
+    void on_pushButtonCancel_clicked();
     void on_treeWidgetAll_itemSelectionChanged();
     void onToolBoxSelectionChanged();
     void onShowWarningMessage(QString msg);
     void onFinished();
 
+
 private:
     Ui::DialogGenerateAttributes *ui;
-//    CDTSegmentationLayer* segmentationLayer;
     QUuid segID;
     int _bandCount;
-    QMap<QString,QListWidget*> toolBoxWidgets;
+    QMap<QString,QListWidget*> toolBoxWidgets;    
+    CDTAttributeGenerator* attributeGenerator;
 
-    void loadPlugin();
+    void showPlugins();
     static int itemLevel(QTreeWidgetItem *item);
+    void setWorkingUI();
 };
 
 #endif // DIALOGGENERATEATTRIBUTES_H

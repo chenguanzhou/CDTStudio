@@ -62,10 +62,10 @@ QUuid CDTBaseLayer::id() const{return uuid;}
 QString CDTBaseLayer::name() const
 {
     QSqlQuery query(QSqlDatabase::database("category"));
-    qDebug()<<query.prepare(QString("select name from %1 where id =?").arg(tableName()));
+    query.prepare(QString("select name from %1 where id =?").arg(tableName()));
     query.addBindValue(id().toString());
-    qDebug()<<query.exec();
-    qDebug()<<query.next();
+    query.exec();
+    query.next();
     return query.value(0).toString();
 }
 
