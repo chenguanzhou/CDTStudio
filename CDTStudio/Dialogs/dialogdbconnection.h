@@ -43,14 +43,17 @@ private slots:
     void on_toolButton_clicked();
     void on_comboDriver_currentIndexChanged(const QString &arg1);
     void on_pushButtonTest_clicked();
+    void conditionChanged();
 
 private:
     void initialize();
     void updateConnInfo();
+    void updateButtonBox();
 
 private:
     Ui::DialogDBConnection *ui;
     CDTDatabaseConnInfo dbConnInfo;
+    bool isTested;
 };
 
 #endif // DIALOGDBCONNECTION_H

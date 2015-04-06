@@ -29,14 +29,15 @@ bool CDTDatabaseConnInfo::operator==(const CDTDatabaseConnInfo &rhs) const
 
 bool CDTDatabaseConnInfo::isNull()
 {
-    return dbName.isEmpty();
+    return dbType.isEmpty() || dbName.isEmpty();
 }
 
 
 DialogDBConnection::DialogDBConnection(CDTDatabaseConnInfo dbInfo, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogDBConnection),
-    dbConnInfo(dbInfo)
+    dbConnInfo(dbInfo),
+    isTested(false)
 {
     ui->setupUi(this);
     QStringList drivers = QSqlDatabase::drivers();
@@ -67,12 +68,24 @@ CDTDatabaseConnInfo DialogDBConnection::dbConnectInfo()
 
 void DialogDBConnection::initialize()
 {
-    ui->comboDriver->setCurrentIndex( ui->comboDriver->findText(dbConnInfo.dbType));
-    ui->editDatabase->setText(dbConnInfo.dbName);
-    ui->editUsername->setText(dbConnInfo.username);
-    ui->editPassword->setText(dbConnInfo.password);
-    ui->editHostname->setText(dbConnInfo.hostName);
-    ui->portSpinBox->setValue(dbConnInfo.port);
+    if (!dbConnInfo.isNull())
+    {
+        ui->comboDriver->setCurrentIndex( ui->comboDriver->findText(dbConnInfo.dbType));
+        ui->editDatabase->setText(dbConnInfo.dbName);
+        ui->editUsername->setText(dbConnInfo.username);
+        ui->editPassword->setText(dbConnInfo.password);
+        ui->editHostname->setText(dbConnInfo.hostName);
+        ui->portSpinBox->setValue(dbConnInfo.port);
+    }
+
+    updateButtonBox();
+
+    connect(ui->comboDriver,SIGNAL(currentIndexChanged(int)),SLOT(conditionChanged()));
+    connect(ui->editDatabase,SIGNAL(textChanged(QString)),SLOT(conditionChanged()));
+    connect(ui->editUsername,SIGNAL(textChanged(QString)),SLOT(conditionChanged()));
+    connect(ui->editPassword,SIGNAL(textChanged(QString)),SLOT(conditionChanged()));
+    connect(ui->editHostname,SIGNAL(textChanged(QString)),SLOT(conditionChanged()));
+    connect(ui->portSpinBox,SIGNAL(valueChanged(int)),SLOT(conditionChanged()));
 }
 
 void DialogDBConnection::updateConnInfo()
@@ -83,6 +96,13 @@ void DialogDBConnection::updateConnInfo()
     dbConnInfo.password = ui->editPassword->text();
     dbConnInfo.hostName = ui->editHostname->text();
     dbConnInfo.port = ui->portSpinBox->value();
+}
+
+void DialogDBConnection::updateButtonBox()
+{
+    QPushButton *button = ui->buttonBox->button(QDialogButtonBox::Ok);
+    if (button)
+        button->setEnabled(isTested);
 }
 
 /// Only for SQLITE
@@ -118,13 +138,29 @@ void DialogDBConnection::on_pushButtonTest_clicked()
     db.setPassword(dbConnInfo.password);
     db.setHostName(dbConnInfo.hostName);
     db.setPort(dbConnInfo.port);
-    if (db.open()==false)
+    if (db.open()!=false)
     {
-        QMessageBox::warning(this, QObject::tr("Unable to open database"),
-                             QObject::tr("An error occurred while opening the connection: ")
-                             + db.lastError().text());
-        QSqlDatabase::removeDatabase("test");
-        return;
+        QSqlQuery query(db);
+        if (query.exec("create temp table cdtstudio_test(hehe int)"))
+        {
+            QMessageBox::information(this,tr("Connection Test"),tr("Test Seccessfully!"));
+            isTested = true;
+            updateButtonBox();
+            QSqlDatabase::removeDatabase("test");
+            return;
+        }
     }
-    QMessageBox::information(this,tr("Connection Test"),tr("Test Seccessfully!"));
+
+
+    QMessageBox::warning(this, QObject::tr("Unable to open database"),
+                         QObject::tr("An error occurred while opening the connection: ")
+                         + db.lastError().text());
+    QSqlDatabase::removeDatabase("test");
+    return;
+}
+
+void DialogDBConnection::conditionChanged()
+{
+    isTested = false;
+    updateButtonBox();
 }

@@ -23,8 +23,8 @@ public slots:
     bool saveProject();
     bool saveAllProject();
     bool saveAsProject();
-    bool closeTab(const int &index);
-    void closeAll();
+    int closeTab(const int &index);
+    bool closeAll();
 private:
     QString readLastProjectDir();
     void writeLastProjectDir(const QString &path);

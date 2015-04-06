@@ -236,7 +236,7 @@ void CDTImageLayer::addSegmentation()
         CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this);
         segmentation->initSegmentationLayer(
                     dlg->name(),dlg->shapefileID(),dlg->markfileID(),
-                    dlg->method(),dlg->params(),dlg->databaseConnInfo(),dlg->borderColor());
+                    dlg->method(),dlg->params(),/*dlg->databaseConnInfo()*/CDTDatabaseConnInfo(),dlg->borderColor());
         segmentationsRoot->appendRow(segmentation->standardKeyItem());
         addSegmentation(segmentation);
     }

@@ -592,7 +592,11 @@ void MainWindow::resizeEvent(QResizeEvent *e)
 
 void MainWindow::closeEvent(QCloseEvent *e)
 {
-    ui->tabWidgetProject->closeAll();
+    if (!ui->tabWidgetProject->closeAll())
+    {
+        e->ignore();
+        return;
+    }
     QSettings setting("WHU","CDTStudio");
     setting.setValue("geometry", saveGeometry());
     setting.setValue("windowState", saveState());

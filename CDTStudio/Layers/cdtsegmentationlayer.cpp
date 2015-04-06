@@ -148,8 +148,15 @@ void CDTSegmentationLayer::editDBInfo()
 
 void CDTSegmentationLayer::generateAttributes()
 {
-//    MainWindow::getAttributesDockWidget()->clear();
-
+    while (databaseURL().isNull())
+    {
+        int ret = QMessageBox::warning(NULL,tr("Warning"),tr("Database connection information is not set!\nSet it now?")
+                                       ,QMessageBox::Ok|QMessageBox::Cancel);
+        if (ret == QMessageBox::Ok)
+            editDBInfo();
+        else
+            return;
+    }
 
     CDTDatabaseConnInfo dbConnInfo = this->databaseURL();
     QSqlDatabase db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"attribute");
@@ -333,6 +340,9 @@ QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
 {
     QList<QAbstractTableModel *> models;
     CDTDatabaseConnInfo dbConnInfo = databaseURL();
+    if (dbConnInfo.isNull())
+        return models;
+
     QSqlDatabase db = QSqlDatabase::addDatabase(dbConnInfo.dbType,"attribute");
     db.setDatabaseName(dbConnInfo.dbName);
     db.setHostName(dbConnInfo.hostName);

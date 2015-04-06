@@ -111,27 +111,39 @@ bool CDTProjectTabWidget::saveAsProject()
     return true;
 }
 
-bool CDTProjectTabWidget::closeTab(const int &index)
+int CDTProjectTabWidget::closeTab(const int &index)
 {
     if(index<0) return false;
 
     CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
 
     int ret = tabItem->maybeSave();
-    if(ret == QMessageBox::Cancel  )
-        return true;
 
-    this->removeTab(index);
-    delete tabItem;
-    return true;
+    if (ret != QMessageBox::Cancel)
+    {
+        this->removeTab(index);
+        delete tabItem;
+    }
+
+    return ret;
 }
 
-void CDTProjectTabWidget::closeAll()
+bool CDTProjectTabWidget::closeAll()
 {
     if(this->count()<=0)
-        return ;
+        return true;
+
+    int tabIndex = 0;
+    bool isAppClose = true;
     for(int i=0;i<this->count();++i)
-        this->closeTab(0);
+    {
+        if (this->closeTab(tabIndex)==QMessageBox::Cancel)
+        {
+            ++tabIndex;
+            isAppClose = false;
+        }
+    }
+    return isAppClose;
 }
 
 QString CDTProjectTabWidget::readLastProjectDir()

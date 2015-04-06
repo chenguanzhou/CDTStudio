@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QMap>
-#include "dialogdbconnection.h"
 
 namespace Ui {
 class DialogNewSegmentation;
@@ -28,11 +27,9 @@ public:
     QColor  borderColor() const;
     QString method() const;
     QVariantMap params() const;
-    CDTDatabaseConnInfo databaseConnInfo()const;
 
 private slots:
     void setSegMethod(int index);
-    void setDBConnectionInfo();
     void startSegmentation();
     void onSegFinished();
     void updateButtonBoxStatus();
@@ -47,10 +44,7 @@ private:
     QString shapefileTempPath;
     QString mkID;
     QString shpID;
-    CDTDatabaseConnInfo dbConnInfo;
-
     bool isFinished;
-    bool isDBTested;
 
     void loadPlugins();
 };

@@ -14,7 +14,6 @@ DialogNewSegmentation::DialogNewSegmentation(
     fileSystem(fileSys),
     inputImagePath(inputImage),
     isFinished(false),
-    isDBTested(false),
     ui(new Ui::DialogNewSegmentation)
 {
     ui->setupUi(this);    
@@ -31,9 +30,6 @@ DialogNewSegmentation::DialogNewSegmentation(
 
     connect(ui->comboBox,SIGNAL(currentIndexChanged(int)),SLOT(setSegMethod(int)));
     connect(ui->pushButtonStart,SIGNAL(clicked()),SLOT(startSegmentation()));
-    connect(ui->pushButtonDBInfo,SIGNAL(clicked()),SLOT(setDBConnectionInfo()));
-
-    //should connect before load plugins
     loadPlugins();
 }
 
@@ -72,25 +68,9 @@ QVariantMap DialogNewSegmentation::params() const
     return segmentationParams;
 }
 
-CDTDatabaseConnInfo DialogNewSegmentation::databaseConnInfo() const
-{
-    return dbConnInfo;
-}
-
 void DialogNewSegmentation::setSegMethod(int index)
 {    
     ui->propertyWidget->setObject(segmentationPlugins[index]);
-}
-
-void DialogNewSegmentation::setDBConnectionInfo()
-{
-    DialogDBConnection dlg(dbConnInfo);
-    if (dlg.exec()==QDialog::Accepted)
-    {
-        dbConnInfo = dlg.dbConnectInfo();
-        isDBTested = true;
-        updateButtonBoxStatus();
-    }
 }
 
 void DialogNewSegmentation::loadPlugins()
@@ -144,5 +124,5 @@ void DialogNewSegmentation::onSegFinished()
 
 void DialogNewSegmentation::updateButtonBoxStatus()
 {
-    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isFinished&&isDBTested);
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isFinished/*&&isDBTested*/);
 }
