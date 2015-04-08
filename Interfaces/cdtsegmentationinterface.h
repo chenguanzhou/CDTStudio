@@ -13,7 +13,7 @@ public:
     explicit CDTSegmentationInterface(QObject* parent = 0):QObject(parent){}
 
     virtual QString segmentationMethod()const =0;
-    virtual void startSegmentation(QProgressBar *progressBar,QLabel *label) =0;//TODO:Hide QProgressBar
+    virtual void startSegmentation() =0;//TODO:Hide QProgressBar
 
     QVariantMap params() const
     {
@@ -34,12 +34,10 @@ public:
     void setMarkfilePath  (const QString &path){markfilePath=path;}
     void setShapefilePath (const QString &path){shapefilePath=path;}
 
-
-
-//    QString inputImagePath()const{return _inputImagePath;}
-//    QString markfilePath()  const{return _markfilePath;}
-//    QString shapefilePath() const{return _shapefilePath;}
 signals:
+    void currentProgressChanged(QString);
+    void progressBarValueChanged(int);//0-100
+    void progressBarSizeChanged(int,int);
     void finished();
 
 protected:

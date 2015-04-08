@@ -14,14 +14,12 @@ DESTDIR = ../../../bin/Plugins
 
 SOURCES += \
     mstmethodinterface.cpp \
-    mstsegmenter.cpp\
     graphkruskal.cpp
 
 HEADERS +=\
     ../../../Interfaces/cdtsegmentationinterface.h \
     ../../../CDTStudio/cdtbasethread.h \
     mstmethodinterface.h \
-    mstsegmenter.h\
     graphkruskal.h
 
 

@@ -11,9 +11,11 @@
 //TODO  Attribute Widget Closable(invisible)
 //TODO  Read & write project in another thread
 //TODO  FileSystem as a db
+//TODO  Export classification result
+//TODO  Band selection for rasters
+//TODO  Button Group For Icons in CDTProjectWidget
 
 //BUG   Same name
-//BUG   16bit Image Texture Bug
 
 int main(int argc, char *argv[])
 {

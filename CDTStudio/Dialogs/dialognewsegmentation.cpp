@@ -3,6 +3,7 @@
 #include "stable.h"
 #include "cdtfilesystem.h"
 #include "cdtsegmentationinterface.h"
+#include "cdtsegmentationhelper.h"
 
 extern QList<CDTSegmentationInterface *> segmentationPlugins;
 
@@ -30,7 +31,7 @@ DialogNewSegmentation::DialogNewSegmentation(
 
     connect(ui->comboBox,SIGNAL(currentIndexChanged(int)),SLOT(setSegMethod(int)));
     connect(ui->pushButtonStart,SIGNAL(clicked()),SLOT(startSegmentation()));
-    loadPlugins();
+    showPlugins();
 }
 
 DialogNewSegmentation::~DialogNewSegmentation()
@@ -73,7 +74,7 @@ void DialogNewSegmentation::setSegMethod(int index)
     ui->propertyWidget->setObject(segmentationPlugins[index]);
 }
 
-void DialogNewSegmentation::loadPlugins()
+void DialogNewSegmentation::showPlugins()
 {
     foreach (CDTSegmentationInterface* plugin, segmentationPlugins) {
         ui->comboBox->addItem(plugin->segmentationMethod());
@@ -83,18 +84,29 @@ void DialogNewSegmentation::loadPlugins()
 
 void DialogNewSegmentation::startSegmentation()
 {
+    CDTSegmentationInterface *plugin = segmentationPlugins[ui->comboBox->currentIndex()];
+    CDTSegmentationHelper *thread = new CDTSegmentationHelper(plugin,this);
+    thread->setMarkfilePath(markfileTempPath);
+    thread->setShapefilePath(shapefileTempPath);
+    if (thread == NULL || !thread->isValid())
+    {
+        logger()->error("Start Segmentation Failed!");
+        return;
+    }
+
+    connect(thread,SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
+    connect(thread,SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
+    connect(thread,SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
+
+    connect(thread,SIGNAL(finished()),this,SLOT(onSegFinished()));
+
     ui->progressBar->show();
     ui->labelProgress->show();
     this->adjustSize();
 
-    CDTSegmentationInterface *interface = segmentationPlugins[ui->comboBox->currentIndex()];
-    interface->setMarkfilePath(markfileTempPath);
-    interface->setShapefilePath(shapefileTempPath);
+    thread->start();
 
-    connect(interface,SIGNAL(finished()),this,SLOT(onSegFinished()));
-    interface->startSegmentation(ui->progressBar,ui->labelProgress);
-
-    segmentationParams = interface->params();
+    segmentationParams = plugin->params();
     ui->frameTotal->setEnabled(false);
     ui->pushButtonStart->setEnabled(false);
 }
