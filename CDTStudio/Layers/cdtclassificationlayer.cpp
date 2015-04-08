@@ -6,6 +6,7 @@
 #include "cdtclassifierassessmentform.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtvariantconverter.h"
+#include "cdtexportclassificationlayerhelper.h"
 
 
 QList<CDTClassificationLayer *> CDTClassificationLayer::layers;
@@ -17,13 +18,19 @@ CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
     setKeyItem(new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this));
 
     //actions
-    QWidgetAction *actionSetLayerTransparency = new QWidgetAction(this);
-    QAction *actionRename               = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this);
-    QAction *actionAccuracyAssessment   = new QAction(tr("Accuracy Assessment"),this);
-    QAction* actionRemoveClassification = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this);
+    QWidgetAction *actionSetLayerTransparency =
+            new QWidgetAction(this);
+    QAction *actionRename =
+            new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this);
+    QAction *actionExportClsLayer =
+            new QAction(QIcon(":/Icon/Export.png"),tr("Export Classification Layer"),this);
+    QAction *actionAccuracyAssessment =
+            new QAction(tr("Accuracy Assessment"),this);
+    QAction* actionRemoveClassification =
+            new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this);
 
     setActions(QList<QList<QAction *> >()
-               <<(QList<QAction*>()<<actionSetLayerTransparency<<actionRename<<actionAccuracyAssessment)
+               <<(QList<QAction*>()<<actionSetLayerTransparency<<actionRename<<actionExportClsLayer<<actionAccuracyAssessment)
                <<(QList<QAction*>()<<actionRemoveClassification));
 
     //Transparency
@@ -39,6 +46,7 @@ CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
     connect(this,SIGNAL(removeClassification(CDTClassificationLayer*)),this->parent(),SLOT(removeClassification(CDTClassificationLayer*)));
     connect(actionRemoveClassification,SIGNAL(triggered()),SLOT(remove()));
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
+    connect(actionExportClsLayer,SIGNAL(triggered()),SLOT(exportLayer()));
     connect(actionAccuracyAssessment,SIGNAL(triggered()),SLOT(showAccuracy()));
 }
 
@@ -59,6 +67,18 @@ CDTClassificationLayer::~CDTClassificationLayer()
 void CDTClassificationLayer::remove()
 {
     emit removeClassification(this);
+}
+
+void CDTClassificationLayer::exportLayer()
+{
+    QString shpPath= QFileDialog::getSaveFileName(NULL,tr("Export"),QString(), "ESRI Shapefile(*.shp)");
+    if(shpPath.isEmpty())
+        return;
+
+    if (CDTExportClassificationLayerHelper::exportClassification(id(),tr("Category"),shpPath))
+        QMessageBox::information(NULL,tr("Completed"),tr("Export file completed!"));
+    else
+        QMessageBox::critical(NULL,tr("Error"),tr("Export classification layer failed!"));
 }
 
 void CDTClassificationLayer::showAccuracy()
@@ -147,7 +167,7 @@ QStringList CDTClassificationLayer::selectedFeatures() const
 
 QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
 {
-    QMap<QString,QVariant> clsInfo = this->clsInfo();
+    QVariantMap clsInfo = this->clsInfo();
 
     QVariantList data = this->data();
     QMap<int,QColor> colorList;

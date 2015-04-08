@@ -49,6 +49,7 @@ signals:
 
 public slots:
     void remove();
+    void exportLayer();
     void showAccuracy();
 
 private:

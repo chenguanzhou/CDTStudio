@@ -241,15 +241,15 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
         return false;
     }
 
-    int index = layer.fieldNameIndex(DefaultFieldName);
+    int index = layer.fieldNameIndex(fieldName);
     if(index==-1)
     {
-        if (layer.dataProvider()->addAttributes((QList<QgsField>()<<QgsField(DefaultFieldName,QVariant::String)))==false)
+        if (layer.dataProvider()->addAttributes((QList<QgsField>()<<QgsField(fieldName,QVariant::String)))==false)
         {
             logger()->warn("Add attribute failed!");
             return false;
         }
-        index = layer.fieldNameIndex(DefaultFieldName);
+        index = layer.fieldNameIndex(fieldName);
     }
 
     layer.startEditing();
@@ -263,7 +263,7 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
     while(iter.nextFeature(f))
     {
         QString name = nameList[f.attribute("GridCode").toInt()];
-        if (f.setAttribute(DefaultFieldName,name)==false)
+        if (f.setAttribute(fieldName,name)==false)
         {
             logger()->error("Set classification info to the shapefile failed!");
             return false;
