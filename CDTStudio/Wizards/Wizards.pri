@@ -4,15 +4,10 @@ FORMS += \
 
 HEADERS += \
     $$PWD/wizardnewclassification.h \
-    $$PWD/wizardvectorchangedetection.h\
-    $$PWD/Helpers/cdtclassificationhelper.h\
-    $$PWD/Helpers/cdtvectorchangedetectionhelper.h
+    $$PWD/wizardvectorchangedetection.h
 
 SOURCES += \
     $$PWD/wizardnewclassification.cpp \
-    $$PWD/wizardvectorchangedetection.cpp\
-    $$PWD/Helpers/cdtclassificationhelper.cpp\
-    $$PWD/Helpers/cdtvectorchangedetectionhelper.cpp
+    $$PWD/wizardvectorchangedetection.cpp
 
 INCLUDEPATH += $$PWD
-INCLUDEPATH += $$PWD/Helpers

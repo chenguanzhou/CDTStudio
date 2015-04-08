@@ -43,6 +43,7 @@ FORMS    += \
 
 include(Dialogs/Dialogs.pri)
 include(Docks/Docks.pri)
+include(Helpers/Helpers.pri)
 include(Layers/Layers.pri)
 include(Wizards/Wizards.pri)
 include(../Interfaces/Interfaces.pri)
