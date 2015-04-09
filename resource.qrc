@@ -1,36 +1,37 @@
 <RCC>
     <qresource prefix="/">
         <file>Trans/zh_CN.qm</file>
-        <file>Icon/Edit.png</file>
-        <file>Icon/Export.png</file>
-        <file>Icon/Layers.png</file>
-        <file>Icon/Minus.png</file>
-        <file>Icon/New.png</file>
-        <file>Icon/Ok.png</file>
-        <file>Icon/Open.png</file>
-        <file>Icon/Add.png</file>
-        <file>Icon/RecentFiles.png</file>
-        <file>Icon/Remove.png</file>
-        <file>Icon/Save.png</file>
-        <file>Icon/SaveAll.png</file>
-        <file>Icon/SaveAs.png</file>
-        <file>Icon/Undo.png</file>
-        <file>Icon/Refresh.png</file>
-        <file>Icon/Rename.png</file>
-        <file>Icon/FullExtent.png</file>
-        <file>Icon/Pan.png</file>
-        <file>Icon/ZoomIn.png</file>
-        <file>Icon/ZoomOut.png</file>
-        <file>Icon/Maximize.png</file>
-        <file>Icon/AddProperty.png</file>
-        <file>Icon/DataSource.png</file>
-        <file>Icon/Start.png</file>
-        <file>Icon/Stop.png</file>
-        <file>Icon/Redo.png</file>
+        <file>Icons/Edit.png</file>
+        <file>Icons/Export.png</file>
+        <file>Icons/Layers.png</file>
+        <file>Icons/Minus.png</file>
+        <file>Icons/New.png</file>
+        <file>Icons/Ok.png</file>
+        <file>Icons/Open.png</file>
+        <file>Icons/Add.png</file>
+        <file>Icons/RecentFiles.png</file>
+        <file>Icons/Remove.png</file>
+        <file>Icons/Save.png</file>
+        <file>Icons/SaveAll.png</file>
+        <file>Icons/SaveAs.png</file>
+        <file>Icons/Undo.png</file>
+        <file>Icons/Refresh.png</file>
+        <file>Icons/Rename.png</file>
+        <file>Icons/FullExtent.png</file>
+        <file>Icons/Pan.png</file>
+        <file>Icons/ZoomIn.png</file>
+        <file>Icons/ZoomOut.png</file>
+        <file>Icons/Maximize.png</file>
+        <file>Icons/AddProperty.png</file>
+        <file>Icons/DataSource.png</file>
+        <file>Icons/Start.png</file>
+        <file>Icons/Stop.png</file>
+        <file>Icons/Redo.png</file>
         <file>StyleSheet/default.css</file>
-        <file>Icon/OBCD.png</file>
-        <file>Icon/PBCD.png</file>
-        <file>Icon/2.png</file>
-        <file>Icon/2p.png</file>
+        <file>Icons/OBCD.png</file>
+        <file>Icons/PBCD.png</file>
+        <file>Icons/2.png</file>
+        <file>Icons/2p.png</file>
+        <file>Icons/Default.png</file>
     </qresource>
 </RCC>

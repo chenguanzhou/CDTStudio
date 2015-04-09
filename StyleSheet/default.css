@@ -60,8 +60,8 @@ padding: 5px;
 }
 
 QDockWidget {		
-titlebar-close-icon: url(:/Icon/Remove.png);
-titlebar-normal-icon: url(:/Icon/Maximize.png);
+titlebar-close-icon: url(:/Icons/Remove.png);
+titlebar-normal-icon: url(:/Icons/Maximize.png);
 background:#EEEEF2;
 }
 QDockWidget::close-button:hover, QDockWidget::float-button:hover {

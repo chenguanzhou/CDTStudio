@@ -45,19 +45,19 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     QWidgetAction *actionChangeBorderColor = new QWidgetAction(this);
     QWidgetAction *actionSetLayerTransparency = new QWidgetAction(this);
     QAction *actionRename =
-            new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Segmentation"),this);
+            new QAction(QIcon(":/Icons/Rename.png"),tr("Rename Segmentation"),this);
     QAction *actionGenerateAttributes =
-            new QAction(QIcon(":/Icon/AddProperty.png"),tr("Generate Attributes"),this);
+            new QAction(QIcon(":/Icons/AddProperty.png"),tr("Generate Attributes"),this);
     QAction *actionEditDBInfo =
-            new QAction(QIcon(":/Icon/DataSource.png"),tr("Edit Attribute DB Source"),this);
+            new QAction(QIcon(":/Icons/DataSource.png"),tr("Edit Attribute DB Source"),this);
     QAction *actionExportShapefile =
-            new QAction(QIcon(":/Icon/Export.png"),tr("Export Shapefile"),this);
+            new QAction(QIcon(":/Icons/Export.png"),tr("Export Shapefile"),this);
     QAction *actionRemoveSegmentation =
-            new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Segmentation"),this);
+            new QAction(QIcon(":/Icons/Remove.png"),tr("Remove Segmentation"),this);
     QAction *actionAddClassifications =
-            new QAction(QIcon(":/Icon/Add.png"),tr("Add Classification"),this);
+            new QAction(QIcon(":/Icons/Add.png"),tr("Add Classification"),this);
     QAction *actionRemoveAllClassifications =
-            new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Classifications"),this);
+            new QAction(QIcon(":/Icons/Remove.png"),tr("Remove All Classifications"),this);
     QAction *actionAddDecisionFusion =
             new QAction(tr("Run Decision Fusion"),this);
 

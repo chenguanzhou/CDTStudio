@@ -11,12 +11,12 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     //    categoryModel(new QSqlRelationalTableModel(this,QSqlDatabase::database("category"))),
     categoryModel(NULL),
     delegateColor(new CDTCategoryDelegate(this)),
-    actionEdit(new QAction(QIcon(":/Icon/Edit.png"),tr("Edit"),this)),
-    actionRevert(new QAction(QIcon(":/Icon/Undo.png"),tr("Revert"),this)),
-    actionSubmit(new QAction(QIcon(":/Icon/Ok.png"),tr("Submit"),this)),
-    actionInsert(new QAction(QIcon(":/Icon/Add.png"),tr("Insert"),this)),
-    actionRemove(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove"),this)),
-    actionRemove_All(new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All"),this))
+    actionEdit(new QAction(QIcon(":/Icons/Edit.png"),tr("Edit"),this)),
+    actionRevert(new QAction(QIcon(":/Icons/Undo.png"),tr("Revert"),this)),
+    actionSubmit(new QAction(QIcon(":/Icons/Ok.png"),tr("Submit"),this)),
+    actionInsert(new QAction(QIcon(":/Icons/Add.png"),tr("Insert"),this)),
+    actionRemove(new QAction(QIcon(":/Icons/Remove.png"),tr("Remove"),this)),
+    actionRemove_All(new QAction(QIcon(":/Icons/Remove.png"),tr("Remove All"),this))
 {
     //layout
     this->setEnabled(false);

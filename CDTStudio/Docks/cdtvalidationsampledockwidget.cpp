@@ -38,9 +38,9 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     listView->setSelectionBehavior(QListView::SelectRows);
     listView->setModel(sampleModel);
 
-    QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this);
-    QAction *actionAddNew = new QAction(QIcon(":/Icon/Add.png"),tr("Add a sample set"),this);
-    QAction *actionRemove = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove"),this);
+    QAction *actionRename = new QAction(QIcon(":/Icons/Rename.png"),tr("Rename"),this);
+    QAction *actionAddNew = new QAction(QIcon(":/Icons/Add.png"),tr("Add a sample set"),this);
+    QAction *actionRemove = new QAction(QIcon(":/Icons/Remove.png"),tr("Remove"),this);
     toolBar->addActions(QList<QAction*>()<<actionRename<<actionAddNew<<actionRemove);
     toolBar->setIconSize(MainWindow::getIconSize());
 

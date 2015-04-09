@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     recentFileToolButton->setText(tr("&Recent"));
     recentFileToolButton->setToolButtonStyle(ui->mainToolBar->toolButtonStyle());
-    recentFileToolButton->setIcon(QIcon(":/Icon/RecentFiles.png"));
+    recentFileToolButton->setIcon(QIcon(":/Icons/RecentFiles.png"));
     recentFileToolButton->setPopupMode(QToolButton::InstantPopup);
     ui->mainToolBar->addWidget(recentFileToolButton);
 
@@ -99,27 +99,27 @@ void MainWindow::initIconSize()
 
 void MainWindow::initActions()
 {
-    actionNew = new QAction(QIcon(":/Icon/New.png"),tr("&New"),this);
+    actionNew = new QAction(QIcon(":/Icons/New.png"),tr("&New"),this);
     actionNew->setShortcut(QKeySequence::New);
     actionNew->setStatusTip(tr("Create a new project"));
     connect(actionNew,SIGNAL(triggered()),SLOT(onActionNew()));
 
-    actionOpen = new QAction(QIcon(":/Icon/Open.png"),tr("&Open"),this);
+    actionOpen = new QAction(QIcon(":/Icons/Open.png"),tr("&Open"),this);
     actionOpen->setShortcut(QKeySequence::Open);
     actionOpen->setStatusTip(tr("Open one or more projects"));
     connect(actionOpen,SIGNAL(triggered()),SLOT(onActionOpen()));
 
-    actionSave = new QAction(QIcon(":/Icon/Save.png"),tr("&Save"),this);
+    actionSave = new QAction(QIcon(":/Icons/Save.png"),tr("&Save"),this);
     actionSave->setShortcut(QKeySequence::Save);
     actionSave->setStatusTip(tr("Save current project"));
     connect(actionSave,SIGNAL(triggered()),SLOT(onActionSave()));
 
-    actionSaveAll = new QAction(QIcon(":/Icon/SaveAll.png"),tr("Save A&ll"),this);
+    actionSaveAll = new QAction(QIcon(":/Icons/SaveAll.png"),tr("Save A&ll"),this);
     actionSaveAll->setShortcut(QKeySequence(Qt::CTRL+Qt::SHIFT+Qt::Key_S));
     actionSaveAll->setStatusTip(tr("Save all existing projects"));
     connect(actionSaveAll,SIGNAL(triggered()),SLOT(onActionSaveAll()));
 
-    actionSaveAs = new QAction(QIcon(":/Icon/SaveAs.png"),tr("Save &As"),this);
+    actionSaveAs = new QAction(QIcon(":/Icons/SaveAs.png"),tr("Save &As"),this);
     actionSaveAs->setShortcut(QKeySequence::SaveAs);
     actionSaveAs->setStatusTip(tr("Save current project as"));
     connect(actionSaveAs,SIGNAL(triggered()),SLOT(onActionSaveAs()));
@@ -139,7 +139,7 @@ void MainWindow::initMenuBar()
                          <<actionSaveAs);
     menuFile->addSeparator();
     menuRecent = new QMenu(tr("&Recent"),this);
-    menuRecent->setIcon(QIcon(":/Icon/RecentFiles.png"));
+    menuRecent->setIcon(QIcon(":/Icons/RecentFiles.png"));
     menuFile->addMenu(menuRecent);
     menuBar()->addMenu(menuFile);
     logger()->info("MenuBars initialized");

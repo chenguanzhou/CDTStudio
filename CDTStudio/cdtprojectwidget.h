@@ -30,10 +30,12 @@ public slots:
     void onProjectChanged();
     bool saveProject(QString &path);
 
+    void onOriginalTool(bool toggle);
     void onZoomOutTool(bool toggle);
     void onZoomInTool(bool toggle);
-    void onPanTool(bool toggle);
+    void onPanTool(bool toggle);    
     void onFullExtent();
+
     void setLayerVisible(QgsMapLayer* layer,bool visible);
     void appendLayers(QList<QgsMapLayer*> layers);
     void removeLayer(QList<QgsMapLayer*> layer);
@@ -50,13 +52,11 @@ private:
 
     QgsMapCanvas* mapCanvas;
     QToolBar *initToolBar();
-    QgsMapTool *panTool;
-    QgsMapTool *zoomInTool;
-    QgsMapTool *zoomOutTool;
-    QAction *actionZoomOut;
-    QAction *actionZoomIn;
-    QAction *actionPan;
-    QAction *actionFullExtent;
+    QToolButton *toolButtonOriginal;
+    QToolButton *toolButtonZoomOut;
+    QToolButton *toolButtonZoomIn;
+    QToolButton *toolButtonPan;
+    QToolButton *toolButtonFullExtent;
 
     QList<QgsMapLayer*>     activeLayers;
     QMap<QgsMapLayer*,bool> layersVisible;

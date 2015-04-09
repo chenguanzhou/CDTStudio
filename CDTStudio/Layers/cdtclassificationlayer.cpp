@@ -21,13 +21,13 @@ CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
     QWidgetAction *actionSetLayerTransparency =
             new QWidgetAction(this);
     QAction *actionRename =
-            new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Classification"),this);
+            new QAction(QIcon(":/Icons/Rename.png"),tr("Rename Classification"),this);
     QAction *actionExportClsLayer =
-            new QAction(QIcon(":/Icon/Export.png"),tr("Export Classification Layer"),this);
+            new QAction(QIcon(":/Icons/Export.png"),tr("Export Classification Layer"),this);
     QAction *actionAccuracyAssessment =
             new QAction(tr("Accuracy Assessment"),this);
     QAction* actionRemoveClassification =
-            new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Classification"),this);
+            new QAction(QIcon(":/Icons/Remove.png"),tr("Remove Classification"),this);
 
     setActions(QList<QList<QAction *> >()
                <<(QList<QAction*>()<<actionSetLayerTransparency<<actionRename<<actionExportClsLayer<<actionAccuracyAssessment)

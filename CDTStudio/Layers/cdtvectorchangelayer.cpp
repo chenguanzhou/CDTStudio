@@ -14,11 +14,11 @@ CDTVectorChangeLayer::CDTVectorChangeLayer(QUuid uuid, QObject *parent)
     setKeyItem(keyItem);
 
     QAction *actionRename =
-            new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this);
+            new QAction(QIcon(":/Icons/Rename.png"),tr("Rename"),this);
     QAction *actionRemoveLayer =
-            new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Vector-based change detection layer"),this);
+            new QAction(QIcon(":/Icons/Remove.png"),tr("Remove Vector-based change detection layer"),this);
     QAction *actiobExport =
-            new QAction(QIcon(":/Icon/Export.png"),tr("Export shapefile"),this);
+            new QAction(QIcon(":/Icons/Export.png"),tr("Export shapefile"),this);
 
     setActions(QList<QList<QAction *> >()
                <<(QList<QAction *>()<<actionRename<<actiobExport)

@@ -203,7 +203,7 @@ void CDTUndoWidget::setupUi( QDockWidget *UndoWidget )
 
     undoButton = new QPushButton( dockWidgetContents );
     undoButton->setObjectName( QString::fromUtf8( "undoButton" ) );
-    undoButton->setIcon( QIcon(":/Icon/Undo.png") );
+    undoButton->setIcon( QIcon(":/Icons/Undo.png") );
     undoButton->setFlat(true);
     undoButton->setIconSize(MainWindow::getIconSize());
 
@@ -211,7 +211,7 @@ void CDTUndoWidget::setupUi( QDockWidget *UndoWidget )
 
     redoButton = new QPushButton( dockWidgetContents );
     redoButton->setObjectName( QString::fromUtf8( "redoButton" ) );
-    redoButton->setIcon( QIcon(":/Icon/Redo.png") );
+    redoButton->setIcon( QIcon(":/Icons/Redo.png") );
     redoButton->setFlat(true);
     redoButton->setIconSize(MainWindow::getIconSize());
 

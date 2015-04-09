@@ -33,12 +33,12 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     QWidgetAction *actionOpacity            = new QWidgetAction(this);
     QWidgetAction *actionMultiBandRenderer  = new QWidgetAction(this);
 
-    QAction *actionRename                   = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Image"),this);
-    QAction *actionRemoveImage              = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Image"),this);
-    QAction *actionAddExtractionLayer       = new QAction(QIcon(":/Icon/Add.png"),tr("Add Extraction"),this);
-    QAction *actionAddSegmentationLayer     = new QAction(QIcon(":/Icon/Add.png"),tr("Add Segmentation"),this);
-    QAction *actionRemoveAllExtractions     = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Extractions"),this);
-    QAction *actionRemoveAllSegmentations   = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Segmentations"),this);
+    QAction *actionRename                   = new QAction(QIcon(":/Icons/Rename.png"),tr("Rename Image"),this);
+    QAction *actionRemoveImage              = new QAction(QIcon(":/Icons/Remove.png"),tr("Remove Image"),this);
+    QAction *actionAddExtractionLayer       = new QAction(QIcon(":/Icons/Add.png"),tr("Add Extraction"),this);
+    QAction *actionAddSegmentationLayer     = new QAction(QIcon(":/Icons/Add.png"),tr("Add Segmentation"),this);
+    QAction *actionRemoveAllExtractions     = new QAction(QIcon(":/Icons/Remove.png"),tr("Remove All Extractions"),this);
+    QAction *actionRemoveAllSegmentations   = new QAction(QIcon(":/Icons/Remove.png"),tr("Remove All Segmentations"),this);
 
     setActions(QList<QList<QAction *> >()
                <<(QList<QAction *>()<<actionOpacity<<actionMultiBandRenderer<<actionRename<<actionRemoveImage)

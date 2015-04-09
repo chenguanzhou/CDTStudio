@@ -136,30 +136,39 @@ bool CDTProjectWidget::saveProject(QString &path)
     }
 }
 
+void CDTProjectWidget::onOriginalTool(bool toggle)
+{
+    if (toggle)
+    {
+        mapCanvas->unsetMapTool(mapCanvas->mapTool());
+        mapCanvas->setMapTool(NULL);
+    }
+}
+
 void CDTProjectWidget::onZoomOutTool(bool toggle)
 {
     if (toggle)
     {
-        untoggledToolBar();
-        mapCanvas->setMapTool(zoomOutTool);
+        mapCanvas->unsetMapTool(mapCanvas->mapTool());
+        mapCanvas->setMapTool(new QgsMapToolZoom(mapCanvas,true));
     }
 }
 
 void CDTProjectWidget::onZoomInTool(bool toggle)
 {
     if (toggle)
-    {
-        untoggledToolBar();
-        mapCanvas->setMapTool(zoomInTool);
+    {        
+        mapCanvas->unsetMapTool(mapCanvas->mapTool());
+        mapCanvas->setMapTool(new QgsMapToolZoom(mapCanvas,false));
     }
 }
 
 void CDTProjectWidget::onPanTool(bool toggle)
 {
     if (toggle)
-    {
-        untoggledToolBar();
-        mapCanvas->setMapTool(panTool);
+    {        
+        mapCanvas->unsetMapTool(mapCanvas->mapTool());
+        mapCanvas->setMapTool(new QgsMapToolPan(mapCanvas));
     }
 }
 
@@ -236,32 +245,53 @@ QToolBar *CDTProjectWidget::initToolBar()
     QToolBar* toolBar = new QToolBar(tr("Navigate"),this);
     toolBar->setIconSize(MainWindow::getIconSize());
 
-    actionZoomOut  = new QAction(QIcon(":/Icon/ZoomOut.png"),tr("Zoom Out"),this);
-    actionZoomIn   = new QAction(QIcon(":/Icon/ZoomIn.png"),tr("Zoom In"),this);
-    actionPan      = new QAction(QIcon(":/Icon/Pan.png"),tr("Pan"),this);
-    actionFullExtent = new QAction(QIcon(":/Icon/FullExtent.png"),tr("Full Extent"),this);
+    toolButtonOriginal = new QToolButton(this);
+    toolButtonOriginal->setText(tr("Original"));
+    toolButtonOriginal->setToolTip(toolButtonOriginal->text());
+    toolButtonOriginal->setIcon(QIcon(":/Icons/Default.png"));
+    toolButtonOriginal->setCheckable(true);
+    toolButtonOriginal->setChecked(true);
 
-    actionZoomOut->setCheckable(true);
-    actionZoomIn->setCheckable(true);
-    actionPan->setCheckable(true);
+    toolButtonZoomOut = new QToolButton(this);
+    toolButtonZoomOut->setText(tr("Zoom Out"));
+    toolButtonZoomOut->setToolTip(toolButtonZoomOut->text());
+    toolButtonZoomOut->setIcon(QIcon(":/Icons/ZoomOut.png"));
+    toolButtonZoomOut->setCheckable(true);
 
-    toolBar->addAction(actionZoomOut);
-    toolBar->addAction(actionZoomIn );
-    toolBar->addAction(actionPan);
-    toolBar->addAction(actionFullExtent);
+    toolButtonZoomIn = new QToolButton(this);
+    toolButtonZoomIn->setText(tr("Zoom In"));
+    toolButtonZoomIn->setToolTip(toolButtonZoomIn->text());
+    toolButtonZoomIn->setIcon(QIcon(":/Icons/ZoomIn.png"));
+    toolButtonZoomIn->setCheckable(true);
 
-    connect(actionZoomOut,SIGNAL(triggered(bool)),this,SLOT(onZoomOutTool(bool)));
-    connect(actionZoomIn ,SIGNAL(triggered(bool)),this,SLOT(onZoomInTool(bool)));
-    connect(actionPan,SIGNAL(triggered(bool)),this,SLOT(onPanTool(bool)));
-    connect(actionFullExtent,SIGNAL(triggered()),this,SLOT(onFullExtent()));
+    toolButtonPan = new QToolButton(this);
+    toolButtonPan->setText(tr("Pan"));
+    toolButtonPan->setToolTip(toolButtonPan->text());
+    toolButtonPan->setIcon(QIcon(":/Icons/Pan.png"));
+    toolButtonPan->setCheckable(true);
 
-    zoomOutTool = new QgsMapToolZoom(mapCanvas,TRUE);
-    zoomInTool = new QgsMapToolZoom(mapCanvas,FALSE);
-    panTool = new QgsMapToolPan(mapCanvas);
+    toolButtonFullExtent = new QToolButton(this);
+    toolButtonFullExtent->setText(tr("Full Extent"));
+    toolButtonFullExtent->setToolTip(toolButtonFullExtent->text());
+    toolButtonFullExtent->setIcon(QIcon(":/Icons/FullExtent.png"));
 
-    zoomOutTool->setAction(actionZoomOut);
-    zoomInTool->setAction(actionZoomIn);
-    panTool->setAction(actionPan);
+    QButtonGroup *group = new QButtonGroup(this);
+    group->addButton(toolButtonOriginal);
+    group->addButton(toolButtonZoomOut);
+    group->addButton(toolButtonZoomIn);
+    group->addButton(toolButtonPan);
+
+    toolBar->addWidget(toolButtonOriginal);
+    toolBar->addWidget(toolButtonZoomOut);
+    toolBar->addWidget(toolButtonZoomIn );
+    toolBar->addWidget(toolButtonPan);
+    toolBar->addWidget(toolButtonFullExtent);
+
+    connect(toolButtonOriginal,SIGNAL(toggled(bool)),this,SLOT(onOriginalTool(bool)));
+    connect(toolButtonZoomOut,SIGNAL(toggled(bool)),this,SLOT(onZoomOutTool(bool)));
+    connect(toolButtonZoomIn ,SIGNAL(toggled(bool)),this,SLOT(onZoomInTool(bool)));
+    connect(toolButtonPan,SIGNAL(toggled(bool)),this,SLOT(onPanTool(bool)));
+    connect(toolButtonFullExtent,SIGNAL(clicked()),this,SLOT(onFullExtent()));
 
     return toolBar;
 }
@@ -295,9 +325,9 @@ void CDTProjectWidget::createProject(QUuid id)
 
 void CDTProjectWidget::untoggledToolBar()
 {
-    actionZoomOut->setChecked(false);
-    actionZoomIn->setChecked(false);
-    actionPan->setChecked(false);
+    toolButtonZoomOut->setChecked(false);
+    toolButtonZoomIn->setChecked(false);
+    toolButtonPan->setChecked(false);
 }
 
 

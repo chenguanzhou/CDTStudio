@@ -25,9 +25,9 @@ CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     vbox->addWidget(groupBoxSamples);
     this->setWidget(widget);
 
-    QAction *actionRename = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename"),this);
-    QAction *actionAddNew = new QAction(QIcon(":/Icon/Add.png"),tr("Add a new training sample"),this);
-    QAction *actionRemove = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove selected sample"),this);
+    QAction *actionRename = new QAction(QIcon(":/Icons/Rename.png"),tr("Rename"),this);
+    QAction *actionAddNew = new QAction(QIcon(":/Icons/Add.png"),tr("Add a new training sample"),this);
+    QAction *actionRemove = new QAction(QIcon(":/Icons/Remove.png"),tr("Remove selected sample"),this);
     toolBar->addActions(QList<QAction*>()<<actionRename<<actionAddNew<<actionRemove);
     toolBar->setIconSize(MainWindow::getIconSize());
     listView->setModel(sampleModel);

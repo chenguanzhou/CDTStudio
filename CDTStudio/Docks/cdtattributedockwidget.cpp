@@ -23,8 +23,8 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     tabWidget->setMovable(true);
     tabWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-    QAction *actionExportCurrentTable = new QAction(QIcon(":/Icon/Save.png"),tr("Export current table to file"), this);
-    QAction *actionExportAllTables = new QAction(QIcon(":/Icon/Save.png"),tr("Export all tables to file"), this);
+    QAction *actionExportCurrentTable = new QAction(QIcon(":/Icons/Save.png"),tr("Export current table to file"), this);
+    QAction *actionExportAllTables = new QAction(QIcon(":/Icons/Save.png"),tr("Export all tables to file"), this);
     connect(actionExportCurrentTable,SIGNAL(triggered()),SLOT(onActionExportCurrentTable()));
     connect(actionExportAllTables,SIGNAL(triggered()),SLOT(onActionExportAllTables()));
     tabWidget->addAction(actionExportCurrentTable);

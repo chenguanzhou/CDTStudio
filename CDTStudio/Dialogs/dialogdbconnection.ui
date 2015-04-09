@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Set Database Connection Information</string>
+   <string>Set Database</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
