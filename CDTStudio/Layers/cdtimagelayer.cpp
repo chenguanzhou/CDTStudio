@@ -1,5 +1,7 @@
 #include "cdtimagelayer.h"
 #include "stable.h"
+#include <qgsmultibandcolorrenderer.h>
+#include "mainwindow.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtprojectlayer.h"
 #include "cdtextractionlayer.h"
@@ -12,7 +14,7 @@
 QList<CDTImageLayer *> CDTImageLayer::layers;
 
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
-    : CDTBaseLayer(uuid,parent)
+    : CDTBaseLayer(uuid,parent),multibandSelectionWidget(NULL)
 {
     setKeyItem(new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE,CDTProjectTreeItem::RASTER,QString(),this));
     extractionRoot
@@ -24,12 +26,13 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
 
     layers.push_back(this);
 
-
     connect(this,SIGNAL(removeImageLayer(CDTImageLayer*)),(CDTProjectLayer*)(this->parent()),SLOT(removeImageLayer(CDTImageLayer*)));
 
 
     //actions
     QWidgetAction *actionOpacity            = new QWidgetAction(this);
+    QWidgetAction *actionMultiBandRenderer  = new QWidgetAction(this);
+
     QAction *actionRename                   = new QAction(QIcon(":/Icon/Rename.png"),tr("Rename Image"),this);
     QAction *actionRemoveImage              = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove Image"),this);
     QAction *actionAddExtractionLayer       = new QAction(QIcon(":/Icon/Add.png"),tr("Add Extraction"),this);
@@ -38,7 +41,7 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     QAction *actionRemoveAllSegmentations   = new QAction(QIcon(":/Icon/Remove.png"),tr("Remove All Segmentations"),this);
 
     setActions(QList<QList<QAction *> >()
-               <<(QList<QAction *>()<<actionOpacity<<actionRename<<actionRemoveImage)
+               <<(QList<QAction *>()<<actionOpacity<<actionMultiBandRenderer<<actionRename<<actionRemoveImage)
                <<(QList<QAction *>()<<actionAddExtractionLayer<<actionRemoveAllExtractions)
                <<(QList<QAction *>()<<actionAddSegmentationLayer<<actionRemoveAllSegmentations));
 
@@ -51,8 +54,12 @@ CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     slider->setValue(100);
     actionOpacity->setDefaultWidget(slider);
 
+    //Multi-band Selection
+    multibandSelectionWidget = new QWidget(NULL);
+    actionMultiBandRenderer->setDefaultWidget(multibandSelectionWidget);
+
+
     connect(slider,SIGNAL(valueChanged(int)),SLOT(setLayerOpacity(int)));
-//    connect(this,SIGNAL(layerOpacityChanged(int)),slider,SLOT(setValue(int)));
     connect(this,SIGNAL(destroyed()),slider,SLOT(deleteLater()));
 
     connect(actionRename,SIGNAL(triggered()),this,SLOT(rename()));
@@ -94,20 +101,6 @@ CDTImageLayer::~CDTImageLayer()
     layers.removeAll(this);
 }
 
-//void CDTImageLayer::setName(const QString &name)
-//{
-//    if (this->name() == name)
-//        return;
-//    QSqlQuery query(QSqlDatabase::database("category"));
-//    query.prepare("UPDATE imageLayer set name = ? where id =?");
-//    query.bindValue(0,name);
-//    query.bindValue(1,this->id().toString());
-//    query.exec();
-
-//    standardKeyItem()->setText(name);
-//    emit layerChanged();
-//}
-
 void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
 {
     QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(path,QFileInfo(path).completeBaseName());
@@ -122,6 +115,45 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
     keyItem()->setToolTip(path);
 
     setCanvasLayer(newCanvasLayer);
+
+    //Init multiband selection widget
+    if (newCanvasLayer->bandCount()>=3)
+    {
+        QFormLayout *layout = new QFormLayout(multibandSelectionWidget);
+        multibandSelectionWidget->setLayout(layout);
+        layout->setMargin(3);
+
+        QStringList bandTexts = QStringList()<<tr("Red")<<tr("Green")<<tr("Blue");
+        QList<QColor> bandColors = QList<QColor>()<<QColor(Qt::red)<<QColor(Qt::green)<<QColor(Qt::blue);
+        QStringList bandNames;
+        for(int i=0;i<newCanvasLayer->bandCount();++i)
+            bandNames<<tr("Band %1").arg(i+1);
+
+        QList<QComboBox*> comboList;
+
+        const int rgbCount = 3;
+        for(int i=0;i<rgbCount;++i)
+        {
+            QLabel *label = new QLabel(bandTexts[i]);
+            QPalette palette = label->palette();
+            palette.setColor(QPalette::WindowText,bandColors[i]);
+            label->setPalette(palette);
+            QFont font = label->font();
+            font.setBold(true);
+            label->setFont(font);
+            QComboBox *combo = new QComboBox();
+            combo->addItems(bandNames);
+            combo->setCurrentIndex(i);
+            layout->addRow(label,combo);
+            comboList << combo;
+        }
+
+        rBandID = 1;gBandID = 2;bBandID = 3;
+
+        connect(comboList[0],SIGNAL(currentIndexChanged(int)),SLOT(redBandChanged(int)));
+        connect(comboList[1],SIGNAL(currentIndexChanged(int)),SLOT(greenBandChanged(int)));
+        connect(comboList[2],SIGNAL(currentIndexChanged(int)),SLOT(blueBandChanged(int)));
+    }
 
     QSqlDatabase db = QSqlDatabase::database("category");
     if (db.isValid()==false)
@@ -183,15 +215,6 @@ QString CDTImageLayer::path() const
     return query.value(0).toString();
 }
 
-//QString CDTImageLayer::name() const
-//{
-//    QSqlDatabase db = QSqlDatabase::database("category");
-//    QSqlQuery query(db);
-//    query.exec("select name from imageLayer where id ='" + this->id().toString() +"'");
-//    query.next();
-//    return query.value(0).toString();
-//}
-
 int CDTImageLayer::bandCount() const
 {
     QgsRasterLayer* layer = (QgsRasterLayer*)canvasLayer();
@@ -220,7 +243,6 @@ void CDTImageLayer::addExtraction()
     {
         CDTExtractionLayer *extraction = new CDTExtractionLayer(QUuid::createUuid(),this);
         extraction->initLayer(dlg->name(),dlg->fileID(),dlg->color(),dlg->borderColor(),dlg->opacity());
-//        extractionRoot->appendRow(extraction->standardItems());
         extractionRoot->appendRow(extraction->standardKeyItem());
         addExtraction(extraction);
     }
@@ -259,7 +281,6 @@ void CDTImageLayer::removeExtraction(CDTExtractionLayer *ext)
         extractions.remove(index);
         emit removeLayer(QList<QgsMapLayer*>()<<ext->canvasLayer());
         fileSystem()->removeFile(ext->shapefileID());
-//        delete ext;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         emit layerChanged();
     }
 }
@@ -288,7 +309,6 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
         emit removeLayer(QList<QgsMapLayer*>()<<sgmt->canvasLayer());
         fileSystem()->removeFile(sgmt->shapefilePath());
         fileSystem()->removeFile(sgmt->markfilePath());
-//        delete sgmt; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         emit layerChanged();
     }
 }
@@ -307,18 +327,6 @@ void CDTImageLayer::removeAllSegmentationLayers()
     emit layerChanged();
 }
 
-//void CDTImageLayer::rename()
-//{
-//    bool ok;
-//    QString text = QInputDialog::getText(NULL, tr("Input Image Name"),
-//                                         tr("Image rename:"), QLineEdit::Normal,
-//                                         this->name(), &ok);
-//    if (ok && !text.isEmpty())
-//    {
-//        setName(text);
-//    }
-//}
-
 void CDTImageLayer::setLayerOpacity(int opacity)
 {
     QgsRasterLayer *rasterLayer =  qobject_cast<QgsRasterLayer*>(canvasLayer());
@@ -329,21 +337,23 @@ void CDTImageLayer::setLayerOpacity(int opacity)
     }
 }
 
-//void CDTImageLayer::onContextMenuRequest(QWidget *parent)
-//{
-//    QMenu *menu =new QMenu(parent);
+void CDTImageLayer::redBandChanged(int bandIDFrom0)
+{
+    rBandID = bandIDFrom0 + 1;
+    updateMultiBandRenderer();
+}
 
-//    menu->addAction(actionRename);
-//    menu->addAction(actionRemoveImage);
-//    menu->addSeparator();
-//    menu->addAction(actionAddExtractionLayer);
-//    menu->addAction(actionRemoveAllExtractions);
-//    menu->addSeparator();
-//    menu->addAction(actionAddSegmentationLayer);
-//    menu->addAction(actionRemoveAllSegmentations);
+void CDTImageLayer::greenBandChanged(int bandIDFrom0)
+{
+    gBandID = bandIDFrom0 + 1;
+    updateMultiBandRenderer();
+}
 
-//    menu->exec(QCursor::pos());
-//}
+void CDTImageLayer::blueBandChanged(int bandIDFrom0)
+{
+    bBandID = bandIDFrom0 + 1;
+    updateMultiBandRenderer();
+}
 
 void CDTImageLayer::addExtraction(CDTExtractionLayer *extraction)
 {
@@ -356,6 +366,18 @@ void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
 {
     segmentations.push_back(segmentation);
     emit layerChanged();
+}
+
+void CDTImageLayer::updateMultiBandRenderer()
+{
+    QgsRasterLayer *layer = qobject_cast<QgsRasterLayer *>(this->canvasLayer());
+    if (layer->bandCount()<3)
+        return;
+
+    QgsMultiBandColorRenderer *renderer =
+            new QgsMultiBandColorRenderer(layer->renderer(),rBandID,gBandID,bBandID);
+    layer->setRenderer(renderer);
+    MainWindow::getCurrentMapCanvas()->refresh();
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)

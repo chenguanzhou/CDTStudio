@@ -36,7 +36,8 @@ public:
 signals:
     void removeImageLayer(CDTImageLayer*);
 
-public slots:        
+public slots:
+//    void setRenderer();
     void addExtraction();
     void addSegmentation();    
     void remove();
@@ -45,9 +46,15 @@ public slots:
     void removeSegmentation(CDTSegmentationLayer*);
     void removeAllSegmentationLayers();
     void setLayerOpacity(int opacity);
+
+    void redBandChanged(int bandIDFrom0);
+    void greenBandChanged(int bandIDFrom0);
+    void blueBandChanged(int bandIDFrom0);
 private:        
     void addExtraction(CDTExtractionLayer* extraction);
     void addSegmentation(CDTSegmentationLayer* segmentation);
+
+    void updateMultiBandRenderer();
 
 private:
     QVector<CDTExtractionLayer *>   extractions;
@@ -55,6 +62,10 @@ private:
 
     CDTProjectTreeItem *segmentationsRoot;
     CDTProjectTreeItem *extractionRoot;
+
+    QWidget *multibandSelectionWidget;
+
+    int rBandID,gBandID,bBandID;
 
     static QList<CDTImageLayer *> layers;
 };
