@@ -87,6 +87,7 @@ void CDTUndoWidget::destroyStack()
 
 void CDTUndoWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
+    Q_UNUSED(layer);
     onDockClear();
 }
 

@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core
 
 TARGET = ANN
 TEMPLATE = lib
@@ -6,12 +6,11 @@ CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
 
-INCLUDEPATH += ../../../Interfaces
-
 SOURCES += anninterface.cpp
 
-HEADERS += anninterface.h \
-    ../../../Interfaces/cdtclassifierinterface.h
+HEADERS += anninterface.h
+
+include(../../../Interfaces/Interfaces.pri)
 
 OTHER_FILES += ANN.json
 
@@ -21,7 +20,6 @@ target.path = /usr/lib
 INSTALLS += target
 }
 !unix{
-include(../../../Tools/Config/win.pri)
 }
 
 #opencv

@@ -592,7 +592,7 @@ void WizardVectorChangeDetection::startDetect()
     QMap<QString, QString> categoryPairs;
 //    QStringList categoryNamesT1;
 //    QStringList categoryNamesT2;
-    for (size_t i=0;i<ui->listWidgetCategoryPairs->count();++i)
+    for (int i=0;i<ui->listWidgetCategoryPairs->count();++i)
     {
         QString pair = ui->listWidgetCategoryPairs->item(i)->text();
         QStringList pairText = pair.split("<->");

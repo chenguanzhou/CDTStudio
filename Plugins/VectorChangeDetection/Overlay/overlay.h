@@ -3,6 +3,7 @@
 
 #include "cdtvectorchangedetectioninterface.h"
 
+class QgsGeometry;
 class Overlay:public CDTVectorChangeDetectionInterface
 {
     Q_OBJECT

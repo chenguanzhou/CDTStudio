@@ -111,9 +111,9 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QMouseEvent *e)
             polygon.push_back(points);
             QgsGeometry selectGeom = *(QgsGeometry::fromPolygon(polygon) );
 
-            if ( mapCanvas->mapRenderer()->hasCrsTransformEnabled() )
+            if ( mapCanvas->mapSettings().hasCrsTransformEnabled() )
             {
-                QgsCoordinateTransform ct( mapCanvas->mapRenderer()->destinationCrs(), vlayer->crs() );
+                QgsCoordinateTransform ct( mapCanvas->mapSettings().destinationCrs(), vlayer->crs() );
                 selectGeom.transform( ct );
             }
 

@@ -11,14 +11,15 @@ TEMPLATE = lib
 CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
-INCLUDEPATH += ../../../Interfaces\
 
 SOURCES += \
     imagedifferencing.cpp
 
 HEADERS += \
-    imagedifferencing.h \
-    ../../../Interfaces/cdtpbcddiffinterface.h
+    imagedifferencing.h
+
+include(../../../Interfaces/Interfaces.pri)
+
 OTHER_FILES += ImageDifferencing.json
 
 unix {
@@ -29,6 +30,5 @@ INCLUDEPATH += /usr/include/gdal \
     LIBS += -lgdal
 }
 !unix{
-    include(../../../Tools/Config/win.pri)
     LIBS += -lgdal_i
 }

@@ -11,14 +11,15 @@ TEMPLATE = lib
 CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
-INCLUDEPATH += ../../../Interfaces\
 
 SOURCES += \
     otsu.cpp
 
 HEADERS += \
-    otsu.h \
-    ../../../Interfaces/cdtautothresholdinterface.h
+    otsu.h
+
+include(../../../Interfaces/Interfaces.pri)
+
 OTHER_FILES += otsu.json
 
 unix {

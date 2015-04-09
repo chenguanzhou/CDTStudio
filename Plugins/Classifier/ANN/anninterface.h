@@ -1,7 +1,7 @@
 #ifndef ANNINTERFACE_H
 #define ANNINTERFACE_H
 
-#include "../../../Interfaces/cdtclassifierinterface.h"
+#include "cdtclassifierinterface.h"
 
 class ANNInterface : public CDTClassifierInterface
 {

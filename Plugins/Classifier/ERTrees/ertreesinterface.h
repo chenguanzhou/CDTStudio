@@ -1,7 +1,7 @@
 #ifndef ERTREESINTERFACE_H
 #define ERTREESINTERFACE_H
 
-#include "../../../Interfaces/cdtclassifierinterface.h"
+#include "cdtclassifierinterface.h"
 
 class ERTreesInterface : public CDTClassifierInterface
 {

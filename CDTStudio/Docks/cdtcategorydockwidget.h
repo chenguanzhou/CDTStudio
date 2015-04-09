@@ -27,7 +27,7 @@ private slots:
     void on_actionRemove_All_triggered();
     void on_actionRevert_triggered();
     void on_actionSubmit_triggered();
-    void onPrimeInsert(int, QSqlRecord& record);
+//    void onPrimeInsert(int, QSqlRecord& record);
     void on_actionEdit_triggered(bool checked);
 private:
     QTableView      *tableView;

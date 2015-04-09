@@ -2,7 +2,8 @@
 #define CDTEXTRACTIONINTERFACE_H
 
 #include <QtCore>
-#include <qgsmaptool.h>
+class QgsMapTool;
+class QgsMapCanvas;
 class QgsVectorLayer;
 
 class CDTExtractionInterface:public QObject

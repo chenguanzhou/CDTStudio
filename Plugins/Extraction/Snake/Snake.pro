@@ -6,8 +6,6 @@ CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
 
-INCLUDEPATH += ../../../Interfaces\
-
 OTHER_FILES += Snake.json
 
 unix {
@@ -27,14 +25,18 @@ DEFINES += CORE_EXPORT=
 DEFINES += GUI_EXPORT=
 }
 !unix{
-include(../../../Tools/Config/win.pri)
+#QGIS
+INCLUDEPATH += $(QGIS_ROOT)/include
+LIBS += -L$(QGIS_ROOT)/lib
+DEFINES += CORE_EXPORT=__declspec(dllimport)
+DEFINES += GUI_EXPORT=__declspec(dllimport)
+
 LIBS += -lgdal_i
 }
 
 LIBS += -lqgis_core -lqgis_gui
 
 HEADERS += \
-    ../../../Interfaces/cdtextractioninterface.h \
     StatisticSnake.h \
     snakeinterface.h\
     cdtsnakemaptool.h
@@ -44,3 +46,5 @@ SOURCES += \
     StatisticSnake.cpp \
     snakeinterface.cpp \
     cdtsnakemaptool.cpp
+
+include(../../../Interfaces/Interfaces.pri)

@@ -1,7 +1,7 @@
 #ifndef BAYESINTERFACE_H
 #define BAYESINTERFACE_H
 
-#include "../../../Interfaces/cdtclassifierinterface.h"
+#include "cdtclassifierinterface.h"
 
 
 class BayesInterface : public CDTClassifierInterface

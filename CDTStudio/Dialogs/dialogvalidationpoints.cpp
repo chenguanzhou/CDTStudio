@@ -84,6 +84,7 @@ void DialogValidationPoints::onSelectionChanged(const QItemSelection &items)
 
 void DialogValidationPoints::closeEvent(QCloseEvent *e)
 {
+    Q_UNUSED(e);
     QSqlQuery query(QSqlDatabase::database("category"));
     query.exec("drop table category_temp");
 

@@ -11,14 +11,15 @@ TEMPLATE = lib
 CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
-INCLUDEPATH += ../../../Interfaces\
 
 SOURCES += \
     rms.cpp
 
 HEADERS += \
-    rms.h \
-    ../../../Interfaces/cdtpbcdmergeinterface.h
+    rms.h
+
+include(../../../Interfaces/Interfaces.pri)
+
 OTHER_FILES += rms.json
 
 unix {

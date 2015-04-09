@@ -23,7 +23,7 @@ bool CStatisticSnake::GetStatisticSnake()
 	m_pShapeImage=FillSeedArrayRgn(m_seedArray,m_statistic_start,m_statistic_w,m_statistic_h);
 	if(m_pShapeImage==NULL)return false;
 
-	int i,j,n;
+    int i,j;
 
 	m_statistic_n=new double[m_statistic_w*m_statistic_h];
 	m_staticstic_intensity=new double[m_statistic_w*m_statistic_h];

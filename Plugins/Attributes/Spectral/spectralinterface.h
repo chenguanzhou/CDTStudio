@@ -1,8 +1,7 @@
 #ifndef SPECTRALINTERFACE_H
 #define SPECTRALINTERFACE_H
 
-#include "../../../Interfaces/cdtattributesinterface.h"
-#include <ctime>
+#include "cdtattributesinterface.h"
 
 
 class SpectralInterface : public CDTAttributesInterface

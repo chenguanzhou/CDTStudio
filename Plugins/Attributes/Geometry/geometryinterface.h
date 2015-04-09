@@ -1,7 +1,7 @@
 #ifndef GEOMETRYINTERFACE_H
 #define GEOMETRYINTERFACE_H
 
-#include "../../../Interfaces/cdtattributesinterface.h"
+#include "cdtattributesinterface.h"
 
 
 class GeometryInterface : public CDTAttributesInterface

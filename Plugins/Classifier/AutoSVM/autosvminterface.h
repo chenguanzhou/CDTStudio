@@ -1,7 +1,7 @@
 #ifndef AutoSVMINTERFACE_H
 #define AutoSVMINTERFACE_H
 
-#include "../../../Interfaces/cdtclassifierinterface.h"
+#include "cdtclassifierinterface.h"
 
 class AutoSVMInterface : public CDTClassifierInterface
 {

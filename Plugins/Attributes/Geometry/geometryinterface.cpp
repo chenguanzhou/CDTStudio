@@ -225,7 +225,7 @@ qreal GeometryInterface::roundness(const AttributeParamsMultiBand &param) const
     double MinK=std::numeric_limits<double>::max();
     double MaxK=std::numeric_limits<double>::min();
 
-    for(std::vector<QPointF>::size_type ix=0;ix!=param.ringPointsVec.size();ix++)
+    for(int ix=0;ix!=param.ringPointsVec.size();ix++)
     {
         double K =  (param.ringPointsVec[ix].x()-param.rotated_center.x())*(param.ringPointsVec[ix].x()-param.rotated_center.x())
                 / (param.majorSemiAxesOfAE*param.majorSemiAxesOfAE)

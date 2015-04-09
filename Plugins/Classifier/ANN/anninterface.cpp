@@ -53,14 +53,14 @@ cv::Mat ANNInterface::startClassification(const cv::Mat &data, const cv::Mat &tr
     totalNodes<<categoriesInfo.size();
 
     cv::Mat layerSizes = cv::Mat_<int>(1,totalNodes.size());
-    for(size_t i=0;i<totalNodes.size();++i)
+    for(int i=0;i<totalNodes.size();++i)
     {
         layerSizes.at<int>(0,i) = totalNodes[i];
     }
 
     //Make suitable labels for ANN
     cv::Mat newResponses = cv::Mat_<float>::zeros(responses.rows,categoriesInfo.size());
-    for(size_t i = 0;i<newResponses.rows;++i)
+    for(int i = 0;i<newResponses.rows;++i)
     {
         newResponses.at<float>(i,responses.at<int>(i,0)) = 1;
     }
@@ -74,7 +74,7 @@ cv::Mat ANNInterface::startClassification(const cv::Mat &data, const cv::Mat &tr
     cv::Mat result = cv::Mat_<float>(data.rows,categoriesInfo.size());
     cv::Mat resultReturn = cv::Mat_<float>(data.rows,1);
     classifier.predict(data,result);
-    for (size_t i=0; i<result.rows;++i)
+    for (int i=0; i<result.rows;++i)
     {
         float* rowData = result.ptr<float>(i);
         float max = rowData[0];

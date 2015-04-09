@@ -3,7 +3,8 @@
 
 #include <QtCore>
 #include <QtPlugin>
-#include <qgsvectorlayer.h>
+
+class QgsVectorLayer;
 
 class CDTVectorChangeDetectionInterface:public QObject
 {

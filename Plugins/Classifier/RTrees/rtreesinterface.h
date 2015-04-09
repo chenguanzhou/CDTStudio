@@ -1,7 +1,7 @@
 #ifndef RTREESINTERFACE_H
 #define RTREESINTERFACE_H
 
-#include "../../../Interfaces/cdtclassifierinterface.h"
+#include "cdtclassifierinterface.h"
 
 class RTreesInterface : public CDTClassifierInterface
 {

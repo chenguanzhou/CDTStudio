@@ -107,7 +107,7 @@ void CDTCategoryDockWidget::updateImageID(QUuid id)
         categoryModel = new QSqlTableModel(this,QSqlDatabase::database("category"));
         categoryModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Category Name"));
         categoryModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Color"));
-        connect(categoryModel,SIGNAL(primeInsert(int,QSqlRecord&)),SLOT(onPrimeInsert(int,QSqlRecord&)));
+//        connect(categoryModel,SIGNAL(primeInsert(int,QSqlRecord&)),SLOT(onPrimeInsert(int,QSqlRecord&)));
         tableView->setModel(categoryModel);
     }
     categoryModel->setTable("category");
@@ -179,18 +179,18 @@ void CDTCategoryDockWidget::on_actionSubmit_triggered()
     tableView->resizeRowsToContents();
 }
 
-void CDTCategoryDockWidget::onPrimeInsert(int , QSqlRecord &record)
-{
-    //    static int indexOffset = 0;
-    //    record.setValue(0,QUuid::createUuid().toString());
-    //    record.setValue(1,tr("New Class")+QString::number(indexOffset++));
-    //    record.setValue(2,QColor(qrand()%255,qrand()%255,qrand()%255));
-    //    record.setValue(3,imageLayerID.toString());
-    //    record.setGenerated(0,true);
-    //    record.setGenerated(1,true);
-    //    record.setGenerated(2,true);
-    //    record.setGenerated(3,true);
-}
+//void CDTCategoryDockWidget::onPrimeInsert(int , QSqlRecord &record)
+//{
+//        static int indexOffset = 0;
+//        record.setValue(0,QUuid::createUuid().toString());
+//        record.setValue(1,tr("New Class")+QString::number(indexOffset++));
+//        record.setValue(2,QColor(qrand()%255,qrand()%255,qrand()%255));
+//        record.setValue(3,imageLayerID.toString());
+//        record.setGenerated(0,true);
+//        record.setGenerated(1,true);
+//        record.setGenerated(2,true);
+//        record.setGenerated(3,true);
+//}
 
 void CDTCategoryDockWidget::on_actionEdit_triggered(bool checked)
 {

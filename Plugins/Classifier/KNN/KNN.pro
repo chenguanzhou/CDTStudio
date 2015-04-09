@@ -1,16 +1,16 @@
-QT       += core gui
+QT       += core
 
 TARGET = KNN
 TEMPLATE = lib
 CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
-INCLUDEPATH += ../../../Interfaces
 
 SOURCES += knninterface.cpp
 
-HEADERS += knninterface.h \
-    ../../../Interfaces/cdtclassifierinterface.h
+HEADERS += knninterface.h
+
+include(../../../Interfaces/Interfaces.pri)
 
 OTHER_FILES += KNN.json
 
@@ -18,9 +18,6 @@ unix{
 QMAKE_CXXFLAGS += -std=c++0x
 target.path = /usr/lib
 INSTALLS += target
-}
-!unix{
-include(../../../Tools/Config/win.pri)
 }
 
 #opencv

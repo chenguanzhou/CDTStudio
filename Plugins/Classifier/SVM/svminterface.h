@@ -1,7 +1,7 @@
 #ifndef SVMINTERFACE_H
 #define SVMINTERFACE_H
 
-#include "../../../Interfaces/cdtclassifierinterface.h"
+#include "cdtclassifierinterface.h"
 
 class SVMInterfacePrivate;
 class SVMInterface : public CDTClassifierInterface

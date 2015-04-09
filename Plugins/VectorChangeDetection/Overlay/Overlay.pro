@@ -15,13 +15,9 @@ DESTDIR = ../../../bin/Plugins
 SOURCES += \
     overlay.cpp
 
-HEADERS +=\
-    ../../../Interfaces/cdtvectorchangedetectioninterface.h \
-    overlay.h
+HEADERS += overlay.h
 
-
-INCLUDEPATH += ../../../Interfaces\
-    ../../../CDTStudio
+include(../../../Interfaces/Interfaces.pri)
 
 OTHER_FILES += Overlay.json
 
@@ -37,7 +33,12 @@ INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
 !unix{
-include(../../../Tools/Config/win.pri)
+#QGIS
+INCLUDEPATH += $(QGIS_ROOT)/include
+LIBS += -L$(QGIS_ROOT)/lib
+DEFINES += CORE_EXPORT=__declspec(dllimport)
+DEFINES += GUI_EXPORT=__declspec(dllimport)
+
 LIBS += -lgdal_i
 }
 

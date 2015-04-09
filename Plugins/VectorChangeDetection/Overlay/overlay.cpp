@@ -1,5 +1,7 @@
 #include "overlay.h"
-#include "qgsgeometry.h"
+#include <qgsfeatureiterator.h>
+#include <qgsgeometry.h>
+#include <qgsvectorlayer.h>
 
 Overlay::Overlay(QObject *parent)
     :CDTVectorChangeDetectionInterface(parent)

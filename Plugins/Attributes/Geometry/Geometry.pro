@@ -4,19 +4,19 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core sql
 
 TARGET = Geometry
 TEMPLATE = lib
 CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
-INCLUDEPATH += ../../../Interfaces
 
 SOURCES += geometryinterface.cpp
 
-HEADERS += geometryinterface.h \
-    ../../../Interfaces/cdtattributesinterface.h
+HEADERS += geometryinterface.h
+
+include(../../../Interfaces/Interfaces.pri)
 
 OTHER_FILES += Geometry.json
 
@@ -29,6 +29,5 @@ INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
 !unix{
-include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }

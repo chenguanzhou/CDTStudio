@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       = core
 
 TARGET = MSTMethod
 TEMPLATE = lib
@@ -17,14 +17,11 @@ SOURCES += \
     graphkruskal.cpp
 
 HEADERS +=\
-    ../../../Interfaces/cdtsegmentationinterface.h \
-    ../../../CDTStudio/cdtbasethread.h \
     mstmethodinterface.h \
     graphkruskal.h
 
 
-INCLUDEPATH += ../../../Interfaces\
-    ../../../CDTStudio
+include(../../../Interfaces/Interfaces.pri)
 
 OTHER_FILES += MSTMethod.json
 
@@ -39,8 +36,17 @@ QMAKE_CXXFLAGS += -std=c++0x
 INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
+
 !unix{
-include(../../../Tools/Config/win.pri)
+#stxxl
+INCLUDEPATH += \
+    $(STXXL_ROOT)/include \
+    $(BOOST_ROOT)
+
+LIBS += \
+    -L$(STXXL_ROOT)/lib \
+    -L$(BOOST_LIBRARYDIR)
+
 LIBS += -lgdal_i
 }
 

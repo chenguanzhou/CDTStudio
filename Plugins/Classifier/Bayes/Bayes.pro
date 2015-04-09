@@ -1,16 +1,16 @@
-QT       += core gui
+QT       += core
 
 TARGET = Bayes
 TEMPLATE = lib
 CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
-INCLUDEPATH += ../../../Interfaces
 
 SOURCES += bayesinterface.cpp
 
-HEADERS += bayesinterface.h \
-    ../../../Interfaces/cdtclassifierinterface.h
+HEADERS += bayesinterface.h
+
+include(../../../Interfaces/Interfaces.pri)
 
 OTHER_FILES += Bayes.json
 
@@ -18,9 +18,6 @@ unix{
 QMAKE_CXXFLAGS += -std=c++0x
 target.path = /usr/lib
 INSTALLS += target
-}
-!unix{
-include(../../../Tools/Config/win.pri)
 }
 
 #opencv

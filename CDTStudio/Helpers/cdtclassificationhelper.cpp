@@ -120,6 +120,6 @@ void CDTClassificationHelper::pcaTransform(cv::Mat& data,int pcaParam)
 
 void CDTClassificationHelper::getConfusionMatrix(QList<int> label, QMap<int, QString> testSample, QVector<QVector<int> > &exportMatrix)
 {
-
+    //TODO Forget
 }
 

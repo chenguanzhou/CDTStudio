@@ -29,7 +29,7 @@ CDTClassifierAssessmentForm::~CDTClassifierAssessmentForm()
 
 void CDTClassifierAssessmentForm::setClassification(QString id)
 {
-    CDTClassificationLayer *layer = CDTClassificationLayer::getLayer(id);
+//    CDTClassificationLayer *layer = CDTClassificationLayer::getLayer(id);
     for (int i=0;i<modelClassification->rowCount();++i)
     {
         if (modelClassification->data(modelClassification->index(i,1)).toString() == id)

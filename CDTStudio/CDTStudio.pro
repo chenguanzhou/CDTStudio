@@ -31,7 +31,6 @@ HEADERS  += \
     cdtprojecttabwidget.h \
     cdtprojectwidget.h \
     cdtprojecttreeitem.h \
-    cdtpluginloader.h \
     recentfilesupervisor.h \
     cdtattributegenerator.h \
     cdtbasethread.h \

@@ -1,8 +1,7 @@
 #ifndef TEXTUREINTERFACE_H
 #define TEXTUREINTERFACE_H
 
-#include "../../../Interfaces/cdtattributesinterface.h"
-#include <ctime>
+#include "cdtattributesinterface.h"
 
 
 class TextureInterface : public CDTAttributesInterface

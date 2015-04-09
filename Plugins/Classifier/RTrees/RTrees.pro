@@ -1,15 +1,14 @@
-QT       += core gui
+QT       += core
 
 TARGET = RTrees
 TEMPLATE = lib
 CONFIG += plugin
 DESTDIR = ../../../bin/Plugins
-INCLUDEPATH += ../../../Interfaces
-
 SOURCES += rtreesinterface.cpp
 
-HEADERS += rtreesinterface.h \
-    ../../../Interfaces/cdtclassifierinterface.h
+HEADERS += rtreesinterface.h
+
+include(../../../Interfaces/Interfaces.pri)
 
 OTHER_FILES += RTrees.json
 
@@ -17,9 +16,6 @@ unix{
 QMAKE_CXXFLAGS += -std=c++0x
 target.path = /usr/lib
 INSTALLS += target
-}
-!unix{
-include(../../../Tools/Config/win.pri)
 }
 
 #opencv
