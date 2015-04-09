@@ -29,6 +29,8 @@ INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
 !unix{
+INCLUDEPATH += $(OSGEO4W_ROOT)/include
+LIBS += -L$(OSGEO4W_ROOT)/lib
 LIBS += -lgdal_i
 }
 

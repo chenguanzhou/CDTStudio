@@ -3,7 +3,10 @@
 
 #include <QtCore>
 #include <QtPlugin>
-#include <opencv2/opencv.hpp>
+
+namespace cv {
+class Mat;
+}
 
 class CDTClassifierInterface:public QObject
 {
