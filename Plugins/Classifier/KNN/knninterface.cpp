@@ -1,5 +1,6 @@
 #include "knninterface.h"
 #include <limits>
+#include <opencv2/opencv.hpp>
 
 class KNNInterfacePrivate
 {

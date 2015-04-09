@@ -1,5 +1,6 @@
 #include "bayesinterface.h"
 #include <limits>
+#include <opencv2/opencv.hpp>
 
 BayesInterface::BayesInterface(QObject *parent)
     :CDTClassifierInterface(parent)

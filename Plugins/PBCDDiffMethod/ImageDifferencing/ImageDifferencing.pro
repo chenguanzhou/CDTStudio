@@ -25,10 +25,12 @@ OTHER_FILES += ImageDifferencing.json
 unix {
 INCLUDEPATH += /usr/include/gdal \
             /usr/local/include/gdal \
-    target.path = /usr/lib
-    INSTALLS += target
-    LIBS += -lgdal
+target.path = /usr/lib
+INSTALLS += target
+LIBS += -lgdal
 }
 !unix{
-    LIBS += -lgdal_i
+INCLUDEPATH += $(OSGEO4W_ROOT)/include
+LIBS += -L$(OSGEO4W_ROOT)/lib
+LIBS += -lgdal_i
 }

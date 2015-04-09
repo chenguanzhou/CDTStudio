@@ -1,5 +1,6 @@
 #include "rtreesinterface.h"
 #include <limits>
+#include <opencv2/opencv.hpp>
 
 RTreesInterface::RTreesInterface(QObject *parent)
     :CDTClassifierInterface(parent)

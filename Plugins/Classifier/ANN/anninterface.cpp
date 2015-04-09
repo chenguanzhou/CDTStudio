@@ -1,5 +1,6 @@
 #include "anninterface.h"
 #include <limits>
+#include <opencv2/opencv.hpp>
 
 ANNInterface::ANNInterface(QObject *parent)
     :CDTClassifierInterface(parent)

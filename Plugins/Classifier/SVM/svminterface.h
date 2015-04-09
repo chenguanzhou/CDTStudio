@@ -2,6 +2,7 @@
 #define SVMINTERFACE_H
 
 #include "cdtclassifierinterface.h"
+#include <opencv2/opencv.hpp>
 
 class SVMInterfacePrivate;
 class SVMInterface : public CDTClassifierInterface

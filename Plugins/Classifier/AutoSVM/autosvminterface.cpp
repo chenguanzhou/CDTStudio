@@ -1,5 +1,6 @@
 #include "autosvminterface.h"
 #include <limits>
+#include <opencv2/opencv.hpp>
 
 AutoSVMInterface::AutoSVMInterface(QObject *parent)
     :CDTClassifierInterface(parent)

@@ -1,5 +1,6 @@
 #include "ertreesinterface.h"
 #include <limits>
+#include <opencv2/opencv.hpp>
 
 ERTreesInterface::ERTreesInterface(QObject *parent)
     :CDTClassifierInterface(parent)
