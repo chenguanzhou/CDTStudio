@@ -1,31 +1,25 @@
 #include "cdtprojectwidget.h"
 #include "cdtprojecttabwidget.h"
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QVBoxLayout>
-#include "cdtbaseobject.h"
-#include <QToolBar>
-#include <qgsapplication.h>
-#include <qgsmaptoolzoom.h>
-#include <qgsmaptoolpan.h>
-#include <qgsmaplayer.h>
-#include <qgsmaplayerregistry.h>
-#include <qgsvectorlayer.h>
-#include <qgsvectordataprovider.h>
+#include "cdtbaselayer.h"
+#include "stable.h"
+#include "cdtprojecttreeitem.h"
+#include "cdtapplication.h"
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
     project(NULL),
-    treeModel(new QStandardItemModel(this)),
-    isChanged(false),
-    mapCanvas(new QgsMapCanvas(this))
+    treeModelObject(new QStandardItemModel(this)),
+    mapCanvas(new QgsMapCanvas(this,"mapCanvas"))
 {
-    connect(treeModel,SIGNAL(itemChanged(QStandardItem*)),SLOT(onItemChanged(QStandardItem*)));    
-    connect(this,SIGNAL(projectChanged()),this,SLOT(setIsChanged()));
+    connect(treeModelObject,SIGNAL(itemChanged(QStandardItem*)),SLOT(onObjectItemChanged(QStandardItem*)));
 
+    connect(this,SIGNAL(projectChanged()),this,SLOT(onProjectChanged()));
+    connect(mapCanvas,SIGNAL(xyCoordinates(QgsPoint)),MainWindow::getMainWindow(),SLOT(showMouseCoordinate(QgsPoint)));
+    connect(mapCanvas,SIGNAL(scaleChanged(double)),MainWindow::getMainWindow(),SLOT(showScale(double)));
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
-    mapCanvas->setCanvasColor(QColor(255, 255, 255));
+
+    mapCanvas->setCanvasColor(this->palette().color(this->backgroundRole()));
 
     vbox->addWidget(mapCanvas);
     this->setLayout(vbox);
@@ -37,24 +31,19 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 
 CDTProjectWidget::~CDTProjectWidget()
 {
+    MainWindow::getMainWindow()->clearAllDocks();
+    project->removeAllImageLayers();
     if(project) delete project;
     file.close();
 }
 
-void CDTProjectWidget::onContextMenu(QPoint pt, QModelIndex index)
-{
-    CDTProjectTreeItem *item =(CDTProjectTreeItem*)treeModel->itemFromIndex(index);
-    if(item ==NULL)
-        return;
-    int type = item->getType();
-
-
-    CDTBaseObject* correspondingObject = item->correspondingObject();
-    if (correspondingObject)
-    {
-        correspondingObject->onContextMenuRequest(this);
-    }
-}
+//void CDTProjectWidget::onContextMenu(QPoint , QModelIndex index)
+//{
+//    CDTProjectTreeItem *item =(CDTProjectTreeItem*)treeModelObject->itemFromIndex(index);
+//    if(item ==NULL)
+//        return;
+////    int type = item->getType();
+//}
 
 bool CDTProjectWidget::readProject(const QString &filepath)
 {
@@ -70,11 +59,10 @@ bool CDTProjectWidget::readProject(const QString &filepath)
 
     QByteArray compressedData = file.readAll();
     QByteArray data = qUncompress(compressedData);
-    qDebug()<<data.size();
+
     QTemporaryFile tempFile;
     tempFile.open();
     tempFile.write(data);
-    qDebug()<<tempFile.size();
     tempFile.flush();
     tempFile.seek(0);
     QDataStream in(&(tempFile));
@@ -89,7 +77,7 @@ bool CDTProjectWidget::readProject(const QString &filepath)
     createProject(QUuid());
     in>>*project;
     emit projectChanged();
-    isChanged = false;
+    setWindowModified(false);
 
     refreshMapCanvas();
     return true;
@@ -114,7 +102,7 @@ bool CDTProjectWidget::writeProject()
     file.write(compressedDat);
     file.flush();
     qDebug()<<"compressedFile:"<<file.size();
-    isChanged = false;
+    setWindowModified(false);
 
     return true;
 }
@@ -148,30 +136,39 @@ bool CDTProjectWidget::saveProject(QString &path)
     }
 }
 
+void CDTProjectWidget::onOriginalTool(bool toggle)
+{
+    if (toggle)
+    {
+        mapCanvas->unsetMapTool(mapCanvas->mapTool());
+        mapCanvas->setMapTool(NULL);
+    }
+}
+
 void CDTProjectWidget::onZoomOutTool(bool toggle)
 {
     if (toggle)
     {
-        untoggledToolBar();
-        mapCanvas->setMapTool(zoomOutTool);
+        mapCanvas->unsetMapTool(mapCanvas->mapTool());
+        mapCanvas->setMapTool(new QgsMapToolZoom(mapCanvas,true));
     }
 }
 
 void CDTProjectWidget::onZoomInTool(bool toggle)
 {
     if (toggle)
-    {
-        untoggledToolBar();
-        mapCanvas->setMapTool(zoomInTool);
+    {        
+        mapCanvas->unsetMapTool(mapCanvas->mapTool());
+        mapCanvas->setMapTool(new QgsMapToolZoom(mapCanvas,false));
     }
 }
 
 void CDTProjectWidget::onPanTool(bool toggle)
 {
     if (toggle)
-    {
-        untoggledToolBar();
-        mapCanvas->setMapTool(panTool);
+    {        
+        mapCanvas->unsetMapTool(mapCanvas->mapTool());
+        mapCanvas->setMapTool(new QgsMapToolPan(mapCanvas));
     }
 }
 
@@ -180,22 +177,29 @@ void CDTProjectWidget::onFullExtent()
     mapCanvas->zoomToFullExtent();
 }
 
+void CDTProjectWidget::setLayerVisible(QgsMapLayer *layer, bool visible)
+{
+    if (layer==NULL) return;
+
+    if (layersVisible.keys().contains(layer))
+        layersVisible[layer] = visible;
+}
+
 void CDTProjectWidget::appendLayers(QList<QgsMapLayer *> layers)
 {    
     activeLayers.append(layers);
     foreach (QgsMapLayer *lyr, activeLayers) {
         layersVisible.insert(lyr,true);
     }
-    refreshMapCanvas();
+    refreshMapCanvas(false);
 }
 
 void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
 {
     foreach (QgsMapLayer *lyr, layer) {
-        int index = activeLayers.indexOf(lyr);
-        if (index!=-1)
+        if (activeLayers.contains(lyr))
         {
-            activeLayers.removeAt(index);
+            activeLayers.removeAll(lyr);
             QgsMapLayerRegistry::instance()->removeMapLayer(lyr->id());
         }
     }
@@ -205,26 +209,29 @@ void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
 void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
 {
     QList<QgsMapCanvasLayer> mapLayers;
+
     foreach (QgsMapLayer *lyr, activeLayers) {
-        if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::VectorLayer)
+        if (lyr->type()==QgsMapLayer::VectorLayer)
         {
-            mapLayers<<QgsMapCanvasLayer(lyr);
+            mapLayers<<QgsMapCanvasLayer(lyr,layersVisible.value(lyr));
         }
     }
     foreach (QgsMapLayer *lyr, activeLayers) {
-        if (layersVisible.value(lyr)==true && lyr->type()==QgsMapLayer::RasterLayer)
+        if (lyr->type()==QgsMapLayer::RasterLayer)
         {
-            mapLayers<<QgsMapCanvasLayer(lyr);
+            mapLayers<<QgsMapCanvasLayer(lyr,layersVisible.value(lyr));
         }
     }
+
 
     mapCanvas->setLayerSet(mapLayers);
     if (zoomToFullExtent)
         mapCanvas->zoomToFullExtent();
 }
 
-void CDTProjectWidget::onItemChanged(QStandardItem *item)
+void CDTProjectWidget::onObjectItemChanged(QStandardItem *item)
 {
+    //layer visible
     CDTProjectTreeItem* treeItem = (CDTProjectTreeItem*)item;
     if (treeItem->mapLayer())
     {
@@ -236,37 +243,55 @@ void CDTProjectWidget::onItemChanged(QStandardItem *item)
 QToolBar *CDTProjectWidget::initToolBar()
 {
     QToolBar* toolBar = new QToolBar(tr("Navigate"),this);
-    toolBar->setIconSize(QSize(16,16));
+    toolBar->setIconSize(MainWindow::getIconSize());
 
-    actionZoomOut  = new QAction(QIcon(":/Icon/mActionZoomOut.svg"),tr("Zoom Out"),this);
-    actionZoomIn   = new QAction(QIcon(":/Icon/mActionZoomIn.svg"),tr("Zoom In"),this);
-    actionPan      = new QAction(QIcon(":/Icon/mActionPan.svg"),tr("Pan"),this);
-    actionFullExtent = new QAction(QIcon(":/Icon/mActionZoomFullExtent.svg"),tr("Full Extent"),this);
-//    QAction* hehe = new QAction(tr("Hehe"),this);
+    toolButtonOriginal = new QToolButton(this);
+    toolButtonOriginal->setText(tr("Original"));
+    toolButtonOriginal->setToolTip(toolButtonOriginal->text());
+    toolButtonOriginal->setIcon(QIcon(":/Icons/Default.png"));
+    toolButtonOriginal->setCheckable(true);
+    toolButtonOriginal->setChecked(true);
 
-    actionZoomOut->setCheckable(true);
-    actionZoomIn->setCheckable(true);
-    actionPan->setCheckable(true);
+    toolButtonZoomOut = new QToolButton(this);
+    toolButtonZoomOut->setText(tr("Zoom Out"));
+    toolButtonZoomOut->setToolTip(toolButtonZoomOut->text());
+    toolButtonZoomOut->setIcon(QIcon(":/Icons/ZoomOut.png"));
+    toolButtonZoomOut->setCheckable(true);
 
-    toolBar->addAction(actionZoomOut);
-    toolBar->addAction(actionZoomIn );
-    toolBar->addAction(actionPan);
-    toolBar->addAction(actionFullExtent);
-//    toolBar->addAction(hehe);
+    toolButtonZoomIn = new QToolButton(this);
+    toolButtonZoomIn->setText(tr("Zoom In"));
+    toolButtonZoomIn->setToolTip(toolButtonZoomIn->text());
+    toolButtonZoomIn->setIcon(QIcon(":/Icons/ZoomIn.png"));
+    toolButtonZoomIn->setCheckable(true);
 
-    connect(actionZoomOut,SIGNAL(triggered(bool)),this,SLOT(onZoomOutTool(bool)));
-    connect(actionZoomIn ,SIGNAL(triggered(bool)),this,SLOT(onZoomInTool(bool)));
-    connect(actionPan,SIGNAL(triggered(bool)),this,SLOT(onPanTool(bool)));
-    connect(actionFullExtent,SIGNAL(triggered()),this,SLOT(onFullExtent()));
-//    connect(hehe,SIGNAL(triggered()),this,SLOT(onHehe()));
+    toolButtonPan = new QToolButton(this);
+    toolButtonPan->setText(tr("Pan"));
+    toolButtonPan->setToolTip(toolButtonPan->text());
+    toolButtonPan->setIcon(QIcon(":/Icons/Pan.png"));
+    toolButtonPan->setCheckable(true);
 
-    zoomOutTool = new QgsMapToolZoom(mapCanvas,TRUE);
-    zoomInTool = new QgsMapToolZoom(mapCanvas,FALSE);
-    panTool = new QgsMapToolPan(mapCanvas);
+    toolButtonFullExtent = new QToolButton(this);
+    toolButtonFullExtent->setText(tr("Full Extent"));
+    toolButtonFullExtent->setToolTip(toolButtonFullExtent->text());
+    toolButtonFullExtent->setIcon(QIcon(":/Icons/FullExtent.png"));
 
-    zoomOutTool->setAction(actionZoomOut);
-    zoomInTool->setAction(actionZoomIn);
-    panTool->setAction(actionPan);
+    QButtonGroup *group = new QButtonGroup(this);
+    group->addButton(toolButtonOriginal);
+    group->addButton(toolButtonZoomOut);
+    group->addButton(toolButtonZoomIn);
+    group->addButton(toolButtonPan);
+
+    toolBar->addWidget(toolButtonOriginal);
+    toolBar->addWidget(toolButtonZoomOut);
+    toolBar->addWidget(toolButtonZoomIn );
+    toolBar->addWidget(toolButtonPan);
+    toolBar->addWidget(toolButtonFullExtent);
+
+    connect(toolButtonOriginal,SIGNAL(toggled(bool)),this,SLOT(onOriginalTool(bool)));
+    connect(toolButtonZoomOut,SIGNAL(toggled(bool)),this,SLOT(onZoomOutTool(bool)));
+    connect(toolButtonZoomIn ,SIGNAL(toggled(bool)),this,SLOT(onZoomInTool(bool)));
+    connect(toolButtonPan,SIGNAL(toggled(bool)),this,SLOT(onPanTool(bool)));
+    connect(toolButtonFullExtent,SIGNAL(clicked()),this,SLOT(onFullExtent()));
 
     return toolBar;
 }
@@ -287,32 +312,28 @@ bool CDTProjectWidget::openProjectFile(QString filepath)
 
 void CDTProjectWidget::createProject(QUuid id)
 {
-    project = new CDTProject(id);
+    project = new CDTProjectLayer(id);
     project->setMapCanvas( mapCanvas);
 
 
-    connect(project,SIGNAL(projectChanged()),this,SIGNAL(projectChanged()));
+    connect(project,SIGNAL(layerChanged()),this,SIGNAL(projectChanged()));
     connect(project,SIGNAL(appendLayers(QList<QgsMapLayer*>)),this,SLOT(appendLayers(QList<QgsMapLayer*>)));
     connect(project,SIGNAL(removeLayer(QList<QgsMapLayer*>)),this,SLOT(removeLayer(QList<QgsMapLayer*>)));
 
-    treeModel->appendRow(project->standardItems());
+    treeModelObject->appendRow(project->standardKeyItem());
 }
 
 void CDTProjectWidget::untoggledToolBar()
 {
-    actionZoomOut->setChecked(false);
-    actionZoomIn->setChecked(false);
-    actionPan->setChecked(false);
+    toolButtonZoomOut->setChecked(false);
+    toolButtonZoomIn->setChecked(false);
+    toolButtonPan->setChecked(false);
 }
 
-//void CDTProjectWidget::onHehe()
-//{
-
-//}
 
 int CDTProjectWidget::maybeSave()
 {
-    if(isChanged)
+    if(isWindowModified())
     {
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(this, tr("Application"),
@@ -339,9 +360,9 @@ QToolBar *CDTProjectWidget::menuBar()
     return (QToolBar *)(this->layout()->menuBar());
 }
 
-void CDTProjectWidget::setIsChanged()
+void CDTProjectWidget::onProjectChanged()
 {
-    isChanged = true;
+    setWindowModified(true);
 }
 
 

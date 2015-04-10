@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui
 
 TARGET = texture
 TEMPLATE = lib
@@ -12,12 +12,12 @@ CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
 
-INCLUDEPATH += ../../../Interfaces
-
 SOURCES += textureinterface.cpp
 
-HEADERS += textureinterface.h\
-    ../../../Interfaces/cdtattributesinterface.h
+HEADERS += textureinterface.h
+
+include(../../../Interfaces/Interfaces.pri)
+
 OTHER_FILES += texture.json
 
 unix{
@@ -29,7 +29,8 @@ INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
 !unix{
-include(../../../Tools/Config/win.pri)
+INCLUDEPATH += $(OSGEO4W_ROOT)/include
+LIBS += -L$(OSGEO4W_ROOT)/lib
 LIBS += -lgdal_i
 }
 

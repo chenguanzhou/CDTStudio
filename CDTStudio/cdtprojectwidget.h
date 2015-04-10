@@ -1,22 +1,17 @@
 #ifndef CDTPROJECTWIDGET_H
 #define CDTPROJECTWIDGET_H
 
-#include <QWidget>
-#include "cdtproject.h"
-#include "cdtprojecttreemodel.h"
-#include "mainwindow.h"
-#include <QPoint>
-#include <QModelIndex>
-#include <QFile>
 #include <qgsmapcanvas.h>
 #include <qgsmaptool.h>
+#include "cdtprojectlayer.h"
+#include "mainwindow.h"
 
+class QStandardItemModel;
 class CDTProjectWidget : public QWidget
 {
     Q_OBJECT
 public:
     friend class CDTProjectTabWidget;
-    friend class CDTProjectWidget;
     friend class MainWindow;
 
     explicit CDTProjectWidget(QWidget *parent = 0);
@@ -32,37 +27,36 @@ public:
 signals:
     void projectChanged();
 public slots:
-    void onContextMenu(QPoint pt,QModelIndex index);
-    void setIsChanged();
+    void onProjectChanged();
     bool saveProject(QString &path);
 
+    void onOriginalTool(bool toggle);
     void onZoomOutTool(bool toggle);
     void onZoomInTool(bool toggle);
-    void onPanTool(bool toggle);
+    void onPanTool(bool toggle);    
     void onFullExtent();
+
+    void setLayerVisible(QgsMapLayer* layer,bool visible);
     void appendLayers(QList<QgsMapLayer*> layers);
     void removeLayer(QList<QgsMapLayer*> layer);
     void refreshMapCanvas(bool zoomToFullExtent=true);
-    void onItemChanged(QStandardItem*item);
+
+    void onObjectItemChanged(QStandardItem* item);
 
 private slots:
     void untoggledToolBar();
-//    void onHehe();
 private:
-    bool isChanged;
-    CDTProject *project;
+    CDTProjectLayer *project;
     QFile file;
-    QStandardItemModel* treeModel;
+    QStandardItemModel *treeModelObject;
 
     QgsMapCanvas* mapCanvas;
     QToolBar *initToolBar();
-    QgsMapTool *panTool;
-    QgsMapTool *zoomInTool;
-    QgsMapTool *zoomOutTool;
-    QAction *actionZoomOut;
-    QAction *actionZoomIn;
-    QAction *actionPan;
-    QAction *actionFullExtent;
+    QToolButton *toolButtonOriginal;
+    QToolButton *toolButtonZoomOut;
+    QToolButton *toolButtonZoomIn;
+    QToolButton *toolButtonPan;
+    QToolButton *toolButtonFullExtent;
 
     QList<QgsMapLayer*>     activeLayers;
     QMap<QgsMapLayer*,bool> layersVisible;

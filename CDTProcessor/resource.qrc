@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>xsd/PBCD_Binary.xsd</file>
+        <file>icons/processor.png</file>
+    </qresource>
+</RCC>

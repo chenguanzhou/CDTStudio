@@ -18,7 +18,10 @@ DEFINES += CDTHISTOGRAMPLOT_LIBRARY
 unix{
 INCLUDEPATH += /usr/include/qwt
 }
-else{
+!unix{
 include(../Config/win.pri)
 }
 LIBS += -lqwt
+
+RESOURCES += \
+    resource.qrc

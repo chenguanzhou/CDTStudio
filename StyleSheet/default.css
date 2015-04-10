@@ -1,0 +1,124 @@
+QMainWondow{
+background-color: #EEEEF2;
+}
+
+QMenuBar{
+background-color: #EEEEF2;
+padding: 2px;
+spacing: 2px;
+}
+QMenuBar::item {	
+background: #EEEEF2;
+spacing: 3px; /* spacing between menu bar items */
+padding: 4px;
+}
+QMenuBar::item:selected { /* when selected using mouse or keyboard */
+background-color: rgb(201, 222, 245);
+border-top:1px solid #CCCEDB;
+border-left:1px solid #CCCEDB;
+border-right:1px solid #CCCEDB;
+}
+QMenuBar::item:pressed {
+background: #F6F6F6;
+}
+QMenu{
+background: #F6F6F6;
+padding: 2px;
+border-bottom:1px solid #CCCEDB;
+border-left:1px solid #CCCEDB;
+border-right:1px solid #CCCEDB;
+}
+
+QMenu::item:selected { /* when selected using mouse or keyboard */    
+color: rgb(0, 0, 0);
+background-color: rgb(201, 222, 245);
+}
+QMenu::item:pressed {
+background: #F6F6F6;
+}
+QToolBar{
+border-color: #EEEEF2;
+spacing: 2px;
+padding: 3px;
+}
+
+QToolButton:hover {
+border:none;
+background: rgb(201, 222, 245);
+border-radius: 3px;
+}
+
+QToolButton:pressed {
+background: #F6F6F6;
+border-radius: 3px;
+}
+
+QDockWidget::title{
+border-top: 3px solid #9B9FB9;
+background-color:#EEEEF2;
+padding: 5px;
+}
+
+QDockWidget {		
+titlebar-close-icon: url(:/Icons/Remove.png);
+titlebar-normal-icon: url(:/Icons/Maximize.png);
+background:#EEEEF2;
+}
+QDockWidget::close-button:hover, QDockWidget::float-button:hover {
+background: #F7F7F9;
+}
+QTabBar::tab {
+color: #000000;
+background: #EEEEF2;
+}
+
+QTabBar::tab:selected{
+color: #FFFFFF;
+background: #007ACC;
+}
+
+QTabBar::tab:hover{	
+color: #FFFFFF;
+background: #1C97EA;
+}
+
+QTabWidget::pane {
+border:1px solid #007ACC;
+border-top-width:3px ;
+}
+
+QTreeView{
+background: #F5F5F5;
+alternate-background-color: #F4F4F4;
+border:none
+}
+
+QTreeView::item:selected:active{
+background: #3399FF;
+}
+
+QTreeView::item:selected:!active {
+background: #CCCEDB;
+}
+
+QHeaderView::section {
+background-color:  #9B9FB9;
+color: white;
+padding-left: 2px;
+border:1px solid #EEEEF2;
+}
+
+/*QFrame#qwtPlot {
+border:1px solid #9B9FB9;
+border-top-width:3px ;
+padding: 3px
+}*/
+
+QgsMapCanvas#mapCanvas{
+border:none;
+}
+
+QListView#listWidgetT2Bands::item:selected,QListView#listWidgetT1Bands::item:selected{
+color:#ff0000;
+font: bold 20px;
+}

@@ -3,4 +3,9 @@ TEMPLATE = subdirs
 SUBDIRS += \
     Segmentation \
     Attributes \
-    Classifier
+    Classifier\
+    Extraction \
+    PBCDDiffMethod\
+    PBCDMergeMethod\
+    AutoThreshold\
+    VectorChangeDetection

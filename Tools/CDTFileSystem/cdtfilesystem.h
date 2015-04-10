@@ -3,27 +3,39 @@
 
 #include "cdtfilesystem_global.h"
 #include <QtCore>
+#include "log4qt/logger.h"
 
-class CDTFilePrivate;
+class CDTFileSystemPrivate;
 
-class CDTFILESYSTEM_EXPORT CDTFileSystem
+class CDTFILESYSTEM_EXPORT CDTFileSystem:public QObject
 {
+    Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
-    CDTFileSystem();
+    CDTFileSystem(QObject* parent = NULL);
     ~CDTFileSystem();
 
-    friend QDataStream &operator<<(QDataStream &out, const CDTFileSystem &files);
-    friend QDataStream &operator>>(QDataStream &in, CDTFileSystem &files);
+    friend QDataStream CDTFILESYSTEM_EXPORT &operator<<(QDataStream &out, const CDTFileSystem &files);
+    friend QDataStream CDTFILESYSTEM_EXPORT &operator>>(QDataStream &in, CDTFileSystem &files);
 
-//    bool addFile(QStringList fileNameList,QUuid &id);
-//    bool updateFile(QStringList fileNameList,QUuid &id);
-//    QStringList getFile(const QUuid &id);// return files' name
+    bool registerFile(QString id,
+            const QString &filePath,
+            QString prefix = QString(),
+            QString suffix = QString(),
+            QStringList affiliatedFiles = QStringList());
 
+    bool getFile(QString id,QString& filePath);
+    bool getFile(QString id,QString& filePath,QStringList &affiliatedFiles);
+
+    void removeFile(QString id,bool deleteFiles = true);
+    void exportFiles(QString id);
+
+//    static bool getRasterVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
+//    static bool getShapefileVSIZipFile(const QString &srcPath,const QString &zipPath,bool deleteSrcFile);
+    static QStringList getShapefileAffaliated(const QString &srcPath);
+    static QStringList getRasterAffaliated(const QString &srcPath);
 private:
-    void clear();
-
-private:
-    QMap<QUuid,QList<QFile*> > files;
+    CDTFileSystemPrivate* pData;
 };
 
 //QDataStream CDTFILESYSTEM_EXPORT &operator<<(QDataStream &out, const CDTFileSystem &files);

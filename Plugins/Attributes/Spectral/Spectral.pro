@@ -4,20 +4,20 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core sql
 
 TARGET = Spectral
 TEMPLATE = lib
-CONFIG += Plugin
+CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
 
-INCLUDEPATH += ../../../Interfaces
-
 SOURCES += spectralinterface.cpp
 
-HEADERS += spectralinterface.h \
-    ../../../Interfaces/cdtattributesinterface.h
+HEADERS += spectralinterface.h
+
+include(../../../Interfaces/Interfaces.pri)
+
 OTHER_FILES += Spectral.json
 
 unix{
@@ -29,7 +29,8 @@ INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 }
 !unix{
-include(../../../Tools/Config/win.pri)
+INCLUDEPATH += $(OSGEO4W_ROOT)/include
+LIBS += -L$(OSGEO4W_ROOT)/lib
 LIBS += -lgdal_i
 }
 

@@ -13,6 +13,12 @@
   <property name="windowTitle">
    <string>CDTStudio</string>
   </property>
+  <property name="iconSize">
+   <size>
+    <width>16</width>
+    <height>16</height>
+   </size>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="leftMargin">
@@ -35,6 +41,9 @@
       <property name="tabsClosable">
        <bool>true</bool>
       </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -45,40 +54,22 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>37</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <widget class="QMenu" name="menu_Recent">
-     <property name="title">
-      <string>&amp;Recent</string>
-     </property>
-    </widget>
-    <addaction name="action_New"/>
-    <addaction name="actionOpen"/>
-    <addaction name="actionSave"/>
-    <addaction name="actionSave_All"/>
-    <addaction name="action_Save_As"/>
-    <addaction name="separator"/>
-    <addaction name="menu_Recent"/>
-   </widget>
-   <addaction name="menu_File"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
     <string>Normal</string>
    </property>
-   <property name="iconSize">
-    <size>
-     <width>32</width>
-     <height>32</height>
-    </size>
+   <property name="movable">
+    <bool>true</bool>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -86,13 +77,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="action_New"/>
-   <addaction name="actionOpen"/>
-   <addaction name="actionSave"/>
-   <addaction name="actionSave_All"/>
-   <addaction name="action_Save_As"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidgetProject">
    <property name="windowTitle">
     <string>Project</string>
@@ -115,7 +100,7 @@
       <number>2</number>
      </property>
      <item>
-      <widget class="QTreeView" name="treeViewProject">
+      <widget class="QTreeView" name="treeViewObjects">
        <property name="contextMenuPolicy">
         <enum>Qt::CustomContextMenu</enum>
        </property>
@@ -125,76 +110,18 @@
        <property name="showDropIndicator" stdset="0">
         <bool>false</bool>
        </property>
-       <property name="indentation">
-        <number>10</number>
-       </property>
        <property name="animated">
         <bool>true</bool>
        </property>
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
+       <property name="headerHidden">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>
    </widget>
   </widget>
-  <action name="action_New">
-   <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/New_file.png</normaloff>:/Icon/New_file.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;New</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
-  </action>
-  <action name="actionOpen">
-   <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/open.png</normaloff>:/Icon/open.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Open</string>
-   </property>
-  </action>
-  <action name="actionSave">
-   <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/save.png</normaloff>:/Icon/save.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Save</string>
-   </property>
-  </action>
-  <action name="actionSave_All">
-   <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/save_all.png</normaloff>:/Icon/save_all.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Save All</string>
-   </property>
-  </action>
-  <action name="action_Save_As">
-   <property name="icon">
-    <iconset resource="../resource.qrc">
-     <normaloff>:/Icon/save_as.png</normaloff>:/Icon/save_as.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Save As</string>
-   </property>
-  </action>
-  <action name="actionConsole">
-   <property name="text">
-    <string>Console</string>
-   </property>
-   <property name="shortcut">
-    <string>F12</string>
-   </property>
-  </action>
+  <widget class="QStatusBar" name="statusBar"/>
   <zorder>dockWidgetProject</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -206,11 +133,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <tabstops>
-  <tabstop>treeViewProject</tabstop>
- </tabstops>
- <resources>
-  <include location="../resource.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

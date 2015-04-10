@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>contact.xsd</file>
+        <file>valid_contact.xml</file>
+    </qresource>
+</RCC>

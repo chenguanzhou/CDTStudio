@@ -1,17 +1,12 @@
 #include "cdtprojecttabwidget.h"
+#include "stable.h"
 #include "dialognewproject.h"
-#include <QFileDialog>
-#include <QDataStream>
-#include <QFileInfo>
-#include <QList>
-#include <QMessageBox>
-#include <QSettings>
-#include <QVariant>
+
 
 CDTProjectTabWidget::CDTProjectTabWidget(QWidget *parent) :
     QTabWidget(parent)
 {
-    connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
+    connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));    
 }
 
 void CDTProjectTabWidget::createNewProject()
@@ -31,8 +26,7 @@ void CDTProjectTabWidget::createNewProject()
         projectWidget->createProject(QUuid::createUuid());
         projectWidget->project->insertToTable(dlg->projectName());
 
-
-        if (projectWidget->openProjectFile(dlg->projectPath())==false)return;
+        if (projectWidget->openProjectFile(dlg->projectPath())==false)return;        
         addTab(projectWidget,dlg->projectName());
         saveProject();
         emit menuRecentChanged(dlg->projectPath());
@@ -51,6 +45,9 @@ void CDTProjectTabWidget::openProject(const QString &filepath)
             delete projectWidget;
             return;
         }
+        QThread t;
+        projectWidget->moveToThread(&t);
+        projectWidget->moveToThread(thread());
 
         if(!compareFilePath(QFileInfo(filepath).absoluteFilePath()))
             return;
@@ -108,30 +105,45 @@ bool CDTProjectTabWidget::saveAsProject()
     if(!fileName.isEmpty())
     {
         writeLastProjectDir(QFileInfo(fileName).absolutePath());
-        emit menuRecentChanged(fileName);
+        emit menuRecentChanged(fileName);        
         ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
     }
-}
-
-bool CDTProjectTabWidget::closeTab(const int &index)
-{
-    CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
-
-    int ret = tabItem->maybeSave();
-    if(ret == QMessageBox::Cancel  )
-        return true;
-
-    this->removeTab(index);
-    delete (tabItem);
     return true;
 }
 
-void CDTProjectTabWidget::closeAll()
+int CDTProjectTabWidget::closeTab(const int &index)
+{
+    if(index<0) return false;
+
+    CDTProjectWidget* tabItem =(CDTProjectWidget*)this->widget(index);
+
+    int ret = tabItem->maybeSave();
+
+    if (ret != QMessageBox::Cancel)
+    {
+        this->removeTab(index);
+        delete tabItem;
+    }
+
+    return ret;
+}
+
+bool CDTProjectTabWidget::closeAll()
 {
     if(this->count()<=0)
-        return ;
+        return true;
+
+    int tabIndex = 0;
+    bool isAppClose = true;
     for(int i=0;i<this->count();++i)
-        this->closeTab(0);
+    {
+        if (this->closeTab(tabIndex)==QMessageBox::Cancel)
+        {
+            ++tabIndex;
+            isAppClose = false;
+        }
+    }
+    return isAppClose;
 }
 
 QString CDTProjectTabWidget::readLastProjectDir()

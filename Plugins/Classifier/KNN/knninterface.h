@@ -1,7 +1,7 @@
 #ifndef KNNINTERFACE_H
 #define KNNINTERFACE_H
 
-#include "../../../Interfaces/cdtclassifierinterface.h"
+#include "cdtclassifierinterface.h"
 
 class KNNInterfacePrivate;
 class KNNInterface : public CDTClassifierInterface

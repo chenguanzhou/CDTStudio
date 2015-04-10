@@ -1,7 +1,7 @@
 #include "cdtprojecttreeitem.h"
 
-CDTProjectTreeItem::CDTProjectTreeItem(CDTItemType tp, LayerType ly, const QString &text, CDTBaseObject *crspdObject)
-    :_itemType(tp),layerType(ly),corrObject(crspdObject),qgsMapLayer(NULL)
+CDTProjectTreeItem::CDTProjectTreeItem(CDTItemType tp, LayerType ly, const QString &text, CDTBaseLayer *crspdObject)
+    :itemType(tp),layerType(ly),corrObject(crspdObject),qgsMapLayer(NULL)
 {
     setText(text);
     initAlignment();
@@ -22,7 +22,7 @@ void CDTProjectTreeItem::setMapLayer(QgsMapLayer *layer)
 
 void CDTProjectTreeItem::initAlignment()
 {
-    switch (_itemType) {
+    switch (itemType) {
     case PARAM:
     case METHOD_PARAMS:
         this->setTextAlignment(Qt::AlignRight);
@@ -33,15 +33,19 @@ void CDTProjectTreeItem::initAlignment()
 void CDTProjectTreeItem::initFont()
 {
     QFont font= this->font();
-    switch (_itemType) {
+    switch (itemType) {
     case PROJECT_ROOT:
         font.setBold(true);
         font.setPointSize(font.pointSize()+3);        
         break;
-    case IMAGE_ROOT:
+    case IMAGE:
         font.setBold(true);
         font.setPointSize(font.pointSize()+2);
         break;
+    case IMAGE_ROOT:
+    case PIXEL_CHANGE_ROOT:
+    case VECTOR_CHANGE_ROOT:
+    case EXTRACTION_ROOT:
     case SEGMENTION_ROOT:
         font.setBold(true);
         font.setPointSize(font.pointSize()+1);
@@ -65,10 +69,10 @@ void CDTProjectTreeItem::initFont()
 void CDTProjectTreeItem::initColor()
 {
     QBrush brush = this->foreground();
-    switch (_itemType) {
+    switch (itemType) {
     case PROJECT_ROOT:
         break;
-    case IMAGE_ROOT:
+    case IMAGE:
         brush.setColor(QColor(Qt::red));
         break;
     case METHOD_PARAMS:
@@ -83,7 +87,7 @@ void CDTProjectTreeItem::initColor()
 
 void CDTProjectTreeItem::initCheckState()
 {
-    if (layerType != EMPTY)
+    if (layerType != EMPTY && layerType != GROUP)
     {
         this->setCheckable(true);
         this->setCheckState(Qt::Checked);

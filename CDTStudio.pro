@@ -9,8 +9,9 @@ TEMPLATE = subdirs
 SUBDIRS += \
     Tools\
     Plugins \
-    CDTStudio
+    CDTStudio \
+    Tests \
+    CDTProcessor
 
-TRANSLATIONS  += trans/zh_CN.ts
-
+TRANSLATIONS  += Trans/zh_CN.ts
 

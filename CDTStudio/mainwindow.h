@@ -2,73 +2,138 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QToolButton>
 #include "recentfilesupervisor.h"
+#include "log4qt/logger.h"
 
 namespace Ui {
 class MainWindow;
 }
-
+class QToolButton;
+class QLineEdit;
 class QModelIndex;
 class QTreeView;
-class CDTSampleDockWidget;
-class CDTAttributeDockWidget;
-class DialogConsole;
-class CDTProjectWidget;
-class QgsMapCanvas;
 struct QUuid;
+
+class QgsMapCanvas;
+class QgsScaleComboBox;
+
+class CDTDockWidget;
+class CDTProjectWidget;
+class CDTTrainingSampleDockWidget;
+class CDTValidationSampleDockWidget;
+class CDTCategoryDockWidget;
+class CDTExtractionDockWidget;
+class CDTLayerInfoWidget;
+class CDTUndoWidget;
+class CDTAttributeDockWidget;
+class CDTPlot2DDockWidget;
+class CDTTaskDockWidget;
+class CDTProjectLayer;
+class DialogConsole;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    LOG4QT_DECLARE_QCLASS_LOGGER
     friend class RecentFileSupervisor;
+    friend class CDTProjectWidget;
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();       
 
 private:
+    void initIconSize();
+    void initActions();
+    void initMenuBar();
+    void initToolBar();
+    void initStatusBar();
     void initDockWidgets();
+    void initConsole();    
+
+    void registerDocks(Qt::DockWidgetArea area, CDTDockWidget* dock);
+
+
 
 public:
-    static MainWindow   *getMainWindow();
-    static QTreeView    *getProjectTreeView();
-    static CDTSampleDockWidget   *getSampleDockWidget();
-    static CDTAttributeDockWidget *getAttributesDockWidget();
-    static CDTProjectWidget *getCurrentProjectWidget();
-    static QgsMapCanvas *getCurrentMapCanvas();
+    static MainWindow                   *getMainWindow();
+    static QTreeView                    *getProjectTreeView();
+    static CDTTrainingSampleDockWidget  *getTrainingSampleDockWidget();
+    static CDTAttributeDockWidget       *getAttributesDockWidget();
+    static CDTPlot2DDockWidget          *getPlot2DDockWidget();
+    static CDTExtractionDockWidget      *getExtractionDockWidget();
+    static CDTUndoWidget                *getUndoWidget();
+    static CDTLayerInfoWidget           *getLayerInfoWidget();
+    static CDTTaskDockWidget            *getTaskDockWIdget();
+    static CDTProjectWidget             *getCurrentProjectWidget();
+    static QgsMapCanvas                 *getCurrentMapCanvas();
 
-    static bool setActiveImage(QUuid uuid);
-    static bool setActiveSegmentation(QUuid uuid);
+    static QUuid getCurrentProjectID();
+    static QSize getIconSize();
+
 signals:
     void loadSetting();
     void updateSetting();
 public slots:
     void onCurrentTabChanged(int i);
+    void showMouseCoordinate(const QgsPoint & p);
+    void showScale( double theScale );
+    void userCenter();
+    void userScale();
 
 private slots:
-    void on_action_New_triggered();
-    void on_treeViewProject_customContextMenuRequested(const QPoint &pos);
-    void on_treeViewProject_clicked(const QModelIndex &index);
-    void on_actionOpen_triggered();
-    void on_actionSave_triggered();
-    void on_actionSave_All_triggered();
-    void on_action_Save_As_triggered();
+    void onActionNew();
+    void onActionOpen();
+    void onActionSave();
+    void onActionSaveAll();
+    void onActionSaveAs();
     void onRecentFileTriggered();
 
+    void on_treeViewObjects_customContextMenuRequested(const QPoint &pos);
+    void on_treeViewObjects_clicked(const QModelIndex &index);
+
+    void updateTaskDock();
+    void clearAllDocks();
+
 protected:
-    void closeEvent(QCloseEvent *event);
+    void moveEvent(QMoveEvent *e);
+    void resizeEvent(QResizeEvent *e);
+    void closeEvent(QCloseEvent *e);
 
 
 private:
     Ui::MainWindow *ui;
-    CDTAttributeDockWidget *dockWidgetAttributes;
-    CDTSampleDockWidget *dockWidgetSample;
+
+    CDTAttributeDockWidget          *dockWidgetAttributes;
+    CDTPlot2DDockWidget             *dockWidgetPlot2D;
+    CDTTrainingSampleDockWidget     *dockWidgetTrainingSample;
+    CDTValidationSampleDockWidget   *dockWidgetValidationSample;
+    CDTCategoryDockWidget           *dockWidgetCategory;
+    CDTExtractionDockWidget         *dockWidgetExtraction;
+    CDTUndoWidget                   *dockWidgetUndo;
+    CDTLayerInfoWidget              *dockWidgetLayerInfo;
+    CDTTaskDockWidget               *dockWidgetTask;
+
+    QAction *actionNew;
+    QAction *actionOpen;
+    QAction *actionSave;
+    QAction *actionSaveAll;
+    QAction *actionSaveAs;
+    QAction *actionConsole;
+
+    QMenu *menuFile;
+    QMenu *menuRecent;
+
+    QLineEdit *lineEditCoord;
+    QgsScaleComboBox *scaleEdit;
+
+    QSize iconSize;
+
     RecentFileSupervisor *supervisor;
     int recentFileCount;
     QToolButton* recentFileToolButton;
     QStringList recentFilePaths;
-    DialogConsole* dialogConsole;
 
+    QList<CDTDockWidget*> docks;
     static MainWindow* mainWindow;
     static bool isLocked;
 };

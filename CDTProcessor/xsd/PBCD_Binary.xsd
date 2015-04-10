@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:element name="CDTTask">
+		<xsd:complexType>
+			<xsd:sequence> 
+				<xsd:element name="create" type="create"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:complexType name="create">
+		<xsd:sequence>
+			<xsd:element name="params" type="params"/>
+		</xsd:sequence> 
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="id" type="xsd:string" use="required"/>	
+		<xsd:attribute name="time" type="xsd:string" use="required"/>		
+	</xsd:complexType>
+
+	<xsd:complexType name="params">
+		<xsd:sequence>
+			<xsd:element name="images">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="t1" type="imagepath"/>
+						<xsd:element name="t2" type="imagepath"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			
+			<xsd:element name="bands">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="band_pair" type="xsd:string" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+
+			<xsd:element name="radiometric_correction">
+				<xsd:complexType> 
+					<xsd:attribute name="valid" type="xsd:boolean" use="required"/> 
+					<xsd:attribute name="method" type="xsd:boolean" />
+				</xsd:complexType> 
+			</xsd:element>
+
+			<xsd:element name="diff_method">
+				<xsd:complexType> 
+					<xsd:sequence>
+                                                <xsd:element name="params" minOccurs="0" />
+					</xsd:sequence>
+					<xsd:attribute name="name" type="xsd:string" use="required"/>
+				</xsd:complexType> 
+			</xsd:element>
+
+			<xsd:element name="merge_method">
+				<xsd:complexType> 
+					<xsd:sequence>
+						<xsd:element name="params" minOccurs="0"/>
+					</xsd:sequence>
+					<xsd:attribute name="name" type="xsd:string" use="required"/>
+				</xsd:complexType> 
+			</xsd:element>
+
+			<xsd:element name="threshold">
+				<xsd:complexType> 
+					<xsd:simpleContent> 
+						<xsd:extension base="xsd:string"> 
+							<xsd:attribute name="type" type="xsd:string" /> 
+						</xsd:extension> 	
+					</xsd:simpleContent> 
+				</xsd:complexType> 
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="imagepath">
+		<xsd:attribute name="path" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+</xsd:schema>

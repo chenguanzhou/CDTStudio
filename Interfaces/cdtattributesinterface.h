@@ -21,6 +21,8 @@ class TextureParam
 public:
     uchar* buf;
     int angle;
+    double minVal;
+    double maxVal;
 };
 
 template <class T>

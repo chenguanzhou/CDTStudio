@@ -12,5 +12,7 @@ LIBS += \
     -L$(QWT_ROOT)/lib \
     -L$(BOOST_LIBRARYDIR)
 
+include($(QWT_ROOT)/features/qwt.prf)
+
 DEFINES += CORE_EXPORT=__declspec(dllimport)
 DEFINES += GUI_EXPORT=__declspec(dllimport)

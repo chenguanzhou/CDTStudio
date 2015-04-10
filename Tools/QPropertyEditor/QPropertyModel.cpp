@@ -137,8 +137,8 @@ Qt::ItemFlags QPropertyModel::flags ( const QModelIndex & index ) const
 	// only allow change of value attribute
 	if (item->isRoot())
 		return Qt::ItemIsEnabled;	
-	else if (item->isReadOnly())
-		return Qt::ItemIsDragEnabled | Qt::ItemIsSelectable;	
+    else if (item->isReadOnly())
+        return Qt::ItemIsDragEnabled | Qt::ItemIsSelectable;
 	else
 		return Qt::ItemIsDragEnabled | Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
@@ -336,7 +336,7 @@ void QPropertyModel::addDynamicProperties( Property* parent, QObject* propertyOb
 				++iter;
 			}
 		}
-		if( p == 0 ) p = new Property(dynProp, propertyObject, parent);
+        if( p == 0 ) p = new Property(dynProp, propertyObject, parent);
 		p->setProperty("__Dynamic", true);
 	}
 	endInsertRows();

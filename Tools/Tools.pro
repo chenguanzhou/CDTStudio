@@ -1,8 +1,12 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    CDTDialogs\
+    log4qt \
     QPropertyEditor\
     CDTFileSystem\
-	CDTHistogramPlot\
-	QtColorPicker
+    CDTHistogramPlot\
+    QtColorPicker\    
+    XMLSchemaValidator\
+    CDTTableExporter
+
+CDTFileSystem.depends = log4qt

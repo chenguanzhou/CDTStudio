@@ -2,7 +2,7 @@
 #define CDTPROJECTTREEITEM_H
 
 #include <QStandardItem>
-#include "cdtbaseobject.h"
+#include "cdtbaselayer.h"
 #include "qgsmapcanvas.h"
 
 class CDTProjectTreeItem : public QStandardItem
@@ -11,8 +11,15 @@ public:
     enum CDTItemType{
         PROJECT_ROOT,
         IMAGE_ROOT,
+        IMAGE,
+        PIXEL_CHANGE_ROOT,
+        PIXELCHANGE,
+        VECTOR_CHANGE_ROOT,
+        VECTOR_CHANGE,
         SEGMENTION_ROOT,
         SEGMENTION,
+        EXTRACTION_ROOT,
+        EXTRACTION,
         CLASSIFICATION_ROOT,
         CLASSIFICATION,
         METHOD_PARAMS,
@@ -27,9 +34,9 @@ public:
         VECTOR
     };
 
-    CDTProjectTreeItem(CDTItemType tp,LayerType ly, const QString &text,CDTBaseObject *crspdObject );
-    CDTItemType getType()const {return _itemType;}
-    CDTBaseObject* correspondingObject()const {return corrObject;}
+    CDTProjectTreeItem(CDTItemType tp,LayerType ly, const QString &text,CDTBaseLayer *crspdObject );
+    CDTItemType getType()const {return itemType;}
+    CDTBaseLayer* correspondingObject()const {return corrObject;}
 
     QgsMapLayer *mapLayer()const;
     void setMapLayer(QgsMapLayer* layer);
@@ -40,9 +47,9 @@ private:
     void initFont();
     void initColor();
     void initCheckState();
-    CDTItemType _itemType;
+    CDTItemType itemType;
     LayerType layerType;
-    CDTBaseObject* corrObject;
+    CDTBaseLayer* corrObject;
     QgsMapLayer* qgsMapLayer;
 };
 
