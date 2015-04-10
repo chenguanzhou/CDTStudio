@@ -5,15 +5,18 @@
 //TODO  Unit Test
 //TODO  Comment => Document
 //TODO  Translation
+//TODO  About
+//TODO  Settings
 
 //TODO  Change Detection View
 //TODO  Recent file
 //TODO  Attribute Widget Closable(invisible)
 //TODO  Read & write project in another thread
 //TODO  FileSystem as a db
-//TODO  Band selection for rasters
-//TODO  Button Group For Icons in CDTProjectWidget
 //TODO  More statistics value for attributes' histogram
+//TODO  Mask image process
+//TODO  Relative dir in CDTImageLayer
+//TODO  Widget of layer's property(QWidgetAction)
 
 //BUG   Same name
 
