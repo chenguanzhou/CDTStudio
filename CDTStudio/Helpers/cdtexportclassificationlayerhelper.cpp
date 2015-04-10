@@ -28,8 +28,13 @@ bool CDTExportClassificationLayerHelper::exportClassification(QUuid clsID, QStri
 
     QMap<QString,QString> categoryID_Name;
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("select id,name from category where imageid=?");
-    query.addBindValue(imgLayer->id().toString());
+//    if (query.prepare("select id,name from category where imageid=?")==false)
+//    {
+//        logger()->error("Excuting sql prepare failed:\n %1","select id,name from category where imageid=?");
+//        return false;
+//    }
+//    query.addBindValue(imgLayer->id().toString());
+    query.exec(QString("select id,name from category where imageid=\"%1\"").arg(imgLayer->id().toString()));
     while(query.next())
     {
         categoryID_Name.insert(query.value(0).toString(),query.value(1).toString());
@@ -67,9 +72,14 @@ bool CDTExportClassificationLayerHelper::exportClassification(QUuid clsID, QStri
     {
         int index = data[f.attribute("GridCode").toInt()].toInt();
         QString categoryID = clsInfo.key(index);
+        QString categoryName = categoryID_Name.value(categoryID);
 
-        if (f.setAttribute(fieldName,categoryID_Name.value(categoryID)==false))
-            logger()->error("Set classification info to the shapefile failed!");
+        if (f.setAttribute(fieldName,categoryName)==false)
+        {
+            logger()->error("Set classification info to the shapefile failed!\ncategoryID:%1",categoryID);
+            qDebug()<<fieldName<<categoryID_Name;
+            return false;
+        }
         layer.updateFeature(f);
     }
     layer.commitChanges();
