@@ -21,18 +21,18 @@ public:
 	CStatisticSnake();
 	~CStatisticSnake();
 
-	std::vector<VERTEX2D> m_seedArray; ////////////输入时为种子节点链表，计算完毕后为输出结果////////////
+    std::vector<VERTEX2D> m_seedArray;//Seed points list for input, result for output
 
 public:
     void Initialize(uchar *pBMPData, int w, int h, int wb,const std::vector<VERTEX2D> &pointVec);
 	bool GetStatisticSnake();
 
 private:
-    uchar* m_pBMPData;///////////输入整个影像
+    uchar* m_pBMPData;// Image
 	bool* m_pShapeImage;
-	int m_BMPWidth;/////////////整个影像宽
-	int m_BMPHeight;////////////整个影像高
-	int m_BMPWidthBytes;////////整个影像的每行位数
+    int m_BMPWidth;
+    int m_BMPHeight;
+    int m_BMPWidthBytes;
 
 	VERTEX2D m_statistic_start;
 	int m_statistic_w;
