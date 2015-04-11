@@ -5,13 +5,6 @@
 GraphKruskal::GraphKruskal(unsigned elements)
     :elementCount(elements),num(elements),elts(NULL)
 {
-//        elts.resize(elements);
-//        for (unsigned i = 0; i < elements; i++)
-//        {
-//            elts[i].p = i;//每个区域（集合）的初始根节点是它本身
-//        }
-
-
     file.open();
     if (file.resize(elements*sizeof(GraphElement)) == false)
     {
@@ -28,7 +21,7 @@ GraphKruskal::GraphKruskal(unsigned elements)
     for (unsigned i = 0; i < elements; ++i,++p)
     {
         p->rank = 0;
-        p->p = i;//每个区域（集合）的初始根节点是它本身
+        p->p = i;
         p->sw = 0;
         p->size = 1;
     }
@@ -43,10 +36,10 @@ unsigned GraphKruskal::find( unsigned x )
 {
     int y = x;
 
-    while (y != elts[y].p)//p为x的父节点，不相等，说明x不是根节点
-        y = elts[y].p;//找x的父节点的父节点，直到相等，说明找到了根节点
+    while (y != elts[y].p)
+        y = elts[y].p;//Find root node
 
-    elts[x].p = y;//将x的父节点设为找到的根节点，优化,提高查找速度
+    elts[x].p = y;
     return y;
 }
 
@@ -54,30 +47,29 @@ unsigned GraphKruskal::join_band_sw( unsigned x,unsigned y,float edgeWeight )
 {
     if (elts[x].rank > elts[y].rank)
         {
-            elts[x].size += elts[y].size; //合并所得区域的大小
-            elts[x].sw += elts[y].sw + edgeWeight;//合并所得区域的边权和
+            elts[x].size += elts[y].size;
+            elts[x].sw += elts[y].sw + edgeWeight;
             elts[y].p = x;
 
-            num--;//合并后区域数减一
+            num--;
             return x;
         }
 
         else
         {
-            elts[y].size += elts[x].size;//区域大小
-            elts[y].sw += elts[x].sw + edgeWeight;//组成该区域的边权和
+            elts[y].size += elts[x].size;
+            elts[y].sw += elts[x].sw + edgeWeight;
 
             elts[x].p = y;
 
             if (elts[x].rank == elts[y].rank)
-                elts[y].rank++;//同时将集合y的元素数加1
+                elts[y].rank++;
             num--;
             return y;
         }
 }
 
 
-//预测两个区域是否合并,控制边权和的大小
 
 const float LOG20MULTI2 = 2*log(2/0.1f);
 bool GraphKruskal::joinPredicate_sw(unsigned reg1, unsigned reg2, float th, float edgeWeight, int nPredict )
@@ -86,18 +78,18 @@ bool GraphKruskal::joinPredicate_sw(unsigned reg1, unsigned reg2, float th, floa
     GraphElement elt2 = elts[reg2];
 
     float swreg1 = elt1.sw;
-    unsigned size1=elt1.size;//区域1的像素数
+    unsigned size1=elt1.size;
 
     float swreg2 = elt2.sw;
-    unsigned size2=elt2.size;//区域2的像素数
+    unsigned size2=elt2.size;
 
-    float nedge1 = (float)size1-1+0.000001f;//区域1的边数
-    float nedge2 = (float)size2-1+0.000001f;//区域2的边数
+    float nedge1 = (float)size1-1+0.000001f;
+    float nedge2 = (float)size2-1+0.000001f;
 
     double g=th;//255*sqrt(m_Bands);//
 
-    float if1=(swreg1+edgeWeight)/(nedge1+2);//把当前边权加入区域1的边权后的区域边权均值
-    float if2=(swreg2+edgeWeight)/(nedge2+2);//把当前边权加入区域2的边权后的区域边权均值
+    float if1=(swreg1+edgeWeight)/(nedge1+2);
+    float if2=(swreg2+edgeWeight)/(nedge2+2);
 
 
     float sn1 = (float)(g*sqrt(LOG20MULTI2/size1));
@@ -105,16 +97,16 @@ bool GraphKruskal::joinPredicate_sw(unsigned reg1, unsigned reg2, float th, floa
 
 
     bool bMerge=false;
-    if (nPredict==0)//准则1
+    if (nPredict==0)//Rule1
     {
         if(if1<=sn1 || if2<=sn2)//ok
             bMerge=true;
         else
             bMerge=false;
     }
-    if (nPredict==1)//准则2
+    if (nPredict==1)//Rule2
     {
-        if ((edgeWeight<=sn1)||(edgeWeight<=sn2))//ok
+        if ((edgeWeight<=sn1)||(edgeWeight<=sn2))
             bMerge=true;
         else
             bMerge=false;

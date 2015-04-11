@@ -13,9 +13,9 @@ public:
     GraphElement():rank(0),p(0),size(1),sw(0){}
 
     unsigned rank;
-    unsigned p; //根节点
+    unsigned p; //Root node
     unsigned size;
-    float sw;//该区域边权值之和
+    float sw;//Sum of weights
 };
 
 
@@ -27,8 +27,8 @@ public:
     ~GraphKruskal();
 
     unsigned find(unsigned x);
-    bool joinPredicate_sw(unsigned reg1, unsigned reg2, float th,float edgeWeight,int nPredict);//5基于统计学习理论，控制区域边权和，合并时共用join_band_sw函数
-    unsigned join_band_sw(unsigned x, unsigned y, float edgeWeight);//合并时统计边权和，合并并返回根节点
+    bool joinPredicate_sw(unsigned reg1, unsigned reg2, float th,float edgeWeight,int nPredict);//Is merge or not
+    unsigned join_band_sw(unsigned x, unsigned y, float edgeWeight);//Merge and return the root node
     unsigned size(unsigned x) { return elts[x].size; }
 
 
