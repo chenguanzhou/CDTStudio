@@ -6,6 +6,7 @@
 #include <log4qt/logger.h>
 
 class QAction;
+class QLabel;
 class QStandardItem;
 class QgsMapLayer;
 class QgsMapCanvas;
@@ -51,6 +52,7 @@ protected slots:
     void setID(QUuid id);
     void setKeyItem(CDTProjectTreeItem *item);
     void setActions(QList<QList<QAction *> > actions);
+    void setWidgetActions(QList<QPair<QLabel*,QWidget *> > actions);
     void setCanvasLayer(QgsMapLayer* layer);
     void setMapCanvas(QgsMapCanvas* canvas);
 
@@ -71,6 +73,7 @@ private:
     QgsMapCanvas        *mapCanvas;
 
     QList<QList<QAction *> > actions;
+    QList<QPair<QLabel*,QWidget *> > widgetActions;
 };
 
 #endif // CDTBASELAYER_H

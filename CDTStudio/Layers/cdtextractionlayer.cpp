@@ -8,17 +8,25 @@
 QList<CDTExtractionLayer *> CDTExtractionLayer::layers;
 
 CDTExtractionLayer::CDTExtractionLayer(QUuid uuid, QObject *parent) :
-    CDTBaseLayer(uuid,parent),
-    actionChangeParams(new QWidgetAction(this)),
-    actionRename(new QAction(QIcon(":/Icons/Rename.png"),tr("Rename"),this)),
-    actionExportShapefile(new QAction(QIcon(":/Icons/Export.png"),tr("Export Shapefile"),this)),
-    actionRemoveExtraction(new QAction(QIcon(":/Icons/Remove.png"),tr("Remove Extraction"),this))
+    CDTBaseLayer(uuid,parent)
 {
     layers.push_back(this);
 
     CDTProjectTreeItem *keyItem =
             new CDTProjectTreeItem(CDTProjectTreeItem::EXTRACTION,CDTProjectTreeItem::VECTOR,QString(),this);
     setKeyItem(keyItem);
+
+    QAction *actionRename =
+            new QAction(QIcon(":/Icons/Rename.png"),tr("Rename"),this);
+    QAction *actionExportShapefile =
+            new QAction(QIcon(":/Icons/Export.png"),tr("Export Shapefile"),this);
+    QAction *actionRemoveExtraction =
+            new QAction(QIcon(":/Icons/Remove.png"),tr("Remove Extraction"),this);
+
+    QList<QList<QAction*> > actions = QList<QList<QAction*> >()
+            <<(QList<QAction*>()<<actionRename<<actionExportShapefile)
+           <<(QList<QAction*>()<<actionRemoveExtraction);
+    this->setActions(actions);
 
     connect(this,SIGNAL(removeExtraction(CDTExtractionLayer*)),this->parent(),SLOT(removeExtraction(CDTExtractionLayer*)));
     connect(this,SIGNAL(nameChanged()),this,SIGNAL(layerChanged()));
@@ -110,43 +118,46 @@ CDTExtractionLayer *CDTExtractionLayer::getLayer(QUuid id)
     return NULL;
 }
 
-void CDTExtractionLayer::onContextMenuRequest(QWidget *parent)
-{
-    QWidget* menuWidget = new QWidget(NULL);
-    QFormLayout* layout = new QFormLayout(menuWidget);
-    menuWidget->setLayout(layout);
-    layout->setSpacing(1);
+//void CDTExtractionLayer::onContextMenuRequest(QWidget *parent)
+//{
+//    QWidget* menuWidget = new QWidget(NULL);
+//    QFormLayout* layout = new QFormLayout(menuWidget);
+//    menuWidget->setLayout(layout);
+//    layout->setSpacing(1);
 
-    QtColorPicker *colorPicker = new QtColorPicker(menuWidget);
-    colorPicker->setStandardColors();
-    colorPicker->setCurrentColor(color());
-    connect(colorPicker,SIGNAL(colorChanged(QColor)),SLOT(setColor(QColor)));
+//    QtColorPicker *colorPicker = new QtColorPicker(menuWidget);
+//    colorPicker->setStandardColors();
+//    colorPicker->setCurrentColor(color());
+//    connect(colorPicker,SIGNAL(colorChanged(QColor)),SLOT(setColor(QColor)));
+//    connect(this,SIGNAL(colorChanged(QColor)),colorPicker,SLOT(setCurrentColor(QColor)));
 
-    QtColorPicker *borderColorPicker = new QtColorPicker(menuWidget);
-    borderColorPicker->setStandardColors();
-    borderColorPicker->setCurrentColor(borderColor());
-    connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
+//    QtColorPicker *borderColorPicker = new QtColorPicker(menuWidget);
+//    borderColorPicker->setStandardColors();
+//    borderColorPicker->setCurrentColor(borderColor());
+//    connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
+//    connect(this,SIGNAL(borderColorChanged(QColor)),borderColorPicker,SLOT(setCurrentColor(QColor)));
 
-    layout->addRow(tr("Color"),colorPicker);
-    layout->addRow(tr("Border Color"),borderColorPicker);
-    actionChangeParams->setDefaultWidget(menuWidget);
+//    layout->addRow(tr("Color"),colorPicker);
+//    layout->addRow(tr("Border Color"),borderColorPicker);
+//    actionChangeParams->setDefaultWidget(menuWidget);
 
-    QMenu *menu =new QMenu(parent);
-    menu->addAction(actionChangeParams);
-    menu->addAction(actionRename);
-    menu->addAction(actionExportShapefile);
-    menu->addSeparator();
-    menu->addAction(actionRemoveExtraction);
-    menu->exec(QCursor::pos());
+//    QMenu *menu =new QMenu(parent);
+//    menu->addAction(actionChangeParams);
+//    menu->addAction(actionRename);
+//    menu->addAction(actionExportShapefile);
+//    menu->addSeparator();
+//    menu->addAction(actionRemoveExtraction);
+//    menu->exec(QCursor::pos());
 
-    actionChangeParams->releaseWidget(menuWidget);
-    delete menuWidget;
-}
+//    actionChangeParams->releaseWidget(menuWidget);
+//    delete menuWidget;
+//}
 
 void CDTExtractionLayer::setColor(const QColor &clr)
 {
     if (this->color() == clr)
         return;
+
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("UPDATE extractionlayer set color = ? where id =?");
     query.bindValue(0,clr);
@@ -155,6 +166,8 @@ void CDTExtractionLayer::setColor(const QColor &clr)
 
     setOriginRenderer();
     this->canvas()->refresh();
+
+    emit colorChanged(clr);
     emit layerChanged();
 }
 
@@ -170,6 +183,8 @@ void CDTExtractionLayer::setBorderColor(const QColor &clr)
 
     setOriginRenderer();
     this->canvas()->refresh();
+
+    emit borderColorChanged(clr);
     emit layerChanged();
 }
 
@@ -226,6 +241,22 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
         qDebug()<<"insert into extractionlayer failed!";
         return;
     }
+
+    QList<QPair<QLabel*,QWidget*>> widgets;
+    QtColorPicker *colorPicker = new QtColorPicker();
+    colorPicker->setStandardColors();
+    colorPicker->setCurrentColor(color);
+    connect(colorPicker,SIGNAL(colorChanged(QColor)),SLOT(setColor(QColor)));
+    connect(this,SIGNAL(colorChanged(QColor)),colorPicker,SLOT(setCurrentColor(QColor)));
+    widgets.append(qMakePair(new QLabel(tr("Color")),(QWidget*)colorPicker));
+
+    QtColorPicker *borderColorPicker = new QtColorPicker();
+    borderColorPicker->setStandardColors();
+    borderColorPicker->setCurrentColor(borderColor);
+    connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
+    connect(this,SIGNAL(borderColorChanged(QColor)),borderColorPicker,SLOT(setCurrentColor(QColor)));
+    widgets.append(qMakePair(new QLabel(tr("Border color")),(QWidget*)borderColorPicker));
+    setWidgetActions(widgets);
 
     setOriginRenderer();
 

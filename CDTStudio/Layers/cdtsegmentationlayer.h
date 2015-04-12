@@ -29,7 +29,7 @@ class CDTSegmentationLayer:public CDTBaseLayer
     Q_CLASSINFO("CDTSegmentationLayer","Segmentation")
     Q_CLASSINFO("tableName",tr("segmentationlayer"))
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
-    Q_PROPERTY(QColor Border_Color READ borderColor WRITE setBorderColor DESIGNABLE true USER true)
+    Q_PROPERTY(QColor Border_Color READ borderColor WRITE setBorderColor NOTIFY borderColorChanged DESIGNABLE true USER true)
     Q_PROPERTY(QString Method READ method  DESIGNABLE true USER true)
 
 public:
