@@ -8,6 +8,7 @@ class CDTProjectTreeItem;
 class CDTExtractionLayer;
 class CDTSegmentationLayer;
 class CategoryInformation;
+enum QgsContrastEnhancement::ContrastEnhancementAlgorithm;
 
 typedef QList<CategoryInformation> CDTCategoryInformationList;
 
@@ -25,7 +26,7 @@ public:
     friend QDataStream &operator>>(QDataStream &in, CDTImageLayer &image);
     friend class CDTSegmentationLayer;
 
-    void setNameAndPath(const QString& name,const QString& path);
+    void initLayer(const QString& name,const QString& path);
     void setCategoryInfo(const CDTCategoryInformationList& info);
     QString path()const;
     int bandCount()const;    
@@ -50,11 +51,12 @@ public slots:
     void redBandChanged(int bandIDFrom0);
     void greenBandChanged(int bandIDFrom0);
     void blueBandChanged(int bandIDFrom0);
+    void onEnhancementChanged(int enhancementStyle);
 private:        
     void addExtraction(CDTExtractionLayer* extraction);
     void addSegmentation(CDTSegmentationLayer* segmentation);
 
-    void updateMultiBandRenderer();
+    void updateRenderer();
 
 private:
     QVector<CDTExtractionLayer *>   extractions;
@@ -64,8 +66,8 @@ private:
     CDTProjectTreeItem *extractionRoot;
 
     QWidget *multibandSelectionWidget;
-
     int rBandID,gBandID,bBandID;
+    QgsContrastEnhancement::ContrastEnhancementAlgorithm enhancementStyle;
 
     static QList<CDTImageLayer *> layers;
 };

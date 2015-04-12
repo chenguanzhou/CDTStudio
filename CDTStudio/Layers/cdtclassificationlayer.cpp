@@ -186,7 +186,7 @@ QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
     return categorizedSymbolRenderer;
 }
 
-void CDTClassificationLayer::initClassificationLayer(const QString &name,
+void CDTClassificationLayer::initLayer(const QString &name,
         const QString &methodName,
         const QMap<QString, QVariant> &params,
         const QList<QVariant> &data,
@@ -273,7 +273,7 @@ QDataStream &operator>>(QDataStream &in, CDTClassificationLayer &classification)
 
     in>>id>>name>>method>>param>>data>>clsInfo>>normalize>>pca>>selectedFeatures;
     classification.setID(id);
-    classification.initClassificationLayer(name,method,param,data,clsInfo,normalize,pca,selectedFeatures);
+    classification.initLayer(name,method,param,data,clsInfo,normalize,pca,selectedFeatures);
 
     return in;
 }

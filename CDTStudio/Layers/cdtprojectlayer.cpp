@@ -105,7 +105,7 @@ CDTProjectLayer::~CDTProjectLayer()
     if (fileSystem) delete fileSystem;
 }
 
-void CDTProjectLayer::insertToTable(QString name)
+void CDTProjectLayer::initLayer(QString name)
 {
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare(QString("insert into %1 values(?,?)").arg(tableName()));
@@ -150,7 +150,7 @@ void CDTProjectLayer::addImageLayer()
     if(dlg.exec() == DialogNewImage::Accepted)
     {
         CDTImageLayer *image = new CDTImageLayer(QUuid::createUuid(),this);
-        image->setNameAndPath(dlg.imageName(),dlg.imagePath());
+        image->initLayer(dlg.imageName(),dlg.imagePath());
         imagesRoot->appendRow(image->standardKeyItem());
         addImageLayer(image);
     }
@@ -265,7 +265,7 @@ void CDTProjectLayer::addVectorChangeDetectionLayer()
                 wizard.clsID2()<<
                 wizard.params();
         CDTVectorChangeLayer *layer = new CDTVectorChangeLayer(QUuid::createUuid(),this);
-        layer->initVectorChangeLayer(
+        layer->initLayer(
                     wizard.name(),
                     wizard.shapefileID(),
                     wizard.clsID1(),
@@ -360,7 +360,7 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
     in>>*(project.fileSystem);
 //    project.setName(name);
 
-    project.insertToTable(name);
+    project.initLayer(name);
 
     int count;
     in>>count;

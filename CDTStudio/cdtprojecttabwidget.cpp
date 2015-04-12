@@ -24,7 +24,7 @@ void CDTProjectTabWidget::createNewProject()
 
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
         projectWidget->createProject(QUuid::createUuid());
-        projectWidget->project->insertToTable(dlg->projectName());
+        projectWidget->project->initLayer(dlg->projectName());
 
         if (projectWidget->openProjectFile(dlg->projectPath())==false)return;        
         addTab(projectWidget,dlg->projectName());

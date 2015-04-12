@@ -91,7 +91,7 @@ QgsFeatureRendererV2 *CDTVectorChangeLayer::changeViewRenderer()
     return categorizedSymbolRenderer;
 }
 
-void CDTVectorChangeLayer::initVectorChangeLayer(
+void CDTVectorChangeLayer::initLayer(
         const QString &name,
         const QString &shapefileID,
         const QString &clsID_T1,
@@ -157,7 +157,7 @@ QDataStream &operator>>(QDataStream &in, CDTVectorChangeLayer &change)
     QVariant temp;
     in>>temp;
     QVariantMap params = variantToData<QVariantMap>(temp);
-    change.initVectorChangeLayer(name,shp,cls1,cls2,params);
+    change.initLayer(name,shp,cls1,cls2,params);
 
     return in;
 }

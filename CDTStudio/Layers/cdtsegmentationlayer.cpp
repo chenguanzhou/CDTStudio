@@ -175,7 +175,7 @@ void CDTSegmentationLayer::addClassification()
     if (ret == QWizard::Accepted || dlg.isValid())
     {
         CDTClassificationLayer *classification = new CDTClassificationLayer(QUuid::createUuid(),this);
-        classification->initClassificationLayer(
+        classification->initLayer(
                     dlg.name,
                     dlg.method,
                     dlg.params,
@@ -229,7 +229,7 @@ void CDTSegmentationLayer::decisionFusion()
     dlg.exec();
 
     CDTClassificationLayer *classification = new CDTClassificationLayer(QUuid::createUuid(),this);
-    classification->initClassificationLayer(
+    classification->initLayer(
                 dlg.name,
                 dlg.method,
                 dlg.params,
@@ -411,7 +411,7 @@ void CDTSegmentationLayer::setLayerTransparency(int transparency)
     }
 }
 
-void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
+void CDTSegmentationLayer::initLayer(const QString &name,
                                                  const QString &shpPath,
                                                  const QString &mkPath,
                                                  const QString &method,
@@ -594,7 +594,7 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
     in>>temp;
     QColor color = temp.value<QColor>();
 
-    segmentation.initSegmentationLayer(name,shp,mark,method,params,url,color);
+    segmentation.initLayer(name,shp,mark,method,params,url,color);
 
 
     QMap<QString,QString> sample;

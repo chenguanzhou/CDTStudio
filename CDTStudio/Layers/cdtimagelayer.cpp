@@ -1,6 +1,8 @@
 #include "cdtimagelayer.h"
 #include "stable.h"
 #include <qgsmultibandcolorrenderer.h>
+#include <qgscontrastenhancement.h>
+#include <qgscontrastenhancementfunction.h>
 #include "mainwindow.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtprojectlayer.h"
@@ -14,7 +16,9 @@
 QList<CDTImageLayer *> CDTImageLayer::layers;
 
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
-    : CDTBaseLayer(uuid,parent),multibandSelectionWidget(NULL)
+    : CDTBaseLayer(uuid,parent),
+      multibandSelectionWidget(NULL),
+      enhancementStyle(QgsContrastEnhancement::NoEnhancement)
 {
     setKeyItem(new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE,CDTProjectTreeItem::RASTER,QString(),this));
     extractionRoot
@@ -91,7 +95,7 @@ CDTImageLayer::~CDTImageLayer()
     layers.removeAll(this);
 }
 
-void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
+void CDTImageLayer::initLayer(const QString &name, const QString &path)
 {
     QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(path,QFileInfo(path).completeBaseName());
     if (!newCanvasLayer->isValid())
@@ -128,7 +132,7 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
 
     QList<QPair<QLabel*,QWidget*>> widgets;
     //Opacity slider
-    QSlider *slider = new QSlider(NULL);
+    QSlider *slider = new QSlider();
     slider->setOrientation(Qt::Horizontal);
     slider->setMinimum(0);
     slider->setMaximum(100);
@@ -136,6 +140,17 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
     connect(slider,SIGNAL(valueChanged(int)),SLOT(setLayerOpacity(int)));
     connect(this,SIGNAL(destroyed()),slider,SLOT(deleteLater()));
     widgets<<qMakePair(new QLabel(tr("Opacity")),(QWidget*)slider);
+
+    //Enhancement
+    QComboBox *comboEnhancement = new QComboBox();
+    comboEnhancement->addItems(QStringList()
+                               <<tr("No Enhancement")
+                               <<tr("Stretch To Min/Max")
+                               <<tr("Stretch And Clip To Min/Max")
+                               <<tr("Clip To Min/Max"));
+    comboEnhancement->setCurrentIndex(1);
+    connect(comboEnhancement,SIGNAL(currentIndexChanged(int)),SLOT(onEnhancementChanged(int)));
+    widgets<<qMakePair(new QLabel(tr("Enhancement")),(QWidget*)comboEnhancement);
 
     //Init multiband selection widget
     if (newCanvasLayer->bandCount()>=3)
@@ -169,6 +184,8 @@ void CDTImageLayer::setNameAndPath(const QString &name, const QString &path)
     }
 
     setWidgetActions(widgets);
+
+    newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
 
     emit appendLayers(QList<QgsMapLayer*>()<<canvasLayer());
     emit layerChanged();
@@ -251,7 +268,7 @@ void CDTImageLayer::addSegmentation()
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
         CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this);
-        segmentation->initSegmentationLayer(
+        segmentation->initLayer(
                     dlg->name(),dlg->shapefileID(),dlg->markfileID(),
                     dlg->method(),dlg->params(),/*dlg->databaseConnInfo()*/CDTDatabaseConnInfo(),dlg->borderColor());
         segmentationsRoot->appendRow(segmentation->standardKeyItem());
@@ -335,19 +352,25 @@ void CDTImageLayer::setLayerOpacity(int opacity)
 void CDTImageLayer::redBandChanged(int bandIDFrom0)
 {
     rBandID = bandIDFrom0 + 1;
-    updateMultiBandRenderer();
+    updateRenderer();
 }
 
 void CDTImageLayer::greenBandChanged(int bandIDFrom0)
 {
     gBandID = bandIDFrom0 + 1;
-    updateMultiBandRenderer();
+    updateRenderer();
 }
 
 void CDTImageLayer::blueBandChanged(int bandIDFrom0)
 {
     bBandID = bandIDFrom0 + 1;
-    updateMultiBandRenderer();
+    updateRenderer();
+}
+
+void CDTImageLayer::onEnhancementChanged(int enhancementStyle)
+{
+    this->enhancementStyle = (QgsContrastEnhancement::ContrastEnhancementAlgorithm)enhancementStyle;
+    updateRenderer();
 }
 
 void CDTImageLayer::addExtraction(CDTExtractionLayer *extraction)
@@ -363,15 +386,20 @@ void CDTImageLayer::addSegmentation(CDTSegmentationLayer *segmentation)
     emit layerChanged();
 }
 
-void CDTImageLayer::updateMultiBandRenderer()
-{
+void CDTImageLayer::updateRenderer()
+{    
     QgsRasterLayer *layer = qobject_cast<QgsRasterLayer *>(this->canvasLayer());
-    if (layer->bandCount()<3)
-        return;
 
-    QgsMultiBandColorRenderer *renderer =
-            new QgsMultiBandColorRenderer(layer->renderer(),rBandID,gBandID,bBandID);
-    layer->setRenderer(renderer);
+    if (layer->bandCount()>=3)
+    {
+        //Band
+        QgsRasterRenderer *renderer =
+                new QgsMultiBandColorRenderer(layer->renderer(),rBandID,gBandID,bBandID);
+        layer->setRenderer(renderer);
+    }
+
+    //Contrast
+    layer->setContrastEnhancement(enhancementStyle,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
     MainWindow::getCurrentMapCanvas()->refresh();
 }
 
@@ -400,7 +428,6 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
             (query.value(0).toString(),query.value(1).toString(),query.value(2).value<QColor>()));
     }
 
-    out<<categoryInfo;
 
     query.exec(QString("select id,name,pointset_name from image_validation_samples where imageid = '%1'").arg(image.id()));
     QList<QVariantList> validationPoints;
@@ -437,7 +464,7 @@ QDataStream &operator>>(QDataStream &in, CDTImageLayer &image)
     QString name,path;
     in>>path;
     in>>name;
-    image.setNameAndPath(name,path);
+    image.initLayer(name,path);
 
     int count;
     in>>count;

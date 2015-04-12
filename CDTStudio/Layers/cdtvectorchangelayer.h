@@ -30,7 +30,7 @@ public slots:
     void setRenderer(QgsFeatureRendererV2 *r);
     QgsFeatureRendererV2 * changeViewRenderer();
 
-    void initVectorChangeLayer(
+    void initLayer(
             const QString& name,
             const QString &shapefileID,
             const QString& clsID_T1,

@@ -32,7 +32,7 @@ public:
 
     QgsFeatureRendererV2* renderer();
 
-    void initClassificationLayer(const QString &name,
+    void initLayer(const QString &name,
             const QString &methodName,
             const QMap<QString, QVariant> &params,
             const QList<QVariant> &data,
