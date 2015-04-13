@@ -11,8 +11,8 @@ extern QList<CDTAttributesInterface *>     attributesPlugins;
 
 DialogGenerateAttributes::DialogGenerateAttributes(QUuid segmentationID, int bandCount, QWidget *parent) :
     QDialog(parent),
-    segID(segmentationID),
     ui(new Ui::DialogGenerateAttributes),
+    segID(segmentationID),
     _bandCount(bandCount),
     attributeGenerator(NULL)
 {

@@ -27,6 +27,8 @@ void CDTProjectTreeItem::initAlignment()
     case METHOD_PARAMS:
         this->setTextAlignment(Qt::AlignRight);
         break;
+    default:
+        break;
     }
 }
 

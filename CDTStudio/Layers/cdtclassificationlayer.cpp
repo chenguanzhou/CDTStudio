@@ -18,8 +18,6 @@ CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
     setKeyItem(new CDTProjectTreeItem(CDTProjectTreeItem::CLASSIFICATION,CDTProjectTreeItem::EMPTY,QString(),this));
 
     //actions
-    QWidgetAction *actionSetLayerTransparency =
-            new QWidgetAction(this);
     QAction *actionRename =
             new QAction(QIcon(":/Icons/Rename.png"),tr("Rename Classification"),this);
     QAction *actionExportClsLayer =
@@ -30,18 +28,10 @@ CDTClassificationLayer::CDTClassificationLayer(QUuid uuid, QObject* parent)
             new QAction(QIcon(":/Icons/Remove.png"),tr("Remove Classification"),this);
 
     setActions(QList<QList<QAction *> >()
-               <<(QList<QAction*>()<<actionSetLayerTransparency<<actionRename<<actionExportClsLayer<<actionAccuracyAssessment)
+               <<(QList<QAction*>()<</*actionSetLayerTransparency<<*/actionRename<<actionExportClsLayer<<actionAccuracyAssessment)
                <<(QList<QAction*>()<<actionRemoveClassification));
 
-    //Transparency
-    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
-    sliderTransparency->setMinimum(0);
-    sliderTransparency->setMaximum(100);
-    sliderTransparency->setToolTip(tr("Layer transparency"));
-    connect(sliderTransparency,SIGNAL(valueChanged(int)),parent,SLOT(setLayerTransparency(int)));
-    connect(parent,SIGNAL(layerTransparencyChanged(int)),sliderTransparency,SLOT(setValue(int)));
-    connect(this,SIGNAL(destroyed()),sliderTransparency,SLOT(deleteLater()));
-    actionSetLayerTransparency->setDefaultWidget(sliderTransparency);
+
 
     connect(this,SIGNAL(removeClassification(CDTClassificationLayer*)),this->parent(),SLOT(removeClassification(CDTClassificationLayer*)));
     connect(actionRemoveClassification,SIGNAL(triggered()),SLOT(remove()));
@@ -196,7 +186,7 @@ QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
     return categorizedSymbolRenderer;
 }
 
-void CDTClassificationLayer::initClassificationLayer(const QString &name,
+void CDTClassificationLayer::initLayer(const QString &name,
         const QString &methodName,
         const QMap<QString, QVariant> &params,
         const QList<QVariant> &data,
@@ -226,7 +216,18 @@ void CDTClassificationLayer::initClassificationLayer(const QString &name,
         this->setProperty((QString("   ")+key).toLocal8Bit().constData(),params.value(key.toLocal8Bit().constData()));
     }
 
+    QList<QPair<QLabel*,QWidget*>> widgets;
+    //Transparency
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
+    sliderTransparency->setMinimum(0);
+    sliderTransparency->setMaximum(100);
+    sliderTransparency->setToolTip(tr("Transparency"));
+    connect(sliderTransparency,SIGNAL(valueChanged(int)),parent(),SLOT(setLayerTransparency(int)));
+    connect(parent(),SIGNAL(layerTransparencyChanged(int)),sliderTransparency,SLOT(setValue(int)));
+    connect(this,SIGNAL(destroyed()),sliderTransparency,SLOT(deleteLater()));
+    widgets.append(qMakePair(new QLabel(tr("Transparency")),(QWidget*)sliderTransparency));
 
+    this->setWidgetActions(widgets);
 }
 
 QList<CDTClassificationLayer *> CDTClassificationLayer::getLayers()
@@ -272,7 +273,7 @@ QDataStream &operator>>(QDataStream &in, CDTClassificationLayer &classification)
 
     in>>id>>name>>method>>param>>data>>clsInfo>>normalize>>pca>>selectedFeatures;
     classification.setID(id);
-    classification.initClassificationLayer(name,method,param,data,clsInfo,normalize,pca,selectedFeatures);
+    classification.initLayer(name,method,param,data,clsInfo,normalize,pca,selectedFeatures);
 
     return in;
 }

@@ -6,6 +6,7 @@
 #include <log4qt/logger.h>
 
 class QAction;
+class QLabel;
 class QStandardItem;
 class QgsMapLayer;
 class QgsMapCanvas;
@@ -32,9 +33,9 @@ public:
     QgsMapLayer         *canvasLayer()const;
     QgsMapCanvas        *canvas()const;
     CDTFileSystem       *fileSystem()const;
-    inline QUuid        id()const;
-    QString             name()const;
-    QString             tableName() const;
+    QUuid   id()const;
+    QString name()const;
+    QString tableName() const;
 
     ///Find and return the ancestor object of the this class's instace, whose name is className.
     QObject *getAncestor(const char* className);
@@ -51,6 +52,7 @@ protected slots:
     void setID(QUuid id);
     void setKeyItem(CDTProjectTreeItem *item);
     void setActions(QList<QList<QAction *> > actions);
+    void setWidgetActions(QList<QPair<QLabel*,QWidget *> > actions);
     void setCanvasLayer(QgsMapLayer* layer);
     void setMapCanvas(QgsMapCanvas* canvas);
 
@@ -71,6 +73,7 @@ private:
     QgsMapCanvas        *mapCanvas;
 
     QList<QList<QAction *> > actions;
+    QList<QPair<QLabel*,QWidget *> > widgetActions;
 };
 
 #endif // CDTBASELAYER_H

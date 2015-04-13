@@ -25,8 +25,8 @@ public:
 };
 CDTHistogramPlot::CDTHistogramPlot(QWidget *parent)
     :QwtPlot(parent),
-      pData(new CDTHistogramPlotPrivate),
-      histogram(new QwtPlotCurve)
+      histogram(new QwtPlotCurve),
+      pData(new CDTHistogramPlotPrivate)
 {
     initTools();
     initHistogram();

@@ -24,7 +24,7 @@ public:
     friend class CDTBaseLayer;
     friend class CDTSegmentationLayer;
 
-    void    insertToTable(QString name);
+    void    initLayer(QString name);
     bool    isCDEnabled(QUuid projectID);
 
 public slots:

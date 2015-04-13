@@ -101,6 +101,7 @@ public:
     virtual QString tableName() const=0;
     virtual QStringList attributesName(QString name,QString funcName)
     {
+        Q_UNUSED(funcName);
         return QStringList()<<name;
     }
 

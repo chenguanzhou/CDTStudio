@@ -91,7 +91,7 @@ QgsFeatureRendererV2 *CDTVectorChangeLayer::changeViewRenderer()
     return categorizedSymbolRenderer;
 }
 
-void CDTVectorChangeLayer::initVectorChangeLayer(
+void CDTVectorChangeLayer::initLayer(
         const QString &name,
         const QString &shapefileID,
         const QString &clsID_T1,
@@ -115,13 +115,19 @@ void CDTVectorChangeLayer::initVectorChangeLayer(
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into vector_change VALUES(?,?,?,?,?,?)");
+    if (ret==false)
+    {
+        logger()->error("Init CDTVectorChangeLayer Failed!");
+        return;
+    }
+
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.bindValue(2,shapefileID);
     query.bindValue(3,clsID_T1);
     query.bindValue(4,clsID_T2);
     query.bindValue(5,dataToVariant(params));
-    query.exec();
+    ret = query.exec();
 
     setOriginRenderer();
 
@@ -157,7 +163,7 @@ QDataStream &operator>>(QDataStream &in, CDTVectorChangeLayer &change)
     QVariant temp;
     in>>temp;
     QVariantMap params = variantToData<QVariantMap>(temp);
-    change.initVectorChangeLayer(name,shp,cls1,cls2,params);
+    change.initLayer(name,shp,cls1,cls2,params);
 
     return in;
 }

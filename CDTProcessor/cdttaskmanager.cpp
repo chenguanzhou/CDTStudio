@@ -57,11 +57,13 @@ bool CDTTaskManager::appendNewTask(QString name, QString id, QDomDocument params
 
 void CDTTaskManager::queryTaskInfo(QString id)
 {
-
+    Q_UNUSED(id);
 }
 
 void CDTTaskManager::onTaskCompleted(QString id, QByteArray result)
 {
+    Q_UNUSED(id);
+    Q_UNUSED(result);
     currentTaskID.clear();
     if (!waitingTasksQueue.empty())
     {

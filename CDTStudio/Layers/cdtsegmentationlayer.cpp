@@ -42,8 +42,8 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
 
 
     //Actions
-    QWidgetAction *actionChangeBorderColor = new QWidgetAction(this);
-    QWidgetAction *actionSetLayerTransparency = new QWidgetAction(this);
+//    QWidgetAction *actionChangeBorderColor = new QWidgetAction(this);
+//    QWidgetAction *actionSetLayerTransparency = new QWidgetAction(this);
     QAction *actionRename =
             new QAction(QIcon(":/Icons/Rename.png"),tr("Rename Segmentation"),this);
     QAction *actionGenerateAttributes =
@@ -62,29 +62,10 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
             new QAction(tr("Run Decision Fusion"),this);
 
     setActions(QList<QList<QAction *> >()
-               <<(QList<QAction *>()<<actionChangeBorderColor<<actionSetLayerTransparency<<actionRename
+               <<(QList<QAction *>()/*<<actionChangeBorderColor<<actionSetLayerTransparency*/<<actionRename
                   <<actionEditDBInfo<<actionGenerateAttributes<<actionExportShapefile)
                <<(QList<QAction *>()<<actionRemoveSegmentation)
                <<(QList<QAction *>()<<actionAddClassifications<<actionRemoveAllClassifications<<actionAddDecisionFusion));
-
-    //Widgets for context menu
-    QtColorPicker *borderColorPicker = new QtColorPicker(NULL);
-    borderColorPicker->setStandardColors();
-    borderColorPicker->setToolTip(tr("Border color"));
-    connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
-    connect(this,SIGNAL(borderColorChanged(QColor)),borderColorPicker,SLOT(setCurrentColor(QColor)));
-    connect(this,SIGNAL(destroyed()),borderColorPicker,SLOT(deleteLater()));
-    actionChangeBorderColor->setDefaultWidget(borderColorPicker);
-
-    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
-    sliderTransparency->setMinimum(0);
-    sliderTransparency->setMaximum(100);
-    sliderTransparency->setToolTip(tr("Layer transparency"));
-    connect(sliderTransparency,SIGNAL(valueChanged(int)),SLOT(setLayerTransparency(int)));
-    connect(this,SIGNAL(layerTransparencyChanged(int)),sliderTransparency,SLOT(setValue(int)));
-    connect(this,SIGNAL(destroyed()),sliderTransparency,SLOT(deleteLater()));
-    actionSetLayerTransparency->setDefaultWidget(sliderTransparency);
-
 
     //Connections
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
@@ -194,7 +175,7 @@ void CDTSegmentationLayer::addClassification()
     if (ret == QWizard::Accepted || dlg.isValid())
     {
         CDTClassificationLayer *classification = new CDTClassificationLayer(QUuid::createUuid(),this);
-        classification->initClassificationLayer(
+        classification->initLayer(
                     dlg.name,
                     dlg.method,
                     dlg.params,
@@ -248,7 +229,7 @@ void CDTSegmentationLayer::decisionFusion()
     dlg.exec();
 
     CDTClassificationLayer *classification = new CDTClassificationLayer(QUuid::createUuid(),this);
-    classification->initClassificationLayer(
+    classification->initLayer(
                 dlg.name,
                 dlg.method,
                 dlg.params,
@@ -430,7 +411,7 @@ void CDTSegmentationLayer::setLayerTransparency(int transparency)
     }
 }
 
-void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
+void CDTSegmentationLayer::initLayer(const QString &name,
                                                  const QString &shpPath,
                                                  const QString &mkPath,
                                                  const QString &method,
@@ -456,6 +437,13 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?,?,?,?,?)");
+    if (ret==false)
+    {
+        logger()->error("Init CDTSegmentationLayer Fialed!");
+        delete newLayer;
+        return;
+    }
+
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.bindValue(2,shpPath);
@@ -466,12 +454,39 @@ void CDTSegmentationLayer::initSegmentationLayer(const QString &name,
     query.bindValue(6,dataToVariant(url));
     query.bindValue(7,color);
     query.bindValue(8,((CDTImageLayer*)parent())->id().toString());
-    query.exec();
+    ret = query.exec();
+    if (ret==false)
+    {
+        logger()->error("Init CDTSegmentationLayer Fialed!");
+        delete newLayer;
+        return;
+    }
 
     //dynamic properties
     foreach (QString key, params.keys()) {
         this->setProperty((QString("   ")+key).toLocal8Bit().constData(),params.value(key.toLocal8Bit().constData()));
     }
+
+    QList<QPair<QLabel*,QWidget*>> widgets;
+    //Widgets for context menu
+    QtColorPicker *borderColorPicker = new QtColorPicker(NULL);
+    borderColorPicker->setStandardColors();
+    borderColorPicker->setToolTip(tr("Border color"));
+    connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
+    connect(this,SIGNAL(borderColorChanged(QColor)),borderColorPicker,SLOT(setCurrentColor(QColor)));
+    connect(this,SIGNAL(destroyed()),borderColorPicker,SLOT(deleteLater()));
+    widgets.append(qMakePair(new QLabel(tr("Border color")),(QWidget*)borderColorPicker));
+
+
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
+    sliderTransparency->setMinimum(0);
+    sliderTransparency->setMaximum(100);
+    sliderTransparency->setToolTip(tr("Transparency"));
+    connect(sliderTransparency,SIGNAL(valueChanged(int)),SLOT(setLayerTransparency(int)));
+    connect(this,SIGNAL(layerTransparencyChanged(int)),sliderTransparency,SLOT(setValue(int)));
+    connect(this,SIGNAL(destroyed()),sliderTransparency,SLOT(deleteLater()));
+    widgets.append(qMakePair(new QLabel(tr("Transparency")),(QWidget*)sliderTransparency));
+    setWidgetActions(widgets);
 
     setOriginRenderer();
 
@@ -592,7 +607,7 @@ QDataStream &operator>>(QDataStream &in,CDTSegmentationLayer &segmentation)
     in>>temp;
     QColor color = temp.value<QColor>();
 
-    segmentation.initSegmentationLayer(name,shp,mark,method,params,url,color);
+    segmentation.initLayer(name,shp,mark,method,params,url,color);
 
 
     QMap<QString,QString> sample;

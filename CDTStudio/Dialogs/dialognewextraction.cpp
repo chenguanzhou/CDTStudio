@@ -7,10 +7,10 @@ DialogNewExtraction::DialogNewExtraction(
         const QString &inputImage,
         CDTFileSystem *fileSys,
         QWidget *parent) :
-    inputImagePath(inputImage),
-    fileSystem(fileSys),
     QDialog(parent),
-    ui(new Ui::DialogNewExtraction)
+    ui(new Ui::DialogNewExtraction),
+    inputImagePath(inputImage),
+    fileSystem(fileSys)
 {
     ui->setupUi(this);
     shapefileTempPath = QDir::tempPath()+"/"+QUuid::createUuid().toString()+".shp";

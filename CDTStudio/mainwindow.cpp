@@ -37,8 +37,9 @@ bool MainWindow::isLocked = false;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    recentFileToolButton(new QToolButton(this)),
-    supervisor(new RecentFileSupervisor(this))
+    supervisor(new RecentFileSupervisor(this)),
+    recentFileToolButton(new QToolButton(this))
+
 {        
     ui->setupUi(this);
     mainWindow = this;

@@ -37,7 +37,7 @@ public:
     static CDTExtractionLayer *         getLayer(QUuid id);
 
 public slots:
-    void    onContextMenuRequest(QWidget *parent);
+//    void    onContextMenuRequest(QWidget *parent);
     void    setColor(const QColor &clr);
     void    setBorderColor(const QColor &clr);
     void    setOpacity(const double &val) ;
@@ -52,13 +52,15 @@ public slots:
 
 signals:
     void    nameChanged();
+    void    colorChanged(QColor);
+    void    borderColorChanged(QColor);
     void    removeExtraction(CDTExtractionLayer*);
 
 private:
-    QWidgetAction   *actionChangeParams;
-    QAction         *actionRename;
-    QAction         *actionExportShapefile;
-    QAction         *actionRemoveExtraction;
+//    QWidgetAction   *actionChangeParams;
+//    QAction         *actionRename;
+//    QAction         *actionExportShapefile;
+//    QAction         *actionRemoveExtraction;
 
     static QList<CDTExtractionLayer *> layers;
 };

@@ -101,6 +101,22 @@ void CDTBaseLayer::onContextMenuRequest(QWidget *parent)
 {
     QMenu* menu =new QMenu(parent);
     connect(menu,SIGNAL(aboutToHide()),SLOT(onMenuAboutToHide()));
+
+    if (!widgetActions.isEmpty())
+    {
+        QWidgetAction *widgetAction = new QWidgetAction(this);
+        QWidget *widget = new QWidget(parent);
+        QFormLayout *layout = new QFormLayout(widget);
+        layout->setMargin(3);
+        widget->setLayout(layout);
+        foreach (auto pair, widgetActions) {
+            layout->addRow(pair.first,pair.second);
+        }
+        widgetAction->setDefaultWidget(widget);
+        menu->addAction(widgetAction);
+        menu->addSeparator();
+    }
+
     foreach (QList<QAction *> list, actions) {
         menu->addActions(list);
         menu->addSeparator();
@@ -146,6 +162,11 @@ void CDTBaseLayer::setKeyItem(CDTProjectTreeItem *item)
 void CDTBaseLayer::setActions(QList<QList<QAction *> > actions)
 {
     this->actions = actions;
+}
+
+void CDTBaseLayer::setWidgetActions(QList<QPair<QLabel *, QWidget *> > actions)
+{
+    this->widgetActions = actions;
 }
 
 void CDTBaseLayer::setCanvasLayer(QgsMapLayer *layer)
