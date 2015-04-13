@@ -21,8 +21,8 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
         return QgsPolygon();
     }
     int nBandCount = poSrcDS->GetRasterCount();
-    GDALDataType type = poSrcDS->GetRasterBand(1)->GetRasterDataType();
-    int dataSize = GDALGetDataTypeSize(type)/8;
+//    GDALDataType type = poSrcDS->GetRasterBand(1)->GetRasterDataType();
+//    int dataSize = GDALGetDataTypeSize(type)/8;
 
     double padfTransform[6] = {0,1,0,0,0,1};
     double padfTransform_i[6];
@@ -57,7 +57,7 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
     double maxX = std::numeric_limits<double>::min();
     double maxY = std::numeric_limits<double>::min();
 
-    for (int i=0;i<vecInputPoints.size();++i)
+    for (size_t i=0;i<vecInputPoints.size();++i)
     {
         if (vecInputPoints[i].x<minX)
             minX = vecInputPoints[i].x;
@@ -99,7 +99,7 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
         }
     }
 
-    for (int i=0;i<vecInputPoints.size();++i)
+    for (size_t i=0;i<vecInputPoints.size();++i)
     {
         vecInputPoints[i].x -= nXOff;
         vecInputPoints[i].y -= nYOff;
@@ -110,14 +110,14 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
     snake.GetStatisticSnake();
 
     std::vector<VERTEX2D> vecExportPoints = snake.m_seedArray;
-    for (int i=0;i<vecExportPoints.size();++i)
+    for (size_t i=0;i<vecExportPoints.size();++i)
     {
         vecExportPoints[i].x += nXOff;
         vecExportPoints[i].y += nYOff;
     }
 
     QgsPolyline polyline;
-    for (int i=0;i<vecExportPoints.size();++i)
+    for (size_t i=0;i<vecExportPoints.size();++i)
     {
         QgsPoint ptTemp;
         ptTemp.set(
@@ -137,8 +137,8 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
 
 CDTSnakeMapTool::CDTSnakeMapTool(QgsMapCanvas *canvas) :
     QgsMapTool(canvas),
-    vectorLayer(NULL),
-    mRubberBand(NULL)
+    mRubberBand(NULL),
+    vectorLayer(NULL)
 {
     mCursor = Qt::ArrowCursor;
 }

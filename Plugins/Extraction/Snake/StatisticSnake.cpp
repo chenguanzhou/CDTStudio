@@ -361,8 +361,8 @@ double CStatisticSnake::Statistic_Iteration(std::vector<VERTEX2D>& seedArray,
 		increment_i_temp=0.0;
 		increment_is_temp=0.0;
 		Statistic_GetStatisticValue(sgnArray2,freeCodePolyLine2,increment_n_temp,increment_i_temp,increment_is_temp);
-		if(increment_n_temp<=0)
-			int test=0;
+//		if(increment_n_temp<=0)
+//			int test=0;
 		increment_n=increment_n+increment_n_temp;
 		increment_i=increment_i+increment_i_temp;
 		increment_is=increment_is+increment_is_temp;
@@ -412,7 +412,7 @@ void CStatisticSnake::Statistic_DeleteNeedle(std::vector<VERTEX2D>& seedArray,do
 {
 	int i;
 	int n=seedArray.size();
-	double area;
+//	double area;
 	double da,db;
 	for(i=0;i<n;i++)
 	{
@@ -582,7 +582,7 @@ int CStatisticSnake::Statistic_Rnd(int min, int max)
 void CStatisticSnake::Statistic_DeletePointByMDL(std::vector<VERTEX2D>& seedArray,
 	double total_n,double total_i,double total_is)
 {
-	int ntest=999;
+//	int ntest=999;
 	int i;
 	double JMDL,J,JMDL_temp,JMDL_MIN;
 	double N=m_statistic_w*m_statistic_h;
@@ -631,8 +631,8 @@ void CStatisticSnake::Statistic_DeletePointByMDL(std::vector<VERTEX2D>& seedArra
 	JMDL=J+n*log(N);
 	JMDL_temp=JMDL;
 	JMDL_MIN=JMDL_temp;
-	int nn=n;
-	int step=0;
+//	int nn=n;
+//	int step=0;
 
 	for(;;)
 	{
@@ -704,7 +704,7 @@ void CStatisticSnake::Statistic_DeletePointByMDL(std::vector<VERTEX2D>& seedArra
 				JMDL_temp=JMDL;
 				k=i;
 				ok=false;
-				ntest=increment_n_temp;
+//				ntest=increment_n_temp;
 				increment_n_save_min=increment_n;
 				increment_i_save_min=increment_i;
 				increment_is_save_min=increment_is;
@@ -841,8 +841,8 @@ bool CStatisticSnake::GetFreeCodeLine( FREECODEARRAY& fca,VERTEX2D v1,VERTEX2D v
 	{ 
 		x+=xIncerement; 
 		y+=yIncerement; 
-		if(k==step-1)
-			int test=0;
+//		if(k==step-1)
+//			int test=0;
 		c=GetFreeCode((x+0.5),(y+0.5),(px+0.5),(py+0.5));
 		if(c<0)
 		{
@@ -917,8 +917,7 @@ double CStatisticSnake::Distance_PointToLine(VERTEX2D p, VERTEX2D lp1, VERTEX2D 
 
 bool CStatisticSnake::Statistic_CrossTest(std::vector<VERTEX2D>& seedArray)
 {
-	int i;
-	for(i=0;i<seedArray.size();i++)
+    for(size_t i=0;i<seedArray.size();i++)
 	{
 		VERTEX2D v=seedArray[i];
 		bool test=Statistic_CrossTest(seedArray,v,i);
@@ -930,7 +929,6 @@ bool CStatisticSnake::Statistic_CrossTest(std::vector<VERTEX2D>& seedArray)
 
 void CStatisticSnake::Initialize(uchar *pBMPData, int w, int h, int wb,const std::vector<VERTEX2D> &pointVec)
 {
-	int i;
 	m_pBMPData=	pBMPData;
 	m_BMPWidth=w;
 	m_BMPHeight=h;
@@ -938,7 +936,7 @@ void CStatisticSnake::Initialize(uchar *pBMPData, int w, int h, int wb,const std
 	m_seedArray.clear();
 	VERTEX2D v;
 
-	for(i=0;i<pointVec.size();i++)
+    for(size_t i=0;i<pointVec.size();i++)
 	{
 		v=pointVec[i];
 		v.x=(int)(v.x+0.5);

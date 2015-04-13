@@ -437,6 +437,13 @@ void CDTSegmentationLayer::initLayer(const QString &name,
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?,?,?,?,?)");
+    if (ret==false)
+    {
+        logger()->error("Init CDTSegmentationLayer Fialed!");
+        delete newLayer;
+        return;
+    }
+
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.bindValue(2,shpPath);
@@ -447,7 +454,13 @@ void CDTSegmentationLayer::initLayer(const QString &name,
     query.bindValue(6,dataToVariant(url));
     query.bindValue(7,color);
     query.bindValue(8,((CDTImageLayer*)parent())->id().toString());
-    query.exec();
+    ret = query.exec();
+    if (ret==false)
+    {
+        logger()->error("Init CDTSegmentationLayer Fialed!");
+        delete newLayer;
+        return;
+    }
 
     //dynamic properties
     foreach (QString key, params.keys()) {

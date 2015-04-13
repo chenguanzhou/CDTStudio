@@ -59,6 +59,11 @@ void CDTPixelChangeLayer::initLayer(const QString &name, const QString &image_t1
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into pbcd_binary VALUES(?,?,?,?,?)");
+    if (ret==false)
+    {
+        logger()->error("Init CDTPixelChangeLayer Fialed!");
+        return;
+    }
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.bindValue(2,image_t1);

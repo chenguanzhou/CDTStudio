@@ -52,10 +52,10 @@ void CDTTask_PBCDBinary::start()
         error(tr("Two images have different data type"));
         return;
     }
-    int dataSize = GDALGetDataTypeSize(dataType)/8;
+//    int dataSize = GDALGetDataTypeSize(dataType)/8;
 
-    int bandCount1 = poT1DS->GetRasterCount();
-    int bandCount2 = poT2DS->GetRasterCount();
+//    int bandCount1 = poT1DS->GetRasterCount();
+//    int bandCount2 = poT2DS->GetRasterCount();
 
 
     //2.Create Diff Image

@@ -33,9 +33,9 @@ public:
     QgsMapLayer         *canvasLayer()const;
     QgsMapCanvas        *canvas()const;
     CDTFileSystem       *fileSystem()const;
-    inline QUuid        id()const;
-    QString             name()const;
-    QString             tableName() const;
+    QUuid   id()const;
+    QString name()const;
+    QString tableName() const;
 
     ///Find and return the ancestor object of the this class's instace, whose name is className.
     QObject *getAncestor(const char* className);

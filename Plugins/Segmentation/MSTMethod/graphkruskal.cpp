@@ -3,7 +3,7 @@
 
 
 GraphKruskal::GraphKruskal(unsigned elements)
-    :elementCount(elements),num(elements),elts(NULL)
+    :num(elements),elementCount(elements),elts(NULL)
 {
     file.open();
     if (file.resize(elements*sizeof(GraphElement)) == false)
@@ -34,7 +34,7 @@ GraphKruskal::~GraphKruskal()
 
 unsigned GraphKruskal::find( unsigned x )
 {
-    int y = x;
+    unsigned y = x;
 
     while (y != elts[y].p)
         y = elts[y].p;//Find root node

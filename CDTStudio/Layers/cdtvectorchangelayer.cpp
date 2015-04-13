@@ -115,13 +115,19 @@ void CDTVectorChangeLayer::initLayer(
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
     ret = query.prepare("insert into vector_change VALUES(?,?,?,?,?,?)");
+    if (ret==false)
+    {
+        logger()->error("Init CDTVectorChangeLayer Failed!");
+        return;
+    }
+
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.bindValue(2,shapefileID);
     query.bindValue(3,clsID_T1);
     query.bindValue(4,clsID_T2);
     query.bindValue(5,dataToVariant(params));
-    query.exec();
+    ret = query.exec();
 
     setOriginRenderer();
 

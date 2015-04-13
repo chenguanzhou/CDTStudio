@@ -89,6 +89,11 @@ void CDTProcessorApplication::parseCommand(QByteArray data)
 
     QDomDocument doc;
     bool ret = doc.setContent(xmlContent);
+    if (ret == false)
+    {
+        returnDebugMessage("setContent Failed");
+        return;
+    }
 
     QDomElement root = doc.documentElement();
 
@@ -153,7 +158,7 @@ void CDTProcessorApplication::returnTaskResult(QString id, QByteArray data)
 
 void CDTProcessorApplication::onTaskAppended(QString id)
 {
-
+    Q_UNUSED(id);
 }
 
 void CDTProcessorApplication::onTaskInfoUpdated(QString id, CDTTaskInfo info)
