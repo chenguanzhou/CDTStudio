@@ -16,7 +16,6 @@
 //TODO  More statistics value for attributes' histogram
 //TODO  Mask image process
 //TODO  Relative dir in CDTImageLayer
-//TODO  Widget of layer's property(QWidgetAction)
 
 //BUG   Same name
 

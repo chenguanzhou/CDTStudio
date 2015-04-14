@@ -17,6 +17,7 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     actionInsert(new QAction(QIcon(":/Icons/Add.png"),tr("Insert"),this)),
     actionRemove(new QAction(QIcon(":/Icons/Remove.png"),tr("Remove"),this)),
     actionRemove_All(new QAction(QIcon(":/Icons/Remove.png"),tr("Remove All"),this)),
+    actionImportCategoroies(new QAction(QIcon(":/Icons/Import.png"),tr("Import Categories"),this)),
     actionExportCategoroies(new QAction(QIcon(":/Icons/Export.png"),tr("Export Categories"),this))
 {
     //layout
@@ -45,13 +46,14 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
                         <<actionInsert<<actionRemove<<actionRemove_All);
     toolBar->addSeparator();
     toolBar->addActions(QList<QAction*>()
-                        <<actionExportCategoroies);
+                        <<actionImportCategoroies<<actionExportCategoroies);
 
     connect(actionInsert,SIGNAL(triggered()),SLOT(on_actionInsert_triggered()));
     connect(actionRemove,SIGNAL(triggered()),SLOT(on_actionRemove_triggered()));
     connect(actionRemove_All,SIGNAL(triggered()),SLOT(on_actionRemove_All_triggered()));
     connect(actionRevert,SIGNAL(triggered()),SLOT(on_actionRevert_triggered()));
     connect(actionSubmit,SIGNAL(triggered()),SLOT(on_actionSubmit_triggered()));
+    connect(actionImportCategoroies,SIGNAL(triggered()),SLOT(importCategories()));
     connect(actionExportCategoroies,SIGNAL(triggered()),SLOT(exportCategories()));
 
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -183,6 +185,75 @@ void CDTCategoryDockWidget::on_actionSubmit_triggered()
 //    actionInsert->setEnabled(true);
     tableView->resizeColumnsToContents();
     tableView->resizeRowsToContents();
+}
+
+void CDTCategoryDockWidget::importCategories()
+{
+    if (categoryModel==NULL)
+        return;
+
+    QString path = QFileDialog::getOpenFileName(this,tr("Import"),QString(),tr("XML file(*.xml)"));
+    if (path.isEmpty())
+        return;
+
+    try
+    {
+        QDomDocument doc;
+        QFile file(path);
+        if (file.open(QFile::ReadOnly)==false)
+            throw tr("Open file %1 failed!");
+        if (doc.setContent(&file)==false)
+            throw tr("Read file %1 failed!");
+        QDomElement root = doc.documentElement();
+        if (root.isNull() || root.tagName() != QString("Categories"))
+            throw tr("XML file error!");
+
+        QDomElement ele = root.firstChildElement("Category");
+        QStringList errorNames;
+
+//        QSqlQuery query(QSqlDatabase::database("category"));
+//        query.prepare("insert into category values()");
+        while (!ele.isNull())
+        {
+            QString name = ele.attribute("name");
+            QStringList clrText = ele.attribute("color").split(",");
+            if (clrText.size()!=3)
+                return;
+            QColor color(clrText[0].toInt(),clrText[1].toInt(),clrText[2].toInt());
+
+            QSqlRecord record= categoryModel->record();
+            record.setValue(0,QUuid::createUuid().toString());
+            record.setValue(1,name);
+            record.setValue(2,color);
+            record.setValue(3,imageLayerID.toString());
+
+
+            if (categoryModel->insertRecord(categoryModel->rowCount(),record))
+            {
+                if (categoryModel->submitAll()==false)
+                    categoryModel->revertAll();
+                else
+                    errorNames<<name;
+            }
+            else
+                errorNames<<name;
+
+            ele = ele.nextSiblingElement("Category");
+        }
+
+        if (errorNames.isEmpty())
+            QMessageBox::information(this,tr("Completed!"),tr("Categories imported succeed!"));
+        else
+            QMessageBox::warning(this,tr("Warning"),tr("Following categories inserted failed:\n")+errorNames.join("\n"));
+
+        categoryModel->select();
+
+    }
+    catch (QString msg)
+    {
+        QMessageBox::critical(this,tr("Error"),msg);
+        logger()->error(msg);
+    }
 }
 
 void CDTCategoryDockWidget::exportCategories()

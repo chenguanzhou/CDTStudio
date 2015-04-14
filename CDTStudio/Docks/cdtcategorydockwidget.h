@@ -29,7 +29,7 @@ private slots:
     void on_actionSubmit_triggered();
 //    void onPrimeInsert(int, QSqlRecord& record);
 //    void on_actionEdit_triggered(bool checked);
-    
+    void importCategories();
     void exportCategories();
 private:
     QTableView      *tableView;
@@ -43,6 +43,7 @@ private:
     QAction *actionInsert;
     QAction *actionRemove;
     QAction *actionRemove_All;
+    QAction *actionImportCategoroies;
     QAction *actionExportCategoroies;
 };
 
