@@ -31,7 +31,7 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
 {
     setOrganizationName("WHU");
     setApplicationName("CDTStudio");
-    setApplicationVersion("v0.2");
+    setApplicationVersion("v0.3");
 
     QStringList env = QProcess::systemEnvironment();
     foreach (QString path, env) {

@@ -16,7 +16,8 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     actionSubmit(new QAction(QIcon(":/Icons/Ok.png"),tr("Submit"),this)),
     actionInsert(new QAction(QIcon(":/Icons/Add.png"),tr("Insert"),this)),
     actionRemove(new QAction(QIcon(":/Icons/Remove.png"),tr("Remove"),this)),
-    actionRemove_All(new QAction(QIcon(":/Icons/Remove.png"),tr("Remove All"),this))
+    actionRemove_All(new QAction(QIcon(":/Icons/Remove.png"),tr("Remove All"),this)),
+    actionExportCategoroies(new QAction(QIcon(":/Icons/Export.png"),tr("Export Categories"),this))
 {
     //layout
     this->setEnabled(false);
@@ -42,11 +43,16 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     toolBar->addSeparator();
     toolBar->addActions(QList<QAction*>()
                         <<actionInsert<<actionRemove<<actionRemove_All);
+    toolBar->addSeparator();
+    toolBar->addActions(QList<QAction*>()
+                        <<actionExportCategoroies);
+
     connect(actionInsert,SIGNAL(triggered()),SLOT(on_actionInsert_triggered()));
     connect(actionRemove,SIGNAL(triggered()),SLOT(on_actionRemove_triggered()));
     connect(actionRemove_All,SIGNAL(triggered()),SLOT(on_actionRemove_All_triggered()));
     connect(actionRevert,SIGNAL(triggered()),SLOT(on_actionRevert_triggered()));
     connect(actionSubmit,SIGNAL(triggered()),SLOT(on_actionSubmit_triggered()));
+    connect(actionExportCategoroies,SIGNAL(triggered()),SLOT(exportCategories()));
 
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
@@ -174,9 +180,53 @@ void CDTCategoryDockWidget::on_actionSubmit_triggered()
         qDebug()<<"Submit failed:"<<categoryModel->lastError();
         categoryModel->revertAll();
     }
-    actionInsert->setEnabled(true);
+//    actionInsert->setEnabled(true);
     tableView->resizeColumnsToContents();
     tableView->resizeRowsToContents();
+}
+
+void CDTCategoryDockWidget::exportCategories()
+{
+    if (categoryModel==NULL || categoryModel->rowCount()==0)
+        return;
+    QString path = QFileDialog::getSaveFileName(this,tr("Export"),QString(),tr("XML file(*.xml)"));
+    if (path.isEmpty())
+        return;
+
+    QMessageBox::StandardButton ret =
+            QMessageBox::information(this,tr("Color information"),tr("Export categories with color information?"));
+
+    QDomDocument doc;
+    QDomProcessingInstruction instruction = doc.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
+    doc.appendChild(instruction);
+
+    QDomElement root = doc.createElement("Categories");
+    root.setAttribute("count",categoryModel->rowCount());
+    doc.appendChild(root);
+
+    for (int i=0;i<categoryModel->rowCount();++i)
+    {
+        QString name = categoryModel->data(categoryModel->index(i,1)).toString();
+        QColor color = categoryModel->data(categoryModel->index(i,2)).value<QColor>();
+        qDebug()<<name;
+
+        QDomElement category = doc.createElement("Category");
+        category.setAttribute("name",name);
+        if (ret == QMessageBox::Ok)
+        {
+            category.setAttribute("color",QString("%1,%2,%3").arg(color.red()).arg(color.green()).arg(color.blue()));
+        }
+
+        root.appendChild(category);
+    }
+
+    QFile file(path);
+    file.open(QFile::WriteOnly);
+    QTextStream out(&file);
+    doc.save(out,4);
+    file.close();
+
+    QMessageBox::information(this,tr("Completed"),tr("Export categories completely!"));
 }
 
 //void CDTCategoryDockWidget::onPrimeInsert(int , QSqlRecord &record)
@@ -192,16 +242,16 @@ void CDTCategoryDockWidget::on_actionSubmit_triggered()
 //        record.setGenerated(3,true);
 //}
 
-void CDTCategoryDockWidget::on_actionEdit_triggered(bool checked)
-{
-    actionInsert->setEnabled(checked);
-    actionRemove->setEnabled(checked);
-    actionRemove_All->setEnabled(checked);
-    actionRevert->setEnabled(checked);
-    actionSubmit->setEnabled(checked);
-    if (checked)
-        tableView->setEditTriggers(QTableView::DoubleClicked|QTableView::AnyKeyPressed);
-    else
-        tableView->setEditTriggers(QTableView::NoEditTriggers);
-}
+//void CDTCategoryDockWidget::on_actionEdit_triggered(bool checked)
+//{
+//    actionInsert->setEnabled(checked);
+//    actionRemove->setEnabled(checked);
+//    actionRemove_All->setEnabled(checked);
+//    actionRevert->setEnabled(checked);
+//    actionSubmit->setEnabled(checked);
+//    if (checked)
+//        tableView->setEditTriggers(QTableView::DoubleClicked|QTableView::AnyKeyPressed);
+//    else
+//        tableView->setEditTriggers(QTableView::NoEditTriggers);
+//}
 

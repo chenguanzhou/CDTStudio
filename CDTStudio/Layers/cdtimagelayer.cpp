@@ -427,6 +427,7 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
         categoryInfo.push_back(CategoryInformation
             (query.value(0).toString(),query.value(1).toString(),query.value(2).value<QColor>()));
     }
+    out<<categoryInfo;
 
 
     query.exec(QString("select id,name,pointset_name from image_validation_samples where imageid = '%1'").arg(image.id()));

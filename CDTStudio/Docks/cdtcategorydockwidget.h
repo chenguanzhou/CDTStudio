@@ -28,7 +28,9 @@ private slots:
     void on_actionRevert_triggered();
     void on_actionSubmit_triggered();
 //    void onPrimeInsert(int, QSqlRecord& record);
-    void on_actionEdit_triggered(bool checked);
+//    void on_actionEdit_triggered(bool checked);
+    
+    void exportCategories();
 private:
     QTableView      *tableView;
     QSqlTableModel  *categoryModel;
@@ -41,6 +43,7 @@ private:
     QAction *actionInsert;
     QAction *actionRemove;
     QAction *actionRemove_All;
+    QAction *actionExportCategoroies;
 };
 
 class CDTCategoryDelegate : public QItemDelegate

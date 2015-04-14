@@ -162,7 +162,7 @@ QDataStream &operator>>(QDataStream &in, CDTVectorChangeLayer &change)
     in>>name>>shp>>cls1>>cls2;
     QVariant temp;
     in>>temp;
-    QVariantMap params = variantToData<QVariantMap>(temp);
+    QVariantMap params = temp.toMap();
     change.initLayer(name,shp,cls1,cls2,params);
 
     return in;
