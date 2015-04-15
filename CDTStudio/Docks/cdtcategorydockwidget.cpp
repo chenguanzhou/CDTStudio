@@ -211,15 +211,14 @@ void CDTCategoryDockWidget::importCategories()
         QDomElement ele = root.firstChildElement("Category");
         QStringList errorNames;
 
-//        QSqlQuery query(QSqlDatabase::database("category"));
-//        query.prepare("insert into category values()");
         while (!ele.isNull())
         {
             QString name = ele.attribute("name");
+            QColor color(qrand()%255,qrand()%255,qrand()%255);
             QStringList clrText = ele.attribute("color").split(",");
-            if (clrText.size()!=3)
-                return;
-            QColor color(clrText[0].toInt(),clrText[1].toInt(),clrText[2].toInt());
+            if (clrText.size()==3){
+                color = QColor(clrText[0].toInt(),clrText[1].toInt(),clrText[2].toInt());
+            }
 
             QSqlRecord record= categoryModel->record();
             record.setValue(0,QUuid::createUuid().toString());
@@ -265,7 +264,7 @@ void CDTCategoryDockWidget::exportCategories()
         return;
 
     QMessageBox::StandardButton ret =
-            QMessageBox::information(this,tr("Color information"),tr("Export categories with color information?"));
+            QMessageBox::information(this,tr("Color information"),tr("Export categories with color information?"),QMessageBox::Ok|QMessageBox::Cancel);
 
     QDomDocument doc;
     QDomProcessingInstruction instruction = doc.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
