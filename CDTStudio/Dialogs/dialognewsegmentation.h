@@ -9,6 +9,7 @@ namespace Ui {
 class DialogNewSegmentation;
 }
 class CDTFileSystem;
+struct QUuid;
 
 class DialogNewSegmentation : public QDialog
 {
@@ -16,6 +17,7 @@ class DialogNewSegmentation : public QDialog
     LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit DialogNewSegmentation(
+            QUuid imageID,
             const QString &inputImage,
             CDTFileSystem* fileSys ,
             QWidget *parent = 0

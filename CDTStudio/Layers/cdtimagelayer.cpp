@@ -250,7 +250,7 @@ CDTImageLayer *CDTImageLayer::getLayer(const QUuid &id)
 
 void CDTImageLayer::addExtraction()
 {
-    DialogNewExtraction *dlg = new DialogNewExtraction(this->path(),this->fileSystem());
+    DialogNewExtraction *dlg = new DialogNewExtraction(this->id(),this->path(),this->fileSystem());
     if(dlg->exec()==DialogNewExtraction::Accepted)
     {
         CDTExtractionLayer *extraction = new CDTExtractionLayer(QUuid::createUuid(),this);
@@ -264,7 +264,7 @@ void CDTImageLayer::addExtraction()
 
 void CDTImageLayer::addSegmentation()
 {
-    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->path(),this->fileSystem());
+    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->id(),this->path(),this->fileSystem());
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
         CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this);

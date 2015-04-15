@@ -167,6 +167,11 @@ void CDTSegmentationLayer::exportShapefile()
 
 void CDTSegmentationLayer::addClassification()
 {
+    if (databaseURL().isNull())
+    {
+        QMessageBox::critical(NULL,tr("Error"),tr("Please set database connection!"));
+        return;
+    }
     MainWindow::getAttributesDockWidget()->clearTables();
     WizardNewClassification dlg(id());
     int ret = dlg.exec();

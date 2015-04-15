@@ -17,8 +17,6 @@
 //TODO  Mask image process
 //TODO  Relative dir in CDTImageLayer
 
-//BUG   Same name
-
 int main(int argc, char *argv[])
 {
     CDTApplication a(argc, argv);

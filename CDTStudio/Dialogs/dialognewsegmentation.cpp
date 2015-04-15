@@ -4,10 +4,13 @@
 #include "cdtfilesystem.h"
 #include "cdtsegmentationinterface.h"
 #include "cdtsegmentationhelper.h"
+#include "cdtsegmentationlayer.h"
+#include "cdtlayernamevalidator.h"
 
 extern QList<CDTSegmentationInterface *> segmentationPlugins;
 
 DialogNewSegmentation::DialogNewSegmentation(
+        QUuid imageID,
         const QString &inputImage,
         CDTFileSystem* fileSys,
         QWidget *parent) :
@@ -32,6 +35,15 @@ DialogNewSegmentation::DialogNewSegmentation(
     connect(ui->comboBox,SIGNAL(currentIndexChanged(int)),SLOT(setSegMethod(int)));
     connect(ui->pushButtonStart,SIGNAL(clicked()),SLOT(startSegmentation()));
     showPlugins();
+
+    int index = CDTSegmentationLayer::staticMetaObject.indexOfClassInfo("tableName");
+    if (index != -1)
+    {
+        CDTLayerNameValidator *validator = new CDTLayerNameValidator
+                (QSqlDatabase::database("category"),"name",CDTSegmentationLayer::staticMetaObject.classInfo(index).value(),QString("imageid='%1'").arg(imageID));
+        ui->lineEditName->setValidator(validator);
+    }
+    ui->lineEditName->setText(tr("Untitled"));
 }
 
 DialogNewSegmentation::~DialogNewSegmentation()

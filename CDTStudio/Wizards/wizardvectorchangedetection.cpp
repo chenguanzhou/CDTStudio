@@ -6,8 +6,10 @@
 #include "cdtsegmentationlayer.h"
 #include "cdtclassificationlayer.h"
 #include "cdtfilesystem.h"
+#include "cdtvectorchangelayer.h"
 #include "cdtvectorchangedetectioninterface.h"
 #include "cdtvectorchangedetectionhelper.h"
+#include "cdtlayernamevalidator.h"
 #ifdef Q_OS_WIN
 #include "Windows.h"
 #endif
@@ -40,6 +42,15 @@ WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidge
     setting.beginGroup("WizardVectorChangeDetection");
     this->restoreGeometry(setting.value("geometry").toByteArray());
     setting.endGroup();
+
+    int index = CDTVectorChangeLayer::staticMetaObject.indexOfClassInfo("tableName");
+    if (index != -1)
+    {
+        CDTLayerNameValidator *validator = new CDTLayerNameValidator
+                (QSqlDatabase::database("category"),"name",CDTVectorChangeLayer::staticMetaObject.classInfo(index).value(),QString("project='%1'").arg(projectID));
+        ui->lineEditName->setValidator(validator);
+    }
+    ui->lineEditName->setText(tr("Untitled"));
 }
 
 WizardVectorChangeDetection::~WizardVectorChangeDetection()

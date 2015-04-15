@@ -3,10 +3,12 @@
 #include "stable.h"
 #include "cdtimagelayer.h"
 #include "cdtsegmentationlayer.h"
+#include "cdtclassificationlayer.h"
 #include "cdtattributesinterface.h"
 #include "cdtclassifierinterface.h"
 #include "dialogdbconnection.h"
 #include "cdtclassifierassessmentform.h"
+#include "cdtlayernamevalidator.h"
 
 extern QList<CDTAttributesInterface *>     attributesPlugins;
 extern QList<CDTClassifierInterface *>     classifierPlugins;
@@ -42,6 +44,16 @@ WizardNewClassification::WizardNewClassification(QUuid segmentationID, QWidget *
     this->setButtonText(CustomButton1,tr("Start Classification"));
 
     initClassifiers();
+
+    int index = CDTClassificationLayer::staticMetaObject.indexOfClassInfo("tableName");
+    if (index != -1)
+    {
+        CDTLayerNameValidator *validator = new CDTLayerNameValidator
+                (QSqlDatabase::database("category"),"name",CDTClassificationLayer::staticMetaObject.classInfo(index).value(),QString("segmentationid='%1'").arg(segmentationID));
+        ui->lineEditOutputName->setValidator(validator);
+    }
+    ui->lineEditOutputName->setText(tr("Untitled"));
+
     logger()->debug("WizardNewClassification constructed");
 }
 

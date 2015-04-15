@@ -1,15 +1,24 @@
 #include "dialognewimage.h"
 #include "ui_dialognewimage.h"
-#include <QFileDialog>
-#include <QFileInfo>
-#include <QtCore>
-DialogNewImage::DialogNewImage(QWidget *parent) :
+#include "stable.h"
+#include "cdtimagelayer.h"
+#include "cdtlayernamevalidator.h"
+
+DialogNewImage::DialogNewImage(QUuid prjID, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogNewImage)
 {
     ui->setupUi(this);
     setWindowTitle("Add image");
     loadHistoryPaths();
+
+    int index = CDTImageLayer::staticMetaObject.indexOfClassInfo("tableName");
+    if (index != -1)
+    {
+        CDTLayerNameValidator *validator = new CDTLayerNameValidator
+                (QSqlDatabase::database("category"),"name",CDTImageLayer::staticMetaObject.classInfo(index).value(),QString("projectid='%1'").arg(prjID));
+        ui->lineEditName->setValidator(validator);
+    }
 }
 
 DialogNewImage::~DialogNewImage()
@@ -56,10 +65,7 @@ void DialogNewImage::on_pushButton_clicked()
     ui->comboBox->insertItem(0,dir);
     ui->comboBox->setCurrentIndex(0);
     setting.endGroup();
-
 }
-
-
 
 void DialogNewImage::loadHistoryPaths()
 {
