@@ -12,7 +12,7 @@ class DialogNewImage : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogNewImage(QWidget *parent = 0);
+    explicit DialogNewImage(QUuid prjID,QWidget *parent = 0);
     ~DialogNewImage();
 
     QString imageName() const;

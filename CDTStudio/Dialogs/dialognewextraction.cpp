@@ -1,9 +1,12 @@
 #include "dialognewextraction.h"
 #include "ui_dialognewextraction.h"
-#include "cdtfilesystem.h"
 #include "stable.h"
+#include "cdtfilesystem.h"
+#include "cdtextractionlayer.h"
+#include "cdtlayernamevalidator.h"
 
 DialogNewExtraction::DialogNewExtraction(
+        QUuid imageID,
         const QString &inputImage,
         CDTFileSystem *fileSys,
         QWidget *parent) :
@@ -18,6 +21,15 @@ DialogNewExtraction::DialogNewExtraction(
     ui->borderColorPicker->setStandardColors();
 
     connect(this,SIGNAL(accepted()),SLOT(onAccepted()));
+
+    int index = CDTExtractionLayer::staticMetaObject.indexOfClassInfo("tableName");
+    if (index != -1)
+    {
+        CDTLayerNameValidator *validator = new CDTLayerNameValidator
+                (QSqlDatabase::database("category"),"name",CDTExtractionLayer::staticMetaObject.classInfo(index).value(),QString("imageid='%1'").arg(imageID));
+        ui->lineEditName->setValidator(validator);
+    }
+    ui->lineEditName->setText(tr("Untitled"));
 }
 
 

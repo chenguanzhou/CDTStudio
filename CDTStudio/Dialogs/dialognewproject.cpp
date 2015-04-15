@@ -1,8 +1,6 @@
 #include "dialognewproject.h"
 #include "ui_dialognewproject.h"
-#include <QFileDialog>
-#include <QtCore>
-#include <QMessageBox>
+#include "stable.h"
 
 DialogNewProject::DialogNewProject(QWidget *parent) :
     QDialog(parent),

@@ -182,7 +182,7 @@ bool CDTApplication::initDatabase()
     bool ret ;
 
     ///  Create project table(id text,name text).
-    ret = query.exec("CREATE TABLE project (id text NOT NULL, name text NOT NULL,Primary Key(id) )");
+    ret = query.exec("CREATE TABLE project (id text NOT NULL, name text NOT NULL,Primary Key(id),UNIQUE (name) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table project failed!\nerror:")+query.lastError().text());
@@ -191,7 +191,7 @@ bool CDTApplication::initDatabase()
     }
 
     ///  Create image layer table(id text,name text,path text,projectID text).
-    ret = query.exec("CREATE TABLE imagelayer (id text NOT NULL, name text NOT NULL,path text NOT NULL,projectID text NOT NULL,Primary Key(id) )");
+    ret = query.exec("CREATE TABLE imagelayer (id text NOT NULL, name text NOT NULL,path text NOT NULL,projectID text NOT NULL,Primary Key(id),UNIQUE (name) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table imagelayer failed!\nerror:")+query.lastError().text());
@@ -208,7 +208,8 @@ bool CDTApplication::initDatabase()
                      "borderColor blob,"
                      "opacity double,"
                      "imageID text NOT NULL,"
-                     "Primary Key(id) )");
+                     "Primary Key(id),"
+                     "UNIQUE (name) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table extractionlayer failed!\nerror:")+query.lastError().text());
@@ -227,7 +228,8 @@ bool CDTApplication::initDatabase()
                      "dbUrl blob,"
                      "bordercolor blob,"
                      "imageID text NOT NULL,"
-                     "Primary Key(id) )");
+                     "Primary Key(id),"
+                     "UNIQUE (name) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table segmentationlayer failed!\nerror:")+query.lastError().text());
@@ -246,7 +248,8 @@ bool CDTApplication::initDatabase()
                      "normalizeMethod text,"
                      "pca text,"
                      "segmentationID text NOT NULL,"
-                     "Primary Key(id) )");
+                     "Primary Key(id),"
+                     "UNIQUE (name) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table classificationlayer failed!\nerror:")+query.lastError().text());
@@ -356,7 +359,8 @@ bool CDTApplication::initDatabase()
                      "image_t1 text NOT NULL,"
                      "image_t2 text NOT NULL,"
                      "params blob,"
-                     "Primary Key(id) )");
+                     "Primary Key(id),"
+                     "UNIQUE (name) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table pbcd_binary failed!\nerror:")+query.lastError().text());
@@ -372,7 +376,8 @@ bool CDTApplication::initDatabase()
                      "cls_t1 text NOT NULL,"
                      "cls_t2 text NOT NULL,"
                      "params blob,"
-                     "Primary Key(id) )");
+                     "Primary Key(id),"
+                     "UNIQUE (name) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table vector_change failed!\nerror:")+query.lastError().text());

@@ -109,6 +109,7 @@ void CDTProjectLayer::initLayer(QString name)
 {
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare(QString("insert into %1 values(?,?)").arg(tableName()));
+    qDebug()<<name;
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.exec();
@@ -146,7 +147,7 @@ bool CDTProjectLayer::isCDEnabled(QUuid projectID)
 
 void CDTProjectLayer::addImageLayer()
 {
-    DialogNewImage dlg;
+    DialogNewImage dlg(this->id());
     if(dlg.exec() == DialogNewImage::Accepted)
     {
         CDTImageLayer *image = new CDTImageLayer(QUuid::createUuid(),this);
