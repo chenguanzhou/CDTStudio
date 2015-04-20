@@ -70,6 +70,15 @@ public:
         workbook = workbooks->querySubObject( "Add");
         QAxObject* sheets = workbook->querySubObject( "Worksheets" );
         currentSheet = sheets->querySubObject( "Item( int )", 1 );
+
+        QFile file(path);
+        if (file.exists())
+        {
+            if (file.remove()==false)
+            {
+                valid = false;
+            }
+        }
     }
     ~ExcelWriter()
     {
@@ -154,11 +163,20 @@ bool CDTTableExporter::exportSingleTable(QSqlDatabase &db, const QString &tableN
 #ifdef Q_OS_WIN
 bool CDTTableExporter::exportMultiTables(QSqlDatabase &db, const QStringList &tableNames, const QString &exportPath,bool isHeader,QString &error)
 {
-    qDebug()<<tableNames;
     QAxObject* excel = new QAxObject( "Excel.Application", 0 );
     QAxObject* workbooks = excel->querySubObject( "Workbooks" );
     QAxObject* workbook = workbooks->querySubObject( "Add");
     QAxObject* sheets = workbook->querySubObject( "Worksheets" );
+
+    QFile file(exportPath);
+    if (file.exists())
+    {
+        if (file.remove()==false)
+        {
+            error = QObject::tr("Delete file %1 failed!").arg(exportPath);
+            return false;
+        }
+    }
 
     for (int i=0;i<tableNames.count()-1;++i)
         sheets->dynamicCall("Add()");
@@ -224,6 +242,7 @@ bool CDTTableExporter::exportMultiTables(QSqlDatabase &db, const QStringList &ta
                           QDir::toNativeSeparators(exportPath),QVariant(),QVariant(),QVariant(),QVariant(),QVariant(),QVariant(),2);
     workbook->dynamicCall("Close()");
     excel->dynamicCall("Quit()");
+    delete excel;
     return true;
 }
 #endif
