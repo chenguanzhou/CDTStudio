@@ -135,16 +135,15 @@ void CDTAttributeDockWidget::onActionExportCurrentTable()
     if (tabWidget->currentIndex()<0)
         return;
 
-    QString path = QFileDialog::getSaveFileName(this,tr("Export current table to"),QString(),tr("CSV Files(*.csv);;Text Files(*.txt)"));
+    QString path = QFileDialog::getSaveFileName(this,tr("Export current table to"),QString(),CDTTableExporter::getSingleExporterFilters());
     if (path.isEmpty())
         return;
 
-    bool isHeader = QMessageBox::information(this,tr("Write headers?"),tr("Write first line as headers?"),QMessageBox::Ok|QMessageBox::No)==QMessageBox::Ok;
     QSqlDatabase db = QSqlDatabase::database("attribute");
     QString tableName = tabWidget->tabText(tabWidget->currentIndex());
 
     QString errorText;
-    if (CDTTableExporter::exportSingleTable(db,tableName,path,isHeader,errorText)==false)
+    if (CDTTableExporter::exportSingleTable(db,tableName,path,errorText)==false)
     {
         QMessageBox::critical(this,tr("Error"),tr("Fialed! Error:%1").arg(errorText));
         return;
