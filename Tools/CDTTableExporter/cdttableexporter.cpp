@@ -160,9 +160,10 @@ bool CDTTableExporter::exportSingleTable(QSqlDatabase &db, const QString &tableN
     return true;
 }
 
-#ifdef Q_OS_WIN
+
 bool CDTTableExporter::exportMultiTables(QSqlDatabase &db, const QStringList &tableNames, const QString &exportPath,bool isHeader,QString &error)
 {
+#ifdef Q_OS_WIN
     QAxObject* excel = new QAxObject( "Excel.Application", 0 );
     QAxObject* workbooks = excel->querySubObject( "Workbooks" );
     QAxObject* workbook = workbooks->querySubObject( "Add");
@@ -244,8 +245,10 @@ bool CDTTableExporter::exportMultiTables(QSqlDatabase &db, const QStringList &ta
     excel->dynamicCall("Quit()");
     delete excel;
     return true;
-}
 #endif
+    QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("Export multiple tables are not supported in this plateform!"));
+    return false;
+}
 
 QString CDTTableExporter::getSingleExporterFilters()
 {

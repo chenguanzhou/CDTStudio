@@ -11,17 +11,17 @@ extern QList<CDTExtractionInterface *> extractionPlugins;
 
 CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
+    ui(new Ui::CDTExtractionDockWidget),
     modelExtractions    (new QSqlQueryModel(this)),
-    actionStartEdit     (new QAction(QIcon(":/Icons/Start.png"),tr("Start Edit"),this)),
-    actionRollBack      (new QAction(QIcon(":/Icons/Undo.png"),tr("Rollback"),this)),
-    actionSave          (new QAction(QIcon(":/Icons/Save.png"),tr("Save"),this)),
-    actionStop          (new QAction(QIcon(":/Icons/Stop.png"),tr("Stop"),this)),
-    currentEditState    (LOCKED),
     isGeometryModified  (false),
+    currentEditState    (LOCKED),
     vectorLayer (NULL),
     mapCanvas   (NULL),
     lastMapTool (NULL),
-    ui(new Ui::CDTExtractionDockWidget)
+    actionStartEdit     (new QAction(QIcon(":/Icons/Start.png"),tr("Start Edit"),this)),
+    actionRollBack      (new QAction(QIcon(":/Icons/Undo.png"),tr("Rollback"),this)),
+    actionSave          (new QAction(QIcon(":/Icons/Save.png"),tr("Save"),this)),
+    actionStop          (new QAction(QIcon(":/Icons/Stop.png"),tr("Stop"),this))
 {
     ui->setupUi(this);
 
