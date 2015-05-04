@@ -7,6 +7,7 @@ SUBDIRS += \
     CDTHistogramPlot\
     QtColorPicker\    
     XMLSchemaValidator\
-    CDTTableExporter
+    CDTTableExporter\
+    wwWidgets
 
 CDTFileSystem.depends = log4qt

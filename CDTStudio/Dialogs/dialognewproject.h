@@ -19,7 +19,7 @@ public:
     QString projectPath() const;
 
 private slots:
-    void on_pushButton_clicked();
+    void onButtonClicked();
 
 private:
     Ui::DialogNewProject *ui;

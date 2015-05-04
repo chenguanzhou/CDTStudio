@@ -49,13 +49,14 @@ include(../Interfaces/Interfaces.pri)
 
 INCLUDEPATH += \
     ../Interfaces \
+    ../Tools\
     ../Tools/QPropertyEditor \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
-    ../Tools\
     ../Tools/CDTClassifierAssessmentWidget\
-    ../Tools/CDTTableExporter
+    ../Tools/CDTTableExporter\
+    ../Tools/wwWidgets
 
 
 DEPENDPATH += \
@@ -65,7 +66,8 @@ DEPENDPATH += \
     ../Tools/CDTFileSystem\
     ../Tools/log4qt\
     ../Tools/CDTClassifierAssessmentWidget\
-    ../Tools/CDTTableExporter
+    ../Tools/CDTTableExporter\
+    ../Tools/wwWidgets
 
 #Libraries
 unix{
@@ -86,7 +88,7 @@ LIBS += -lgdal_i -lgdi32
 }
 
 LIBS +=     -L../lib -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
-             -lCDTFileSystem -llog4qt -lCDTTableExporter\
+             -lCDTFileSystem -llog4qt -lCDTTableExporter -lwwWidgets\
             -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
 #opencv

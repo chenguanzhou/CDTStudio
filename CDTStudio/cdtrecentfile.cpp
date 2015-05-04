@@ -29,6 +29,7 @@ QStringList CDTRecentFile::files() const
 ///
 void CDTRecentFile::addFile(QString file)
 {
+    file = QFileInfo(file).absoluteFilePath();
     QStringList oriList = files();
     if (oriList.isEmpty())//Original list is empty
         oriList<<file;
