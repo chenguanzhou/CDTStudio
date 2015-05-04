@@ -22,20 +22,20 @@ SOURCES += main.cpp\
     cdtprojecttabwidget.cpp \
     cdtprojectwidget.cpp \
     cdtprojecttreeitem.cpp \
-    recentfilesupervisor.cpp \    
     cdtattributegenerator.cpp \
-    cdtapplication.cpp    
+    cdtapplication.cpp \    
+    cdtrecentfile.cpp
 
 HEADERS  += \    
     mainwindow.h \
     cdtprojecttabwidget.h \
     cdtprojectwidget.h \
     cdtprojecttreeitem.h \
-    recentfilesupervisor.h \
     cdtattributegenerator.h \
     cdtbasethread.h \
     cdtvariantconverter.h \
-    cdtapplication.h 
+    cdtapplication.h \ 
+    cdtrecentfile.h
 	
 FORMS    += \
     mainwindow.ui \

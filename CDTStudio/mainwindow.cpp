@@ -11,6 +11,7 @@
 #include "cdtpixelchangelayer.h"
 #include "cdtvectorchangelayer.h"
 
+#include "cdtrecentfile.h"
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
 #include "cdtattributedockwidget.h"
@@ -37,7 +38,7 @@ bool MainWindow::isLocked = false;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    supervisor(new RecentFileSupervisor(this)),
+    recentFile(new CDTRecentFile("Project",this)),
     recentFileToolButton(new QToolButton(this))
 
 {        
@@ -60,9 +61,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewObjects,SLOT(expandAll()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
-    connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),supervisor,SLOT(updateMenuRecent(QString)));
-    connect(this,SIGNAL(loadSetting()),supervisor,SLOT(loadSetting()));
-    connect(this,SIGNAL(updateSetting()),supervisor,SLOT(updateSetting()));
+    connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),recentFile,SLOT(addFile(QString)));
+    connect(recentFile,SIGNAL(filesChanged(QStringList)),SLOT(updateRecentFiles(QStringList)));
 
     connect(qApp,SIGNAL(taskInfoUpdated(QString ,int ,QString ,int ,int )),dockWidgetTask,SLOT(updateTaskInfo(QString,int,QString,int,int)));
     connect(qApp,SIGNAL(taskCompleted(QString ,QByteArray )),dockWidgetTask,SLOT(onTaskCompleted(QString ,QByteArray)));
@@ -70,15 +70,17 @@ MainWindow::MainWindow(QWidget *parent) :
     QSettings setting("WHU","CDTStudio");
     this->restoreGeometry(setting.value("geometry").toByteArray());
     this->restoreState(setting.value("windowState").toByteArray());
-    emit loadSetting();
+
+    updateRecentFiles(recentFile->files());
 
     logger()->info("MainWindow initialized");
+    qDebug()<<recentFile->files();
 }
 
 
 MainWindow::~MainWindow()
 {    
-    emit updateSetting();    
+//    emit updateSetting();
     delete ui;
     logger()->info("MainWindow destruct");
 }
@@ -139,9 +141,9 @@ void MainWindow::initMenuBar()
                          <<actionSaveAll
                          <<actionSaveAs);
     menuFile->addSeparator();
-    menuRecent = new QMenu(tr("&Recent"),this);
-    menuRecent->setIcon(QIcon(":/Icons/RecentFiles.png"));
-    menuFile->addMenu(menuRecent);
+    recentFileMenu = new QMenu(tr("&Recent"),this);
+    recentFileMenu->setIcon(QIcon(":/Icons/RecentFiles.png"));
+    menuFile->addMenu(recentFileMenu);
     menuBar()->addMenu(menuFile);
     logger()->info("MenuBars initialized");
 }
@@ -187,7 +189,6 @@ void MainWindow::initStatusBar()
     QLabel *scaleLabel = new QLabel( QString(), statusBar() );
     scaleLabel->setObjectName( "scaleLabel" );
     scaleLabel->setMinimumWidth( 10 );
-//    scaleLabel->setMaximumHeight( 20 );
     scaleLabel->setAlignment( Qt::AlignCenter );
     scaleLabel->setFrameStyle( QFrame::NoFrame );
     scaleLabel->setText( tr( "Scale:" ) );
@@ -197,8 +198,6 @@ void MainWindow::initStatusBar()
     scaleEdit = new QgsScaleComboBox( statusBar() );
     scaleEdit->setObjectName( "scaleEdit" );
     scaleEdit->setMinimumWidth( 10 );
-//    scaleEdit->setMaximumWidth( 200 );
-//    scaleEdit->setMaximumHeight( 20 );
     scaleEdit->lineEdit()->setAlignment(Qt::AlignCenter);
     scaleEdit->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     scaleEdit->setWhatsThis( tr( "Displays the current map scale" ) );
@@ -253,8 +252,6 @@ void MainWindow::initDockWidgets()
     registerDocks(Qt::LeftDockWidgetArea,dockWidgetLayerInfo);
 
     dockWidgetTask = new CDTTaskDockWidget(this);
-//    dockWIdgetTask->setObjectName("dockWIdgetTask");
-//    registerDocks(Qt::AllDockWidgetAreas,dockWIdgetTask);
 
     logger()->info("Docks initialized");
 }
@@ -273,7 +270,6 @@ void MainWindow::initConsole()
 
 void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
 {
-//    connect(this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)),dock,SLOT(onDockClear()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),dock,SLOT(onDockClear()));
     this->addDockWidget(area, dock);
     dock->raise();
@@ -438,6 +434,21 @@ void MainWindow::userScale()
         return;
 
     mapCanvas->zoomScale( 1.0 / scaleEdit->scale() );
+}
+
+void MainWindow::updateRecentFiles(QStringList list)
+{
+    //Clear all existing actions
+    recentFileMenu->clear();
+    while((recentFileToolButton->actions()).size()!=0)
+        recentFileToolButton->removeAction(recentFileToolButton->actions()[0]);
+
+    foreach (QString file, list) {
+        QAction* recentFile = new QAction(file,this);
+        recentFileMenu->addAction(recentFile);
+        recentFileToolButton->addAction(recentFile);
+        connect(recentFile,SIGNAL(triggered()),SLOT(onRecentFileTriggered()));
+    }
 }
 
 

@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "recentfilesupervisor.h"
 #include "log4qt/logger.h"
 
 namespace Ui {
@@ -17,6 +16,7 @@ struct QUuid;
 class QgsMapCanvas;
 class QgsScaleComboBox;
 
+class CDTRecentFile;
 class CDTDockWidget;
 class CDTProjectWidget;
 class CDTTrainingSampleDockWidget;
@@ -70,15 +70,13 @@ public:
     static QUuid getCurrentProjectID();
     static QSize getIconSize();
 
-signals:
-    void loadSetting();
-    void updateSetting();
 public slots:
     void onCurrentTabChanged(int i);
     void showMouseCoordinate(const QgsPoint & p);
     void showScale( double theScale );
     void userCenter();
     void userScale();
+    void updateRecentFiles(QStringList list);
 
 private slots:
     void onActionNew();
@@ -121,15 +119,14 @@ private:
     QAction *actionConsole;
 
     QMenu *menuFile;
-    QMenu *menuRecent;
+    QMenu *recentFileMenu;
 
     QLineEdit *lineEditCoord;
     QgsScaleComboBox *scaleEdit;
 
     QSize iconSize;
 
-    RecentFileSupervisor *supervisor;
-    int recentFileCount;
+    CDTRecentFile *recentFile;
     QToolButton* recentFileToolButton;
     QStringList recentFilePaths;
 

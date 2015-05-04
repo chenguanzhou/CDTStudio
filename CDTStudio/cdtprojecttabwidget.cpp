@@ -102,7 +102,7 @@ bool CDTProjectTabWidget::saveAsProject()
     if(!fileName.isEmpty())
     {
         writeLastProjectDir(QFileInfo(fileName).absolutePath());
-        emit menuRecentChanged(fileName);        
+//        emit menuRecentChanged(fileName);
         ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
     }
     return true;
