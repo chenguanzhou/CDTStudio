@@ -18,7 +18,8 @@ QList<CDTImageLayer *> CDTImageLayer::layers;
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent),
       multibandSelectionWidget(NULL),
-      enhancementStyle(QgsContrastEnhancement::NoEnhancement)
+      enhancementStyle(QgsContrastEnhancement::NoEnhancement),
+      useRelative(false)
 {
     setKeyItem(new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE,CDTProjectTreeItem::RASTER,QString(),this));
     extractionRoot
@@ -97,10 +98,16 @@ CDTImageLayer::~CDTImageLayer()
 
 void CDTImageLayer::initLayer(const QString &name, const QString &path)
 {
-    QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(path,QFileInfo(path).completeBaseName());
+    useRelative = QFileInfo(path).isRelative();
+
+    CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
+    QDir dir(layer->path());
+    QString absoluteFilePath = dir.absoluteFilePath(path);
+
+    QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(absoluteFilePath,QFileInfo(path).completeBaseName());
     if (!newCanvasLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open image ")+path+tr(" failed!"));
+        QMessageBox::critical(NULL,tr("Error"),tr("Open image ")+absoluteFilePath+tr(" failed!"));
         delete newCanvasLayer;
         return;
     }
@@ -227,6 +234,11 @@ QString CDTImageLayer::path() const
     return query.value(0).toString();
 }
 
+bool CDTImageLayer::useRelativePath() const
+{
+    return useRelative;
+}
+
 int CDTImageLayer::bandCount() const
 {
     QgsRasterLayer* layer = (QgsRasterLayer*)canvasLayer();
@@ -246,6 +258,27 @@ CDTImageLayer *CDTImageLayer::getLayer(const QUuid &id)
             return layer;
     }
     return NULL;
+}
+
+void CDTImageLayer::setPath(QString path)
+{
+    if (this->path() == path)
+        return;
+
+    if (path.isEmpty())
+        return;
+
+    bool ret = false;
+    QSqlQuery query(QSqlDatabase::database("category"));
+    ret = query.prepare(QString("UPDATE %1 set path = ? where id =?").arg(tableName()));
+    if (ret==false) return;
+    query.bindValue(0,path);
+    query.bindValue(1,this->id().toString());
+    ret = query.exec();
+    if (ret==false) return;
+
+    emit pathChanged(path);
+    emit layerChanged();
 }
 
 void CDTImageLayer::addExtraction()
@@ -347,6 +380,28 @@ void CDTImageLayer::setLayerOpacity(int opacity)
         rasterLayer->renderer()->setOpacity(opacity/100.);
         canvas()->refresh();
     }
+}
+
+void CDTImageLayer::setUseRelativePath(bool use)
+{
+    if (use==useRelative)
+        return;
+
+    CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
+    QDir dir(layer->path());
+
+    if (use)//relative
+    {
+        QString relativePath = dir.relativeFilePath(this->path());
+        this->setPath(relativePath);
+    }
+    else//absolute
+    {
+        QString absoluteFilePath = dir.absoluteFilePath(this->path());
+        this->setPath(absoluteFilePath);
+    }
+
+    useRelative = QFileInfo(this->path()).isRelative();
 }
 
 void CDTImageLayer::redBandChanged(int bandIDFrom0)

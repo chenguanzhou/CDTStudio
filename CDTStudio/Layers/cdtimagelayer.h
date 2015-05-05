@@ -17,7 +17,8 @@ class CDTImageLayer:public CDTBaseLayer
     Q_OBJECT
     Q_CLASSINFO("CDTImageLayer","Image")
     Q_CLASSINFO("tableName","imagelayer")
-    Q_PROPERTY(QString Source READ path DESIGNABLE true USER true)
+    Q_PROPERTY(QString Source READ path NOTIFY pathChanged DESIGNABLE true USER true)
+    Q_PROPERTY(bool Relative_Path READ useRelativePath WRITE setUseRelativePath DESIGNABLE true USER true)
 public:
     explicit CDTImageLayer(QUuid uuid, QObject *parent = 0);
     ~CDTImageLayer();
@@ -29,6 +30,7 @@ public:
     void initLayer(const QString& name,const QString& path);
     void setCategoryInfo(const CDTCategoryInformationList& info);
     QString path()const;
+    bool useRelativePath() const;
     int bandCount()const;    
 
     static QList<CDTImageLayer *> getLayers();
@@ -36,9 +38,11 @@ public:
 
 signals:
     void removeImageLayer(CDTImageLayer*);
+    void pathChanged(QString);
 
 public slots:
 //    void setRenderer();
+    void setPath(QString path);
     void addExtraction();
     void addSegmentation();    
     void remove();
@@ -47,6 +51,7 @@ public slots:
     void removeSegmentation(CDTSegmentationLayer*);
     void removeAllSegmentationLayers();
     void setLayerOpacity(int opacity);
+    void setUseRelativePath(bool use);
 
     void redBandChanged(int bandIDFrom0);
     void greenBandChanged(int bandIDFrom0);
@@ -70,6 +75,7 @@ private:
     QgsContrastEnhancement::ContrastEnhancementAlgorithm enhancementStyle;
 
     static QList<CDTImageLayer *> layers;
+    bool useRelative;
 };
 
 QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image);

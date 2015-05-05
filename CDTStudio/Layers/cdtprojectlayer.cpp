@@ -109,7 +109,6 @@ void CDTProjectLayer::initLayer(QString name)
 {
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare(QString("insert into %1 values(?,?)").arg(tableName()));
-    qDebug()<<name;
     query.bindValue(0,id().toString());
     query.bindValue(1,name);
     query.exec();
@@ -143,6 +142,16 @@ bool CDTProjectLayer::isCDEnabled(QUuid projectID)
         return false;
     }
     return true;
+}
+
+QString CDTProjectLayer::path() const
+{
+    return prjPath;
+}
+
+void CDTProjectLayer::setPath(QString path)
+{
+    prjPath = path;
 }
 
 void CDTProjectLayer::addImageLayer()
@@ -206,7 +215,6 @@ void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
 
     QVariantMap params;
     in>>params;
-    qDebug()<<"params: "<<params;
 
     QString diffImageID = QUuid::createUuid().toString();
     QString diffPath = params.value("diffPath").toString();

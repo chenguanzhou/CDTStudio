@@ -75,6 +75,7 @@ bool CDTProjectWidget::readProject(const QString &filepath)
         return false;
     }
     createProject(QUuid());
+    project->setPath(filepath);
     in>>*project;
     emit projectChanged();
     setWindowModified(false);

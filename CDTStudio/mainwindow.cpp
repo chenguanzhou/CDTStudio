@@ -74,7 +74,6 @@ MainWindow::MainWindow(QWidget *parent) :
     updateRecentFiles(recentFile->files());
 
     logger()->info("MainWindow initialized");
-    qDebug()<<recentFile->files();
 }
 
 

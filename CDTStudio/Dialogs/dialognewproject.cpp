@@ -8,6 +8,7 @@ DialogNewProject::DialogNewProject(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->lineEditPath->setFilter("*.cdtpro");
+    ui->lineEditPath->setAcceptMode(QFileDialog::AcceptSave);
     connect(ui->lineEditPath,SIGNAL(textChanged(QString)),SLOT(onButtonClicked()));
 }
 
