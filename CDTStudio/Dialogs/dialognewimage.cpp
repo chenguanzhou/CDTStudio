@@ -10,7 +10,11 @@ DialogNewImage::DialogNewImage(QUuid prjID, QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("Add image");
-    loadHistoryPaths();
+
+    connect(ui->lineEditPath,SIGNAL(textChanged(QString)),SLOT(onPathChanged(QString)));
+    ui->lineEditPath->setText(tr("new image"));
+    ui->lineEditPath->setFilter(tr("Images (*.bmp *.png *.xpm *.jpg *.img *.tif)"));
+
 
     int index = CDTImageLayer::staticMetaObject.indexOfClassInfo("tableName");
     if (index != -1)
@@ -23,7 +27,6 @@ DialogNewImage::DialogNewImage(QUuid prjID, QWidget *parent) :
 
 DialogNewImage::~DialogNewImage()
 {
-    saveHistoryPaths();
     delete ui;
 }
 
@@ -33,66 +36,43 @@ QString DialogNewImage::imageName() const
 }
 
 QString DialogNewImage::imagePath() const
-{
-    return ui->comboBox->itemText(ui->comboBox->currentIndex());
+{    
+    return ui->lineEditPath->text();
 }
 
-void DialogNewImage::on_pushButton_clicked()
+bool DialogNewImage::useRelativePath() const
 {
-    QSettings setting("WHU","CDTStudio");
-    setting.beginGroup("Project");
-    QStringList imagedirs = setting.value("lastImageDirs").toStringList();
-    QString dir;
-    if(imagedirs.isEmpty())
-    {
-        dir = QFileDialog::getOpenFileName(this,tr("Open image"),".","Images (*.png *.xpm *.jpg *.img *.tif)");
-    }
-    else
-    {
-        dir = QFileDialog::getOpenFileName(this,tr("Open image"),imagedirs[0],"Images (*.png *.xpm *.jpg *.img *.tif)");
-    }
-    if(dir.isEmpty())
-        return;
-    for(int i=0;i< ui->comboBox->count();++i)
-    {
-        QString tempdir = ui->comboBox->itemText(i);
-        if(QFileInfo (dir) ==QFileInfo (tempdir))
-        {
-            ui->comboBox->removeItem(i);
-            break;
-        }
-    }
-    ui->comboBox->insertItem(0,dir);
-    ui->comboBox->setCurrentIndex(0);
-    setting.endGroup();
+    return ui->checkBoxUseRelativePath->isChecked();
 }
 
-void DialogNewImage::loadHistoryPaths()
+void DialogNewImage::onPathChanged(QString path)
 {
-    QSettings setting("WHU","CDTStudio");
-    setting.beginGroup("Project");
-    QStringList imagedirs = setting.value("lastImageDirs").toStringList();
-    foreach (QString dir, imagedirs) {
-        ui->comboBox->addItem(dir);
-    }
-    setting.endGroup();
+    QFileInfo info(path);
+    bool ret = info.isReadable()&&info.isFile();
+    ui->lineEditName->setText(ret?info.fileName():QString::null);
+    ui->lineEditName->setEnabled(ret);
 }
 
-void DialogNewImage::saveHistoryPaths()
-{
-    QSettings setting("WHU","CDTStudio");
-    setting.beginGroup("Project");
-    QStringList dirs;
-    for(int i=0; i< ui->comboBox->count();++i)
-    {
-        dirs.push_back(ui->comboBox->itemText(i));
-    }
-    setting.setValue("lastImageDirs",dirs);
-    setting.endGroup();
-}
+//void DialogNewImage::loadHistoryPaths()
+//{
+//    QSettings setting("WHU","CDTStudio");
+//    setting.beginGroup("Project");
+//    QStringList imagedirs = setting.value("lastImageDirs").toStringList();
+//    foreach (QString dir, imagedirs) {
+//        ui->comboBox->addItem(dir);
+//    }
+//    setting.endGroup();
+//}
 
-void DialogNewImage::on_comboBox_currentIndexChanged(const QString &arg1)
-{
-    QFileInfo fileinfo(arg1);
-    ui->lineEditName->setText(fileinfo.fileName());
-}
+//void DialogNewImage::saveHistoryPaths()
+//{
+//    QSettings setting("WHU","CDTStudio");
+//    setting.beginGroup("Project");
+//    QStringList dirs;
+//    for(int i=0; i< ui->comboBox->count();++i)
+//    {
+//        dirs.push_back(ui->comboBox->itemText(i));
+//    }
+//    setting.setValue("lastImageDirs",dirs);
+//    setting.endGroup();
+//}

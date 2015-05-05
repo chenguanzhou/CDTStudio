@@ -17,18 +17,17 @@ public:
 
     QString imageName() const;
     QString imagePath() const;
+    bool useRelativePath()const;
 
 private slots:
-    void on_pushButton_clicked();
-    void on_comboBox_currentIndexChanged(const QString &arg1);
-
+    void onPathChanged(QString path);
 signals:
     void imageNameChanged();
 
 private:
     Ui::DialogNewImage *ui;
-    void loadHistoryPaths();
-    void saveHistoryPaths();
+//    void loadHistoryPaths();
+//    void saveHistoryPaths();
 };
 
 #endif // DIALOGNEWIMAGE_H

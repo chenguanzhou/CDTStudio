@@ -159,8 +159,14 @@ void CDTProjectLayer::addImageLayer()
     DialogNewImage dlg(this->id());
     if(dlg.exec() == DialogNewImage::Accepted)
     {
+        if (dlg.imageName().isEmpty()||dlg.imagePath().isEmpty())
+        {
+            QMessageBox::critical(NULL,tr("Error"),tr("Image path or name is empty!"));
+            return;
+        }
         CDTImageLayer *image = new CDTImageLayer(QUuid::createUuid(),this);
         image->initLayer(dlg.imageName(),dlg.imagePath());
+        image->setUseRelativePath(dlg.useRelativePath());
         imagesRoot->appendRow(image->standardKeyItem());
         addImageLayer(image);
     }
