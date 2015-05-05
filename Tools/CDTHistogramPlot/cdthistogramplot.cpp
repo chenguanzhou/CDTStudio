@@ -104,9 +104,7 @@ void CDTHistogramPlot::clear()
 void CDTHistogramPlot::exportAsImage()
 {
     QwtPlotRenderer renderer;
-    if (renderer.exportTo(this,pData->tableName+"_"+pData->fieldName+".pdf")==false)
-        QMessageBox::critical(this,tr("Error"),tr("Export failed!"));
-    else
+    if (renderer.exportTo(this,pData->tableName+"_"+pData->fieldName+".pdf"))
         QMessageBox::information(this,tr("Succeed"),tr("Export completed!"));
 }
 
