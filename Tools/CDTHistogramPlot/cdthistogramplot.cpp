@@ -112,7 +112,7 @@ void CDTHistogramPlot::initHistogram()
 {
     histogram->attach(this);
     histogram->setStyle(QwtPlotCurve::Lines);
-    histogram->setPen(QPen(QColor(255,0,0),2));
+    histogram->setPen(QPen(QColor(255,0,0),1));
     histogram->setBrush(QBrush(QColor(255,0,0,127)));
 
 
@@ -155,7 +155,7 @@ bool CDTHistogramPlot::updateHistogram()
     double minVal = query.value(0).toDouble();
     double maxVal = query.value(1).toDouble();
     int intervals = this->canvas()->width();
-    intervals = intervals>120?120:intervals;
+    intervals = intervals>128?128:intervals;
     double intervalStep = (maxVal - minVal)/intervals;
     qDebug()<<QString("min:%1 max:%2 width:%3").arg(minVal).arg(maxVal).arg(intervals);
 
