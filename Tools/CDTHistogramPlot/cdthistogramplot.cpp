@@ -39,10 +39,11 @@ CDTHistogramPlot::CDTHistogramPlot(QWidget *parent)
     this->setAxisFont(QwtPlot::xBottom,font);
     this->setAxisFont(QwtPlot::yLeft,font);
 
-    QAction *action = new QAction(QIcon(":/Save.png"),tr("Save as image"),this);
-    connect(action,SIGNAL(triggered()),SLOT(exportAsImage()));
+    QAction *actionExport = new QAction(QIcon(":/Save.png"),tr("Save as image"),this);
+    connect(actionExport,SIGNAL(triggered()),SLOT(exportAsImage()));
+
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
-    this->addAction(action);
+    this->addAction(actionExport);
 }
 
 CDTHistogramPlot::~CDTHistogramPlot()

@@ -13,9 +13,7 @@
 //TODO  Attribute Widget Closable(invisible)
 //TODO  Read & write project in another thread
 //TODO  FileSystem as a db
-//TODO  More statistics value for attributes' histogram
 //TODO  Mask image process
-//TODO  Relative dir in CDTImageLayer
 
 int main(int argc, char *argv[])
 {
