@@ -29,8 +29,10 @@ DialogValidationPoints::DialogValidationPoints(const QString validationID, QWidg
     model->setHeaderData(1, Qt::Horizontal, QObject::tr("Category"));
     model->select();
     tableView->setModel(model);
+    tableView->verticalHeader()->hide();
     tableView->hideColumn(2);
     tableView->setItemDelegate(new QSqlRelationalDelegate(this));
+    tableView->setItemDelegateForColumn(0,new CDTReadOnlyDelegate(this));
     tableView->setSelectionBehavior(QTableView::SelectRows);
     tableView->setSelectionMode(QTableView::SingleSelection);
     tableView->resizeRowsToContents();
