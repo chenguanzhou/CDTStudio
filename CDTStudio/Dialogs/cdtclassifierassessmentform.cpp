@@ -69,6 +69,7 @@ void CDTClassifierAssessmentForm::onComboBoxClassificationChanged(int index)
 
 void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
 {
+    testSamples.clear();
     if (index<0)
         return;
 
@@ -112,7 +113,7 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
     if (!imgMarkLayer->isValid())
         return;
 
-    QMap<int,QString> testSamples;
+//    QMap<int,QString> testSamples;
     QList<QVariant> label = layer->data();
 //    query.exec(QString("select objectid,categoryid from object_samples where sampleid ='%1'").arg(sampleID));
 
@@ -276,4 +277,14 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
     Pe /= (double)(info.confusionParams.size()*info.confusionParams.size());
     double kappa = (Pa-Pe)/(1.-Pe);
     ui->kappaLineEdit->setText(QString::number(kappa));
+}
+
+void CDTClassifierAssessmentForm::on_pushButtonCopySample_clicked()
+{
+    QString copy;
+    foreach (int objID, testSamples.keys()) {
+        QString categoryID = testSamples.value(objID);
+        copy += (QString::number(objID) + "\t" + categoryID + "\n");
+    }
+    QApplication::clipboard()->setText(copy);
 }
