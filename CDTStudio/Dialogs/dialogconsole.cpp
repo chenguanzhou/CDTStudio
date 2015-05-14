@@ -1,9 +1,6 @@
 #include "dialogconsole.h"
 #include "ui_dialogconsole.h"
-#include <QtCore>
-#include <QMessageBox>
-#include <QStringListModel>
-#include <QMenu>
+#include "stable.h"
 
 DialogConsole::DialogConsole(QWidget *parent) :
     QDialog(parent),
@@ -13,13 +10,15 @@ DialogConsole::DialogConsole(QWidget *parent) :
     ui->setupUi(this);
     listModel = new QStringListModel(ui->listView);
     ui->listView->setModel(listModel);
+    ui->tableView->setContextMenuPolicy(Qt::ActionsContextMenu);
     setWindowFlags(Qt::Window);
+
 
     connect(ui->pushButtonRefresh,SIGNAL(clicked()),SLOT(updateDatabases()));
     connect(ui->comboBox,SIGNAL(currentIndexChanged(QString)),SLOT(onDatabaseChanged(QString)));
 //    connect(ui->listView,SIGNAL(clicked(QModelIndex)),SLOT(updateCurrentTable(QModelIndex)));
     connect(ui->listView->selectionModel(),SIGNAL(selectionChanged(QItemSelection,QItemSelection)),SLOT(onSelectionChanged(QItemSelection)));
-    connect(ui->listView,SIGNAL(customContextMenuRequested(QPoint)),SLOT(onContextMenu(QPoint)));
+    connect(ui->listView,SIGNAL(customContextMenuRequested(QPoint)),SLOT(onListViewContextMenu(QPoint)));
     connect(ui->pushButtonQuery,SIGNAL(clicked()),SLOT(onQuery()));
     connect(ui->plainTextEditQuery,SIGNAL(textChanged()),SLOT(onQueryTextChanged()));
 
@@ -27,6 +26,10 @@ DialogConsole::DialogConsole(QWidget *parent) :
     this->addAction(actionClose);
     actionClose->setShortcut(QKeySequence(Qt::Key_F12));
     connect(actionClose,SIGNAL(triggered()),SLOT(hide()));
+
+    QAction *actionCopyAll = new QAction(QIcon(":/Icons/Copy.png"),tr("Copy All"),this);
+    ui->tableView->addAction(actionCopyAll);
+    connect(actionCopyAll,SIGNAL(triggered()),SLOT(copyTableAll()));
 }
 
 DialogConsole::~DialogConsole()
@@ -75,6 +78,8 @@ void DialogConsole::onQuery()
         delete ui->tableView->model();
     tableModel->setQuery(query);
     ui->tableView->setModel(tableModel);
+    ui->tableView->resizeColumnsToContents();
+    ui->tableView->resizeRowsToContents();
 }
 
 void DialogConsole::onQueryTextChanged()
@@ -99,12 +104,14 @@ void DialogConsole::onDatabaseChanged(QString connName)
     listModel->setStringList(list);
 }
 
-void DialogConsole::onContextMenu(QPoint pt)
+void DialogConsole::onListViewContextMenu(QPoint pt)
 {
-    int row = ui->listView->indexAt(pt).row();
-    QStringList list = listModel->stringList();
-    if (row>=list.size())
+    QModelIndex index = ui->listView->indexAt(pt);
+    if (!index.isValid())
         return;
+
+    int row = index.row();
+    QStringList list = listModel->stringList();
     ui->listView->setCurrentIndex(ui->listView->indexAt(pt));
     updateCurrentTable(ui->listView->currentIndex());
 
@@ -128,6 +135,25 @@ void DialogConsole::deleteDataInCurrentTable()
 void DialogConsole::onSelectionChanged(QItemSelection selection)
 {
     updateCurrentTable(selection[0].indexes()[0]);
+}
+
+void DialogConsole::copyTableAll()
+{
+    auto model = ui->tableView->model();
+    if (model==NULL || model->rowCount()==0) return;
+
+
+    QString selected_text;
+    for (int i=0;i<model->rowCount();++i)
+    {
+        for (int j=0;j<model->columnCount();++j)
+        {
+            selected_text += (model->data(model->index(i,j)).toString() + "\t");
+        }
+        selected_text += "\n";
+    }
+
+    QApplication::clipboard()->setText(selected_text);
 }
 
 void DialogConsole::updateCurrentTable(const QModelIndex &index)

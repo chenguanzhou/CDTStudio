@@ -96,3 +96,5 @@ include(../Tools/Config/link2opencv.pri)
 
 RESOURCES += \
     ../resource.qrc
+
+DISTFILES +=

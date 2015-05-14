@@ -34,5 +34,6 @@
         <file>Icons/2p.png</file>
         <file>Icons/Default.png</file>
         <file>Icons/Import.png</file>
+        <file>Icons/Copy.png</file>
     </qresource>
 </RCC>

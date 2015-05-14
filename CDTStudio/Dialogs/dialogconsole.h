@@ -26,9 +26,10 @@ private slots:
     void onQuery();
     void onQueryTextChanged();
     void onDatabaseChanged(QString connName);
-    void onContextMenu(QPoint pt);
+    void onListViewContextMenu(QPoint pt);
     void deleteDataInCurrentTable();
     void onSelectionChanged(QItemSelection selection);
+    void copyTableAll();
 
 private:
     void updateCurrentTable(const QModelIndex &index);
