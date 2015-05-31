@@ -154,8 +154,7 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
                                <<tr("No Enhancement")
                                <<tr("Stretch To Min/Max")
                                <<tr("Stretch And Clip To Min/Max")
-                               <<tr("Clip To Min/Max"));
-    comboEnhancement->setCurrentIndex(1);
+                               <<tr("Clip To Min/Max"));    
     connect(comboEnhancement,SIGNAL(currentIndexChanged(int)),SLOT(onEnhancementChanged(int)));
     widgets<<qMakePair(new QLabel(tr("Enhancement")),(QWidget*)comboEnhancement);
 
@@ -192,7 +191,13 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
 
     setWidgetActions(widgets);
 
-    newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
+    if (newCanvasLayer->dataProvider()->dataType(1) != QGis::Byte)
+    {
+        newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
+        comboEnhancement->setCurrentIndex(1);
+    }
+    else
+        comboEnhancement->setCurrentIndex(0);
 
     emit appendLayers(QList<QgsMapLayer*>()<<canvasLayer());
     emit layerChanged();

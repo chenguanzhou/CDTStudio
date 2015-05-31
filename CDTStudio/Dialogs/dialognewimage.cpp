@@ -13,7 +13,7 @@ DialogNewImage::DialogNewImage(QUuid prjID, QWidget *parent) :
 
     connect(ui->lineEditPath,SIGNAL(textChanged(QString)),SLOT(onPathChanged(QString)));
     ui->lineEditPath->setText(tr("new image"));
-    ui->lineEditPath->setFilter(tr("Images (*.bmp *.png *.xpm *.jpg *.img *.tif)"));
+    ui->lineEditPath->setFilter(tr("Images (*.bmp *.png *.xpm *.jpg *.img *.tif *.ecw *.jp2)"));
 
 
     int index = CDTImageLayer::staticMetaObject.indexOfClassInfo("tableName");
