@@ -302,7 +302,10 @@ void CDTImageLayer::addExtraction()
 
 void CDTImageLayer::addSegmentation()
 {
-    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->id(),this->path(),this->fileSystem());
+    CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
+    QDir dir(layer->path());
+    QString absoluteFilePath = dir.absoluteFilePath(path());
+    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->id(),absoluteFilePath,this->fileSystem());
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
         CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this);
