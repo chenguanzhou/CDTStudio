@@ -185,14 +185,55 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
     }
 
 
+    QTime t;
+    t.start();
+//    QSqlQuery query(QSqlDatabase::database("category"));
+//    QList<qint64> newRubberBandsID;
+
+//    query.prepare("select object_samples.objectid,category.color from object_samples natural join category where object_samples.categoryid = category.id and object_samples.sampleID = ?");
+//    query.bindValue(0,sampleID.toString());
+//    query.exec();
+
+//    while (query.next()) {
+//        qint64 objectID = query.value(0).toInt();
+//        newRubberBandsID<<objectID;
+//        if (!rubberBands.keys().contains(objectID))
+//        {
+//            QColor color = query.value(1).value<QColor>();
+//            QgsRubberBand *rubberBand = new QgsRubberBand(mapCanvas,QGis::Polygon);
+
+//            rubberBand->setColor(color);
+//            rubberBand->setBrushStyle(Qt::Dense3Pattern);
+//            QgsFeature f;
+//            QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest().setFilterExpression("GridCode="+QString::number(objectID)));
+//            while(features.nextFeature(f))
+//            {
+//                rubberBand->addGeometry(f.geometry(),vlayer);
+//            }
+//            rubberBands.insert(objectID,rubberBand);
+//        }
+//    }
+
+    QgsFeature f;
+    QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest());
+    QMap<int,QgsPolygon> allGeometry;
+    int objFieldID = vlayer->fieldNameIndex("GridCode");
+    while(features.nextFeature(f))
+    {
+        int objID = f.attribute(objFieldID).toInt();
+        allGeometry.insert(objID,f.geometry()->asPolygon());
+    }
+
     QSqlQuery query(QSqlDatabase::database("category"));
     QList<qint64> newRubberBandsID;
 
     query.prepare("select object_samples.objectid,category.color from object_samples natural join category where object_samples.categoryid = category.id and object_samples.sampleID = ?");
     query.bindValue(0,sampleID.toString());
     query.exec();
+
+
     while (query.next()) {
-        qint64 objectID = query.value(0).toInt();
+        int objectID = query.value(0).toInt();
         newRubberBandsID<<objectID;
         if (!rubberBands.keys().contains(objectID))
         {
@@ -201,17 +242,24 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
 
             rubberBand->setColor(color);
             rubberBand->setBrushStyle(Qt::Dense3Pattern);
-            QgsFeature f;
-            QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest().setFilterExpression("GridCode="+QString::number(objectID)));
-            while(features.nextFeature(f))
-            {
-                rubberBand->addGeometry(f.geometry(),vlayer);
-            }
+//            QgsFeature f;
+//            QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest().setFilterExpression("GridCode="+QString::number(objectID)));
+//            while(features.nextFeature(f))
+//            {
+//                rubberBand->addGeometry(f.geometry(),vlayer);
+//            }
+            if (!allGeometry.keys().contains(objectID))
+                qDebug()<<objectID;
+            QgsGeometry *geo = QgsGeometry::fromPolygon( allGeometry.value(objectID));
+            if (geo==NULL)
+                qDebug()<<"NULL";
+            rubberBand->addGeometry(geo,vlayer);
             rubberBands.insert(objectID,rubberBand);
         }
     }
+    qDebug()<<t.elapsed()<<"ms";
+    qDebug()<<rubberBands.count();
 
-    //    foreach (int64 objID, rubberBands.keys()) {
     QList<qint64> objects = rubberBands.keys();
     for (int i=0;i<objects.size();++i)
     {
@@ -224,7 +272,6 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
             rubberBands.remove(objID);
         }
     }
-    //    }
 }
 
 void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
