@@ -60,10 +60,8 @@ void CDTProjectTabWidget::openProject()
 {
     QString dir = readLastProjectDir();
     QStringList filepaths = QFileDialog::getOpenFileNames(this,tr("Open an project file"),dir,"*.cdtpro");
-    for(int i=0;i< filepaths.size();++i)
-    {
-        QString filepath = filepaths[i];
-        openProject(filepath);
+    foreach (QString filePath, filepaths) {
+        openProject(filePath);
     }
 }
 

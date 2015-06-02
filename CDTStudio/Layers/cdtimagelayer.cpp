@@ -362,6 +362,7 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
         emit removeLayer(QList<QgsMapLayer*>()<<sgmt->canvasLayer());
         fileSystem()->removeFile(sgmt->shapefilePath());
         fileSystem()->removeFile(sgmt->markfilePath());
+        delete sgmt;
         emit layerChanged();
     }
 }

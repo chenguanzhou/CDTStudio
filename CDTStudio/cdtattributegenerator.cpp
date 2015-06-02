@@ -326,7 +326,7 @@ bool CDTAttributeGenerator::computeAttributes(
 
 
     while (query.next())
-    {
+    {        
         int objectID = query.value(0).toInt();
         int pixelCount = query.value(1).toInt();
         int nXOff = query.value(3).toInt();
@@ -346,8 +346,6 @@ bool CDTAttributeGenerator::computeAttributes(
             pointsVecF[i].setY (adfGeoTransform[3] + adfGeoTransform[4]*points[i].x() + adfGeoTransform[5]*points[i].y());
         }
 
-
-
         // Compute Area and Border_length
         OGRPolygon*     polygon         = _geometryObjects[objectID];
         OGRLinearRing*  linearRing      = polygon->getExteriorRing();
@@ -355,13 +353,17 @@ bool CDTAttributeGenerator::computeAttributes(
         double          border_lenghth  = linearRing->get_Length ();
         int             ringPointCount  = linearRing->getNumPoints();
         OGRRawPoint*    ringPoints      = new OGRRawPoint[ringPointCount];
+
         linearRing->getPoints(ringPoints);
         QVector<QPointF> ringPointsVec(ringPointCount);
+        try{
         std::transform(ringPoints,ringPoints+ringPointCount,ringPointsVec.begin(),[&](const OGRRawPoint& ptRaw)->QPointF
         { return QPointF(ptRaw.x,ptRaw.y); });
         delete []ringPoints;
-
-
+        }
+        catch (const std::exception &e){
+            qDebug()<<e.what();
+        }
 
         // Compute minimal bounding rectangle
         cv::Mat pointsMat(2,pixelCount,CV_64FC1);
@@ -532,7 +534,7 @@ bool CDTAttributeGenerator::computeAttributes(
             delete [](buffer[k]);
 
         if (index%progressGap==0)
-            emit progressBarValueChanged(index);
+            emit progressBarValueChanged(index);        
         ++index;
     }
 

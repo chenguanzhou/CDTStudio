@@ -330,25 +330,32 @@ bool MSTMethodInterface::_CreateEdgeWeights(void *p)
                 poSrcDS->GetRasterBand(k+1)->ReadBlock( iXBlock, iYBlock, dataIn[k] );
 
             // Collect the histogram counts.
-            for( int iY = 0; iY < nYValid-1; iY++)
+            for( int iY = 0; iY < nYValid; iY++)
             {
-                for( int iX = 0; iX < nXValid-1; iX++)
+                for( int iX = 0; iX < nXValid; iX++)
                 {
-                    int nodeID1 = (iY+nYOff)*width+iX+nXOff;
-                    for(int k=0;k<nBandCount;++k)
+                    int nodeID1,nodeID2;
+                    if (iX+1<nXValid)
                     {
-                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,iY*nXBlockSize+iX);
-                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,iY*nXBlockSize+iX+1);
+                        nodeID1 = (iY+nYOff)*width+iX+nXOff;
+                        for(int k=0;k<nBandCount;++k)
+                        {
+                            buffer1[k] = SRCVAL(dataIn[k],gdalDataType,iY*nXBlockSize+iX);
+                            buffer2[k] = SRCVAL(dataIn[k],gdalDataType,iY*nXBlockSize+iX+1);
+                        }
+                        nodeID2 = nodeID1+1;
+                        onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
                     }
-                    int nodeID2 = nodeID1+1;
-                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
-                    for(int k=0;k<nBandCount;++k)
+                    if (iY+1<nYValid)
                     {
-                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,iY*nXBlockSize+iX);
-                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,(iY+1)*nXBlockSize+iX);
+                        for(int k=0;k<nBandCount;++k)
+                        {
+                            buffer1[k] = SRCVAL(dataIn[k],gdalDataType,iY*nXBlockSize+iX);
+                            buffer2[k] = SRCVAL(dataIn[k],gdalDataType,(iY+1)*nXBlockSize+iX);
+                        }
+                        nodeID2 = nodeID1+width;
+                        onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
                     }
-                    nodeID2 = nodeID1+width;
-                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
                 }
             }
         }
@@ -377,14 +384,15 @@ bool MSTMethodInterface::_CreateEdgeWeights(void *p)
                 poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,0,nYOff,width,2,dataIn[k],width,2,gdalDataType,0,0);
                 for (int i=0;i<width-1;++i)
                 {
-                    int nodeID1 = nYOff * width + i;
-                    for(int k=0;k<nBandCount;++k)
-                    {
-                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
-                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,i+1);
-                    }
-                    int nodeID2 = nodeID1+1;
-                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
+                    int nodeID1,nodeID2;
+                    nodeID1 = nYOff * width + i;
+//                    for(int k=0;k<nBandCount;++k)
+//                    {
+//                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
+//                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,i+1);
+//                    }
+//                    nodeID2 = nodeID1+1;
+//                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
                     for(int k=0;k<nBandCount;++k)
                     {
                         buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
@@ -418,14 +426,15 @@ bool MSTMethodInterface::_CreateEdgeWeights(void *p)
                 poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,0,2,height,dataIn[k],2,height,gdalDataType,0,0);
                 for (int i=0;i<height-1;++i)
                 {
-                    int nodeID1 = i * width + nXOff;
-                    for(int k=0;k<nBandCount;++k)
-                    {
-                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
-                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,i+2);
-                    }
-                    int nodeID2 = nodeID1+2;
-                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
+                    int nodeID1,nodeID2;
+                    nodeID1 = i * width + nXOff;
+//                    for(int k=0;k<nBandCount;++k)
+//                    {
+//                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
+//                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,i+2);
+//                    }
+//                    nodeID2 = nodeID1+width;
+//                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
                     for(int k=0;k<nBandCount;++k)
                     {
                         buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
