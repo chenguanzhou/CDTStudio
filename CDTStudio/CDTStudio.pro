@@ -91,6 +91,13 @@ LIBS +=     -L../lib -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
              -lCDTFileSystem -llog4qt -lCDTTableExporter -lwwWidgets\
             -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
+
+#generate pdb for release version
+#win32-msvc* {
+#QMAKE_CFLAGS_RELEASE += -zi
+#QMAKE_LFLAGS_RELEASE += /INCREMENTAL:NO /DEBUG
+#}
+
 #opencv
 include(../Tools/Config/link2opencv.pri)
 
