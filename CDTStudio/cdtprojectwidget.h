@@ -42,6 +42,8 @@ public slots:
     void refreshMapCanvas(bool zoomToFullExtent=true);
 
     void onObjectItemChanged(QStandardItem* item);
+    void onRenderStarting();
+    void onRenderComplete();
 
 private slots:
     void untoggledToolBar();

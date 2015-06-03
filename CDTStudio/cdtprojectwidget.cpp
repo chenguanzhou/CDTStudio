@@ -16,6 +16,8 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     connect(this,SIGNAL(projectChanged()),this,SLOT(onProjectChanged()));
     connect(mapCanvas,SIGNAL(xyCoordinates(QgsPoint)),MainWindow::getMainWindow(),SLOT(showMouseCoordinate(QgsPoint)));
     connect(mapCanvas,SIGNAL(scaleChanged(double)),MainWindow::getMainWindow(),SLOT(showScale(double)));
+    connect(mapCanvas,SIGNAL(renderStarting()),SLOT(onRenderStarting()));
+    connect(mapCanvas,SIGNAL(renderComplete(QPainter*)),SLOT(onRenderComplete()));
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
 
@@ -32,8 +34,11 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 CDTProjectWidget::~CDTProjectWidget()
 {
     MainWindow::getMainWindow()->clearAllDocks();
-    project->removeAllImageLayers();
-    if(project) delete project;
+    if(project)
+    {
+        project->removeAllImageLayers();
+        delete project;
+    }
     file.close();
 }
 
@@ -239,6 +244,20 @@ void CDTProjectWidget::onObjectItemChanged(QStandardItem *item)
         layersVisible[treeItem->mapLayer()] = treeItem->checkState()==Qt::Checked;
         refreshMapCanvas(false);
     }
+}
+
+void CDTProjectWidget::onRenderStarting()
+{
+    MainWindow *w = MainWindow::getMainWindow();
+    if (w)
+        w->setEnabled(false);
+}
+
+void CDTProjectWidget::onRenderComplete()
+{
+    MainWindow *w = MainWindow::getMainWindow();
+    if (w)
+        w->setEnabled(true);
 }
 
 QToolBar *CDTProjectWidget::initToolBar()
