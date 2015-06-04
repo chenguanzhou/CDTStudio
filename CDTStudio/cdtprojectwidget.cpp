@@ -62,15 +62,17 @@ bool CDTProjectWidget::readProject(const QString &filepath)
     if (openProjectFile(filepath)==false)
         return false;
 
-    QByteArray compressedData = file.readAll();
-    QByteArray data = qUncompress(compressedData);
+    QTime time;
+    time.start();
 
-    QTemporaryFile tempFile;
-    tempFile.open();
-    tempFile.write(data);
-    tempFile.flush();
-    tempFile.seek(0);
-    QDataStream in(&(tempFile));
+//    QTemporaryFile tempFile;
+//    tempFile.open();
+//    tempFile.write(data);
+//    tempFile.flush();
+//    tempFile.seek(0);
+//    QDataStream in(&(tempFile));
+
+    QDataStream in(qUncompress(file.readAll()));
 
     quint32 magicNumber;
     in>>  magicNumber;
@@ -85,30 +87,42 @@ bool CDTProjectWidget::readProject(const QString &filepath)
     emit projectChanged();
     setWindowModified(false);
 
+    logger()->info("Open the project cost %1 ms",time.elapsed());
+
     refreshMapCanvas();
     return true;
 }
 
 bool CDTProjectWidget::writeProject()
 {
-    QTemporaryFile tempFile;
-    tempFile.open();
-    QDataStream temp(&tempFile);
-    temp << (quint32)0xABCDEF;
-    temp <<*project;
-    tempFile.flush();
-    tempFile.seek(0);
-    qDebug()<<"tempFile:"<<tempFile.size();
+    QTime time;
+    time.start();
+    //    QTemporaryFile tempFile;
+    //    tempFile.open();
+    //    QDataStream temp(&tempFile);
+    //    temp << (quint32)0xABCDEF;
+    //    temp <<*project;
+    //    tempFile.flush();
+    //    tempFile.seek(0);
+    //    qDebug()<<"tempFile:"<<tempFile.size();
+    //    QByteArray array = tempFile.readAll();
+    //    QByteArray compressedDat = qCompress(array,1);
+    //    qDebug()<<"compressedData:"<<compressedDat.size();
 
-    QByteArray array = tempFile.readAll();
-    QByteArray compressedDat = qCompress(array);
+    QByteArray array;
+    QDataStream out(&array,QIODevice::WriteOnly);
+    out << (quint32)0xABCDEF;
+    out << *project;
+    QByteArray compressedDat = qCompress(array,1);
     qDebug()<<"compressedData:"<<compressedDat.size();
+
     file.seek(0);
     file.resize(0);
     file.write(compressedDat);
     file.flush();
     qDebug()<<"compressedFile:"<<file.size();
     setWindowModified(false);
+    logger()->info("Save the project cost %1 ms",time.elapsed());
 
     return true;
 }

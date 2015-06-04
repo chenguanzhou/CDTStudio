@@ -230,8 +230,12 @@ bool MSTMethodInterface::_CheckAndInit()
     }
 
     //3.Init Output Image
+    char** pszOptions = NULL;
+    pszOptions = CSLSetNameValue(pszOptions,"COMPRESS","DEFLATE");
+    pszOptions = CSLSetNameValue(pszOptions,"PREDICTOR","1");
+    pszOptions = CSLSetNameValue(pszOptions,"ZLEVEL","9");
     GDALDriver* poDriver = (GDALDriver*)GDALGetDriverByName("GTiff");
-    GDALDataset* poDstDS = poDriver->Create(markfilePath.toUtf8().constData(),poSrcDS->GetRasterXSize(),poSrcDS->GetRasterYSize(),1,GDT_Int32,NULL);
+    GDALDataset* poDstDS = poDriver->Create(markfilePath.toUtf8().constData(),poSrcDS->GetRasterXSize(),poSrcDS->GetRasterYSize(),1,GDT_Int32,pszOptions);
     if (poDstDS == NULL)
     {
         return false;
@@ -621,35 +625,85 @@ bool MSTMethodInterface::_GenerateFlagImage(GraphKruskal *&graph,const QMap<unsi
     GDALDataset* poSrcDS = (GDALDataset*)srcDS;
     GDALDataset* poDstDS = (GDALDataset*)dstDS;
 
-    unsigned width = poSrcDS->GetRasterXSize();
-    unsigned height= poSrcDS->GetRasterYSize();
+    int width = poSrcDS->GetRasterXSize();
+    int height= poSrcDS->GetRasterYSize();
 
-    //    boost::progress_display pd(height,std::cout,"generating result\n","","");
+//    const int progressGap = height/100;
+//    emit progressBarSizeChanged(0,height);
+//    GDALRasterBand* poFlagBand = poDstDS->GetRasterBand(1);
+//    GDALRasterBand* poMaskBand = poFlagBand->GetMaskBand();
+//    std::vector<uchar> mask(width);
 
-    const int progressGap = height/100;
-    emit progressBarSizeChanged(0,height);
+//    for(int i=0,index =0;i<height;++i)
+//    {
+//        poMaskBand->RasterIO(GF_Read,0,i,width,1,&mask[0],width,1,GDT_Byte,0,0);
+//        for(int j=0;j<width;++j,++index)
+//        {
+//            int objectID = 0;
+//            if (mask[j]!=0)
+//            {
+//                int root = graph->find(index);
+//                objectID = mapRootidObjectid.value(root);
+//            }
+//            poFlagBand->RasterIO(GF_Write,j,i,1,1,(int *)&objectID,1,1,GDT_Int32,0,0);
+//        }
+//        if (i%progressGap == 0)
+//            emit progressBarValueChanged(i);
+//    }
+//    emit progressBarValueChanged(height);
+
+    emit progressBarSizeChanged(0,100);
     GDALRasterBand* poFlagBand = poDstDS->GetRasterBand(1);
     GDALRasterBand* poMaskBand = poFlagBand->GetMaskBand();
-    std::vector<uchar> mask(width);
 
-    for(unsigned i=0,index =0;i<height;++i)
+    int nXBlocks, nYBlocks, nXBlockSize, nYBlockSize;
+    int iXBlock, iYBlock;
+    poFlagBand->GetBlockSize( &nXBlockSize, &nYBlockSize );
+    nXBlocks = (width + nXBlockSize - 1) / nXBlockSize;
+    nYBlocks = (height + nYBlockSize - 1) / nYBlockSize;
+    int blocksCount = nXBlocks*nYBlocks;
+    QVector<int> dataOut(nXBlockSize * nYBlockSize);
+
+    for( iYBlock = 0; iYBlock < nYBlocks; ++iYBlock )
     {
-        poMaskBand->RasterIO(GF_Read,0,i,width,1,&mask[0],width,1,GDT_Byte,0,0);
-        for(unsigned j=0;j<width;++j,++index)
+        int nYOff = iYBlock*nYBlockSize;
+
+        for( iXBlock = 0; iXBlock < nXBlocks; ++iXBlock )
         {
-            int objectID = 0;
-            if (mask[j]!=0)
+            int nXValid, nYValid;
+            if( (iXBlock+1) * nXBlockSize > width )
+                nXValid = width - iXBlock * nXBlockSize;
+            else
+                nXValid = nXBlockSize;
+            if( (iYBlock+1) * nYBlockSize > height )
+                nYValid = height - iYBlock * nYBlockSize;
+            else
+                nYValid = nYBlockSize;
+
+            int nXOff = iXBlock*nXBlockSize;
+
+            for( int iY = 0; iY < nYValid; ++iY)
             {
-                int root = graph->find(index);
-                objectID = mapRootidObjectid.value(root);
+                unsigned index = (nYOff+iY)*width+nXOff;
+                for( int iX = 0; iX < nXValid; ++iX,++index)
+                {
+                    int objectID = 0;
+//                    if (mask[j]!=0)
+//                    {
+                        int root = graph->find(index);
+                        objectID = mapRootidObjectid.value(root);
+//                    }
+                    dataOut[iY*nXBlockSize+iX] = objectID;
+//                    poFlagBand->RasterIO(GF_Write,j,i,1,1,(int *)&objectID,1,1,GDT_Int32,0,0);
+                }
             }
-            poFlagBand->RasterIO(GF_Write,j,i,1,1,(int *)&objectID,1,1,GDT_Int32,0,0);
+
+            poFlagBand->WriteBlock(iXBlock, iYBlock, &dataOut[0]);
         }
-        if (i%progressGap == 0)
-            emit progressBarValueChanged(i);
-        //        ++pd;
+        emit progressBarValueChanged((iXBlock+iYBlock*nXBlocks)* 100./blocksCount);
     }
-    emit progressBarValueChanged(height);
+
+    emit progressBarValueChanged(100);
     return true;
 }
 
