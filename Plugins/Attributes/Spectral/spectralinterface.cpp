@@ -120,25 +120,38 @@ qreal SpectralInterface::mean_of_inner_border(const AttributeParamsSingleBand &p
 {
     qreal refValue =0;
     QSet<QPoint> pointsSet;
-    for(int i=0;i<param.pointsVecI.size();++i)
-    {
-        pointsSet.insert(param.pointsVecI[i]);
+    foreach (QPoint pt, param.pointsVecI) {
+        pointsSet.insert(pt);
     }
 
     int borderPointCount=0;
-    for(int i=0;i<param.pointsVecI.size();++i)
-    {
-        int x=param.pointsVecI[i].x();
-        int y=param.pointsVecI[i].y();
+//    for(int i=0;i<param.pointsVecI.size();++i)
+//    {
+//        int x=param.pointsVecI[i].x();
+//        int y=param.pointsVecI[i].y();
 
-        if((!pointsSet.contains(QPoint(x,y-1))) || (!pointsSet.contains(QPoint(x,y+1)))
-                || (!pointsSet.contains(QPoint(x+1,y))) || (!pointsSet.contains(QPoint(x-1,y))))
+//        if((!pointsSet.contains(QPoint(x,y-1))) ||
+//            (!pointsSet.contains(QPoint(x,y+1))) ||
+//            (!pointsSet.contains(QPoint(x+1,y))) ||
+//            (!pointsSet.contains(QPoint(x-1,y))))
+//        {
+//            refValue += SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
+//            ++borderPointCount;
+//        }
+//    }
+    foreach (QPoint pt, param.pointsVecI) {
+        int x=pt.x();
+        int y=pt.y();
+        if((!pointsSet.contains(QPoint(x,y-1))) ||
+            (!pointsSet.contains(QPoint(x,y+1))) ||
+            (!pointsSet.contains(QPoint(x+1,y))) ||
+            (!pointsSet.contains(QPoint(x-1,y))))
         {
-            refValue += SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
+            refValue += SRCVAL(param.buffer, param.dataType, y * param.nXSize + x);
             ++borderPointCount;
         }
     }
-    refValue /=borderPointCount;
+    refValue /= borderPointCount;
     return refValue;
 }
 
