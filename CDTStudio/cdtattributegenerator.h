@@ -49,32 +49,45 @@ private:
     QString         _errorInfo;
 
     bool readGeometry();
-    bool initAttributeTable();
-    bool computeAttributes(QMap<QString, QList<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames);
+    bool initAttributeTable(void *p);
+    bool computeAttributes(void *p,QMap<QString, QList<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames);
     bool addAttributesToTables(QMap<QString, QList<QVector<double> > > &attributesValues, QMap<QString, QStringList> &attributesFieldNames);
 };
 
-class ObjectInfo
+class ObjectSorterElement
 {
 public:
-    ObjectInfo(int xx=0,int yy=0,int id=0):x(xx),y(yy),ObjectID(id){}
+    ObjectSorterElement(int xx=0,int yy=0,int id=0):x(xx),y(yy),ObjectID(id){}
     int x,y,ObjectID;
 };
 
-struct ObjectInfoComparator
+struct ObjectSorterElementComparator
 {
-    bool operator () (const ObjectInfo& a, const ObjectInfo& b) const
+    bool operator () (const ObjectSorterElement& a, const ObjectSorterElement& b) const
     {
         return a.ObjectID < b.ObjectID;
     }
-    ObjectInfo min_value() const
+    ObjectSorterElement min_value() const
     {
-        return ObjectInfo(0,0,std::numeric_limits<int>::min());
+        return ObjectSorterElement(0,0,std::numeric_limits<int>::min());
     }
-    ObjectInfo max_value() const
+    ObjectSorterElement max_value() const
     {
-        return ObjectInfo(0,0,std::numeric_limits<int>::max());
+        return ObjectSorterElement(0,0,std::numeric_limits<int>::max());
     }
+};
+
+class ObjectInfo{
+public:
+    ObjectInfo(int objID = 0,const std::vector<QPoint> &objPoints = std::vector<QPoint>(),
+               int xmin= 0,int xmax= 0,int ymin= 0,int ymax= 0)
+        :ObjectID(objID),ObjectPoints(objPoints),
+          x_min(xmin),x_max(xmax),y_min(ymin),y_max(ymax)
+    {}
+
+    int ObjectID;
+    std::vector<QPoint> ObjectPoints;
+    int x_min,x_max,y_min,y_max;
 };
 
 #endif // CDTATTRIBUTEGENERATOR_H

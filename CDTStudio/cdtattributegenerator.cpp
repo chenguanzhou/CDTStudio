@@ -6,7 +6,8 @@
 #endif
 
 extern QList<CDTAttributesInterface *>     attributesPlugins;
-typedef stxxl::sorter<ObjectInfo,ObjectInfoComparator,sizeof(ObjectInfo)*1024*1024> ObjectSorter;
+typedef stxxl::sorter<ObjectSorterElement,ObjectSorterElementComparator,sizeof(ObjectSorterElement)*1024*1024> ObjectSorter;
+typedef stxxl::VECTOR_GENERATOR<ObjectInfo>::result ObjectVector;
 
 CDTAttributeGenerator::CDTAttributeGenerator(
         const QString &imagePath,
@@ -88,18 +89,22 @@ CDTAttributeGenerator::~CDTAttributeGenerator()
 
 void CDTAttributeGenerator::run()
 {
+    QTime t;
+    t.start();
     if (readGeometry()==false)
         return;
 
-    if (initAttributeTable()==false)
+    ObjectVector objectInfoVector;
+    if (initAttributeTable(&objectInfoVector)==false)
         return;
 
     QMap<QString,QList<QVector<double> > > attributesValues;
     QMap<QString,QStringList> attributesFieldNames;
-    if (computeAttributes(attributesValues,attributesFieldNames)==false)
+    if (computeAttributes(&objectInfoVector,attributesValues,attributesFieldNames)==false)
         return;
 
     addAttributesToTables(attributesValues,attributesFieldNames);
+    qDebug()<<"Attribute generation cost: "<<t.elapsed()<<"ms";
 }
 
 bool CDTAttributeGenerator::readGeometry()
@@ -146,35 +151,37 @@ bool CDTAttributeGenerator::readGeometry()
     return true;
 }
 
-bool CDTAttributeGenerator::initAttributeTable()
+bool CDTAttributeGenerator::initAttributeTable(void *p)
 {
-    QSqlDatabase db = QSqlDatabase::database("attribute");
-    QSqlQuery query(db);
+//    QSqlDatabase db = QSqlDatabase::database("attribute");
+//    QSqlQuery query(db);
 
-    query.exec("drop table if exists ObjectID_Info");
-    if (query.isActive()==false)
-    {
-        emit showWarningMessage(query.lastError().text());
-        return false;
-    }
-    if (db.driverName()=="QMYSQL")
-        query.exec("create table ObjectID_Info"
-                   "(ObjectID int,ObjectCount int,ObjectPoints MEDIUMBLOB,x_min int,x_max int,y_min int,y_max int)");
-    else
-        query.exec("create table ObjectID_Info"
-                   "(ObjectID int,ObjectCount int,ObjectPoints blob,x_min int,x_max int,y_min int,y_max int)");
-    if (query.isActive()==false)
-    {
-        emit showWarningMessage(query.lastError().text());
-        return false;
-    }
+//    query.exec("drop table if exists ObjectID_Info");
+//    if (query.isActive()==false)
+//    {
+//        emit showWarningMessage(query.lastError().text());
+//        return false;
+//    }
+//    if (db.driverName()=="QMYSQL")
+//        query.exec("create table ObjectID_Info"
+//                   "(ObjectID int,ObjectCount int,ObjectPoints MEDIUMBLOB,x_min int,x_max int,y_min int,y_max int)");
+//    else
+//        query.exec("create table ObjectID_Info"
+//                   "(ObjectID int,ObjectCount int,ObjectPoints blob,x_min int,x_max int,y_min int,y_max int)");
+//    if (query.isActive()==false)
+//    {
+//        emit showWarningMessage(query.lastError().text());
+//        return false;
+//    }
+
+    ObjectVector *objVector = static_cast<ObjectVector *>(p);
 
     emit currentProgressChanged(tr("Initializing Object Information"));
     int barSize = _height;
     emit progressBarSizeChanged(0,barSize);
     int progressGap = barSize/100;
 
-    ObjectSorter sorter(ObjectInfoComparator(),500*1024*1024);
+    ObjectSorter sorter(ObjectSorterElementComparator(),500*1024*1024);
     GDALRasterBand* poFlagBand = _poFlagDS->GetRasterBand(1);
     GDALRasterBand* poMaskBand = poFlagBand->GetMaskBand();
     int* buffer = new int[_width];
@@ -184,7 +191,7 @@ bool CDTAttributeGenerator::initAttributeTable()
         {
             poFlagBand->RasterIO(GF_Read,0,i,_width,1,buffer,_width,1,GDT_Int32,0,0);
             for(int j=0;j<_width;++j)
-                sorter.push(ObjectInfo(j,i,buffer[j]));
+                sorter.push(ObjectSorterElement(j,i,buffer[j]));
 
             if (i%progressGap==0)
                 emit progressBarValueChanged(i);
@@ -201,7 +208,7 @@ bool CDTAttributeGenerator::initAttributeTable()
             {
                 if (mask[j]==0)
                     continue;
-                sorter.push(ObjectInfo(j,i,buffer[j]));
+                sorter.push(ObjectSorterElement(j,i,buffer[j]));
             }
             if (i%progressGap==0)
                 emit progressBarValueChanged(i);
@@ -217,15 +224,15 @@ bool CDTAttributeGenerator::initAttributeTable()
     emit progressBarValueChanged(barSize);
 
 
-    db.transaction();
-    if (query.prepare("insert into ObjectID_Info values(?,?,?,?,?,?,?)")==false)
-    {
-        emit showWarningMessage(query.lastError().text());
-        return false;
-    }
+//    db.transaction();
+//    if (query.prepare("insert into ObjectID_Info values(?,?,?,?,?,?,?)")==false)
+//    {
+//        emit showWarningMessage(query.lastError().text());
+//        return false;
+//    }
 
     int currentID = 0;
-    QVector<QPoint> objectPoints;
+    std::vector<QPoint> objectPoints;
     int xmin = std::numeric_limits<int>::max();
     int xmax = std::numeric_limits<int>::min();
     int ymin = std::numeric_limits<int>::max();
@@ -248,15 +255,18 @@ bool CDTAttributeGenerator::initAttributeTable()
         }
         else//insert into sqlite
         {
-            query.bindValue(0,currentID);
-            query.bindValue(1,objectPoints.size());
-            query.bindValue(2,QByteArray((char*)(&objectPoints[0]),objectPoints.size()*sizeof(QPoint))  );
-            query.bindValue(3,xmin);
-            query.bindValue(4,xmax);
-            query.bindValue(5,ymin);
-            query.bindValue(6,ymax);
-            if (query.exec()==false)
-                qDebug()<<query.lastError().text();
+//            query.bindValue(0,currentID);
+//            query.bindValue(1,objectPoints.size());
+//            query.bindValue(2,QByteArray((char*)(&objectPoints[0]),objectPoints.size()*sizeof(QPoint))  );
+//            query.bindValue(3,xmin);
+//            query.bindValue(4,xmax);
+//            query.bindValue(5,ymin);
+//            query.bindValue(6,ymax);
+//            if (query.exec()==false)
+//                qDebug()<<query.lastError().text();
+
+            objVector->push_back(ObjectInfo(
+                currentID,objectPoints,xmin,xmax,ymin,ymax));
 
             currentID = sorter->ObjectID;
             xmin = xmax = sorter->x;
@@ -270,42 +280,46 @@ bool CDTAttributeGenerator::initAttributeTable()
         ++index;
     }
 
-    query.bindValue(0,currentID);
-    query.bindValue(1,objectPoints.size());
-    query.bindValue(2,QByteArray((char*)&objectPoints[0],objectPoints.size()*sizeof(QPoint))   );
-    query.bindValue(3,xmin);
-    query.bindValue(4,xmax);
-    query.bindValue(5,ymin);
-    query.bindValue(6,ymax);
-    query.exec();
+//    query.bindValue(0,currentID);
+//    query.bindValue(1,objectPoints.size());
+//    query.bindValue(2,QByteArray((char*)&objectPoints[0],objectPoints.size()*sizeof(QPoint))   );
+//    query.bindValue(3,xmin);
+//    query.bindValue(4,xmax);
+//    query.bindValue(5,ymin);
+//    query.bindValue(6,ymax);
+//    query.exec();
+    objVector->push_back(ObjectInfo(
+        currentID,objectPoints,xmin,xmax,ymin,ymax));
 
     emit progressBarValueChanged(barSize);
     _objectCount = currentID+1;
-    db.commit();
+//    db.commit();
 
 
     return true;
 }
 
 bool CDTAttributeGenerator::computeAttributes(
+        void *p,
         QMap<QString,QList<QVector<double> > > &attributesValues,
         QMap<QString,QStringList> &attributesFieldNames)
 {
     attributesValues.clear();
+    ObjectVector *objVector = static_cast<ObjectVector *>(p);
 
     double adfGeoTransform[6];
     _poImageDS->GetGeoTransform(adfGeoTransform);
 
-    QSqlDatabase db = QSqlDatabase::database("attribute");
-    db.transaction();
-    QSqlQuery query(db);
-    if (query.exec("select * from ObjectID_Info")==false)
-    {
-        emit showWarningMessage(query.lastError().text());
-        return false;
-    }
+//    QSqlDatabase db = QSqlDatabase::database("attribute");
+//    db.transaction();
+//    QSqlQuery query(db);
+//    if (query.exec("select * from ObjectID_Info")==false)
+//    {
+//        emit showWarningMessage(query.lastError().text());
+//        return false;
+//    }
 
-    assert(query.record().count() == 7);
+//    assert(query.record().count() == 7);
     emit currentProgressChanged(tr("Generating Attributes"));
     int barSize = _objectCount;
     emit progressBarSizeChanged(0,barSize);
@@ -325,26 +339,34 @@ bool CDTAttributeGenerator::computeAttributes(
     clock_t time_start =clock();
 
 
-    while (query.next())
-    {        
-        int objectID = query.value(0).toInt();
-        int pixelCount = query.value(1).toInt();
-        int nXOff = query.value(3).toInt();
-        int nYOff = query.value(5).toInt();
-        int nXSize = query.value(4).toInt() - nXOff + 1;
-        int nYSize = query.value(6).toInt() - nYOff + 1;
-        QByteArray byteArray = query.value(2).toByteArray();
-        QPoint* points = (QPoint*)(byteArray.data());
-        QVector<QPoint> pointsVecI(pixelCount);
-        QVector<QPointF> pointsVecF(pixelCount);
+//    while (query.next())
+//    {
+    for (ObjectVector::iterator it = objVector->begin(); it != objVector->end(); ++it)
+    {
+        int objectID = it->ObjectID;
+        int pixelCount = it->ObjectPoints.size();
+        int nXOff = it->x_min;
+        int nYOff = it->y_min;
+        int nXSize = it->x_max - nXOff + 1;
+        int nYSize = it->y_max - nYOff + 1;
+
+//        QByteArray byteArray = query.value(2).toByteArray();
+//        QPoint* points = (QPoint*)(byteArray.data());
+        QVector<QPoint> pointsVecI;
+        QVector<QPointF> pointsVecF;
         QVector<QPointF> rotatedPointsVec(pixelCount);
 
-        for (int i=0;i<pixelCount;++i)
-        {
-            pointsVecI[i]= points[i] - QPoint(nXOff,nYOff);
-            pointsVecF[i].setX (adfGeoTransform[0] + adfGeoTransform[1]*points[i].x() + adfGeoTransform[2]*points[i].y());
-            pointsVecF[i].setY (adfGeoTransform[3] + adfGeoTransform[4]*points[i].x() + adfGeoTransform[5]*points[i].y());
-        }
+        std::for_each(it->ObjectPoints.begin(),it->ObjectPoints.end(),[&](const QPoint &pt){
+            pointsVecI.push_back(pt- QPoint(nXOff,nYOff));
+            qreal x = adfGeoTransform[0] + adfGeoTransform[1]*pt.x() + adfGeoTransform[2]*pt.y();
+            qreal y = adfGeoTransform[3] + adfGeoTransform[4]*pt.x() + adfGeoTransform[5]*pt.y();
+            pointsVecF.push_back(QPointF(x,y));
+        });
+//        for (int i=0;i<pixelCount;++i)
+//        {
+//            pointsVecF[i].setX (adfGeoTransform[0] + adfGeoTransform[1]*it->ObjectPoints[i].x() + adfGeoTransform[2]*it->ObjectPoints[i].y());
+//            pointsVecF[i].setY (adfGeoTransform[3] + adfGeoTransform[4]*it->ObjectPoints[i].x() + adfGeoTransform[5]*it->ObjectPoints[i].y());
+//        }
 
         // Compute Area and Border_length
         OGRPolygon*     polygon         = _geometryObjects[objectID];
@@ -429,7 +451,6 @@ bool CDTAttributeGenerator::computeAttributes(
             rotated_center+=rotatedPointsVec[i];
         }
         rotated_center /= rotatedPointsVec.size();
-
 
         //buffer
         QVector<uchar*> buffer(_bandCount);
@@ -518,7 +539,6 @@ bool CDTAttributeGenerator::computeAttributes(
                                 plugin,funcName.toUtf8().constData(),Qt::DirectConnection,
                                 Q_RETURN_ARG(qreal, resultVal ),
                                 Q_ARG(AttributeParamsMultiBand, params));
-
                     attributesValue.append(resultVal);
                     //                    if (!attributesFieldNames[tableName].contains(attributeName))
                     if (index==0)
@@ -542,7 +562,7 @@ bool CDTAttributeGenerator::computeAttributes(
     qDebug()<<"cost: "<< (clock()-time_start)/(double)CLOCKS_PER_SEC<<"s";
 
     emit progressBarValueChanged(barSize);
-    db.commit();
+//    db.commit();
 
     return true;
 }

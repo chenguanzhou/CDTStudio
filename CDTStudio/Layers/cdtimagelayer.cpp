@@ -103,7 +103,6 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
     CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
     QDir dir(layer->path());
     QString absoluteFilePath = dir.absoluteFilePath(path);
-
     QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(absoluteFilePath,QFileInfo(path).completeBaseName());
     if (!newCanvasLayer->isValid())
     {
@@ -239,6 +238,19 @@ QString CDTImageLayer::path() const
     return query.value(0).toString();
 }
 
+QString CDTImageLayer::absolutPath() const
+{
+    if (useRelativePath())
+    {
+        CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
+        QDir dir(layer->path());
+        return dir.absoluteFilePath(path());
+    }
+    else
+        return this->path();
+
+}
+
 bool CDTImageLayer::useRelativePath() const
 {
     return useRelative;
@@ -302,10 +314,7 @@ void CDTImageLayer::addExtraction()
 
 void CDTImageLayer::addSegmentation()
 {
-    CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
-    QDir dir(layer->path());
-    QString absoluteFilePath = dir.absoluteFilePath(path());
-    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->id(),absoluteFilePath,this->fileSystem());
+    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->id(),absolutPath(),this->fileSystem());
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
         CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this);

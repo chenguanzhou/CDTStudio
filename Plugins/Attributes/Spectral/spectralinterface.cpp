@@ -30,11 +30,9 @@ QString SpectralInterface::tableName() const
 qreal SpectralInterface::brightness(const AttributeParamsMultiBand &param) const
 {
     qreal refValue = 0;
-    for (int i=0;i<param.pointsVecI.size();++i)
-    {
-        for (int k=0;k<param.buffer.size();++k)
-        {
-            refValue += SRCVAL(param.buffer[k],param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
+    foreach (QPoint pt, param.pointsVecI) {
+        foreach (uchar* data, param.buffer) {
+            refValue += SRCVAL(data,param.dataType,pt.y() * param.nXSize + pt.x());
         }
     }
 

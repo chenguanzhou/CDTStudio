@@ -30,6 +30,7 @@ public:
     void initLayer(const QString& name,const QString& path);
     void setCategoryInfo(const CDTCategoryInformationList& info);
     QString path()const;
+    QString absolutPath() const;
     bool useRelativePath() const;
     int bandCount()const;    
 
