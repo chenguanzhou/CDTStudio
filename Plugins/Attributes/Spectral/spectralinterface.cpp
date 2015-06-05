@@ -30,11 +30,12 @@ QString SpectralInterface::tableName() const
 qreal SpectralInterface::brightness(const AttributeParamsMultiBand &param) const
 {
     qreal refValue = 0;
-    foreach (QPoint pt, param.pointsVecI) {
-        foreach (uchar* data, param.buffer) {
+
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
+        std::for_each(param.buffer.begin(),param.buffer.end(),[&](uchar* data){
             refValue += SRCVAL(data,param.dataType,pt.y() * param.nXSize + pt.x());
-        }
-    }
+        });
+    });
 
     return  refValue / (param.buffer.size()*param.pointsVecI.size());
 }
@@ -42,10 +43,9 @@ qreal SpectralInterface::brightness(const AttributeParamsMultiBand &param) const
 qreal SpectralInterface::layer_mean(const AttributeParamsSingleBand& param) const
 {
     qreal refValue =0;
-    for (int i=0;i<param.pointsVecI.size();++i)
-    {
-        refValue += SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
-    }
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
+        refValue += SRCVAL(param.buffer,param.dataType,pt.y() * param.nXSize + pt.x());
+    });
     return    refValue / param.pointsVecI.size();
 }
 
@@ -53,16 +53,15 @@ qreal SpectralInterface::layer_stddev(const AttributeParamsSingleBand& param) co
 {
     qreal Mean = 0;
     qreal refValue = 0;
-    for (int i=0;i<param.pointsVecI.size();++i)
-    {
-        Mean += SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
-    }
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
+        Mean += SRCVAL(param.buffer,param.dataType,pt.y() * param.nXSize + pt.x());
+    });
     Mean /= param.pointsVecI.size();
-    for (int i=0;i<param.pointsVecI.size();++i)
-    {
-        refValue +=(Mean-SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x()))
-                * (Mean-SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y()*param.nXSize + param.pointsVecI[i].x()));
-    }
+
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
+        refValue +=(Mean-SRCVAL(param.buffer,param.dataType,pt.y() * param.nXSize + pt.x()))
+                * (Mean-SRCVAL(param.buffer,param.dataType,pt.y()*param.nXSize + pt.x()));
+    });
     return sqrt(refValue / param.pointsVecI.size());
 }
 
@@ -70,74 +69,54 @@ qreal SpectralInterface::skewness(const AttributeParamsSingleBand &param) const
 {
     qreal mean =0,var=0;
     qreal refValue=0;
-    for (int i=0;i<param.pointsVecI.size();++i)
-    {
-        mean += SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
-    }
+
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
+        mean += SRCVAL(param.buffer,param.dataType,pt.y() * param.nXSize + pt.x());
+    });
     mean /= param.pointsVecI.size();
-    for (int i=0;i<param.pointsVecI.size();++i)
-    {
-        var +=(mean-SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x()))
-                * (mean-SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y()*param.nXSize + param.pointsVecI[i].x()));
-    }
-    for (int i=0;i<param.pointsVecI.size();++i)
-    {
-        refValue +=(mean-SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x()))
-                * (mean-SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y ()* param.nXSize + param.pointsVecI[i].x()))
-                *(mean-SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x()));
-    }
+
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
+        qreal d = mean-SRCVAL(param.buffer,param.dataType,pt.y() * param.nXSize + pt.x());
+        var += d*d;
+        refValue +=d*d*d;
+    });
+
     refValue /=((sqrt(var))*(sqrt(var))*(sqrt(var)));
     return refValue;
 }
 
 qreal SpectralInterface::max_value(const AttributeParamsSingleBand &param) const
 {
-    qreal refValue =0;
-    for(int i=0;i<param.pointsVecI.size();++i)
-    {
-        if(SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x()) >= refValue)
-            refValue=SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
-    }
+    qreal refValue =SRCVAL(param.buffer,param.dataType,param.pointsVecI[0].y() * param.nXSize + param.pointsVecI[0].x());
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
+        qreal d = SRCVAL(param.buffer,param.dataType,pt.y() * param.nXSize + pt.x());
+        if(d > refValue)
+            refValue=d;
+    });
     return refValue;
 }
 
 qreal SpectralInterface::min_value(const AttributeParamsSingleBand &param) const
 {
-    qreal refValue =SRCVAL(param.buffer,param.dataType,param.pointsVecI[1].y() * param.nXSize + param.pointsVecI[1].x());
-    for(int i=0;i<param.pointsVecI.size();++i)
-    {
-        if(SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x()) <= refValue)
-            refValue=SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
-    }
+    qreal refValue =SRCVAL(param.buffer,param.dataType,param.pointsVecI[0].y() * param.nXSize + param.pointsVecI[0].x());
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
+        qreal d = SRCVAL(param.buffer,param.dataType,pt.y() * param.nXSize + pt.x());
+        if(d < refValue)
+            refValue=d;
+    });
     return refValue;
 }
-
-
 
 qreal SpectralInterface::mean_of_inner_border(const AttributeParamsSingleBand &param) const
 {
     qreal refValue =0;
     QSet<QPoint> pointsSet;
-    foreach (QPoint pt, param.pointsVecI) {
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
         pointsSet.insert(pt);
-    }
+    });
 
     int borderPointCount=0;
-//    for(int i=0;i<param.pointsVecI.size();++i)
-//    {
-//        int x=param.pointsVecI[i].x();
-//        int y=param.pointsVecI[i].y();
-
-//        if((!pointsSet.contains(QPoint(x,y-1))) ||
-//            (!pointsSet.contains(QPoint(x,y+1))) ||
-//            (!pointsSet.contains(QPoint(x+1,y))) ||
-//            (!pointsSet.contains(QPoint(x-1,y))))
-//        {
-//            refValue += SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
-//            ++borderPointCount;
-//        }
-//    }
-    foreach (QPoint pt, param.pointsVecI) {
+    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
         int x=pt.x();
         int y=pt.y();
         if((!pointsSet.contains(QPoint(x,y-1))) ||
@@ -148,7 +127,8 @@ qreal SpectralInterface::mean_of_inner_border(const AttributeParamsSingleBand &p
             refValue += SRCVAL(param.buffer, param.dataType, y * param.nXSize + x);
             ++borderPointCount;
         }
-    }
+    });
+
     refValue /= borderPointCount;
     return refValue;
 }
