@@ -1,4 +1,5 @@
 #include "cdtattributegenerator.h"
+#include <numeric>
 #include <opencv2/opencv.hpp>
 
 #ifndef Q_MOC_RUN
@@ -367,12 +368,13 @@ bool CDTAttributeGenerator::computeAttributes(
 
         for (int i=0;i<pixelCount;++i)
         {
-            rotatedPointsVec[i].setX(pointsMat.at<double>(0,i)) ;
-            rotatedPointsVec[i].setY(pointsMat.at<double>(1,i)) ;
-            if (rotatedPointsVec[i].x()<minX) minX = rotatedPointsVec[i].x();
-            if (rotatedPointsVec[i].x()>maxX) maxX = rotatedPointsVec[i].x();
-            if (rotatedPointsVec[i].y()<minY) minY = rotatedPointsVec[i].y();
-            if (rotatedPointsVec[i].y()>maxY) maxY = rotatedPointsVec[i].y();
+            double x = pointsMat.at<double>(0,i);
+            double y = pointsMat.at<double>(1,i);
+            rotatedPointsVec[i] = QPointF(x,y);
+            if (x<minX) minX = x;
+            if (x>maxX) maxX = x;
+            if (y<minY) minY = y;
+            if (y>maxY) maxY = y;
         }
 
         double longSideOfMBR  = maxX-minX;
@@ -382,10 +384,11 @@ bool CDTAttributeGenerator::computeAttributes(
         double minorSemiAxesOfAE = shortSideOfMBR * scale;
 
         QPointF rotated_center(0,0);
-        for(int i=0;i<rotatedPointsVec.size();++i)
-        {
-            rotated_center+=rotatedPointsVec[i];
-        }
+//        for(int i=0;i<rotatedPointsVec.size();++i)
+//        {
+//            rotated_center+=rotatedPointsVec[i];
+//        }
+        rotated_center = std::accumulate(rotatedPointsVec.begin(),rotatedPointsVec.end(),QPointF(0.,0.));
         rotated_center /= rotatedPointsVec.size();
 
         //buffer

@@ -57,23 +57,40 @@ QVector<qreal> TextureInterface::GLCM(const AttributeParamsSingleAngleBand &para
     refValue.clear();
     refValue.resize(_mapHaralickNames["GLCM"].size());
 
-    QVector<QPoint> pointsAnother(param.pointsVecI.size());
-    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint &pt)->QPoint
-    {
-        return pt+_offset;
-//        return QPoint(pt.x()+_offset.x(),pt.y()+_offset.y());
-    });
+//    QVector<QPoint> pointsAnother(param.pointsVecI.size());
+//    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint &pt)->QPoint
+//    {
+//        return pt+_offset;
+//    });
 
     QVector<double> glcm(SIXTEEN*SIXTEEN,0);
     int count = 0;
-    for (int i=0;i<param.pointsVecI.size();++i)
+//    for (int i=0;i<param.pointsVecI.size();++i)
+//    {
+//        if (pointsAnother[i].x() >=0 && pointsAnother[i].x() < param.nXSize && pointsAnother[i].y() >=0 && pointsAnother[i].y() < param.nYSize)
+//        {
+//            int level_1 = ( SRCVAL(param.buffer.buf,param.dataType,param.pointsVecI[i].y() * param.nXSize
+//                                   + param.pointsVecI[i].x() ) - blockOffset) / blockCount;
+//            int level_2 = ( SRCVAL(param.buffer.buf,param.dataType,pointsAnother[i].y() * param.nXSize
+//                                   + pointsAnother[i].x() ) - blockOffset) / blockCount;
+//            ++glcm[level_1*SIXTEEN + level_2];
+//            ++count;
+//        }
+//    }
+
+    qreal blockCount_1 = 1./blockCount;
+    QVector<QPoint>::const_iterator iter_pt = param.pointsVecI.begin();
+    for (;iter_pt!=param.pointsVecI.end();++iter_pt)
     {
-        if (pointsAnother[i].x() >=0 && pointsAnother[i].x() < param.nXSize && pointsAnother[i].y() >=0 && pointsAnother[i].y() < param.nYSize)
+
+        int offset_x = iter_pt->x()+_offset.x();
+        int offset_y = iter_pt->y()+_offset.y();
+        if (offset_x>=0 && offset_x < param.nXSize && offset_y >=0 && offset_y < param.nYSize)
         {
-            int level_1 = ( SRCVAL(param.buffer.buf,param.dataType,param.pointsVecI[i].y() * param.nXSize
-                                   + param.pointsVecI[i].x() ) - blockOffset) / blockCount;
-            int level_2 = ( SRCVAL(param.buffer.buf,param.dataType,pointsAnother[i].y() * param.nXSize
-                                   + pointsAnother[i].x() ) - blockOffset) / blockCount;
+            int level_1 = ( SRCVAL(param.buffer.buf,param.dataType,iter_pt->y() * param.nXSize
+                                   + iter_pt->x() ) - blockOffset) * blockCount_1;
+            int level_2 = ( SRCVAL(param.buffer.buf,param.dataType,offset_y * param.nXSize
+                                   + offset_x ) - blockOffset) * blockCount_1;
             ++glcm[level_1*SIXTEEN + level_2];
             ++count;
         }

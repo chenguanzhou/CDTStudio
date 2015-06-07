@@ -110,24 +110,77 @@ qreal SpectralInterface::min_value(const AttributeParamsSingleBand &param) const
 qreal SpectralInterface::mean_of_inner_border(const AttributeParamsSingleBand &param) const
 {
     qreal refValue =0;
+    int borderPointCount=0;
+
     QSet<QPoint> pointsSet;
+    std::vector<bool> maskBuffer(param.nXSize*param.nYSize,false);
     std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
-        pointsSet.insert(pt);
+        maskBuffer[pt.y() * param.nXSize + pt.x()] = true;
     });
 
-    int borderPointCount=0;
-    std::for_each(param.pointsVecI.begin(),param.pointsVecI.end(),[&](const QPoint &pt){
-        int x=pt.x();
-        int y=pt.y();
-        if((!pointsSet.contains(QPoint(x,y-1))) ||
-            (!pointsSet.contains(QPoint(x,y+1))) ||
-            (!pointsSet.contains(QPoint(x+1,y))) ||
-            (!pointsSet.contains(QPoint(x-1,y))))
+    for (int i=0;i<param.nYSize;++i)
+    {
+        bool isMask = maskBuffer[i*param.nXSize];
+        if (isMask)
+            pointsSet.insert(QPoint(0,i));
+        for (int j=1;j<param.nXSize-1;++j)
         {
-            refValue += SRCVAL(param.buffer, param.dataType, y * param.nXSize + x);
-            ++borderPointCount;
+            bool current = maskBuffer[i*param.nXSize+j];
+
+            if (isMask)
+            {
+                if (current)
+                    continue;
+                else
+                    pointsSet.insert(QPoint(j-1,i));
+            }
+            else
+            {
+                if (current)
+                    pointsSet.insert(QPoint(j,i));
+                else
+                    continue;
+            }
+            isMask = current;
         }
-    });
+        if (maskBuffer[i*param.nXSize+param.nXSize-1])
+            pointsSet.insert(QPoint(param.nXSize-1,i));
+    }
+
+    for (int i=0;i<param.nXSize;++i)
+    {
+        bool isMask = maskBuffer[i];
+        if (isMask)
+            pointsSet.insert(QPoint(i,0));
+        for (int j=1;j<param.nYSize-1;++j)
+        {
+            bool current = maskBuffer[j*param.nXSize+i];
+
+            if (isMask)
+            {
+                if (current)
+                    continue;
+                else
+                    pointsSet.insert(QPoint(i,j-1));
+            }
+            else
+            {
+                if (current)
+                    pointsSet.insert(QPoint(i,j));
+                else
+                    continue;
+            }
+            isMask = current;
+        }
+        if (maskBuffer[(param.nYSize-1)*param.nXSize+i])
+            pointsSet.insert(QPoint(i,param.nYSize-1));
+    }
+
+    foreach (const QPoint &pt, pointsSet) {
+        refValue += SRCVAL(param.buffer, param.dataType,pt.y() * param.nXSize + pt.x());
+        ++borderPointCount;
+    }
+
 
     refValue /= borderPointCount;
     return refValue;
