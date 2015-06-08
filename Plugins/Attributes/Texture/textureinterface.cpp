@@ -108,37 +108,43 @@ QVector<qreal> TextureInterface::GLCM(const AttributeParamsSingleAngleBand &para
     double mean2 = 0.0;
     double var1  = 0.0;
     double var2  = 0.0;
+
+    QVector<double>::const_iterator iter = glcm.begin();
     for (int j = 0; j < SIXTEEN; ++j)
     {
-        for (int k = 0; k < SIXTEEN; ++k)
+        for (int k = 0; k < SIXTEEN; ++k,++iter)
         {
-            refValue[0] += glcm[j*SIXTEEN + k] / (1+(j-k)*(j-k));
-            refValue[1] += glcm[j*SIXTEEN + k] * (j-k)*(j-k);
-            refValue[2] += glcm[j*SIXTEEN + k] * sqrt(static_cast<double>((j-k)*(j-k)));
-            mean1       += glcm[j*SIXTEEN + k] * j;
-            mean2       += glcm[j*SIXTEEN + k] * k;
-            refValue[5] += fabs(glcm[j*SIXTEEN + k])<0.00001?0:(-glcm[j*SIXTEEN + k]*log(glcm[j*SIXTEEN + k]));
-            refValue[6] += glcm[j*SIXTEEN + k] * glcm[j*SIXTEEN + k];
+//            int index = j*SIXTEEN + k;
+            refValue[0] += *iter / (1+(j-k)*(j-k));
+            refValue[1] += *iter * (j-k)*(j-k);
+            refValue[2] += *iter * sqrt(static_cast<double>((j-k)*(j-k)));
+            mean1       += *iter * j;
+            mean2       += *iter * k;
+            refValue[5] += fabs(*iter)<0.00001?0:(-*iter*log(*iter));
+            refValue[6] += *iter * *iter;
         }
     }
 
+    iter = glcm.begin();
     for (int j = 0; j < SIXTEEN; ++j)
     {
-        for (int k = 0; k < SIXTEEN; ++k)
+        for (int k = 0; k < SIXTEEN; ++k,++iter)
         {
-            var1        += glcm[j*SIXTEEN + k]*(j - mean1)*(j - mean1);
-            var2        += glcm[j*SIXTEEN + k]*(k - mean2)*(k - mean2);
+//            int index = j*SIXTEEN + k;
+            var1        += *iter*(j - mean1)*(j - mean1);
+            var2        += *iter*(k - mean2)*(k - mean2);
         }
     }
 
     refValue[3]         = mean1;
     refValue[4]         = sqrt(var1);
 
+    iter = glcm.begin();
     for (int j = 0; j < SIXTEEN; ++j)
     {
-        for (int k = 0; k < SIXTEEN; ++k)
+        for (int k = 0; k < SIXTEEN; ++k,++iter)
         {
-            refValue[7] += glcm[j*SIXTEEN + k]*(j - mean1)*(k - mean2)/sqrt(var1*var2);
+            refValue[7] += *iter *(j - mean1)*(k - mean2)/sqrt(var1*var2);
         }
     }
 
