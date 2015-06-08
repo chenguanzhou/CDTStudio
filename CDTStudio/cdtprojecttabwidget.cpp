@@ -129,15 +129,11 @@ bool CDTProjectTabWidget::closeAll()
     if(this->count()<=0)
         return true;
 
-    int tabIndex = 0;
     bool isAppClose = true;
-    for(int i=0;i<this->count();++i)
+    while (this->count()!=0)
     {
-        if (this->closeTab(tabIndex)==QMessageBox::Cancel)
-        {
-            ++tabIndex;
+        if (this->closeTab(0)==QMessageBox::Cancel)
             isAppClose = false;
-        }
     }
     return isAppClose;
 }
