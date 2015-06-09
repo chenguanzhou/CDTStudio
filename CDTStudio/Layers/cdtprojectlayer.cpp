@@ -12,6 +12,8 @@
 #include "dialognewimage.h"
 #include "dialogpbcdbinary.h"
 #include "wizardvectorchangedetection.h"
+#include "wizardpagepbcddiff.h"
+#include "wizardpagepbcdautothreshold.h"
 
 CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     CDTBaseLayer(uuid,parent),
@@ -209,8 +211,14 @@ void CDTProjectLayer::addPBCDBinaryLayer()
     if (isCDEnabled(prjID)==false)
         return;
 
-    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
-    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));
+    QWizard wizard;
+    wizard.addPage(new WizardPagePBCDDiff(prjID,&wizard));
+    wizard.addPage(new WizardPagePBCDAutoThreshold(&wizard));
+    wizard.exec();
+
+//    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
+//    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));
+
 }
 
 void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
