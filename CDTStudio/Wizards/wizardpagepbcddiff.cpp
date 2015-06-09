@@ -13,7 +13,8 @@ WizardPagePBCDDiff::WizardPagePBCDDiff(QUuid projectID,QWidget *parent) :
     QWizardPage(parent),
     ui(new Ui::WizardPagePBCDDiff),
     prjID(projectID),
-    modelImage(new QSqlQueryModel(this))
+    modelImage(new QSqlQueryModel(this)),
+    isGenerated(false)
 {
     ui->setupUi(this);
 
@@ -48,6 +49,12 @@ WizardPagePBCDDiff::WizardPagePBCDDiff(QUuid projectID,QWidget *parent) :
 WizardPagePBCDDiff::~WizardPagePBCDDiff()
 {
     delete ui;
+}
+
+bool WizardPagePBCDDiff::validatePage()
+{
+    return isGenerated;
+//    return true;
 }
 
 
@@ -133,5 +140,5 @@ void WizardPagePBCDDiff::updateGroupBoxMerge()
 
 void WizardPagePBCDDiff::generate()
 {
-
+    isGenerated = true;
 }

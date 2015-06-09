@@ -18,6 +18,8 @@ public:
     explicit WizardPagePBCDDiff(QUuid projectID,QWidget *parent = 0);
     ~WizardPagePBCDDiff();
 
+    bool validatePage();
+
 private slots:
     void onT1ImageChanged(int row);
     void onT2ImageChanged(int row);
@@ -36,6 +38,7 @@ private:
     Ui::WizardPagePBCDDiff *ui;
     QUuid prjID;
     QSqlQueryModel *modelImage;
+    bool isGenerated;
 };
 
 #endif // WIZARDPAGEPBCDDIFF_H

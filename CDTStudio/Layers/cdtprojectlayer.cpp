@@ -212,8 +212,8 @@ void CDTProjectLayer::addPBCDBinaryLayer()
         return;
 
     QWizard wizard;
-    wizard.addPage(new WizardPagePBCDDiff(prjID,&wizard));
-    wizard.addPage(new WizardPagePBCDAutoThreshold(&wizard));
+    wizard.addPage(new WizardPagePBCDDiff(prjID));
+    wizard.addPage(new WizardPagePBCDAutoThreshold());
     wizard.exec();
 
 //    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
