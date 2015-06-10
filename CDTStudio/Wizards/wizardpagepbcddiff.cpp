@@ -5,6 +5,7 @@
 #include "dialogpbcdaddbandpair.h"
 #include "cdtpbcddiffinterface.h"
 #include "cdtpbcdmergeinterface.h"
+#include "cdtpbcddiff.h"
 
 extern QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
 extern QList<CDTPBCDMergeInterface *>      pbcdMergePlugins;
@@ -20,12 +21,19 @@ WizardPagePBCDDiff::WizardPagePBCDDiff(QUuid projectID,QWidget *parent) :
 
     connect(ui->comboBoxT1Image,SIGNAL(currentIndexChanged(int)),SLOT(onT1ImageChanged(int)));
     connect(ui->comboBoxT2Image,SIGNAL(currentIndexChanged(int)),SLOT(onT2ImageChanged(int)));
+    connect(ui->comboBoxT1Image,SIGNAL(currentIndexChanged(int)),SLOT(setUnGenerated()));
+    connect(ui->comboBoxT2Image,SIGNAL(currentIndexChanged(int)),SLOT(setUnGenerated()));
 
     connect(ui->pushButtonAddBandPair,SIGNAL(clicked()),SLOT(onAddBandPair()));
     connect(ui->pushButtonAutoBand,SIGNAL(clicked()),SLOT(onAutoBand()));
     connect(ui->pushButtonRemoveBands,SIGNAL(clicked()),SLOT(onRemoveBands()));
     connect(ui->pushButtonRemoveAllBands,SIGNAL(clicked()),SLOT(clearBandPairs()));
     connect(ui->listWidgetBandPairs,SIGNAL(itemSelectionChanged()),SLOT(onSelectionChanged()));
+    connect(ui->pushButtonAddBandPair,SIGNAL(clicked()),SLOT(setUnGenerated()));
+    connect(ui->pushButtonAutoBand,SIGNAL(clicked()),SLOT(setUnGenerated()));
+    connect(ui->pushButtonRemoveBands,SIGNAL(clicked()),SLOT(setUnGenerated()));
+    connect(ui->pushButtonRemoveAllBands,SIGNAL(clicked()),SLOT(setUnGenerated()));
+    connect(ui->listWidgetBandPairs,SIGNAL(itemSelectionChanged()),SLOT(setUnGenerated()));
 
     connect(ui->pushButtonGenerate,SIGNAL(clicked()),SLOT(generate()));
 
@@ -54,7 +62,6 @@ WizardPagePBCDDiff::~WizardPagePBCDDiff()
 bool WizardPagePBCDDiff::validatePage()
 {
     return isGenerated;
-//    return true;
 }
 
 
@@ -83,6 +90,7 @@ void WizardPagePBCDDiff::onAddBandPair()
         return;
     ui->listWidgetBandPairs->addItem(newPair);
     updatePushbuttonRemoveAll();
+    updateGroupBoxMerge();
 }
 
 void WizardPagePBCDDiff::onAutoBand()
@@ -96,9 +104,8 @@ void WizardPagePBCDDiff::onAutoBand()
     this->clearBandPairs();
     for (int i=0;i<minCount;++i)
     {
-        ui->listWidgetBandPairs->addItem(QString("band%1->band%1").arg(i+1));
+        ui->listWidgetBandPairs->addItem(QString("band%1<->band%1").arg(i+1));
     }
-//    ui->listWidgetBandPairs->addItem("ave->ave");
     updatePushbuttonRemoveAll();
     updateGroupBoxMerge();
 }
@@ -135,10 +142,110 @@ void WizardPagePBCDDiff::clearBandPairs()
 
 void WizardPagePBCDDiff::updateGroupBoxMerge()
 {
-    ui->groupBoxMerge->setEnabled(!ui->listWidgetBandPairs->count()<=1);
+    ui->comboBoxMergeMethod->setEnabled(ui->listWidgetBandPairs->count()>1);
+}
+
+void WizardPagePBCDDiff::setUnGenerated()
+{
+    isGenerated = false;
+    //Remove images
+}
+
+void WizardPagePBCDDiff::generationFinished()
+{
+    this->setEnabled(true);
+    CDTPBCDDiff *thread = qobject_cast<CDTPBCDDiff *>(sender());
+    if (thread==NULL)
+        return;
+
+    if (!thread->isCompleted())//Failed
+        return;
+
+    QString outputPath = thread->outputPath;
+    isGenerated = true;
+
+    QObject *prt = this;
+    QWizard *wizard = NULL;
+    while(prt)
+    {
+        wizard = qobject_cast<QWizard *>(prt);
+        if (wizard!=NULL)
+            break;
+        prt = prt->parent();
+    }
+
+    if (wizard)
+        wizard->setProperty("FloatImage",outputPath);
+    else
+    {
+        qDebug()<<"Failed!";
+    }
+
+//    setField("Float Image",outputPath);
+//    setField("Num of Thresholds",1);
+}
+
+void WizardPagePBCDDiff::showWarningMessage(QString msg)
+{
+    QMessageBox::warning(NULL,tr("Warning"),msg);
 }
 
 void WizardPagePBCDDiff::generate()
 {
-    isGenerated = true;
+    QString t1Path = ui->labelT1Path->text();
+    QString t2Path = ui->labelT2Path->text();
+    if (t1Path.isEmpty() || t2Path.isEmpty())
+    {
+        QMessageBox::critical(this,tr("Error"),tr("Image path is empty!"));
+        return;
+    }
+
+    QList<QPair<uint,uint> > bandPairs;
+    for (int i=0;i<ui->listWidgetBandPairs->count();++i)
+    {
+        QStringList pair = ui->listWidgetBandPairs->item(i)->text().split("<->");
+        if (pair.count()<2)
+        {
+            QMessageBox::critical(this,tr("Error"),tr("One of image band pair is invalid!"));
+            return;
+        }
+        uint id1 = (pair[0]=="ave")?0:pair[0].remove("band").toUInt();
+        uint id2 = (pair[1]=="ave")?0:pair[1].remove("band").toUInt();
+
+        bandPairs.push_back(qMakePair(id1,id2));
+    }
+
+    if (ui->comboBoxDiffMethod->count()==0)
+    {
+        QMessageBox::critical(this,tr("Error"),tr("No Diff Plugin Found!"));
+        return;
+    }
+
+    if (bandPairs.count()>1 && ui->comboBoxMergeMethod->count()==0)
+    {
+        QMessageBox::critical(this,tr("Error"),tr("No Merge Plugin Found!"));
+        return;
+    }
+
+    CDTPBCDDiffInterface *diffPlugin;
+    foreach (CDTPBCDDiffInterface *plugin, pbcdDiffPlugins) {
+        if (plugin->methodName()==ui->comboBoxDiffMethod->currentText())
+        {
+            diffPlugin = plugin;
+        }
+    }
+
+    CDTPBCDMergeInterface *mergePlugin;
+    foreach (CDTPBCDMergeInterface *plugin, pbcdMergePlugins) {
+        if (plugin->methodName()==ui->comboBoxMergeMethod->currentText())
+        {
+            mergePlugin = plugin;
+        }
+    }
+
+    this->setEnabled(false);
+    CDTPBCDDiff *thread = new CDTPBCDDiff(t1Path,t2Path,bandPairs,diffPlugin,mergePlugin,this);
+    connect(thread,SIGNAL(finished()),SLOT(generationFinished()));
+    connect(thread,SIGNAL(showWarningMessage(QString)),SLOT(showWarningMessage(QString)));
+    thread->start();
 }

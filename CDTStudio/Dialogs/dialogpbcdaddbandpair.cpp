@@ -8,7 +8,7 @@ QString DialogPBCDAddBandPair::getNewPair(QString path1,
 {    
     DialogPBCDAddBandPair dlg(path1,path2);
     if (dlg.exec()==QDialog::Accepted)
-        return dlg.ui->listWidgetT1->currentItem()->text() + "->" +
+        return dlg.ui->listWidgetT1->currentItem()->text() + "<->" +
                 dlg.ui->listWidgetT2->currentItem()->text();
     else
         return QString::null;

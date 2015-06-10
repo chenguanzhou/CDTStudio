@@ -12,13 +12,16 @@ QString RMS::methodName() const
     return "Root Mean Square";
 }
 
-float RMS::merge(QVector<float> buffer)
+float RMS::merge(QVector<float>::const_iterator begin, QVector<float>::const_iterator end)
 {
-    std::transform(buffer.begin(),buffer.end(),buffer.begin(),[](float &val)->float{
-        return val*val;
+    int count = 0;
+    float result = 0;
+    std::for_each(begin,end,[&](const float &val){
+        result += val*val;
+        ++count;
     });
-    float result = std::accumulate(buffer.begin(),buffer.end(),0);
-    return sqrt(result/buffer.size());
+//    float result = std::accumulate(begin.begin(),begin.begin()+end,0);
+    return sqrt(result/count);
 }
 
 #if QT_VERSION < 0x050000

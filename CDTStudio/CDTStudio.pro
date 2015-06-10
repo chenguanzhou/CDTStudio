@@ -22,7 +22,6 @@ SOURCES += main.cpp\
     cdtprojecttabwidget.cpp \
     cdtprojectwidget.cpp \
     cdtprojecttreeitem.cpp \
-    cdtattributegenerator.cpp \
     cdtapplication.cpp \    
     cdtrecentfile.cpp
 
@@ -31,8 +30,6 @@ HEADERS  += \
     cdtprojecttabwidget.h \
     cdtprojectwidget.h \
     cdtprojecttreeitem.h \
-    cdtattributegenerator.h \
-    cdtbasethread.h \
     cdtvariantconverter.h \
     cdtapplication.h \ 
     cdtrecentfile.h

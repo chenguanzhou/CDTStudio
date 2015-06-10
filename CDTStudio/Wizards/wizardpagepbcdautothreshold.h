@@ -15,6 +15,8 @@ public:
     explicit WizardPagePBCDAutoThreshold(QWidget *parent = 0);
     ~WizardPagePBCDAutoThreshold();
 
+    void initializePage();
+
 private:
     Ui::WizardPagePBCDAutoThreshold *ui;
 };

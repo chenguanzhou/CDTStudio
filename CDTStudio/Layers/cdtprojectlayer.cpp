@@ -212,6 +212,7 @@ void CDTProjectLayer::addPBCDBinaryLayer()
         return;
 
     QWizard wizard;
+    wizard.setWindowTitle(tr("Pixel-based Change Detection Wizard"));
     wizard.addPage(new WizardPagePBCDDiff(prjID));
     wizard.addPage(new WizardPagePBCDAutoThreshold());
     wizard.exec();

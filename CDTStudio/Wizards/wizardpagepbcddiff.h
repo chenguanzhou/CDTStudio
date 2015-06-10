@@ -32,6 +32,10 @@ private slots:
     void clearBandPairs();
 
     void updateGroupBoxMerge();
+    void setUnGenerated();
+
+    void generationFinished();
+    void showWarningMessage(QString msg);
     void generate();
 
 private:
