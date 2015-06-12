@@ -2,6 +2,7 @@
 #include "ui_wizardpagepbcddiff.h"
 
 #include "stable.h"
+#include "cdtimagelayer.h"
 #include "dialogpbcdaddbandpair.h"
 #include "cdtpbcddiffinterface.h"
 #include "cdtpbcdmergeinterface.h"
@@ -67,16 +68,18 @@ bool WizardPagePBCDDiff::validatePage()
 
 void WizardPagePBCDDiff::onT1ImageChanged(int row)
 {
-    QString path = modelImage->data(modelImage->index(row,2)).toString();
-    ui->labelT1Path->setText(path);
+    QString id = modelImage->data(modelImage->index(row,1)).toString();
+    CDTImageLayer* layer = CDTImageLayer::getLayer(QUuid(id));
+    ui->labelT1Path->setText(layer->absolutPath());
 
     clearBandPairs();
 }
 
 void WizardPagePBCDDiff::onT2ImageChanged(int row)
 {
-    QString path = modelImage->data(modelImage->index(row,2)).toString();
-    ui->labelT2Path->setText(path);
+    QString id = modelImage->data(modelImage->index(row,1)).toString();
+    CDTImageLayer* layer = CDTImageLayer::getLayer(QUuid(id));
+    ui->labelT2Path->setText(layer->absolutPath());
 
     clearBandPairs();
 }
@@ -247,5 +250,9 @@ void WizardPagePBCDDiff::generate()
     CDTPBCDDiff *thread = new CDTPBCDDiff(t1Path,t2Path,bandPairs,diffPlugin,mergePlugin,this);
     connect(thread,SIGNAL(finished()),SLOT(generationFinished()));
     connect(thread,SIGNAL(showWarningMessage(QString)),SLOT(showWarningMessage(QString)));
+    connect(thread,SIGNAL(currentProgressChanged(QString)),ui->labelProgress,SLOT(setText(QString)));
+    connect(thread,SIGNAL(progressBarSizeChanged(int,int)),ui->progressBar,SLOT(setRange(int,int)));
+    connect(thread,SIGNAL(progressBarValueChanged(int)),ui->progressBar,SLOT(setValue(int)));
+
     thread->start();
 }

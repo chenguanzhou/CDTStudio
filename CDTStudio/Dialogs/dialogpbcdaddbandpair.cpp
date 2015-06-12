@@ -23,8 +23,24 @@ DialogPBCDAddBandPair::DialogPBCDAddBandPair(QString path1,
     ui->setupUi(this);
     ui->labelT1->setText(path1);
     ui->labelT2->setText(path2);
-    setListWidget(QgsRasterLayer(path1).bandCount(),ui->listWidgetT1);
-    setListWidget(QgsRasterLayer(path2).bandCount(),ui->listWidgetT2);
+    GDALDataset *poSrcDS1 = NULL;
+    GDALDataset *poSrcDS2 = NULL;
+    try
+    {
+        poSrcDS1 = (GDALDataset *)GDALOpen(path1.toUtf8().constData(),GA_ReadOnly);
+        poSrcDS2 = (GDALDataset *)GDALOpen(path2.toUtf8().constData(),GA_ReadOnly);
+        if (poSrcDS1==NULL || poSrcDS2==NULL)
+            throw tr("Image path is not valid");
+        setListWidget(poSrcDS1->GetRasterCount(),ui->listWidgetT1);
+        setListWidget(poSrcDS2->GetRasterCount(),ui->listWidgetT2);
+    }
+    catch (const QString msg)
+    {
+        QMessageBox::warning(this,tr("Warning"),msg);
+    }
+
+    GDALClose(poSrcDS1);
+    GDALClose(poSrcDS2);
 }
 
 DialogPBCDAddBandPair::~DialogPBCDAddBandPair()

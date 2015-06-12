@@ -57,6 +57,8 @@ void CDTPBCDDiff::run()
             return poAveDS->GetRasterBand(1);
         else //Create
         {                        
+            emit currentProgressChanged(tr("Compute average band"));
+
             const int width = poSrcDS->GetRasterXSize();
             const int height = poSrcDS->GetRasterYSize();
             const int bandCount = poSrcDS->GetRasterCount();
@@ -72,11 +74,13 @@ void CDTPBCDDiff::run()
             nYBlocks = (height + nYBlockSize - 1) / nYBlockSize;
             QVector<float> dataOut(nXBlockSize * nYBlockSize,0);
 
+            emit progressBarSizeChanged(0,nYBlocks*nXBlocks);
+            int progressVal = 0;
             for( iYBlock = 0; iYBlock < nYBlocks; ++iYBlock )
             {
                 int nYOff = iYBlock*nYBlockSize;
 
-                for( iXBlock = 0; iXBlock < nXBlocks; ++iXBlock )
+                for( iXBlock = 0; iXBlock < nXBlocks; ++iXBlock,++progressVal )
                 {
                     int nXValid, nYValid;
                     if( (iXBlock+1) * nXBlockSize > width )
@@ -107,6 +111,7 @@ void CDTPBCDDiff::run()
                         val /= bandCount;
                     });
                     poAveBand->WriteBlock(iXBlock,iYBlock,&dataOut[0]);
+                    emit progressBarValueChanged(progressVal);
                 }
             }
             return poAveBand;
@@ -138,6 +143,8 @@ void CDTPBCDDiff::run()
         }
     };
 
+
+    //Start
     GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
     GDALDataset *poT1DS = NULL;
     GDALDataset *poT2DS = NULL;
@@ -157,7 +164,7 @@ void CDTPBCDDiff::run()
     {
         QTime t;
         t.start();
-        //1. Init
+        //1. Init        
         if (bandPairs.count()==0)
             throw tr("No band pair selected!");
 
@@ -166,6 +173,14 @@ void CDTPBCDDiff::run()
 
         if (bandPairs.count()>1 && mergePlugin==NULL)
             throw tr("No PBCD Merge plugin found!");
+
+        connect(diffPlugin,SIGNAL(currentProgressChanged(QString)),this,SIGNAL(currentProgressChanged(QString)));
+        connect(diffPlugin,SIGNAL(progressBarSizeChanged(int,int)),this,SIGNAL(progressBarSizeChanged(int,int)));
+        connect(diffPlugin,SIGNAL(progressBarValueChanged(int)),this,SIGNAL(progressBarValueChanged(int)));
+
+        emit currentProgressChanged(tr("Initialize"));
+        emit progressBarSizeChanged(0,100);
+        emit progressBarValueChanged(-1);
 
         poT1DS = OpenGDALDataset(t1Path);
         poT2DS = OpenGDALDataset(t2Path);
@@ -183,6 +198,7 @@ void CDTPBCDDiff::run()
 
         qDebug()<<"Init:"<<t.restart()<<"ms";
         //2. Create Diff Image
+
         poDiffDS = CreateTiffDataset(diffPath,width,height,bandPairs.count(),GDT_Float32);
         double geoTransform[6];
         poT1DS->GetGeoTransform(geoTransform);
@@ -225,12 +241,16 @@ void CDTPBCDDiff::run()
         }
         else//Single threshold
         {
+            emit currentProgressChanged(tr("Merge the result"));
+            emit progressBarSizeChanged(0,100);
+            emit progressBarValueChanged(-1);
             poMergeDS = CreateTiffDataset(mergePath.toUtf8().constData(),width,height,1,GDT_Float32);
             poMergeDS->SetGeoTransform(geoTransform);
             poMergeDS->SetProjection(projectionRef);
 
             Merge(poDiffDS,poMergeDS,mergePlugin);
             outputPath = mergePath;
+            emit progressBarValueChanged(100);
         }
         completed = true;
 

@@ -15,6 +15,11 @@ public:
     virtual QString methodName()const =0;
 
     virtual QString generateDiffImage(QList<QPair<GDALRasterBand*,GDALRasterBand*> > poBands,GDALDataset* outDiffDS) =0;
+
+signals:
+    void currentProgressChanged(QString);
+    void progressBarValueChanged(int);//0-100
+    void progressBarSizeChanged(int,int);
 };
 
 Q_DECLARE_INTERFACE(CDTPBCDDiffInterface,"cn.edu.WHU.CDTStudio.CDTPBCDDiffInterface/1.0")

@@ -13,9 +13,11 @@ QString ImageDifferencing::methodName() const
 }
 
 QString ImageDifferencing::generateDiffImage(QList<QPair<GDALRasterBand *, GDALRasterBand *> > poBands, GDALDataset *outDiffDS)
-{
+{    
     for (int i=0;i<poBands.size();++i)
     {
+        emit currentProgressChanged(tr("Generate difference image(band%1)").arg(i+1));
+
         GDALRasterBand* poBand1 = poBands.value(i).first;
         GDALRasterBand* poBand2 = poBands.value(i).second;
         GDALRasterBand* poBandDiff = outDiffDS->GetRasterBand(i+1);
@@ -80,6 +82,7 @@ QString ImageDifferencing::generateDiffImage(QList<QPair<GDALRasterBand *, GDALR
 //        }
 //        delete []bufferRes;
 
+        emit progressBarSizeChanged(0,height);
         uchar* bufferT1 = new uchar[dataSize*width];
         uchar* bufferT2 = new uchar[dataSize*width];
         float* bufferRes = new float[width];
@@ -105,6 +108,7 @@ QString ImageDifferencing::generateDiffImage(QList<QPair<GDALRasterBand *, GDALR
             ret = poBandDiff->RasterIO(GF_Write,0,row,width,1,bufferRes,width,1,GDT_Float32,0,0);
             if (ret != CE_None)
                 return tr("Write diff image failed");
+            emit progressBarValueChanged(row);
         }
         delete []bufferT1;
         delete []bufferT2;
