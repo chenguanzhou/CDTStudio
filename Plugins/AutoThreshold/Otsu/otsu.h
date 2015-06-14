@@ -20,8 +20,8 @@ public:
     float autoThreshold(QVector<int> data);
 
 private:
-    float var(const QVector<int> &data, int from, int to, float mean);
-    float ratio(int count1,int count2,float var1,float var2,float mean1,float mean2);
+//    float var(const QVector<int> &data, int from, int to, float mean);
+    double ratio(int count1, int count2, double mean1, double mean2);
 };
 
 #endif // GENERICPLUGIN_H

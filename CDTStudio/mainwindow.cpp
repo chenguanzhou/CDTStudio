@@ -24,7 +24,7 @@
 #include "cdtprojecttreeitem.h"
 #include "cdtundowidget.h"
 #include "cdtlayerinfowidget.h"
-#include "cdttaskdockwidget.h"
+//#include "cdttaskdockwidget.h"
 
 #include "dialogconsole.h"
 
@@ -64,8 +64,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),recentFile,SLOT(addFile(QString)));
     connect(recentFile,SIGNAL(filesChanged(QStringList)),SLOT(updateRecentFiles(QStringList)));
 
-    connect(qApp,SIGNAL(taskInfoUpdated(QString ,int ,QString ,int ,int )),dockWidgetTask,SLOT(updateTaskInfo(QString,int,QString,int,int)));
-    connect(qApp,SIGNAL(taskCompleted(QString ,QByteArray )),dockWidgetTask,SLOT(onTaskCompleted(QString ,QByteArray)));
+//    connect(qApp,SIGNAL(taskInfoUpdated(QString ,int ,QString ,int ,int )),dockWidgetTask,SLOT(updateTaskInfo(QString,int,QString,int,int)));
+//    connect(qApp,SIGNAL(taskCompleted(QString ,QByteArray )),dockWidgetTask,SLOT(onTaskCompleted(QString ,QByteArray)));
 
     QSettings setting("WHU","CDTStudio");
     this->restoreGeometry(setting.value("geometry").toByteArray());
@@ -206,11 +206,11 @@ void MainWindow::initStatusBar()
     connect( scaleEdit, SIGNAL( scaleChanged() ), this, SLOT( userScale() ) );
 
     //CDTDockWidgetTask
-    QPushButton *pushButtonTask = new QPushButton(tr("Show task progress"),this);
-    pushButtonTask->setCheckable(true);
-    connect(pushButtonTask,SIGNAL(toggled(bool)),SLOT(updateTaskDock()));
-    connect(pushButtonTask,SIGNAL(toggled(bool)),dockWidgetTask,SLOT(setVisible(bool)));
-    statusBar()->addPermanentWidget(pushButtonTask , 0 );
+//    QPushButton *pushButtonTask = new QPushButton(tr("Show task progress"),this);
+//    pushButtonTask->setCheckable(true);
+//    connect(pushButtonTask,SIGNAL(toggled(bool)),SLOT(updateTaskDock()));
+//    connect(pushButtonTask,SIGNAL(toggled(bool)),dockWidgetTask,SLOT(setVisible(bool)));
+//    statusBar()->addPermanentWidget(pushButtonTask , 0 );
 
     logger()->info("StatusBar initialized");
 }
@@ -250,7 +250,7 @@ void MainWindow::initDockWidgets()
     dockWidgetLayerInfo->setObjectName("dockWidgetLayerInfo");
     registerDocks(Qt::LeftDockWidgetArea,dockWidgetLayerInfo);
 
-    dockWidgetTask = new CDTTaskDockWidget(this);
+//    dockWidgetTask = new CDTTaskDockWidget(this);
 
     logger()->info("Docks initialized");
 }
@@ -316,10 +316,10 @@ CDTLayerInfoWidget *MainWindow::getLayerInfoWidget()
     return mainWindow->dockWidgetLayerInfo;
 }
 
-CDTTaskDockWidget *MainWindow::getTaskDockWIdget()
-{
-    return mainWindow->dockWidgetTask;
-}
+//CDTTaskDockWidget *MainWindow::getTaskDockWIdget()
+//{
+//    return mainWindow->dockWidgetTask;
+//}
 
 CDTProjectWidget *MainWindow::getCurrentProjectWidget()
 {
@@ -575,12 +575,12 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
     }
 }
 
-void MainWindow::updateTaskDock()
-{
-    QRect rect = this->geometry();
-    dockWidgetTask->resize(rect.width()/2,rect.height()/3);
-    dockWidgetTask->move(QPoint( rect.left()+rect.width()/2,rect.top()+rect.height()*2/3- ui->statusBar->height()));
-}
+//void MainWindow::updateTaskDock()
+//{
+//    QRect rect = this->geometry();
+//    dockWidgetTask->resize(rect.width()/2,rect.height()/3);
+//    dockWidgetTask->move(QPoint( rect.left()+rect.width()/2,rect.top()+rect.height()*2/3- ui->statusBar->height()));
+//}
 
 void MainWindow::clearAllDocks()
 {
@@ -591,13 +591,13 @@ void MainWindow::clearAllDocks()
 
 void MainWindow::moveEvent(QMoveEvent *e)
 {
-    updateTaskDock();
+//    updateTaskDock();
     QMainWindow::moveEvent(e);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *e)
 {
-    updateTaskDock();
+//    updateTaskDock();
     QMainWindow::resizeEvent(e);
 }
 

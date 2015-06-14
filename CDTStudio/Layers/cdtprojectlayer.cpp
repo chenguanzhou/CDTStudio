@@ -6,7 +6,7 @@
 #include "cdtimagelayer.h"
 #include "cdtpixelchangelayer.h"
 #include "cdtfilesystem.h"
-#include "cdttaskdockwidget.h"
+//#include "cdttaskdockwidget.h"
 #include "cdtpbcdbinarylayer.h"
 #include "cdtvectorchangelayer.h"
 #include "dialognewimage.h"
@@ -222,34 +222,34 @@ void CDTProjectLayer::addPBCDBinaryLayer()
 
 }
 
-void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
-{
-    CDTTaskReply *reply = qobject_cast<CDTTaskReply *>(sender());
+//void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
+//{
+//    CDTTaskReply *reply = qobject_cast<CDTTaskReply *>(sender());
 
-    QDataStream in(result);
+//    QDataStream in(result);
 
-    QVariantMap params;
-    in>>params;
+//    QVariantMap params;
+//    in>>params;
 
-    QString diffImageID = QUuid::createUuid().toString();
-    QString diffPath = params.value("diffPath").toString();
-    fileSystem->registerFile(diffImageID,diffPath,QString(),QString(),
-                             CDTFileSystem::getShapefileAffaliated(diffPath));
+//    QString diffImageID = QUuid::createUuid().toString();
+//    QString diffPath = params.value("diffPath").toString();
+//    fileSystem->registerFile(diffImageID,diffPath,QString(),QString(),
+//                             CDTFileSystem::getShapefileAffaliated(diffPath));
 
-    params.insert("diffImageID",diffImageID);
-    params.remove("diffPath");
+//    params.insert("diffImageID",diffImageID);
+//    params.remove("diffPath");
 
-    CDTPBCDBinaryLayer *layer = new CDTPBCDBinaryLayer(QUuid::createUuid(),this);
-    layer->initLayer(
-                reply->property("name").toString(),
-                reply->property("image_t1").toString(),
-                reply->property("image_t2").toString(),
-                params);
-    pixelChangesRoot->appendRow(layer->standardKeyItem());
-    pixelChanges.push_back(layer);
+//    CDTPBCDBinaryLayer *layer = new CDTPBCDBinaryLayer(QUuid::createUuid(),this);
+//    layer->initLayer(
+//                reply->property("name").toString(),
+//                reply->property("image_t1").toString(),
+//                reply->property("image_t2").toString(),
+//                params);
+//    pixelChangesRoot->appendRow(layer->standardKeyItem());
+//    pixelChanges.push_back(layer);
 
-    emit layerChanged();
-}
+//    emit layerChanged();
+//}
 
 void CDTProjectLayer::removePixelChangeLayer(CDTPixelChangeLayer *layer)
 {

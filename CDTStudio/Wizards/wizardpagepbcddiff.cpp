@@ -6,7 +6,7 @@
 #include "dialogpbcdaddbandpair.h"
 #include "cdtpbcddiffinterface.h"
 #include "cdtpbcdmergeinterface.h"
-#include "cdtpbcddiff.h"
+#include "cdtpbcdhelper.h"
 
 extern QList<CDTPBCDDiffInterface *>       pbcdDiffPlugins;
 extern QList<CDTPBCDMergeInterface *>      pbcdMergePlugins;
@@ -53,6 +53,7 @@ WizardPagePBCDDiff::WizardPagePBCDDiff(QUuid projectID,QWidget *parent) :
     }
 
     ui->pushButtonAutoBand->click();
+//    qDebug()<<"hehe";
 }
 
 WizardPagePBCDDiff::~WizardPagePBCDDiff()

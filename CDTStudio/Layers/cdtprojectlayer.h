@@ -39,7 +39,7 @@ public slots:
 
 
     void addPBCDBinaryLayer();
-    void addPBCDBinaryLayer(QByteArray result);
+//    void addPBCDBinaryLayer(QByteArray result);
     void removePixelChangeLayer(CDTPixelChangeLayer *layer);
     void removeAllPixelChangeLayers();
 

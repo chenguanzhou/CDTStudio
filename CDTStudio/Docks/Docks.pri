@@ -7,7 +7,6 @@ HEADERS += \
     $$PWD/cdtextractiondockwidget.h \
     $$PWD/cdtlayerinfowidget.h \
     $$PWD/cdtundowidget.h \
-    $$PWD/cdttaskdockwidget.h \
     $$PWD/cdtplot2ddockwidget.h \
     $$PWD/cdtcategorydockwidget.h\
     $$PWD/MapTools/cdtmaptoolselecttrainingsamples.h \
@@ -20,7 +19,6 @@ SOURCES += \
     $$PWD/cdtextractiondockwidget.cpp \
     $$PWD/cdtlayerinfowidget.cpp \
     $$PWD/cdtundowidget.cpp \
-    $$PWD/cdttaskdockwidget.cpp \
     $$PWD/cdtplot2ddockwidget.cpp \
     $$PWD/cdtcategorydockwidget.cpp\
     $$PWD/MapTools/cdtmaptoolselecttrainingsamples.cpp \

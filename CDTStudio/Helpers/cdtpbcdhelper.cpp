@@ -1,4 +1,4 @@
-#include "cdtpbcddiff.h"
+#include "cdtpbcdhelper.h"
 #include <gdal_priv.h>
 #include "cdtpbcddiffinterface.h"
 #include "cdtpbcdmergeinterface.h"
@@ -298,3 +298,97 @@ bool CDTPBCDDiff::isCompleted() const
     return completed;
 }
 
+
+
+CDTPBCDGenerateResult::CDTPBCDGenerateResult(GDALDataset *mergeDS, GDALDataset *resultDS,int numOfThresholds, double posT, double negT, QObject *parent)
+    :CDTBaseThread(parent),poMergeDS(mergeDS),poResultDS(resultDS)
+{
+    this->numOfThresholds = numOfThresholds;
+    this->posT = posT;
+    this->negT = negT;
+}
+
+CDTPBCDGenerateResult::~CDTPBCDGenerateResult()
+{
+
+}
+
+void CDTPBCDGenerateResult::run()
+{
+    try
+    {
+        emit currentProgressChanged(tr("Generate Result"));
+
+        int width = poMergeDS->GetRasterXSize();
+        int height = poMergeDS->GetRasterYSize();
+
+        emit progressBarSizeChanged(0,height);
+
+        GDALRasterBand *poMergeBand = poMergeDS->GetRasterBand(1);
+        GDALRasterBand *poResultBand = poResultDS->GetRasterBand(1);
+
+        //Two functor to generate result
+        auto funcSingleThreshold = [=](const float& val)->uchar{
+            return val>posT?255:0;
+        };
+
+        auto funcDoubleThreshold = [=](const float& val)->uchar{
+            return (val>negT&&val<posT)?0:255;
+        };
+
+        std::vector<float> bufferIn(width);
+        std::vector<uchar> bufferOut(width);
+        for (int i=0;i<height;++i)
+        {
+            poMergeBand->RasterIO(GF_Read,0,i,width,1,&bufferIn[0],width,1,GDT_Float32,0,0);
+            if (numOfThresholds==1)
+                std::transform(bufferIn.begin(),bufferIn.end(),bufferOut.begin(),funcSingleThreshold);
+            else
+                std::transform(bufferIn.begin(),bufferIn.end(),bufferOut.begin(),funcDoubleThreshold);
+
+            poResultBand->RasterIO(GF_Write,0,i,width,1,&bufferOut[0],width,1,GDT_Byte,0,0);
+            emit progressBarValueChanged(i);
+        }
+
+        emit progressBarValueChanged(height);
+    }
+    catch (const QString& msg)
+    {
+        emit showWarningMessage(msg);
+    }
+    GDALClose(poMergeDS);
+    GDALClose(poResultDS);
+}
+
+
+CDTPBCDHistogramHelper::CDTPBCDHistogramHelper(GDALDataset *ds, int numOfThresholds, QObject *parent)
+    :CDTBaseThread(parent),poDS(ds),histogramPositive(256),histogramNegetive(256)
+{
+    this->numOfThresholds = numOfThresholds;
+}
+
+void CDTPBCDHistogramHelper::run()
+{
+    emit currentProgressChanged(tr("Computing the histogram"));
+    emit progressBarSizeChanged(0,100);
+    emit progressBarValueChanged(-1);
+
+    GDALRasterBand *poBand = poDS->GetRasterBand(1);
+
+    maxVal = poBand->GetMaximum();
+    minVal = poBand->GetMinimum();
+
+    histogramPositive.fill(0);
+    histogramNegetive.fill(0);
+    if (numOfThresholds==1)
+    {
+        poBand->GetHistogram(minVal,maxVal,256,&histogramPositive[0],false,false,NULL,NULL);
+    }
+    else if (numOfThresholds==2)
+    {
+        poBand->GetHistogram(0,maxVal,256,&histogramPositive[0],false,false,NULL,NULL);
+        poBand->GetHistogram(minVal,0,256,&histogramNegetive[0],false,false,NULL,NULL);
+    }
+    GDALClose(poDS);
+    emit progressBarValueChanged(100);
+}

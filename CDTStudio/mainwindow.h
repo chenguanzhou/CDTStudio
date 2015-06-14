@@ -63,7 +63,7 @@ public:
     static CDTExtractionDockWidget      *getExtractionDockWidget();
     static CDTUndoWidget                *getUndoWidget();
     static CDTLayerInfoWidget           *getLayerInfoWidget();
-    static CDTTaskDockWidget            *getTaskDockWIdget();
+//    static CDTTaskDockWidget            *getTaskDockWIdget();
     static CDTProjectWidget             *getCurrentProjectWidget();
     static QgsMapCanvas                 *getCurrentMapCanvas();
 
@@ -89,7 +89,7 @@ private slots:
     void on_treeViewObjects_customContextMenuRequested(const QPoint &pos);
     void on_treeViewObjects_clicked(const QModelIndex &index);
 
-    void updateTaskDock();
+//    void updateTaskDock();
     void clearAllDocks();
 
 protected:
@@ -109,7 +109,7 @@ private:
     CDTExtractionDockWidget         *dockWidgetExtraction;
     CDTUndoWidget                   *dockWidgetUndo;
     CDTLayerInfoWidget              *dockWidgetLayerInfo;
-    CDTTaskDockWidget               *dockWidgetTask;
+//    CDTTaskDockWidget               *dockWidgetTask;
 
     QAction *actionNew;
     QAction *actionOpen;

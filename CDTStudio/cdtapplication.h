@@ -3,7 +3,7 @@
 
 #include "QtGlobal"
 #include "qgsapplication.h"
-#include "cdttaskdockwidget.h"
+//#include "cdttaskdockwidget.h"
 
 class CDTApplication;
 class QProcess;
@@ -23,13 +23,13 @@ public:
     ~CDTApplication();
 
     static QString getStyleSheetByName(QString styleName);
-signals:
-    void taskInfoUpdated(QString id,int status,QString currentStep,int currentProgress,int totalProgress);
-    void taskCompleted(QString id,QByteArray result);
+//signals:
+//    void taskInfoUpdated(QString id,int status,QString currentStep,int currentProgress,int totalProgress);
+//    void taskCompleted(QString id,QByteArray result);
 
-public slots:
-    void sendTask(const QByteArray &data);
-    void readMessage();
+//public slots:
+//    void sendTask(const QByteArray &data);
+//    void readMessage();
 
 private:
     void initPlugins();
@@ -38,11 +38,11 @@ private:
     void initStxxl();
     #endif
 
-    QProcess *processor;
-    QUdpSocket* udpReceiver;
-    QUdpSocket* udpSender;
-    qint16 portUpload;
-    qint16 portDownload;    
+//    QProcess *processor;
+//    QUdpSocket* udpReceiver;
+//    QUdpSocket* udpSender;
+//    qint16 portUpload;
+//    qint16 portDownload;
 };
 
 #endif // CDTAPPLICATION_H
