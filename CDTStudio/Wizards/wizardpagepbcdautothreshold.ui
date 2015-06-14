@@ -57,29 +57,29 @@
          <string>Positive Threshold</string>
         </property>
         <property name="buddy">
-         <cstring>doubleSpinBoxMinT</cstring>
+         <cstring>doubleSpinBoxPosT</cstring>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBoxMinT">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxPosT">
         <property name="maximum">
          <double>99999.990000000005239</double>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="labelNeg">
         <property name="text">
          <string>Negetive Threshold</string>
         </property>
         <property name="buddy">
-         <cstring>doubleSpinBoxMaxT</cstring>
+         <cstring>doubleSpinBoxNegT</cstring>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxT">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxNegT">
         <property name="minimum">
          <double>-9999999.000000000000000</double>
         </property>

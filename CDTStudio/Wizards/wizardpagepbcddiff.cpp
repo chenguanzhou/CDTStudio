@@ -164,9 +164,6 @@ void WizardPagePBCDDiff::generationFinished()
     if (!thread->isCompleted())//Failed
         return;
 
-    QString outputPath = thread->outputPath;
-    isGenerated = true;
-
     QObject *prt = this;
     QWizard *wizard = NULL;
     while(prt)
@@ -178,7 +175,11 @@ void WizardPagePBCDDiff::generationFinished()
     }
 
     if (wizard)
-        wizard->setProperty("FloatImage",outputPath);
+    {
+        wizard->setProperty("FloatImage",thread->outputPath);
+        wizard->setProperty("NumOfThresholds",thread->numOfThresholds);
+        isGenerated = true;
+    }
     else
     {
         qDebug()<<"Failed!";

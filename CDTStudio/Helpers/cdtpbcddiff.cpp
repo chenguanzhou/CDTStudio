@@ -5,6 +5,7 @@
 
 CDTPBCDDiff::CDTPBCDDiff(const QString &T1Path, const QString &T2Path, QList<QPair<uint, uint> > BandPairs, CDTPBCDDiffInterface *DiffPlugin, CDTPBCDMergeInterface *MergePlugin, QObject *parent)
     :CDTBaseThread(parent),
+      numOfThresholds(0),
       t1Path(T1Path),
       t2Path(T2Path),
       bandPairs(BandPairs),
@@ -119,13 +120,15 @@ void CDTPBCDDiff::run()
     };
 
     //A Lambda Functor to Merge
-    auto Merge = [](GDALDataset *poDS,GDALDataset *poMerged,CDTPBCDMergeInterface *mergePlugin){
+    auto Merge = [this](GDALDataset *poDS,GDALDataset *poMerged,CDTPBCDMergeInterface *mergePlugin){
         int width = poDS->GetRasterXSize();
         int height = poDS->GetRasterYSize();
         int bandCount = poDS->GetRasterCount();
 
         GDALRasterBand *poBand = poMerged->GetRasterBand(1);
 
+        emit currentProgressChanged(tr("Merge the result"));
+        emit progressBarSizeChanged(0,height);
         QVector<float> buffer(bandCount*width);
         QVector<float> result_buffer(width);
         for (int i=0;i<height;++i)
@@ -140,6 +143,7 @@ void CDTPBCDDiff::run()
                 *iter_out = result;
             }
             poBand->RasterIO(GF_Write,0,i,width,1,&result_buffer[0],width,1,GDT_Float32,0,0);
+            emit progressBarValueChanged(i);
         }
     };
 
@@ -238,20 +242,30 @@ void CDTPBCDDiff::run()
         {
             poMergeDS = poDiffDS;
             outputPath = diffPath;
+            numOfThresholds = 2;
         }
         else//Single threshold
         {
-            emit currentProgressChanged(tr("Merge the result"));
-            emit progressBarSizeChanged(0,100);
-            emit progressBarValueChanged(-1);
             poMergeDS = CreateTiffDataset(mergePath.toUtf8().constData(),width,height,1,GDT_Float32);
             poMergeDS->SetGeoTransform(geoTransform);
             poMergeDS->SetProjection(projectionRef);
 
             Merge(poDiffDS,poMergeDS,mergePlugin);
             outputPath = mergePath;
-            emit progressBarValueChanged(100);
+            numOfThresholds = 1;
         }
+
+        //5. Compute MinMax
+
+        emit currentProgressChanged(tr("Compute MinMax Value"));
+        emit progressBarSizeChanged(0,100);
+        emit progressBarValueChanged(-1);
+        for (int k=0;k<poMergeDS->GetRasterCount();++k)
+        {
+            GDALRasterBand *poBand = poMergeDS->GetRasterBand(k+1);
+            poBand->ComputeStatistics(0,NULL,NULL,NULL,NULL,NULL,NULL);
+        }
+        emit progressBarValueChanged(100);
         completed = true;
 
         qDebug()<<"Merge:"<<t.elapsed()<<"ms";

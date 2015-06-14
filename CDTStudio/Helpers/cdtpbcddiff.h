@@ -23,6 +23,7 @@ public:
     void run();
     bool isCompleted()const;
     QString outputPath;
+    int numOfThresholds;
 
 private:
     QString t1Path;

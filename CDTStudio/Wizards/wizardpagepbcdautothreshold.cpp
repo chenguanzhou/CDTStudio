@@ -1,5 +1,6 @@
 #include "wizardpagepbcdautothreshold.h"
 #include "ui_wizardpagepbcdautothreshold.h"
+#include "stable.h"
 #include "cdtautothresholdinterface.h"
 
 extern QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
@@ -31,11 +32,30 @@ void WizardPagePBCDAutoThreshold::initializePage()
         prt = prt->parent();
     }
 
-    if (wizard)
+    if (wizard==NULL)
+        return;
+
+    QString imagePath = wizard->property("FloatImage").toString();
+    int numOfThresholds = wizard->property("NumOfThresholds").toInt();
+    ui->labelNeg->setEnabled(numOfThresholds!=1);
+    ui->doubleSpinBoxNegT->setEnabled(numOfThresholds!=1);
+
+    GDALDataset *poDS = (GDALDataset *)GDALOpen(imagePath.toUtf8().constData(),GA_ReadOnly);
+    if (poDS==NULL)
     {
-        QString imagePath = wizard->property("FloatImage").toString();
-        qDebug()<<"WizardPagePBCDAutoThreshold"<<imagePath;
+        qDebug()<<"Null dataset!";
+        return;
     }
-    else
-        qDebug()<<"Nothing";
+
+    GDALRasterBand *poBand = poDS->GetRasterBand(1);
+
+    double maxVal = poBand->GetMaximum();
+    double minVal = poBand->GetMinimum();
+
+    ui->doubleSpinBoxNegT->setMinimum(minVal);
+    ui->doubleSpinBoxNegT->setMaximum(maxVal);
+    ui->doubleSpinBoxPosT->setMinimum(minVal);
+    ui->doubleSpinBoxPosT->setMaximum(maxVal);
+
+
 }
