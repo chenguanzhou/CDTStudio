@@ -213,9 +213,32 @@ void CDTProjectLayer::addPBCDBinaryLayer()
 
     QWizard wizard;
     wizard.setWindowTitle(tr("Pixel-based Change Detection Wizard"));
-    wizard.addPage(new WizardPagePBCDDiff(prjID));
-    wizard.addPage(new WizardPagePBCDAutoThreshold());
-    wizard.exec();
+    WizardPagePBCDDiff *page1 = new WizardPagePBCDDiff(prjID);
+    WizardPagePBCDAutoThreshold *page2 = new WizardPagePBCDAutoThreshold();
+
+    wizard.addPage(page1);
+    wizard.addPage(page2);
+    if (wizard.exec()!=QDialog::Accepted)
+        return;
+
+    QString resultID = QUuid::createUuid().toString();
+    fileSystem->registerFile(resultID,page2->resultImagePath,QString(),QString(),
+                             CDTFileSystem::getRasterAffaliated(page2->resultImagePath));
+
+    QVariantMap params;
+    params["diffImageID"] = resultID;
+    params["positiveThreshold"] = page2->posT();
+    params["negetiveThreshold"] = page2->negT();
+    CDTPBCDBinaryLayer *layer = new CDTPBCDBinaryLayer(QUuid::createUuid(),this);
+    layer->initLayer(
+                page1->name(),
+                page1->imageID_t1(),
+                page1->imageID_t2(),
+                params);
+    pixelChangesRoot->appendRow(layer->standardKeyItem());
+    pixelChanges.push_back(layer);
+
+    emit layerChanged();
 
 //    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
 //    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));

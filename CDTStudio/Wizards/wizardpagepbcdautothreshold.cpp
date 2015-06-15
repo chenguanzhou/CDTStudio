@@ -28,6 +28,16 @@ WizardPagePBCDAutoThreshold::~WizardPagePBCDAutoThreshold()
         poDriver->Delete(mergeImagePath.toUtf8().constData());
 }
 
+double WizardPagePBCDAutoThreshold::posT() const
+{
+    return ui->doubleSpinBoxPosT->value();
+}
+
+double WizardPagePBCDAutoThreshold::negT() const
+{
+    return ui->doubleSpinBoxNegT->value();
+}
+
 void WizardPagePBCDAutoThreshold::initializePage()
 {
     isGenerated = false;

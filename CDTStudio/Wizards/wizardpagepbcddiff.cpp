@@ -61,6 +61,23 @@ WizardPagePBCDDiff::~WizardPagePBCDDiff()
     delete ui;
 }
 
+QString WizardPagePBCDDiff::name() const
+{
+    return ui->lineEditName->text();
+}
+
+QString WizardPagePBCDDiff::imageID_t1() const
+{
+    QString id = modelImage->data(modelImage->index(ui->comboBoxT1Image->currentIndex(),1)).toString();
+    return id;
+}
+
+QString WizardPagePBCDDiff::imageID_t2() const
+{
+    QString id = modelImage->data(modelImage->index(ui->comboBoxT2Image->currentIndex(),1)).toString();
+    return id;
+}
+
 bool WizardPagePBCDDiff::validatePage()
 {
     return isGenerated;

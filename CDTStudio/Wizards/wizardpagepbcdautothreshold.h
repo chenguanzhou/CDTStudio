@@ -11,10 +11,13 @@ class WizardPagePBCDAutoThreshold;
 class WizardPagePBCDAutoThreshold : public QWizardPage
 {
     Q_OBJECT
-
 public:
+    friend class CDTProjectLayer;
     explicit WizardPagePBCDAutoThreshold(QWidget *parent = 0);
     ~WizardPagePBCDAutoThreshold();
+
+    double posT()const;
+    double negT()const;
 
     void initializePage();
     bool validatePage();

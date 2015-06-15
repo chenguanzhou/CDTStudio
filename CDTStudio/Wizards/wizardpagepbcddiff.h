@@ -18,7 +18,10 @@ public:
     explicit WizardPagePBCDDiff(QUuid projectID,QWidget *parent = 0);
     ~WizardPagePBCDDiff();
 
-    bool validatePage();
+    QString name() const;
+    QString imageID_t1()const;
+    QString imageID_t2()const;
+    bool validatePage();    
 
 private slots:
     void onT1ImageChanged(int row);
