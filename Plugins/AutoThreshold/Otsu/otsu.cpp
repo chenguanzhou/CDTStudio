@@ -14,14 +14,17 @@ QString Otsu::methodName() const
 
 float Otsu::autoThreshold(QVector<int> data)
 {
-    int totalCount = std::accumulate(data.begin(),data.end(),0);
-    int totalSum = 0;
-    for(int i=1;i<data.size();++i)
+//    int totalCount = std::accumulate(data.begin(),data.end(),0);
+//    double totalSum = 0;
+    qint64 totalCount = 0;
+    double totalSum = 0.;
+    for(int i=0;i<data.size();++i)
     {
-        totalSum += i*data[i];
+        totalCount += data[i];
+        totalSum += i*static_cast<double>(data[i]);
     }
 
-    int count1 = 0,count2 = totalCount;
+    qint64 count1 = 0,count2 = totalCount;
     double sum1 = 0,sum2 = totalSum;
 
     int maxID = 0;
@@ -38,10 +41,10 @@ float Otsu::autoThreshold(QVector<int> data)
         if (count2==0)
             break;
 
-        sum1 += data[i]*i;
-        sum2 -= data[i]*i;
-        double mean1 = sum1/static_cast<float>(count1);
-        double mean2 = sum2/static_cast<float>(count2);
+        sum1 += static_cast<double>(data[i])*i;
+        sum2 -= static_cast<double>(data[i])*i;
+        double mean1 = sum1/static_cast<double>(count1);
+        double mean2 = sum2/static_cast<double>(count2);
 //        float var1 = var(data,0,i+1,mean1);
 //        float var2 = var(data,i+1,data.size(),mean2);
         double val = ratio(count1,count2/*,var1,var2*/,mean1,mean2);
@@ -50,9 +53,8 @@ float Otsu::autoThreshold(QVector<int> data)
             maxVal = val;
             maxID = i;
         }
-        qDebug()<<i<<mean1<<mean2<<val<<maxID;
+//        qDebug()<<i<<mean1<<mean2<<count2<<sum2<<maxID;
     }
-
     return maxID + 0.5;
 }
 

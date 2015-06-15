@@ -60,7 +60,7 @@ void WizardPagePBCDAutoThreshold::applyAutoThreshold()
     {
         double t = thresholdPlugin->autoThreshold(histogramPositive)*(maxVal-minVal)/256.+minVal;
         ui->doubleSpinBoxPosT->setValue(t);
-        qDebug()<<minVal<<maxVal<<t;
+//        qDebug()<<minVal<<maxVal<<t;
 //        qDebug()<<histogramPositive;
     }
     else if(numOfThresholds==2)
