@@ -128,7 +128,7 @@ bool CDTAttributeGenerator::readGeometry()
     const int gridCodeID = defn->GetFieldIndex("GridCode");
     _geometryObjects.clear();
 
-    emit currentProgressChanged(tr("Load Geommetry Information"));
+    emit currentProgressChanged(tr("Load Geometry Information"));
     int barSize = layer->GetFeatureCount();
     emit progressBarSizeChanged(0,barSize);
     int progressGap = barSize/100;

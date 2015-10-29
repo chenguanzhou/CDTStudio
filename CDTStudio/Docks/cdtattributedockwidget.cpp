@@ -132,7 +132,7 @@ void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
 
 void CDTAttributeDockWidget::onActionExportCurrentTable()
 {
-    if (tabWidget->currentIndex()<0)
+    if (tabWidget->count()<0)
         return;
 
     QString path = QFileDialog::getSaveFileName(this,tr("Export current table to"),QString(),CDTTableExporter::getSingleExporterFilters());

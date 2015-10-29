@@ -310,7 +310,7 @@ QColor CDTSegmentationLayer::borderColor() const
 
 QString CDTSegmentationLayer::imagePath() const
 {
-    return ((CDTImageLayer*)parent())->path();
+    return ((CDTImageLayer*)parent())->absolutPath();
 }
 
 int CDTSegmentationLayer::layerTransparency() const

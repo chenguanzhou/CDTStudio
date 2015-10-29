@@ -472,7 +472,7 @@ void CDTImageLayer::updateRenderer()
     }
 
     //Contrast
-    layer->setContrastEnhancement(enhancementStyle,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
+    layer->setContrastEnhancement(enhancementStyle,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle());
     MainWindow::getCurrentMapCanvas()->refresh();
 }
 

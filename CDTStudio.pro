@@ -10,8 +10,7 @@ SUBDIRS += \
     Tools\
     Plugins \
     CDTStudio \
-    Tests \
-    CDTProcessor
+    Tests
 
 TRANSLATIONS  += Trans/zh_CN.ts
 
