@@ -53,11 +53,6 @@ QColor DialogNewExtraction::borderColor() const
     return ui->borderColorPicker->currentColor();
 }
 
-double DialogNewExtraction::opacity() const
-{
-    return ui->doubleSpinBoxOpacity->value();
-}
-
 QString DialogNewExtraction::fileID() const
 {
     return shapefileID;

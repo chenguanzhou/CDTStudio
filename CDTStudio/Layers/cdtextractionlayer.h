@@ -28,7 +28,7 @@ public:
     QString shapefileID()   const;
     QColor  color()         const;
     QColor  borderColor()   const;
-    double  opacity()       const;
+    int     layerTransparency() const;
 
     void    setRenderer(QgsFeatureRendererV2 *r);
     void    setOriginRenderer();
@@ -40,13 +40,11 @@ public slots:
 //    void    onContextMenuRequest(QWidget *parent);
     void    setColor(const QColor &clr);
     void    setBorderColor(const QColor &clr);
-    void    setOpacity(const double &val) ;
-    void    setOpacity(const int &val);
+    void    setLayerTransparency(const int &transparency);
     void    initLayer(const QString& name,
             const QString &shpID,
             const QColor &color,
-            const QColor &borderColor,
-            double opacity);
+            const QColor &borderColor);
     void    remove();
     void    exportShapefile();
 
@@ -54,6 +52,7 @@ signals:
     void    nameChanged();
     void    colorChanged(QColor);
     void    borderColorChanged(QColor);
+    void    layerTransparencyChanged(int);
     void    removeExtraction(CDTExtractionLayer*);
 
 private:

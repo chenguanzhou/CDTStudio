@@ -300,11 +300,11 @@ void CDTImageLayer::setPath(QString path)
 
 void CDTImageLayer::addExtraction()
 {
-    DialogNewExtraction *dlg = new DialogNewExtraction(this->id(),this->path(),this->fileSystem());
+    DialogNewExtraction *dlg = new DialogNewExtraction(this->id(),this->absolutPath(),this->fileSystem());
     if(dlg->exec()==DialogNewExtraction::Accepted)
     {
         CDTExtractionLayer *extraction = new CDTExtractionLayer(QUuid::createUuid(),this);
-        extraction->initLayer(dlg->name(),dlg->fileID(),dlg->color(),dlg->borderColor(),dlg->opacity());
+        extraction->initLayer(dlg->name(),dlg->fileID(),dlg->color(),dlg->borderColor());
         extractionRoot->appendRow(extraction->standardKeyItem());
         addExtraction(extraction);
     }
@@ -314,7 +314,7 @@ void CDTImageLayer::addExtraction()
 
 void CDTImageLayer::addSegmentation()
 {
-    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->id(),absolutPath(),this->fileSystem());
+    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->id(),this->absolutPath(),this->fileSystem());
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
         CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this);

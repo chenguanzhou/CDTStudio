@@ -75,14 +75,13 @@ QColor CDTExtractionLayer::borderColor() const
     return query.value(0).value<QColor>();
 }
 
-double CDTExtractionLayer::opacity() const
+int CDTExtractionLayer::layerTransparency() const
 {
-    QSqlDatabase db = QSqlDatabase::database("category");
-    QSqlQuery query(db);
-    query.exec("select opacity from extractionlayer where id ='" + this->id().toString() +"'");
-    query.next();
-    query.value(0);
-    return query.value(0).toDouble();
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
+    if (p)
+        return p->layerTransparency();
+    else
+        return -1;
 }
 
 void CDTExtractionLayer::setRenderer(QgsFeatureRendererV2 *r)
@@ -188,24 +187,18 @@ void CDTExtractionLayer::setBorderColor(const QColor &clr)
     emit layerChanged();
 }
 
-void CDTExtractionLayer::setOpacity(const double &val)
+void CDTExtractionLayer::setLayerTransparency(const int &transparency)
 {
-    QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare("UPDATE extractionlayer set Opacity = ? where id =?");
-    query.bindValue(0,val);
-    query.bindValue(1,this->id().toString());
-    query.exec();
-
-    emit layerChanged();
-}
-
-void CDTExtractionLayer::setOpacity(const int &val)
-{
-    setOpacity(val/100.);
+    QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
+    if (p)
+    {
+        p->setLayerTransparency(transparency);
+        canvas()->refresh();
+    }
 }
 
 void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
-                                   const QColor &color, const QColor &borderColor, double opacity)
+                                   const QColor &color, const QColor &borderColor)
 {
     QString tempShpPath;
     this->fileSystem()->getFile(shpID,tempShpPath);
@@ -218,11 +211,13 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
     }
 
     setCanvasLayer(newLayer);
+    connect(newLayer,SIGNAL(layerTransparencyChanged(int)),this,SIGNAL(layerTransparencyChanged(int)));
+
     keyItem()->setText(name);
 
     QSqlQuery query(QSqlDatabase::database("category"));
     bool ret ;
-    ret = query.prepare("insert into extractionlayer VALUES(?,?,?,?,?,?,?)");
+    ret = query.prepare("insert into extractionlayer VALUES(?,?,?,?,?,?)");
     if (ret==false)
     {
         qDebug()<<"Prepare 'insert into extractionlayer failed!'";
@@ -233,7 +228,6 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
     query.addBindValue(shpID);
     query.addBindValue(color);
     query.addBindValue(borderColor);
-    query.addBindValue(opacity);
     query.addBindValue(((CDTImageLayer*)parent())->id().toString());
     ret = query.exec();
     if (ret==false)
@@ -256,6 +250,17 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
     connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
     connect(this,SIGNAL(borderColorChanged(QColor)),borderColorPicker,SLOT(setCurrentColor(QColor)));
     widgets.append(qMakePair(new QLabel(tr("Border color")),(QWidget*)borderColorPicker));
+
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
+    sliderTransparency->setMinimum(0);
+    sliderTransparency->setMaximum(100);
+    sliderTransparency->setToolTip(tr("Transparency"));
+    connect(sliderTransparency,SIGNAL(valueChanged(int)),SLOT(setLayerTransparency(int)));
+    connect(this,SIGNAL(layerTransparencyChanged(int)),sliderTransparency,SLOT(setValue(int)));
+    connect(this,SIGNAL(destroyed()),sliderTransparency,SLOT(deleteLater()));
+    widgets.append(qMakePair(new QLabel(tr("Transparency")),(QWidget*)sliderTransparency));
+    setWidgetActions(widgets);
+
     setWidgetActions(widgets);
 
     setOriginRenderer();
@@ -286,7 +291,7 @@ QDataStream &operator<<(QDataStream &out, const CDTExtractionLayer &extraction)
      <<query.value(2).toString()        //shapefile
     <<query.value(3).value<QColor>()    //color
     <<query.value(4).value<QColor>()    //border color
-    <<query.value(5).toDouble();        //opacity
+    <<-1;        //deprecated
 
     return out;
 }
@@ -304,6 +309,6 @@ QDataStream &operator>>(QDataStream &in, CDTExtractionLayer &extraction)
     double opacity;
     in>>opacity;
 
-    extraction.initLayer(name,shp,color,borderColor,opacity);
+    extraction.initLayer(name,shp,color,borderColor);
     return in;
 }
