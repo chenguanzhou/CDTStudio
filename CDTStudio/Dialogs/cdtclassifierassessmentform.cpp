@@ -15,6 +15,11 @@ CDTClassifierAssessmentForm::CDTClassifierAssessmentForm(QWidget *parent) :
     ui->setupUi(this);
     ui->comboBoxClassification->setModel(modelClassification);
     ui->comboBoxSample->setModel(modelSample);
+    ui->tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    QAction *actionCopyAll = new QAction(QIcon(":/Icons/Copy.png"),tr("Copy All"),this);
+    ui->tableWidget->addAction(actionCopyAll);
+    connect(actionCopyAll,SIGNAL(triggered()),SLOT(copyTableAll()));
 
     connect(ui->comboBoxClassification,SIGNAL(currentIndexChanged(int)),SLOT(onComboBoxClassificationChanged(int)));
     connect(ui->comboBoxSample,SIGNAL(currentIndexChanged(int)),SLOT(onComboBoxSampleChanged(int)));
@@ -264,7 +269,7 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
         correctCount += matrixData.at<int>(i,i);
     }
 //    qDebug()<<"info.confusionParams.size():"<<info.confusionParams.size();
-    double overall = correctCount*100/info.confusionParams.size();
+    double overall = correctCount*100./info.confusionParams.size();
     ui->overallAcuraccyLineEdit->setText(QString::number(overall)+"%");
 
     //Kappa
@@ -287,4 +292,23 @@ void CDTClassifierAssessmentForm::on_pushButtonCopySample_clicked()
         copy += (QString::number(objID) + "\t" + categoryID + "\n");
     }
     QApplication::clipboard()->setText(copy);
+}
+
+void CDTClassifierAssessmentForm::copyTableAll()
+{
+    auto model = ui->tableWidget->model();
+    if (model==NULL || model->rowCount()==0) return;
+
+
+    QString selected_text;
+    for (int i=0;i<model->rowCount();++i)
+    {
+        for (int j=0;j<model->columnCount();++j)
+        {
+            selected_text += (model->data(model->index(i,j)).toString() + "\t");
+        }
+        selected_text += "\n";
+    }
+
+    QApplication::clipboard()->setText(selected_text);
 }

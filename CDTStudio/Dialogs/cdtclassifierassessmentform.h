@@ -41,6 +41,7 @@ private slots:
     void onComboBoxSampleChanged(int index);
 
     void on_pushButtonCopySample_clicked();
+    void copyTableAll();
 
 private:
     void setInfo(const CDTClassificationInformation& info);
