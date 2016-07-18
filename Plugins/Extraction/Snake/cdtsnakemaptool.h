@@ -19,8 +19,8 @@ public:
     explicit CDTSnakeMapTool(QgsMapCanvas *canvas);
     ~CDTSnakeMapTool();
 
-    virtual void canvasMoveEvent ( QMouseEvent * e );
-    virtual void canvasPressEvent( QMouseEvent * e );
+    virtual void canvasMoveEvent ( QgsMapMouseEvent * e ) override;
+    virtual void canvasPressEvent( QgsMapMouseEvent * e ) override;
 signals:
 
 public slots:

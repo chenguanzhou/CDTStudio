@@ -65,6 +65,19 @@ qreal SpectralInterface::layer_stddev(const AttributeParamsSingleBand& param) co
     return sqrt(refValue / param.pointsVecI.size());
 }
 
+qreal SpectralInterface::layer_median(const AttributeParamsSingleBand &param) const
+{
+    QList<qreal> refValueList;
+    for (int i=0;i<param.pointsVecI.size();++i)
+    {
+        qreal refValue;
+        refValue = SRCVAL(param.buffer,param.dataType,param.pointsVecI[i].y() * param.nXSize + param.pointsVecI[i].x());
+        refValueList.push_back(refValue);
+    }
+    qSort(refValueList.begin(),refValueList.end());
+    return    refValueList.at(refValueList.size()/2);
+}
+
 qreal SpectralInterface::skewness(const AttributeParamsSingleBand &param) const
 {
     qreal mean =0,var=0;

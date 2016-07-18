@@ -26,6 +26,8 @@ public:
             const AttributeParamsSingleBand& param) const;
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal layer_stddev(
             const AttributeParamsSingleBand& param) const;
+    Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal layer_median(
+            const AttributeParamsSingleBand& param) const;
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal skewness(
             const AttributeParamsSingleBand& param) const;
     Q_INVOKABLE CDT_ATTRIBUTE_SINGLE_BAND qreal max_value(
