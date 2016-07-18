@@ -65,8 +65,8 @@ public:
 private:
     GDALDataset *poDS;
     int numOfThresholds;
-    QVector<int> histogramPositive;
-    QVector<int> histogramNegetive;
+    QVector<GUIntBig> histogramPositive;
+    QVector<GUIntBig> histogramNegetive;
     double maxVal;
     double minVal;
 };

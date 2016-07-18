@@ -41,7 +41,7 @@ CDTAttributeGenerator::CDTAttributeGenerator(
     }
 
 
-    _poGeometryDS =  OGRSFDriverRegistrar::Open( shpPath.toUtf8().constData());
+    _poGeometryDS =  (GDALDataset*)GDALOpenEx( shpPath.toUtf8().constData(),GDAL_OF_VECTOR,NULL,NULL,NULL);
     if (_poGeometryDS == NULL)
     {
         _errorInfo = tr("Open Vector File ")+shpPath+tr(" Failed!");
@@ -85,7 +85,7 @@ CDTAttributeGenerator::~CDTAttributeGenerator()
 {
     GDALClose(_poImageDS);
     GDALClose(_poFlagDS);
-    OGRDataSource::DestroyDataSource( _poGeometryDS );
+    GDALClose( _poGeometryDS );
 }
 
 void CDTAttributeGenerator::run()

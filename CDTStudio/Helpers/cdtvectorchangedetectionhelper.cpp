@@ -284,9 +284,9 @@ void CDTVectorChangeDetectionHelper::createShapefile(QString path)
     OGRRegisterAll();
 
 
-    OGRSFDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
+    GDALDriver* poDriver = GetGDALDriverManager()->GetDriverByName("ESRI Shapefile");
     Q_ASSERT(poDriver);
-    OGRDataSource* poDS = poDriver->CreateDataSource(path.toUtf8().constData(),NULL);
+    GDALDataset* poDS = poDriver->Create(path.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
     Q_ASSERT(poDS);
 //    OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
     OGRLayer *layer = poDS->CreateLayer("change",NULL,wkbPolygon,NULL);
@@ -310,5 +310,5 @@ void CDTVectorChangeDetectionHelper::createShapefile(QString path)
         logger()->error( "Creating field failed.") ;
         return ;
     }
-    OGRDataSource::DestroyDataSource(poDS);
+    GDALClose(poDS);
 }

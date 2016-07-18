@@ -45,6 +45,7 @@ LIBS += -L$(QGIS_ROOT)/lib\
                 -L$(OSGEO4W_ROOT)/lib
 DEFINES += CORE_EXPORT=__declspec(dllimport)
 DEFINES += GUI_EXPORT=__declspec(dllimport)
+DEFINES += noexcept=
 
 LIBS += -lgdal_i
 }

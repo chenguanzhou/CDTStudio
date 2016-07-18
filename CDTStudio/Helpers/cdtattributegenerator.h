@@ -34,7 +34,7 @@ private:
     bool            _isValid;
     GDALDataset*    _poImageDS;
     GDALDataset*    _poFlagDS;
-    OGRDataSource*  _poGeometryDS;
+    GDALDataset*  _poGeometryDS;
     QMap<QString,QStringList> _attributes;
     QMap<QString,CDTAttributesInterface*> _plugins;
     QMap<int,OGRPolygon *> _geometryObjects;

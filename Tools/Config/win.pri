@@ -36,3 +36,4 @@ BOOST_LIBRARYDIR = $(BOOST_LIBRARYDIR)
 
 DEFINES += CORE_EXPORT=__declspec(dllimport)
 DEFINES += GUI_EXPORT=__declspec(dllimport)
+DEFINES += noexcept=

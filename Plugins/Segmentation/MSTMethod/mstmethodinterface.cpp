@@ -716,7 +716,7 @@ bool MSTMethodInterface::_Polygonize()
         return false;
     }
 
-    OGRSFDriver* poOgrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
+    GDALDriver * poOgrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
     if (poOgrDriver == NULL)
     {
         GDALClose(poFlagDS);
@@ -725,9 +725,9 @@ bool MSTMethodInterface::_Polygonize()
 
     QFileInfo info(shapefilePath);
     if (info.exists())
-        poOgrDriver->DeleteDataSource(shapefilePath.toUtf8().constData());
+        poOgrDriver->Delete(shapefilePath.toUtf8().constData());
 
-    OGRDataSource* poDstDataset = poOgrDriver->CreateDataSource(shapefilePath.toUtf8().constData(),0);
+    GDALDataset* poDstDataset = poOgrDriver->Create(shapefilePath.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
     if (poDstDataset == NULL)
     {
         GDALClose(poFlagDS);
@@ -740,7 +740,7 @@ bool MSTMethodInterface::_Polygonize()
     if (poLayer == NULL)
     {
         GDALClose(poFlagDS);
-        OGRDataSource::DestroyDataSource( poDstDataset );
+        GDALClose( poDstDataset );
         return false;
     }
 
@@ -748,7 +748,7 @@ bool MSTMethodInterface::_Polygonize()
     if ( (poLayer->CreateField(&ofDef_DN) != OGRERR_NONE) )
     {
         GDALClose(poFlagDS);
-        OGRDataSource::DestroyDataSource( poDstDataset );
+        GDALClose( poDstDataset );
         return false;
     }
 
@@ -761,14 +761,14 @@ bool MSTMethodInterface::_Polygonize()
     if (err != CE_None)
     {
         GDALClose(poFlagDS);
-        OGRDataSource::DestroyDataSource( poDstDataset );
+        GDALClose( poDstDataset );
         if (pSpecialReference) delete pSpecialReference;
         return false;
     }
 
     if (pSpecialReference) delete pSpecialReference;
     GDALClose(poFlagDS);
-    OGRDataSource::DestroyDataSource( poDstDataset );
+    GDALClose(poDstDataset);
     return true;
 }
 

@@ -66,10 +66,10 @@ void DialogNewExtraction::onAccepted()
     GDALDataset *poImageDS = (GDALDataset *)GDALOpen(inputImagePath.toUtf8().constData(),GA_ReadOnly);
     Q_ASSERT(poImageDS);
 
-    OGRSFDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
+    GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("ESRI Shapefile");
     Q_ASSERT(poDriver);
 
-    OGRDataSource* poDS = poDriver->CreateDataSource(shapefileTempPath.toUtf8().constData(),NULL);
+    GDALDataset* poDS = poDriver->Create(shapefileTempPath.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
     Q_ASSERT(poDS);
     OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
     OGRLayer *layer = poDS->CreateLayer("extraction",reference,wkbPolygon,NULL);
@@ -82,7 +82,7 @@ void DialogNewExtraction::onAccepted()
         return;
     }
 
-    OGRDataSource::DestroyDataSource(poDS);
+    GDALClose(poDS);
     reference->Release();
     GDALClose(poImageDS);
 //    OGRCleanupAll();

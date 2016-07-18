@@ -148,9 +148,8 @@ void WizardPagePBCDAutoThreshold::onHistogramGenerated()
     {
         maxVal = thread->maxVal;
         minVal = thread->minVal;
-        histogramNegetive = thread->histogramNegetive;
-        histogramPositive = thread->histogramPositive;
-
+        std::transform(thread->histogramNegetive.begin(),thread->histogramNegetive.end(),histogramNegetive.begin(),[=](GUIntBig s)->int{return static_cast<int>(s);});
+        std::transform(thread->histogramPositive.begin(),thread->histogramPositive.end(),histogramPositive.begin(),[=](GUIntBig s)->int{return static_cast<int>(s);});
         thread->deleteLater();
 
         if (numOfThresholds==1)
