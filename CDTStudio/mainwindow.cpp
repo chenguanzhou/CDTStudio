@@ -26,6 +26,7 @@
 #include "cdtlayerinfowidget.h"
 //#include "cdttaskdockwidget.h"
 
+#include "dialogabout.h"
 #include "dialogconsole.h"
 
 #ifdef Q_OS_WIN
@@ -132,7 +133,7 @@ void MainWindow::initActions()
 
 void MainWindow::initMenuBar()
 {
-    menuFile = new QMenu(tr("&File"),this);
+    QMenu* menuFile = new QMenu(tr("&File"),this);
     menuFile->addActions(QList<QAction*>()
                          <<actionNew
                          <<actionOpen
@@ -143,7 +144,13 @@ void MainWindow::initMenuBar()
     recentFileMenu = new QMenu(tr("&Recent"),this);
     recentFileMenu->setIcon(QIcon(":/Icons/RecentFiles.png"));
     menuFile->addMenu(recentFileMenu);
+
+    QMenu* menuAbout = new QMenu(tr("&About"),this);
+    menuAbout->addAction(tr("About &Qt"),qApp,SLOT(aboutQt()));
+    menuAbout->addAction(tr("&About"),this,SLOT(about()));
+
     menuBar()->addMenu(menuFile);
+    menuBar()->addMenu(menuAbout);
     logger()->info("MenuBars initialized");
 }
 
@@ -481,6 +488,12 @@ void MainWindow::onRecentFileTriggered()
 {
     QAction* action = (QAction*)sender();
     ui->tabWidgetProject->openProject(action->text());
+}
+
+void MainWindow::about()
+{
+    DialogAbout *dlg = new DialogAbout(this);
+    dlg->exec();
 }
 
 void MainWindow::on_treeViewObjects_customContextMenuRequested(const QPoint &pos)

@@ -85,6 +85,7 @@ private slots:
     void onActionSaveAll();
     void onActionSaveAs();
     void onRecentFileTriggered();
+    void about();
 
     void on_treeViewObjects_customContextMenuRequested(const QPoint &pos);
     void on_treeViewObjects_clicked(const QModelIndex &index);
@@ -118,7 +119,6 @@ private:
     QAction *actionSaveAs;
     QAction *actionConsole;
 
-    QMenu *menuFile;
     QMenu *recentFileMenu;
 
     QLineEdit *lineEditCoord;
