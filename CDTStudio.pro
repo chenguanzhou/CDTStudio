@@ -14,3 +14,7 @@ SUBDIRS += \
 
 TRANSLATIONS  += Trans/zh_CN.ts
 
+Tests.depends = CDTStudio
+CDTStudio.depends = Tools
+
+

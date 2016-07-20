@@ -17,6 +17,7 @@ public:
 
 public slots:
     void onOfficialPageLinkClicked();
+    void onTable3rdPartyItemClicked(QModelIndex index);
 
 private:
     Ui::DialogAbout *ui;

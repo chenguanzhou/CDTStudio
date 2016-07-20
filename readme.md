@@ -26,9 +26,8 @@ Scrennshot
 [Boost](http://www.boost.org/)
 [Log4Qt](http://log4qt.sourceforge.net/)
 [Qwt](http://qwt.sourceforge.net/)
-[wwwidgets](http://www.wysota.eu.org/wwwidgets/)
+[wwWidgets](http://www.wysota.eu.org/wwwidgets/)
 [STXXL](http://stxxl.sourceforge.net/)
-QtColorPicker
 [QPropertyEditor](https://github.com/chenguanzhou/QPropertyEditor)
 
 License
