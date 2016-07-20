@@ -54,7 +54,7 @@ CDTMapToolSelectTrainingSamples::~CDTMapToolSelectTrainingSamples()
     }
 }
 
-void CDTMapToolSelectTrainingSamples::canvasMoveEvent(QMouseEvent *e)
+void CDTMapToolSelectTrainingSamples::canvasMoveEvent(QgsMapMouseEvent *e)
 {
     if (( e->buttons() & Qt::LeftButton ) )
     {
@@ -64,7 +64,7 @@ void CDTMapToolSelectTrainingSamples::canvasMoveEvent(QMouseEvent *e)
     }
 }
 
-void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QMouseEvent *e)
+void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QgsMapMouseEvent *e)
 {
     if ( e->button() == Qt::LeftButton )
     {
