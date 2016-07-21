@@ -17,7 +17,7 @@ DialogAbout::DialogAbout(QWidget *parent) :
     ui->labelAppVersion->setText(qApp->applicationVersion());
 
     ui->tableWidget3rdParty->setColumnCount(3);
-    ui->tableWidget3rdParty->setHorizontalHeaderLabels(QStringList()<<tr("Name")<<tr("Version")<<tr("Link"));
+    ui->tableWidget3rdParty->setHorizontalHeaderLabels(QStringList()<<tr("Name")<<tr("Required Version")<<tr("Link"));
     QFile file("://3rdLicenses.txt");
     file.open(QFile::ReadOnly);
     QTextStream s(&file);
