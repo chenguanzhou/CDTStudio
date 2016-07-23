@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
     Log4Qt::BasicConfigurator::configure();
     Log4Qt::Logger::rootLogger()->info("Log4Qt is running!");
 
+    Log4Qt::Logger::rootLogger()->info(QLocale::system().name());
+
     QTranslator appTranslator;
     if (appTranslator.load(":/Trans/" + QLocale::system().name()+".qm"))
     {

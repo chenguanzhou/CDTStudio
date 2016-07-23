@@ -183,10 +183,6 @@ void MainWindow::initStatusBar()
     lineEditCoord->setAlignment( Qt::AlignCenter );
     QRegExp coordValidator( "[+-]?\\d+\\.?\\d*\\s*,\\s*[+-]?\\d+\\.?\\d*" );
     new QRegExpValidator( coordValidator, lineEditCoord );
-    lineEditCoord->setWhatsThis( tr( "Shows the map coordinates at the "
-                                     "current cursor position. The display is continuously updated "
-                                     "as the mouse is moved. It also allows editing to set the canvas "
-                                     "center to a given position. The format is lat,lon or east,north" ) );
     lineEditCoord->setToolTip( tr( "Current map coordinate (lat,lon or east,north)" ) );
     statusBar()->addPermanentWidget( lineEditCoord, 0 );
     connect( lineEditCoord, SIGNAL( returnPressed() ), this, SLOT( userCenter() ) );
@@ -206,18 +202,10 @@ void MainWindow::initStatusBar()
     scaleEdit->setMinimumWidth( 10 );
     scaleEdit->lineEdit()->setAlignment(Qt::AlignCenter);
     scaleEdit->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    scaleEdit->setWhatsThis( tr( "Displays the current map scale" ) );
     scaleEdit->setToolTip( tr( "Current map scale (formatted as x:y)" ) );
 
     statusBar()->addPermanentWidget( scaleEdit, 0 );
     connect( scaleEdit, SIGNAL( scaleChanged() ), this, SLOT( userScale() ) );
-
-    //CDTDockWidgetTask
-//    QPushButton *pushButtonTask = new QPushButton(tr("Show task progress"),this);
-//    pushButtonTask->setCheckable(true);
-//    connect(pushButtonTask,SIGNAL(toggled(bool)),SLOT(updateTaskDock()));
-//    connect(pushButtonTask,SIGNAL(toggled(bool)),dockWidgetTask,SLOT(setVisible(bool)));
-//    statusBar()->addPermanentWidget(pushButtonTask , 0 );
 
     logger()->info("StatusBar initialized");
 }
