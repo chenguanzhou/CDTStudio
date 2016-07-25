@@ -57,20 +57,40 @@ QVector<qreal> TextureInterface::GLCM(const AttributeParamsSingleAngleBand &para
     refValue.clear();
     refValue.resize(_mapHaralickNames["GLCM"].size());
 
-    QVector<QPoint> pointsAnother(param.pointsVecI.size());
-    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint &pt)->QPoint
-    { return QPoint(pt.x()+_offset.x(),pt.y()+_offset.y()); });
+//    QVector<QPoint> pointsAnother(param.pointsVecI.size());
+//    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint &pt)->QPoint
+//    {
+//        return pt+_offset;
+//    });
 
     QVector<double> glcm(SIXTEEN*SIXTEEN,0);
     int count = 0;
-    for (int i=0;i<param.pointsVecI.size();++i)
+//    for (int i=0;i<param.pointsVecI.size();++i)
+//    {
+//        if (pointsAnother[i].x() >=0 && pointsAnother[i].x() < param.nXSize && pointsAnother[i].y() >=0 && pointsAnother[i].y() < param.nYSize)
+//        {
+//            int level_1 = ( SRCVAL(param.buffer.buf,param.dataType,param.pointsVecI[i].y() * param.nXSize
+//                                   + param.pointsVecI[i].x() ) - blockOffset) / blockCount;
+//            int level_2 = ( SRCVAL(param.buffer.buf,param.dataType,pointsAnother[i].y() * param.nXSize
+//                                   + pointsAnother[i].x() ) - blockOffset) / blockCount;
+//            ++glcm[level_1*SIXTEEN + level_2];
+//            ++count;
+//        }
+//    }
+
+    qreal blockCount_1 = 1./blockCount;
+    QVector<QPoint>::const_iterator iter_pt = param.pointsVecI.begin();
+    for (;iter_pt!=param.pointsVecI.end();++iter_pt)
     {
-        if (pointsAnother[i].x() >=0 && pointsAnother[i].x() < param.nXSize && pointsAnother[i].y() >=0 && pointsAnother[i].y() < param.nYSize)
+
+        int offset_x = iter_pt->x()+_offset.x();
+        int offset_y = iter_pt->y()+_offset.y();
+        if (offset_x>=0 && offset_x < param.nXSize && offset_y >=0 && offset_y < param.nYSize)
         {
-            int level_1 = ( SRCVAL(param.buffer.buf,param.dataType,param.pointsVecI[i].y() * param.nXSize
-                                   + param.pointsVecI[i].x() ) - blockOffset) / blockCount;
-            int level_2 = ( SRCVAL(param.buffer.buf,param.dataType,pointsAnother[i].y() * param.nXSize
-                                   + pointsAnother[i].x() ) - blockOffset) / blockCount;
+            int level_1 = ( SRCVAL(param.buffer.buf,param.dataType,iter_pt->y() * param.nXSize
+                                   + iter_pt->x() ) - blockOffset) * blockCount_1;
+            int level_2 = ( SRCVAL(param.buffer.buf,param.dataType,offset_y * param.nXSize
+                                   + offset_x ) - blockOffset) * blockCount_1;
             ++glcm[level_1*SIXTEEN + level_2];
             ++count;
         }
@@ -88,37 +108,43 @@ QVector<qreal> TextureInterface::GLCM(const AttributeParamsSingleAngleBand &para
     double mean2 = 0.0;
     double var1  = 0.0;
     double var2  = 0.0;
+
+    QVector<double>::const_iterator iter = glcm.begin();
     for (int j = 0; j < SIXTEEN; ++j)
     {
-        for (int k = 0; k < SIXTEEN; ++k)
+        for (int k = 0; k < SIXTEEN; ++k,++iter)
         {
-            refValue[0] += glcm[j*SIXTEEN + k] / (1+(j-k)*(j-k));
-            refValue[1] += glcm[j*SIXTEEN + k] * (j-k)*(j-k);
-            refValue[2] += glcm[j*SIXTEEN + k] * sqrt(static_cast<double>((j-k)*(j-k)));
-            mean1       += glcm[j*SIXTEEN + k] * j;
-            mean2       += glcm[j*SIXTEEN + k] * k;
-            refValue[5] += fabs(glcm[j*SIXTEEN + k])<0.00001?0:(-glcm[j*SIXTEEN + k]*log(glcm[j*SIXTEEN + k]));
-            refValue[6] += glcm[j*SIXTEEN + k] * glcm[j*SIXTEEN + k];
+//            int index = j*SIXTEEN + k;
+            refValue[0] += *iter / (1+(j-k)*(j-k));
+            refValue[1] += *iter * (j-k)*(j-k);
+            refValue[2] += *iter * sqrt(static_cast<double>((j-k)*(j-k)));
+            mean1       += *iter * j;
+            mean2       += *iter * k;
+            refValue[5] += fabs(*iter)<0.00001?0:(-*iter*log(*iter));
+            refValue[6] += *iter * *iter;
         }
     }
 
+    iter = glcm.begin();
     for (int j = 0; j < SIXTEEN; ++j)
     {
-        for (int k = 0; k < SIXTEEN; ++k)
+        for (int k = 0; k < SIXTEEN; ++k,++iter)
         {
-            var1        += glcm[j*SIXTEEN + k]*(j - mean1)*(j - mean1);
-            var2        += glcm[j*SIXTEEN + k]*(k - mean2)*(k - mean2);
+//            int index = j*SIXTEEN + k;
+            var1        += *iter*(j - mean1)*(j - mean1);
+            var2        += *iter*(k - mean2)*(k - mean2);
         }
     }
 
     refValue[3]         = mean1;
     refValue[4]         = sqrt(var1);
 
+    iter = glcm.begin();
     for (int j = 0; j < SIXTEEN; ++j)
     {
-        for (int k = 0; k < SIXTEEN; ++k)
+        for (int k = 0; k < SIXTEEN; ++k,++iter)
         {
-            refValue[7] += glcm[j*SIXTEEN + k]*(j - mean1)*(k - mean2)/sqrt(var1*var2);
+            refValue[7] += *iter *(j - mean1)*(k - mean2)/sqrt(var1*var2);
         }
     }
 
@@ -137,20 +163,28 @@ QVector<qreal> TextureInterface::GLDV(const AttributeParamsSingleAngleBand &para
     refValue.clear();
     refValue.resize(_mapHaralickNames["GLDV"].size());
 
-    std::vector<QPoint> pointsAnother(param.pointsVecI.size());
-    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint &pt)->QPoint
-    { return QPoint(pt.x()+_offset.x(),pt.y()+_offset.y());   });
+//    std::vector<QPoint> pointsAnother(param.pointsVecI.size());
+//    std::transform(param.pointsVecI.begin(),param.pointsVecI.end(),pointsAnother.begin(),[&](const QPoint &pt)->QPoint
+//    {
+//        return pt+_offset;
+//    });
 
     std::vector<double> glcm(SIXTEEN*SIXTEEN,0);
     int count = 0;
-    for (int i=0;i<param.pointsVecI.size();++i)
+    qreal blockCount_1 = 1./blockCount;
+    QVector<QPoint>::const_iterator iter_pt = param.pointsVecI.begin();
+//    std::vector<QPoint>::const_iterator iter_ano = pointsAnother.begin();
+    for (;iter_pt!=param.pointsVecI.end();++iter_pt/*,++iter_ano*/)
     {
-        if (pointsAnother[i].x() >=0 && pointsAnother[i].x() < param.nXSize && pointsAnother[i].y() >=0 && pointsAnother[i].y() < param.nYSize)
+        int offset_x = iter_pt->x()+_offset.x();
+        int offset_y = iter_pt->y()+_offset.y();
+        if (offset_x>=0 && offset_x < param.nXSize && offset_y >=0 && offset_y < param.nYSize)
         {
-            int level_1 = (SRCVAL(param.buffer.buf,param.dataType,param.pointsVecI[i].y() * param.nXSize
-                                  + param.pointsVecI[i].x() ) - blockOffset) / blockCount;
-            int level_2 = (SRCVAL(param.buffer.buf,param.dataType,pointsAnother[i].y() *param. nXSize
-                                  + pointsAnother[i].x() ) - blockOffset) / blockCount;
+            int level_1 = (SRCVAL(param.buffer.buf,param.dataType,iter_pt->y() * param.nXSize
+                                  + iter_pt->x() ) - blockOffset) * blockCount_1;
+
+            int level_2 = (SRCVAL(param.buffer.buf,param.dataType,offset_y *param. nXSize
+                                  + offset_x ) - blockOffset) * blockCount_1;
             ++glcm[level_1*SIXTEEN + level_2];
             ++count;
         }

@@ -14,6 +14,7 @@ class CDTProjectLayer: public CDTBaseLayer
     Q_OBJECT    
     Q_CLASSINFO("CDTProjectLayer",tr("Project"))
     Q_CLASSINFO("tableName",tr("project"))
+    Q_PROPERTY(QString path READ path DESIGNABLE true USER true)
 public:
     explicit CDTProjectLayer(QUuid uuid,QObject *parent = 0);
     ~CDTProjectLayer();
@@ -26,8 +27,11 @@ public:
 
     void    initLayer(QString name);
     bool    isCDEnabled(QUuid projectID);
+    QString path() const;
 
 public slots:
+    void setPath(QString path);
+
     void addImageLayer();
     void addImageLayer(CDTImageLayer *image);
     void removeImageLayer(CDTImageLayer *image);
@@ -35,7 +39,7 @@ public slots:
 
 
     void addPBCDBinaryLayer();
-    void addPBCDBinaryLayer(QByteArray result);
+//    void addPBCDBinaryLayer(QByteArray result);
     void removePixelChangeLayer(CDTPixelChangeLayer *layer);
     void removeAllPixelChangeLayers();
 
@@ -47,6 +51,7 @@ public slots:
 
 private:
     bool    isFileExsit;
+    QString prjPath;
     QVector<CDTImageLayer *>    images;
     QVector<CDTPixelChangeLayer *>   pixelChanges;
     QVector<CDTVectorChangeLayer *>   vectorChanges;

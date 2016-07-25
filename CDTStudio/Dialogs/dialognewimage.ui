@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>391</width>
-    <height>70</height>
+    <width>493</width>
+    <height>69</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QFormLayout" name="formLayout">
    <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
@@ -33,54 +33,49 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="0" column="1">
+    <widget class="QwwFileChooser" name="lineEditPath"/>
+   </item>
+   <item row="1" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Image Name</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="2" colspan="2">
-    <widget class="QLineEdit" name="lineEditName"/>
-   </item>
-   <item row="3" column="4" colspan="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="5">
-    <widget class="QPushButton" name="pushButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Browse</string>
-     </property>
-     <property name="autoDefault">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2" colspan="3">
-    <widget class="QComboBox" name="comboBox">
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-     <property name="insertPolicy">
-      <enum>QComboBox::InsertAtTop</enum>
-     </property>
-    </widget>
+   <item row="1" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLineEdit" name="lineEditName"/>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxUseRelativePath">
+       <property name="text">
+        <string>Use Relative Path</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QwwFileChooser</class>
+   <extends>QLineEdit</extends>
+   <header location="global">qwwfilechooser.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

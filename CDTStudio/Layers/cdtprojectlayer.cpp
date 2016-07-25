@@ -6,12 +6,14 @@
 #include "cdtimagelayer.h"
 #include "cdtpixelchangelayer.h"
 #include "cdtfilesystem.h"
-#include "cdttaskdockwidget.h"
+//#include "cdttaskdockwidget.h"
 #include "cdtpbcdbinarylayer.h"
 #include "cdtvectorchangelayer.h"
 #include "dialognewimage.h"
 #include "dialogpbcdbinary.h"
 #include "wizardvectorchangedetection.h"
+#include "wizardpagepbcddiff.h"
+#include "wizardpagepbcdautothreshold.h"
 
 CDTProjectLayer::CDTProjectLayer(QUuid uuid, QObject *parent):
     CDTBaseLayer(uuid,parent),
@@ -144,13 +146,29 @@ bool CDTProjectLayer::isCDEnabled(QUuid projectID)
     return true;
 }
 
+QString CDTProjectLayer::path() const
+{
+    return prjPath;
+}
+
+void CDTProjectLayer::setPath(QString path)
+{
+    prjPath = path;
+}
+
 void CDTProjectLayer::addImageLayer()
 {
-    DialogNewImage dlg;
+    DialogNewImage dlg(this->id());
     if(dlg.exec() == DialogNewImage::Accepted)
     {
+        if (dlg.imageName().isEmpty()||dlg.imagePath().isEmpty())
+        {
+            QMessageBox::critical(NULL,tr("Error"),tr("Image path or name is empty!"));
+            return;
+        }
         CDTImageLayer *image = new CDTImageLayer(QUuid::createUuid(),this);
         image->initLayer(dlg.imageName(),dlg.imagePath());
+        image->setUseRelativePath(dlg.useRelativePath());
         imagesRoot->appendRow(image->standardKeyItem());
         addImageLayer(image);
     }
@@ -193,39 +211,68 @@ void CDTProjectLayer::addPBCDBinaryLayer()
     if (isCDEnabled(prjID)==false)
         return;
 
-    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
-    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));
-}
+    QWizard wizard;
+    wizard.setWindowTitle(tr("Pixel-based Change Detection Wizard"));
+    WizardPagePBCDDiff *page1 = new WizardPagePBCDDiff(prjID);
+    WizardPagePBCDAutoThreshold *page2 = new WizardPagePBCDAutoThreshold();
 
-void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
-{
-    CDTTaskReply *reply = qobject_cast<CDTTaskReply *>(sender());
+    wizard.addPage(page1);
+    wizard.addPage(page2);
+    if (wizard.exec()!=QDialog::Accepted)
+        return;
 
-    QDataStream in(result);
+    QString resultID = QUuid::createUuid().toString();
+    fileSystem->registerFile(resultID,page2->resultImagePath,QString(),QString(),
+                             CDTFileSystem::getRasterAffaliated(page2->resultImagePath));
 
     QVariantMap params;
-    in>>params;
-    qDebug()<<"params: "<<params;
-
-    QString diffImageID = QUuid::createUuid().toString();
-    QString diffPath = params.value("diffPath").toString();
-    fileSystem->registerFile(diffImageID,diffPath,QString(),QString(),
-                             CDTFileSystem::getShapefileAffaliated(diffPath));
-
-    params.insert("diffImageID",diffImageID);
-    params.remove("diffPath");
-
+    params["diffImageID"] = resultID;
+    params["positiveThreshold"] = page2->posT();
+    params["negetiveThreshold"] = page2->negT();
     CDTPBCDBinaryLayer *layer = new CDTPBCDBinaryLayer(QUuid::createUuid(),this);
     layer->initLayer(
-                reply->property("name").toString(),
-                reply->property("image_t1").toString(),
-                reply->property("image_t2").toString(),
+                page1->name(),
+                page1->imageID_t1(),
+                page1->imageID_t2(),
                 params);
     pixelChangesRoot->appendRow(layer->standardKeyItem());
     pixelChanges.push_back(layer);
 
     emit layerChanged();
+
+//    CDTTaskReply* reply = DialogPBCDBinary::startBinaryPBCD(prjID);
+//    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(addPBCDBinaryLayer(QByteArray)));
+
 }
+
+//void CDTProjectLayer::addPBCDBinaryLayer(QByteArray result)
+//{
+//    CDTTaskReply *reply = qobject_cast<CDTTaskReply *>(sender());
+
+//    QDataStream in(result);
+
+//    QVariantMap params;
+//    in>>params;
+
+//    QString diffImageID = QUuid::createUuid().toString();
+//    QString diffPath = params.value("diffPath").toString();
+//    fileSystem->registerFile(diffImageID,diffPath,QString(),QString(),
+//                             CDTFileSystem::getShapefileAffaliated(diffPath));
+
+//    params.insert("diffImageID",diffImageID);
+//    params.remove("diffPath");
+
+//    CDTPBCDBinaryLayer *layer = new CDTPBCDBinaryLayer(QUuid::createUuid(),this);
+//    layer->initLayer(
+//                reply->property("name").toString(),
+//                reply->property("image_t1").toString(),
+//                reply->property("image_t2").toString(),
+//                params);
+//    pixelChangesRoot->appendRow(layer->standardKeyItem());
+//    pixelChanges.push_back(layer);
+
+//    emit layerChanged();
+//}
 
 void CDTProjectLayer::removePixelChangeLayer(CDTPixelChangeLayer *layer)
 {

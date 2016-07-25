@@ -6,8 +6,10 @@
 #include "cdtsegmentationlayer.h"
 #include "cdtclassificationlayer.h"
 #include "cdtfilesystem.h"
+#include "cdtvectorchangelayer.h"
 #include "cdtvectorchangedetectioninterface.h"
 #include "cdtvectorchangedetectionhelper.h"
+#include "cdtlayernamevalidator.h"
 #ifdef Q_OS_WIN
 #include "Windows.h"
 #endif
@@ -40,6 +42,15 @@ WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidge
     setting.beginGroup("WizardVectorChangeDetection");
     this->restoreGeometry(setting.value("geometry").toByteArray());
     setting.endGroup();
+
+    int index = CDTVectorChangeLayer::staticMetaObject.indexOfClassInfo("tableName");
+    if (index != -1)
+    {
+        CDTLayerNameValidator *validator = new CDTLayerNameValidator
+                (QSqlDatabase::database("category"),"name",CDTVectorChangeLayer::staticMetaObject.classInfo(index).value(),QString("project='%1'").arg(projectID));
+        ui->lineEditName->setValidator(validator);
+    }
+    ui->lineEditName->setText(tr("Untitled"));
 }
 
 WizardVectorChangeDetection::~WizardVectorChangeDetection()
@@ -303,7 +314,7 @@ void WizardVectorChangeDetection::showErrorText_Page1(QString msg)
     ui->textEditDataSource->setHtml(QString(
         "<div align=\"center\"><font color=red size=10 face=verdana>%1</font></div>"
         "<p>%2</p>").arg(tr("Params invalid")).arg(msg));
-    ui->textEditDataSource->setStyleSheet("border: 3px solid red");
+    ui->textEditDataSource->setStyleSheet("border: 3px solid red inset");
 }
 
 void WizardVectorChangeDetection::showCorrectText_Page1(QString name ,
@@ -362,7 +373,7 @@ void WizardVectorChangeDetection::showCorrectText_Page1(QString name ,
             .arg(tr("Change Detection's name:"))
             .arg(tr("Source of epoch 1 :"))
             .arg(tr("Source of epoch 2 :")));
-    ui->textEditDataSource->setStyleSheet("border: 3px solid green;");
+    ui->textEditDataSource->setStyleSheet("border: 3px solid green inset;");
 
     //Update Page 2 & Get categories
     auto getCategoriesFromLayer = [](QString imageID)->QStringList
@@ -487,9 +498,9 @@ void WizardVectorChangeDetection::updatePage2State()
                     isPairEmpty);
 
     if (isPairEmpty)
-        ui->listWidgetCategoryPairs->setStyleSheet("border: 3px solid red");
+        ui->listWidgetCategoryPairs->setStyleSheet("border: 3px solid red inset");
     else
-        ui->listWidgetCategoryPairs->setStyleSheet("border: 3px solid green");
+        ui->listWidgetCategoryPairs->setStyleSheet("border: 3px solid green inset");
     isValid_Page2 = !isPairEmpty;
 }
 
@@ -632,7 +643,7 @@ void WizardVectorChangeDetection::showErrorText_Page3(QString msg)
     ui->textEditResult->setHtml(QString(
         "<div align=\"center\"><font color=red size=10 face=verdana>%1</font></div>"
         "<p>%2</p>").arg(tr("Params invalid")).arg(msg));
-    ui->textEditResult->setStyleSheet("border: 3px solid red");
+    ui->textEditResult->setStyleSheet("border: 3px solid red inset");
 }
 
 void WizardVectorChangeDetection::showCorrectText_Page3()
@@ -668,7 +679,7 @@ void WizardVectorChangeDetection::updatePage3State()
         ui->textEditResult->setHtml(QString(
             "<div align=\"center\"><font size=10 face=verdana>%1</font></div>"
             "<p>%2</p>").arg(tr("Params are valid")).arg(tr("Detection process can be start!")));
-        ui->textEditResult->setStyleSheet("border: 3px solid green");
+        ui->textEditResult->setStyleSheet("border: 3px solid green inset");
     }
     else
     {
@@ -684,7 +695,7 @@ void WizardVectorChangeDetection::updatePage3State()
                                     arg(tr("Finish"))
                                     .arg(tr("Close"))
         );
-        ui->textEditResult->setStyleSheet("border: 3px solid green");
+        ui->textEditResult->setStyleSheet("border: 3px solid green inset");
     }
 }
 

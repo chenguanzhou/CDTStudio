@@ -17,7 +17,7 @@ public:
     RMS(QObject *parent = 0);
 
     QString methodName()const;
-    float merge(QVector<float> buffer);
+    float merge(QVector<float>::const_iterator begin, QVector<float>::const_iterator end);
 };
 
 #endif // GENERICPLUGIN_H

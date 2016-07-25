@@ -39,10 +39,11 @@ CDTHistogramPlot::CDTHistogramPlot(QWidget *parent)
     this->setAxisFont(QwtPlot::xBottom,font);
     this->setAxisFont(QwtPlot::yLeft,font);
 
-    QAction *action = new QAction(QIcon(":/Save.png"),tr("Save as image"),this);
-    connect(action,SIGNAL(triggered()),SLOT(exportAsImage()));
+    QAction *actionExport = new QAction(QIcon(":/Save.png"),tr("Save as image"),this);
+    connect(actionExport,SIGNAL(triggered()),SLOT(exportAsImage()));
+
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
-    this->addAction(action);
+    this->addAction(actionExport);
 }
 
 CDTHistogramPlot::~CDTHistogramPlot()
@@ -104,9 +105,7 @@ void CDTHistogramPlot::clear()
 void CDTHistogramPlot::exportAsImage()
 {
     QwtPlotRenderer renderer;
-    if (renderer.exportTo(this,pData->tableName+"_"+pData->fieldName+".pdf")==false)
-        QMessageBox::critical(this,tr("Error"),tr("Export failed!"));
-    else
+    if (renderer.exportTo(this,pData->tableName+"_"+pData->fieldName+".pdf"))
         QMessageBox::information(this,tr("Succeed"),tr("Export completed!"));
 }
 
@@ -114,7 +113,7 @@ void CDTHistogramPlot::initHistogram()
 {
     histogram->attach(this);
     histogram->setStyle(QwtPlotCurve::Lines);
-    histogram->setPen(QPen(QColor(255,0,0),2));
+    histogram->setPen(QPen(QColor(255,0,0),1));
     histogram->setBrush(QBrush(QColor(255,0,0,127)));
 
 
@@ -157,7 +156,7 @@ bool CDTHistogramPlot::updateHistogram()
     double minVal = query.value(0).toDouble();
     double maxVal = query.value(1).toDouble();
     int intervals = this->canvas()->width();
-    intervals = intervals>120?120:intervals;
+    intervals = intervals>128?128:intervals;
     double intervalStep = (maxVal - minVal)/intervals;
     qDebug()<<QString("min:%1 max:%2 width:%3").arg(minVal).arg(maxVal).arg(intervals);
 

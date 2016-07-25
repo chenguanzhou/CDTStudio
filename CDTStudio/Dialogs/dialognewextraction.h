@@ -7,6 +7,7 @@ namespace Ui {
 class DialogNewExtraction;
 }
 class CDTFileSystem;
+struct QUuid;
 
 class DialogNewExtraction : public QDialog
 {
@@ -14,6 +15,7 @@ class DialogNewExtraction : public QDialog
 
 public:
     explicit DialogNewExtraction(
+            QUuid imageID,
             const QString &inputImage,
             CDTFileSystem* fileSys ,
             QWidget *parent = 0
@@ -23,7 +25,6 @@ public:
     QString name()          const;
     QColor  color()         const;
     QColor  borderColor()   const;
-    double  opacity()       const;
     QString fileID()        const;
 
 private slots:

@@ -3,7 +3,7 @@
 #include "stable.h"
 #include "cdtapplication.h"
 #include "mainwindow.h"
-#include "cdttaskdockwidget.h"
+//#include "cdttaskdockwidget.h"
 
 #include "dialogpbcdaddbandpair.h"
 #include "cdtpbcddiffinterface.h"
@@ -257,12 +257,12 @@ void DialogPBCDBinary::generateXML()
         threshold.appendChild(text);
     }
 
-    qApp->sendTask( doc.toByteArray() ) ;
-    reply = MainWindow::getTaskDockWIdget()->appendNewTask(id,name,prjID.toString());
+//    qApp->sendTask( doc.toByteArray() ) ;
+//    reply = MainWindow::getTaskDockWIdget()->appendNewTask(id,name,prjID.toString());
 
-    reply->setProperty("name",name);
-    reply->setProperty("image_t1",modelImage->data(modelImage->index(ui->comboBoxT1Image->currentIndex(),1)));
-    reply->setProperty("image_t2",modelImage->data(modelImage->index(ui->comboBoxT2Image->currentIndex(),1)));
+//    reply->setProperty("name",name);
+//    reply->setProperty("image_t1",modelImage->data(modelImage->index(ui->comboBoxT1Image->currentIndex(),1)));
+//    reply->setProperty("image_t2",modelImage->data(modelImage->index(ui->comboBoxT2Image->currentIndex(),1)));
 
 //    connect(reply,SIGNAL(completed(QByteArray)),this,SLOT(onCompleted(QByteArray)));
 }

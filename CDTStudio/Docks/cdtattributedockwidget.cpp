@@ -132,14 +132,19 @@ void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
 
 void CDTAttributeDockWidget::onActionExportCurrentTable()
 {
-    if (tabWidget->currentIndex()<0)
+    if (tabWidget->count()<0)
         return;
 
-    QString path = QFileDialog::getSaveFileName(this,tr("Export current table to"),QString(),tr("CSV Files(*.csv);;Text Files(*.txt)"));
+    QString path = QFileDialog::getSaveFileName(this,tr("Export current table to"),QString(),CDTTableExporter::getSingleExporterFilters());
     if (path.isEmpty())
         return;
 
-    bool isHeader = QMessageBox::information(this,tr("Write headers?"),tr("Write first line as headers?"),QMessageBox::Ok|QMessageBox::No)==QMessageBox::Ok;
+    bool isHeader = QMessageBox::information(
+                NULL,
+                tr("Write headers?"),
+                tr("Write first line as headers?"),
+                QMessageBox::Ok|QMessageBox::No)==QMessageBox::Ok;
+
     QSqlDatabase db = QSqlDatabase::database("attribute");
     QString tableName = tabWidget->tabText(tabWidget->currentIndex());
 
@@ -156,7 +161,34 @@ void CDTAttributeDockWidget::onActionExportAllTables()
     if (tabWidget->count()<0)
         return;
 
-    QString path = QFileDialog::getSaveFileName(this,tr("Export all tables to"),QString(),tr(""));
+    QString filter = CDTTableExporter::getMiltiExporterFilters();
+    if (filter.isEmpty())
+    {
+        QMessageBox::warning(this,tr("Warning"),tr("Export all tables is not available in current OS"));
+        return;
+    }
+
+    QString path = QFileDialog::getSaveFileName(this,tr("Export all tables to"),QString(),filter);
+    if (path.isEmpty())
+        return;
+
+    bool isHeader = QMessageBox::information(
+                NULL,
+                tr("Write headers?"),
+                tr("Write first line as headers?"),
+                QMessageBox::Ok|QMessageBox::No)==QMessageBox::Ok;
+
+    QSqlDatabase db = QSqlDatabase::database("attribute");
+    QStringList tables;
+    for (int i=0;i<tabWidget->count();++i)
+        tables<<tabWidget->tabText(i);
+
+    QString errorText;
+    if (CDTTableExporter::exportMultiTables(db,tables,path,isHeader,errorText)==false)
+    {
+        QMessageBox::critical(this,tr("Error"),tr("Fialed! Error:%1").arg(errorText));
+        return;
+    }
 }
 
 void CDTAttributeDockWidget::clearTables()

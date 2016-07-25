@@ -148,7 +148,7 @@ CDTSnakeMapTool::~CDTSnakeMapTool()
     delete mRubberBand;
 }
 
-void CDTSnakeMapTool::canvasPressEvent( QMouseEvent * e )
+void CDTSnakeMapTool::canvasPressEvent( QgsMapMouseEvent * e )
 {
     if ( mRubberBand == NULL )
     {
@@ -171,9 +171,12 @@ void CDTSnakeMapTool::canvasPressEvent( QMouseEvent * e )
             QgsGeometry* newPolygonGeom = QgsGeometry::fromPolygon(snakePolygon);
             QgsFeature f(vectorLayer->pendingFields(),0);
             f.setGeometry(newPolygonGeom);
-            vectorLayer->beginEditCommand( "snake" );
+            vectorLayer->startEditing();
+//            vectorLayer->beginEditCommand( "snake" );
             qDebug()<<vectorLayer->addFeature(f);
-            vectorLayer->endEditCommand();
+            qDebug()<<newPolygonGeom->area();
+//            vectorLayer->endEditCommand();
+            vectorLayer->commitChanges();
             canvas()->refresh();
         }
         mRubberBand->reset( QGis::Polygon );
@@ -182,7 +185,7 @@ void CDTSnakeMapTool::canvasPressEvent( QMouseEvent * e )
     }
 }
 
-void CDTSnakeMapTool::canvasMoveEvent( QMouseEvent * e )
+void CDTSnakeMapTool::canvasMoveEvent( QgsMapMouseEvent * e )
 {
     if ( mRubberBand == NULL )
     {

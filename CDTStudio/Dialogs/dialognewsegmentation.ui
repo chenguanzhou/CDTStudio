@@ -55,9 +55,6 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="text">
-           <string>untitled</string>
-          </property>
          </widget>
         </item>
         <item row="1" column="0">
@@ -102,7 +99,7 @@
    <item>
     <widget class="QProgressBar" name="progressBar">
      <property name="value">
-      <number>24</number>
+      <number>0</number>
      </property>
     </widget>
    </item>

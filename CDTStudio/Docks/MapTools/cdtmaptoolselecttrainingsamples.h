@@ -14,8 +14,8 @@ public:
     explicit CDTMapToolSelectTrainingSamples(QgsMapCanvas *canvas);
     ~CDTMapToolSelectTrainingSamples();
 
-    void canvasMoveEvent( QMouseEvent * e );
-    void canvasReleaseEvent( QMouseEvent * e );
+    void canvasMoveEvent( QgsMapMouseEvent * e )override;
+    void canvasReleaseEvent( QgsMapMouseEvent * e )override;
 signals:
 
 public slots:

@@ -1,6 +1,10 @@
 #ifndef CDTSNAKEMAPTOOL_H
 #define CDTSNAKEMAPTOOL_H
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 #include <qgsmaptool.h>
 
 class QgsMapCanvas;
@@ -15,8 +19,8 @@ public:
     explicit CDTSnakeMapTool(QgsMapCanvas *canvas);
     ~CDTSnakeMapTool();
 
-    virtual void canvasMoveEvent ( QMouseEvent * e );
-    virtual void canvasPressEvent( QMouseEvent * e );
+    virtual void canvasMoveEvent ( QgsMapMouseEvent * e ) override;
+    virtual void canvasPressEvent( QgsMapMouseEvent * e ) override;
 signals:
 
 public slots:

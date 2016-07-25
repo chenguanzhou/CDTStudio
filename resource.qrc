@@ -33,5 +33,9 @@
         <file>Icons/2.png</file>
         <file>Icons/2p.png</file>
         <file>Icons/Default.png</file>
+        <file>Icons/Import.png</file>
+        <file>Icons/Copy.png</file>
+        <file>LICENSE</file>
+        <file>3rdLicenses.txt</file>
     </qresource>
 </RCC>

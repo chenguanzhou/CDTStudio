@@ -6,6 +6,8 @@
 #include "log4qt/logger.h"
 
 class CDTHistogramPlot;
+class QTreeView;
+class QStandardItemModel;
 class CDTPlot2DDockWidget : public CDTDockWidget
 {
     Q_OBJECT
@@ -22,8 +24,11 @@ public slots:
 
     void setDataSource(QSqlDatabase db,QString tableName,QString fieldName);
 
+    void onStatisticsFinished();
 private:
     CDTHistogramPlot *qwtPlot;
+    QTreeView *treeViewStatistices;
+    QStandardItemModel *model;
 };
 
 #endif // CDTPLOT2DDOCKWIDGET_H

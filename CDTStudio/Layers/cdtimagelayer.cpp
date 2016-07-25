@@ -18,7 +18,8 @@ QList<CDTImageLayer *> CDTImageLayer::layers;
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent),
       multibandSelectionWidget(NULL),
-      enhancementStyle(QgsContrastEnhancement::NoEnhancement)
+      enhancementStyle(QgsContrastEnhancement::NoEnhancement),
+      useRelative(false)
 {
     setKeyItem(new CDTProjectTreeItem(CDTProjectTreeItem::IMAGE,CDTProjectTreeItem::RASTER,QString(),this));
     extractionRoot
@@ -97,10 +98,15 @@ CDTImageLayer::~CDTImageLayer()
 
 void CDTImageLayer::initLayer(const QString &name, const QString &path)
 {
-    QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(path,QFileInfo(path).completeBaseName());
+    useRelative = QFileInfo(path).isRelative();
+
+    CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
+    QDir dir(layer->path());
+    QString absoluteFilePath = dir.absoluteFilePath(path);
+    QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(absoluteFilePath,QFileInfo(path).completeBaseName());
     if (!newCanvasLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open image ")+path+tr(" failed!"));
+        QMessageBox::critical(NULL,tr("Error"),tr("Open image ")+absoluteFilePath+tr(" failed!"));
         delete newCanvasLayer;
         return;
     }
@@ -147,8 +153,7 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
                                <<tr("No Enhancement")
                                <<tr("Stretch To Min/Max")
                                <<tr("Stretch And Clip To Min/Max")
-                               <<tr("Clip To Min/Max"));
-    comboEnhancement->setCurrentIndex(1);
+                               <<tr("Clip To Min/Max"));    
     connect(comboEnhancement,SIGNAL(currentIndexChanged(int)),SLOT(onEnhancementChanged(int)));
     widgets<<qMakePair(new QLabel(tr("Enhancement")),(QWidget*)comboEnhancement);
 
@@ -185,7 +190,13 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
 
     setWidgetActions(widgets);
 
-    newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
+    if (newCanvasLayer->dataProvider()->dataType(1) != QGis::Byte)
+    {
+        newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
+        comboEnhancement->setCurrentIndex(1);
+    }
+    else
+        comboEnhancement->setCurrentIndex(0);
 
     emit appendLayers(QList<QgsMapLayer*>()<<canvasLayer());
     emit layerChanged();
@@ -227,6 +238,24 @@ QString CDTImageLayer::path() const
     return query.value(0).toString();
 }
 
+QString CDTImageLayer::absolutPath() const
+{
+    if (useRelativePath())
+    {
+        CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
+        QDir dir(layer->path());
+        return dir.absoluteFilePath(path());
+    }
+    else
+        return this->path();
+
+}
+
+bool CDTImageLayer::useRelativePath() const
+{
+    return useRelative;
+}
+
 int CDTImageLayer::bandCount() const
 {
     QgsRasterLayer* layer = (QgsRasterLayer*)canvasLayer();
@@ -248,13 +277,34 @@ CDTImageLayer *CDTImageLayer::getLayer(const QUuid &id)
     return NULL;
 }
 
+void CDTImageLayer::setPath(QString path)
+{
+    if (this->path() == path)
+        return;
+
+    if (path.isEmpty())
+        return;
+
+    bool ret = false;
+    QSqlQuery query(QSqlDatabase::database("category"));
+    ret = query.prepare(QString("UPDATE %1 set path = ? where id =?").arg(tableName()));
+    if (ret==false) return;
+    query.bindValue(0,path);
+    query.bindValue(1,this->id().toString());
+    ret = query.exec();
+    if (ret==false) return;
+
+    emit pathChanged(path);
+    emit layerChanged();
+}
+
 void CDTImageLayer::addExtraction()
 {
-    DialogNewExtraction *dlg = new DialogNewExtraction(this->path(),this->fileSystem());
+    DialogNewExtraction *dlg = new DialogNewExtraction(this->id(),this->absolutPath(),this->fileSystem());
     if(dlg->exec()==DialogNewExtraction::Accepted)
     {
         CDTExtractionLayer *extraction = new CDTExtractionLayer(QUuid::createUuid(),this);
-        extraction->initLayer(dlg->name(),dlg->fileID(),dlg->color(),dlg->borderColor(),dlg->opacity());
+        extraction->initLayer(dlg->name(),dlg->fileID(),dlg->color(),dlg->borderColor());
         extractionRoot->appendRow(extraction->standardKeyItem());
         addExtraction(extraction);
     }
@@ -264,7 +314,7 @@ void CDTImageLayer::addExtraction()
 
 void CDTImageLayer::addSegmentation()
 {
-    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->path(),this->fileSystem());
+    DialogNewSegmentation* dlg = new DialogNewSegmentation(this->id(),this->absolutPath(),this->fileSystem());
     if(dlg->exec()==DialogNewSegmentation::Accepted)
     {
         CDTSegmentationLayer *segmentation = new CDTSegmentationLayer(QUuid::createUuid(),this);
@@ -321,6 +371,7 @@ void CDTImageLayer::removeSegmentation(CDTSegmentationLayer *sgmt)
         emit removeLayer(QList<QgsMapLayer*>()<<sgmt->canvasLayer());
         fileSystem()->removeFile(sgmt->shapefilePath());
         fileSystem()->removeFile(sgmt->markfilePath());
+        delete sgmt;
         emit layerChanged();
     }
 }
@@ -347,6 +398,28 @@ void CDTImageLayer::setLayerOpacity(int opacity)
         rasterLayer->renderer()->setOpacity(opacity/100.);
         canvas()->refresh();
     }
+}
+
+void CDTImageLayer::setUseRelativePath(bool use)
+{
+    if (use==useRelative)
+        return;
+
+    CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
+    QDir dir(layer->path());
+
+    if (use)//relative
+    {
+        QString relativePath = dir.relativeFilePath(this->path());
+        this->setPath(relativePath);
+    }
+    else//absolute
+    {
+        QString absoluteFilePath = dir.absoluteFilePath(this->path());
+        this->setPath(absoluteFilePath);
+    }
+
+    useRelative = QFileInfo(this->path()).isRelative();
 }
 
 void CDTImageLayer::redBandChanged(int bandIDFrom0)
@@ -399,7 +472,7 @@ void CDTImageLayer::updateRenderer()
     }
 
     //Contrast
-    layer->setContrastEnhancement(enhancementStyle,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
+    layer->setContrastEnhancement(enhancementStyle,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle());
     MainWindow::getCurrentMapCanvas()->refresh();
 }
 
@@ -427,6 +500,7 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
         categoryInfo.push_back(CategoryInformation
             (query.value(0).toString(),query.value(1).toString(),query.value(2).value<QColor>()));
     }
+    out<<categoryInfo;
 
 
     query.exec(QString("select id,name,pointset_name from image_validation_samples where imageid = '%1'").arg(image.id()));

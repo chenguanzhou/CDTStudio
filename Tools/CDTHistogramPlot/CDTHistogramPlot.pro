@@ -15,13 +15,17 @@ DESTDIR = ../../lib
 DLLDESTDIR = ../../bin
 DEFINES += CDTHISTOGRAMPLOT_LIBRARY
 
-unix{
+macx{
+CONFIG += qwt
+}
+unix:!macx{
 INCLUDEPATH += /usr/include/qwt
+LIBS += -lqwt
 }
 !unix{
 include(../Config/win.pri)
-}
 LIBS += -lqwt
+}
 
 RESOURCES += \
     resource.qrc

@@ -2,10 +2,26 @@
 #define DIALOGVALIDATIONPOINTS_H
 
 #include <QDialog>
+#include <QItemDelegate>
 
 class QTableView;
 class QSqlRelationalTableModel;
 class QItemSelection;
+
+class CDTReadOnlyDelegate : public QItemDelegate
+{
+    Q_OBJECT
+public:
+    CDTReadOnlyDelegate(QObject *parent = 0)
+        :QItemDelegate(parent){}
+
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &,
+                          const QModelIndex &) const
+    {
+        return NULL;
+    }
+};
+
 class DialogValidationPoints : public QDialog
 {
     Q_OBJECT

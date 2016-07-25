@@ -6,15 +6,16 @@
 #include <QMap>
 #include <QSqlDatabase>
 
-class CDTTableExporterWriter
+class CDTSingleTableExporterWriter
 {
 public:
-    CDTTableExporterWriter(const QString &path)
+    CDTSingleTableExporterWriter(const QString &path)
         :filePath(path),valid(true){
 
     }
-    virtual ~CDTTableExporterWriter(){}
+    virtual ~CDTSingleTableExporterWriter(){}
     bool isValid()const{return valid;}
+    //    virtual bool isHeader()const{return false;}
 
     virtual void writeLine(QStringList record) = 0;
 protected:
@@ -26,10 +27,12 @@ protected:
 class CDTTABLEEXPORTER_EXPORT CDTTableExporter
 {
 public:
-    static bool exportSingleTable(QSqlDatabase &db,const QString &tableName,const QString &exportPath,bool isHeader,QString &error);
+    static bool exportSingleTable(QSqlDatabase &db, const QString &tableName, const QString &exportPath, bool isHeader, QString &error);
     static bool exportMultiTables(QSqlDatabase &db,const QStringList &tableNames,const QString &exportPath,bool isHeader,QString &error);
+    static QString getSingleExporterFilters();
+    static QString getMiltiExporterFilters();
 private:
-    static CDTTableExporterWriter *getWriterByName(const QString& path);
+    static CDTSingleTableExporterWriter *getWriterByNameSingle(const QString& path);
 };
 
 

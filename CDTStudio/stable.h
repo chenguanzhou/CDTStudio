@@ -28,7 +28,6 @@
 #include <qgsmaplayerregistry.h>
 #include <qgssinglesymbolrendererv2.h>
 #include <qgscategorizedsymbolrendererv2.h>
-#include <qgsrendererv2widget.h>
 #include <qgsfillsymbollayerv2.h>
 #include <qgsvectordataprovider.h>
 #include <qgsmapcanvas.h>

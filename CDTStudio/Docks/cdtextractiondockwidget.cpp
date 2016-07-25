@@ -1,27 +1,28 @@
 #include "cdtextractiondockwidget.h"
 #include "ui_cdtextractiondockwidget.h"
-#include "cdtextractioninterface.h"
-#include "cdtextractionlayer.h"
 #include <qgsvectordataprovider.h>
 #include "stable.h"
 #include "mainwindow.h"
+#include "cdtextractioninterface.h"
+#include "cdtextractionlayer.h"
+#include "cdtimagelayer.h"
 #include "cdtundowidget.h"
 
 extern QList<CDTExtractionInterface *> extractionPlugins;
 
 CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
+    ui(new Ui::CDTExtractionDockWidget),
     modelExtractions    (new QSqlQueryModel(this)),
-    actionStartEdit     (new QAction(QIcon(":/Icons/Start.png"),tr("Start Edit"),this)),
-    actionRollBack      (new QAction(QIcon(":/Icons/Undo.png"),tr("Rollback"),this)),
-    actionSave          (new QAction(QIcon(":/Icons/Save.png"),tr("Save"),this)),
-    actionStop          (new QAction(QIcon(":/Icons/Stop.png"),tr("Stop"),this)),
-    currentEditState    (LOCKED),
     isGeometryModified  (false),
+    currentEditState    (LOCKED),
     vectorLayer (NULL),
     mapCanvas   (NULL),
     lastMapTool (NULL),
-    ui(new Ui::CDTExtractionDockWidget)
+    actionStartEdit     (new QAction(QIcon(":/Icons/Start.png"),tr("Start Edit"),this)),
+    actionRollBack      (new QAction(QIcon(":/Icons/Undo.png"),tr("Rollback"),this)),
+    actionSave          (new QAction(QIcon(":/Icons/Save.png"),tr("Save"),this)),
+    actionStop          (new QAction(QIcon(":/Icons/Stop.png"),tr("Stop"),this))
 {
     ui->setupUi(this);
 
@@ -137,7 +138,7 @@ void CDTExtractionDockWidget::onActionStartEdit()
         return;
     start();
     ui->comboBoxExtraction->setEnabled(false);
-    ui->comboBoxMethod->setEnabled(false);
+    ui->comboBoxMethod->setEnabled(false);    
 }
 
 void CDTExtractionDockWidget::onActionRollBack()
@@ -199,8 +200,8 @@ void CDTExtractionDockWidget::start()
         return;
     lastMapTool = mapCanvas->mapTool();
     currentMapTool = extractionPlugins[ui->comboBoxMethod->currentIndex()]->mapTool(mapCanvas,currentImagePath,vectorLayer);
+
     mapCanvas->setMapTool(currentMapTool);
-    vectorLayer->startEditing();
     mapCanvas->refresh();
 
     lastCursor = mapCanvas->cursor();
@@ -270,13 +271,7 @@ void CDTExtractionDockWidget::setExtractionLayer(QString id)
 
     QString name = query.value(0).toString();
     QString imageID = query.value(1).toString();
-
-    query.prepare("select path from imagelayer where id = ?");
-    query.addBindValue(imageID);
-    query.exec();
-    if (query.next()==false)
-        return;
-    currentImagePath = query.value(0).toString();
+    currentImagePath = CDTImageLayer::getLayer(imageID)->absolutPath();
 
 
     modelExtractions->setQuery(QString("select name,id from extractionlayer where imageID = '%1'" )

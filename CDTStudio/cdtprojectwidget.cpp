@@ -16,6 +16,8 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     connect(this,SIGNAL(projectChanged()),this,SLOT(onProjectChanged()));
     connect(mapCanvas,SIGNAL(xyCoordinates(QgsPoint)),MainWindow::getMainWindow(),SLOT(showMouseCoordinate(QgsPoint)));
     connect(mapCanvas,SIGNAL(scaleChanged(double)),MainWindow::getMainWindow(),SLOT(showScale(double)));
+    connect(mapCanvas,SIGNAL(renderStarting()),SLOT(onRenderStarting()));
+    connect(mapCanvas,SIGNAL(renderComplete(QPainter*)),SLOT(onRenderComplete()));
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
 
@@ -32,8 +34,11 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
 CDTProjectWidget::~CDTProjectWidget()
 {
     MainWindow::getMainWindow()->clearAllDocks();
-    project->removeAllImageLayers();
-    if(project) delete project;
+    if(project)
+    {
+        project->removeAllImageLayers();
+        delete project;
+    }
     file.close();
 }
 
@@ -57,15 +62,17 @@ bool CDTProjectWidget::readProject(const QString &filepath)
     if (openProjectFile(filepath)==false)
         return false;
 
-    QByteArray compressedData = file.readAll();
-    QByteArray data = qUncompress(compressedData);
+    QTime time;
+    time.start();
 
-    QTemporaryFile tempFile;
-    tempFile.open();
-    tempFile.write(data);
-    tempFile.flush();
-    tempFile.seek(0);
-    QDataStream in(&(tempFile));
+//    QTemporaryFile tempFile;
+//    tempFile.open();
+//    tempFile.write(data);
+//    tempFile.flush();
+//    tempFile.seek(0);
+//    QDataStream in(&(tempFile));
+
+    QDataStream in(qUncompress(file.readAll()));
 
     quint32 magicNumber;
     in>>  magicNumber;
@@ -75,9 +82,12 @@ bool CDTProjectWidget::readProject(const QString &filepath)
         return false;
     }
     createProject(QUuid());
+    project->setPath(filepath);
     in>>*project;
     emit projectChanged();
     setWindowModified(false);
+
+    logger()->info("Open the project cost %1 ms",time.elapsed());
 
     refreshMapCanvas();
     return true;
@@ -85,24 +95,34 @@ bool CDTProjectWidget::readProject(const QString &filepath)
 
 bool CDTProjectWidget::writeProject()
 {
-    QTemporaryFile tempFile;
-    tempFile.open();
-    QDataStream temp(&tempFile);
-    temp << (quint32)0xABCDEF;
-    temp <<*project;
-    tempFile.flush();
-    tempFile.seek(0);
-    qDebug()<<"tempFile:"<<tempFile.size();
+    QTime time;
+    time.start();
+    //    QTemporaryFile tempFile;
+    //    tempFile.open();
+    //    QDataStream temp(&tempFile);
+    //    temp << (quint32)0xABCDEF;
+    //    temp <<*project;
+    //    tempFile.flush();
+    //    tempFile.seek(0);
+    //    qDebug()<<"tempFile:"<<tempFile.size();
+    //    QByteArray array = tempFile.readAll();
+    //    QByteArray compressedDat = qCompress(array,1);
+    //    qDebug()<<"compressedData:"<<compressedDat.size();
 
-    QByteArray array = tempFile.readAll();
-    QByteArray compressedDat = qCompress(array);
+    QByteArray array;
+    QDataStream out(&array,QIODevice::WriteOnly);
+    out << (quint32)0xABCDEF;
+    out << *project;
+    QByteArray compressedDat = qCompress(array,1);
     qDebug()<<"compressedData:"<<compressedDat.size();
+
     file.seek(0);
     file.resize(0);
     file.write(compressedDat);
     file.flush();
     qDebug()<<"compressedFile:"<<file.size();
     setWindowModified(false);
+    logger()->info("Save the project cost %1 ms",time.elapsed());
 
     return true;
 }
@@ -238,6 +258,20 @@ void CDTProjectWidget::onObjectItemChanged(QStandardItem *item)
         layersVisible[treeItem->mapLayer()] = treeItem->checkState()==Qt::Checked;
         refreshMapCanvas(false);
     }
+}
+
+void CDTProjectWidget::onRenderStarting()
+{
+    MainWindow *w = MainWindow::getMainWindow();
+    if (w)
+        w->setEnabled(false);
+}
+
+void CDTProjectWidget::onRenderComplete()
+{
+    MainWindow *w = MainWindow::getMainWindow();
+    if (w)
+        w->setEnabled(true);
 }
 
 QToolBar *CDTProjectWidget::initToolBar()

@@ -167,6 +167,11 @@ void CDTSegmentationLayer::exportShapefile()
 
 void CDTSegmentationLayer::addClassification()
 {
+    if (databaseURL().isNull())
+    {
+        QMessageBox::critical(NULL,tr("Error"),tr("Please set database connection!"));
+        return;
+    }
     MainWindow::getAttributesDockWidget()->clearTables();
     WizardNewClassification dlg(id());
     int ret = dlg.exec();
@@ -305,7 +310,7 @@ QColor CDTSegmentationLayer::borderColor() const
 
 QString CDTSegmentationLayer::imagePath() const
 {
-    return ((CDTImageLayer*)parent())->path();
+    return ((CDTImageLayer*)parent())->absolutPath();
 }
 
 int CDTSegmentationLayer::layerTransparency() const

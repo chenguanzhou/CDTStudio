@@ -75,7 +75,7 @@ QString CDTBaseLayer::tableName() const
     if (index == -1)
     {
         logger()->error("Get table name of layer:%1 failed!",metaObject()->className());
-        return 0;
+        return QString();
     }
     return metaObject()->classInfo(index).value();
 }
@@ -128,11 +128,18 @@ void CDTBaseLayer::setName(const QString &name)
 {
     if (this->name() == name)
         return;
+
+    if (name.isEmpty())
+        return;
+
+    bool ret = false;
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.prepare(QString("UPDATE %1 set name = ? where id =?").arg(tableName()));
+    ret = query.prepare(QString("UPDATE %1 set name = ? where id =?").arg(tableName()));
+    if (ret==false) return;
     query.bindValue(0,name);
     query.bindValue(1,this->id().toString());
-    query.exec();
+    ret = query.exec();
+    if (ret==false) return;
 
     keyItem()->setText(name);
     emit nameChanged(name);

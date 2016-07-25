@@ -230,8 +230,12 @@ bool MSTMethodInterface::_CheckAndInit()
     }
 
     //3.Init Output Image
+    char** pszOptions = NULL;
+    pszOptions = CSLSetNameValue(pszOptions,"COMPRESS","DEFLATE");
+    pszOptions = CSLSetNameValue(pszOptions,"PREDICTOR","1");
+    pszOptions = CSLSetNameValue(pszOptions,"ZLEVEL","9");
     GDALDriver* poDriver = (GDALDriver*)GDALGetDriverByName("GTiff");
-    GDALDataset* poDstDS = poDriver->Create(markfilePath.toUtf8().constData(),poSrcDS->GetRasterXSize(),poSrcDS->GetRasterYSize(),1,GDT_Int32,NULL);
+    GDALDataset* poDstDS = poDriver->Create(markfilePath.toUtf8().constData(),poSrcDS->GetRasterXSize(),poSrcDS->GetRasterYSize(),1,GDT_Int32,pszOptions);
     if (poDstDS == NULL)
     {
         return false;
@@ -292,101 +296,254 @@ bool MSTMethodInterface::_CreateEdgeWeights(void *p)
     GDALDataType gdalDataType = poSrcDS->GetRasterBand(1)->GetRasterDataType();
     unsigned pixelSize = GDALGetDataTypeSize(gdalDataType)/8;
 
+    int nXBlocks, nYBlocks, nXBlockSize, nYBlockSize;
+    int iXBlock, iYBlock;
+    poSrcDS->GetRasterBand(1)->GetBlockSize( &nXBlockSize, &nYBlockSize );
+    nXBlocks = (width + nXBlockSize - 1) / nXBlockSize;
+    nYBlocks = (height + nYBlockSize - 1) / nYBlockSize;
+    int blocksCount = nXBlocks*nYBlocks;
+
+    QVector<uchar*> dataIn(nBandCount);
     QVector<double> buffer1(nBandCount);
     QVector<double> buffer2(nBandCount);
-
-    std::vector<unsigned char*> lineBufferUp(nBandCount);
-    std::vector<unsigned char*> lineBufferDown(nBandCount);
-
-    GDALRasterBand* poMask = poDstDS->GetRasterBand(1)->GetMaskBand();
-    uchar* maskUp   = new uchar[width];
-    uchar* maskDown = new uchar[width];
-    for (unsigned k=0;k<nBandCount;++k)
+    for(int k=0;k<nBandCount;++k)
     {
-        lineBufferUp[k] = new unsigned char[width*pixelSize];
-        lineBufferDown[k] = new unsigned char[width*pixelSize];
+        dataIn[k] = new uchar[nXBlockSize * nYBlockSize * pixelSize];
     }
 
-    for (unsigned k=0;k<nBandCount;++k)
+    emit progressBarSizeChanged(0,100);
+    for( iYBlock = 0; iYBlock < nYBlocks; iYBlock++ )
     {
-        poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,0,0,width,1,lineBufferUp[k],width,1,gdalDataType,0,0);
-    }
-    poMask->RasterIO(GF_Read, 0,0,width,1,maskUp,width,1,GDT_Byte,0,0);
+        int nYOff = iYBlock*nYBlockSize;
+        int nYValid;
+        if( (iYBlock+1) * nYBlockSize > height )
+            nYValid = height - iYBlock * nYBlockSize;
+        else
+            nYValid = nYBlockSize;
 
-
-    emit progressBarSizeChanged(0,height-1);
-    const int progressGap = (height-1)/100;
-
-
-    for (unsigned y=0;y<height-1;++y)
-    {
-        for (unsigned k=0;k<nBandCount;++k)
-            poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,0,y+1,width,1,lineBufferDown[k],width,1,gdalDataType,0,0);
-        poMask->RasterIO(GF_Read, 0,y+1,width,1,maskDown,width,1,GDT_Byte,0,0);
-
-        for(unsigned x=0;x<width;++x)
+        for( iXBlock = 0; iXBlock < nXBlocks; iXBlock++ )
         {
-            if (maskUp[x]==0) continue;
+            int nXOff = iXBlock*nXBlockSize;
+            int nXValid;
+            if( (iXBlock+1) * nXBlockSize > width )
+                nXValid = width - iXBlock * nXBlockSize;
+            else
+                nXValid = nXBlockSize;
 
-            unsigned nodeID1 = y*width+x;
-            unsigned nodeIDNextLIne = nodeID1+width;
-            if (x < width-1 )
-            {
-                if (maskUp[x+1]!=0)
-                {
-                    for(unsigned k=0;k<nBandCount;++k)
-                    {
-                        buffer1[k] = SRCVAL(lineBufferUp[k],gdalDataType,x);
-                        buffer2[k] = SRCVAL(lineBufferUp[k],gdalDataType,x+1);
-                    }
-                    //                    emit computeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
-                    //                    ++edgeSize;
-                    onComputeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
-                }
-            }
+            for (int k=0;k<nBandCount;++k)
+                poSrcDS->GetRasterBand(k+1)->ReadBlock( iXBlock, iYBlock, dataIn[k] );
 
-            if(y < height-1)
+            // Collect the histogram counts.
+            for( int iY = 0; iY < nYValid; iY++)
             {
-                if (maskDown[x]!=0)
+                for( int iX = 0; iX < nXValid; iX++)
                 {
-                    for(unsigned k=0;k<nBandCount;++k)
+                    int nodeID1,nodeID2;
+                    if (iX+1<nXValid)
                     {
-                        buffer1[k] = SRCVAL(lineBufferUp[k],gdalDataType,x);
-                        buffer2[k] = SRCVAL(lineBufferDown[k],gdalDataType,x);
+                        nodeID1 = (iY+nYOff)*width+iX+nXOff;
+                        for(int k=0;k<nBandCount;++k)
+                        {
+                            buffer1[k] = SRCVAL(dataIn[k],gdalDataType,iY*nXBlockSize+iX);
+                            buffer2[k] = SRCVAL(dataIn[k],gdalDataType,iY*nXBlockSize+iX+1);
+                        }
+                        nodeID2 = nodeID1+1;
+                        onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
                     }
-                    //                    emit computeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
-                    //                    ++edgeSize;
-                    onComputeEdgeWeight(nodeID1,nodeIDNextLIne,buffer1,buffer2,_layerWeights,vecEdge);
+                    if (iY+1<nYValid)
+                    {
+                        for(int k=0;k<nBandCount;++k)
+                        {
+                            buffer1[k] = SRCVAL(dataIn[k],gdalDataType,iY*nXBlockSize+iX);
+                            buffer2[k] = SRCVAL(dataIn[k],gdalDataType,(iY+1)*nXBlockSize+iX);
+                        }
+                        nodeID2 = nodeID1+width;
+                        onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
+                    }
                 }
             }
         }
-
-        std::vector<unsigned char*> tempBuffer = lineBufferDown;
-        lineBufferDown = lineBufferUp;
-        lineBufferUp = tempBuffer;
-
-        uchar* p    = maskUp;
-        maskUp      = maskDown;
-        maskDown    = p;
-
-        //        ++pd;
-        if (y%progressGap==0)
-            emit progressBarValueChanged(y);
-
+        emit progressBarValueChanged((iXBlock+iYBlock*nXBlocks)* 100./blocksCount);
     }
 
-
-    emit progressBarValueChanged(height-1);
-
-    for (unsigned k=0;k<nBandCount;++k)
+    for(int k=0;k<nBandCount;++k)
     {
-        delete [](lineBufferUp[k]);
-        delete [](lineBufferDown[k]);
+        delete [](dataIn[k]);
+        dataIn[k] = new uchar[width * 2 * pixelSize];
     }
-    delete []maskUp;
-    delete []maskDown;
+
+    for( iYBlock = 1; iYBlock < nYBlocks; iYBlock++ )
+    {
+        int nYValid=0;
+        if( (iYBlock+1) * nYBlockSize > height )
+            nYValid = height - iYBlock * nYBlockSize;
+        else
+            nYValid = nYBlockSize;
+
+        int nYOff = iYBlock*nYBlockSize-1;
+        if (nYOff<height-1)
+        {
+            for(int k=0;k<nBandCount;++k)
+            {
+                poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,0,nYOff,width,2,dataIn[k],width,2,gdalDataType,0,0);
+                for (int i=0;i<width-1;++i)
+                {
+                    int nodeID1,nodeID2;
+                    nodeID1 = nYOff * width + i;
+//                    for(int k=0;k<nBandCount;++k)
+//                    {
+//                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
+//                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,i+1);
+//                    }
+//                    nodeID2 = nodeID1+1;
+//                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
+                    for(int k=0;k<nBandCount;++k)
+                    {
+                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
+                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,i+width);
+                    }
+                    nodeID2 = nodeID1+width;
+                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
+                }
+            }
+        }
+    }
+
+    for(int k=0;k<nBandCount;++k)
+    {
+        delete [](dataIn[k]);
+        dataIn[k] = new uchar[height * 2 * pixelSize];
+    }
+    for( iXBlock = 1; iXBlock < nXBlocks; iXBlock++ )
+    {
+        int nXValid=0;
+        if( (iXBlock+1) * nXBlockSize > width )
+            nXValid = width - iXBlock * nXBlockSize;
+        else
+            nXValid = nXBlockSize;
+
+        int nXOff = iXBlock*nXBlockSize-1;
+        if (nXOff<width-1)
+        {
+            for(int k=0;k<nBandCount;++k)
+            {
+                poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,0,2,height,dataIn[k],2,height,gdalDataType,0,0);
+                for (int i=0;i<height-1;++i)
+                {
+                    int nodeID1,nodeID2;
+                    nodeID1 = i * width + nXOff;
+//                    for(int k=0;k<nBandCount;++k)
+//                    {
+//                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
+//                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,i+2);
+//                    }
+//                    nodeID2 = nodeID1+width;
+//                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
+                    for(int k=0;k<nBandCount;++k)
+                    {
+                        buffer1[k] = SRCVAL(dataIn[k],gdalDataType,i);
+                        buffer2[k] = SRCVAL(dataIn[k],gdalDataType,i+1);
+                    }
+                    nodeID2 = nodeID1+1;
+                    onComputeEdgeWeight(nodeID1,nodeID2,buffer1,buffer2,_layerWeights,vecEdge);
+                }
+            }
+        }
+    }
+
+    for(int k=0;k<nBandCount;++k)
+    {
+        delete [](dataIn[k]);
+    }
+
+//    QVector<double> buffer1(nBandCount);
+//    QVector<double> buffer2(nBandCount);
+
+//    std::vector<unsigned char*> lineBufferUp(nBandCount);
+//    std::vector<unsigned char*> lineBufferDown(nBandCount);
+
+//    GDALRasterBand* poMask = poDstDS->GetRasterBand(1)->GetMaskBand();
+//    uchar* maskUp   = new uchar[width];
+//    uchar* maskDown = new uchar[width];
+//    for (unsigned k=0;k<nBandCount;++k)
+//    {
+//        lineBufferUp[k] = new unsigned char[width*pixelSize];
+//        lineBufferDown[k] = new unsigned char[width*pixelSize];
+//    }
+
+//    for (unsigned k=0;k<nBandCount;++k)
+//    {
+//        poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,0,0,width,1,lineBufferUp[k],width,1,gdalDataType,0,0);
+//    }
+//    poMask->RasterIO(GF_Read, 0,0,width,1,maskUp,width,1,GDT_Byte,0,0);
 
 
+//    emit progressBarSizeChanged(0,height-1);
+//    const int progressGap = (height-1)/100;
+
+
+//    for (unsigned y=0;y<height-1;++y)
+//    {
+//        for (unsigned k=0;k<nBandCount;++k)
+//            poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,0,y+1,width,1,lineBufferDown[k],width,1,gdalDataType,0,0);
+//        poMask->RasterIO(GF_Read, 0,y+1,width,1,maskDown,width,1,GDT_Byte,0,0);
+
+//        for(unsigned x=0;x<width;++x)
+//        {
+//            if (maskUp[x]==0) continue;
+
+//            unsigned nodeID1 = y*width+x;
+//            unsigned nodeIDNextLIne = nodeID1+width;
+//            if (x < width-1 )
+//            {
+//                if (maskUp[x+1]!=0)
+//                {
+//                    for(unsigned k=0;k<nBandCount;++k)
+//                    {
+//                        buffer1[k] = SRCVAL(lineBufferUp[k],gdalDataType,x);
+//                        buffer2[k] = SRCVAL(lineBufferUp[k],gdalDataType,x+1);
+//                    }
+//                    onComputeEdgeWeight(nodeID1,nodeID1+1,buffer1,buffer2,_layerWeights,vecEdge);
+//                }
+//            }
+
+//            if(y < height-1)
+//            {
+//                if (maskDown[x]!=0)
+//                {
+//                    for(unsigned k=0;k<nBandCount;++k)
+//                    {
+//                        buffer1[k] = SRCVAL(lineBufferUp[k],gdalDataType,x);
+//                        buffer2[k] = SRCVAL(lineBufferDown[k],gdalDataType,x);
+//                    }
+//                    onComputeEdgeWeight(nodeID1,nodeIDNextLIne,buffer1,buffer2,_layerWeights,vecEdge);
+//                }
+//            }
+//        }
+
+//        std::vector<unsigned char*> tempBuffer = lineBufferDown;
+//        lineBufferDown = lineBufferUp;
+//        lineBufferUp = tempBuffer;
+
+//        uchar* p    = maskUp;
+//        maskUp      = maskDown;
+//        maskDown    = p;
+
+//        if (y%progressGap==0)
+//            emit progressBarValueChanged(y);
+
+//    }
+
+
+//    emit progressBarValueChanged(height-1);
+
+//    for (unsigned k=0;k<nBandCount;++k)
+//    {
+//        delete [](lineBufferUp[k]);
+//        delete [](lineBufferDown[k]);
+//    }
+//    delete []maskUp;
+//    delete []maskDown;
 
 
     return true;
@@ -468,35 +625,85 @@ bool MSTMethodInterface::_GenerateFlagImage(GraphKruskal *&graph,const QMap<unsi
     GDALDataset* poSrcDS = (GDALDataset*)srcDS;
     GDALDataset* poDstDS = (GDALDataset*)dstDS;
 
-    unsigned width = poSrcDS->GetRasterXSize();
-    unsigned height= poSrcDS->GetRasterYSize();
+    int width = poSrcDS->GetRasterXSize();
+    int height= poSrcDS->GetRasterYSize();
 
-    //    boost::progress_display pd(height,std::cout,"generating result\n","","");
+//    const int progressGap = height/100;
+//    emit progressBarSizeChanged(0,height);
+//    GDALRasterBand* poFlagBand = poDstDS->GetRasterBand(1);
+//    GDALRasterBand* poMaskBand = poFlagBand->GetMaskBand();
+//    std::vector<uchar> mask(width);
 
-    const int progressGap = height/100;
-    emit progressBarSizeChanged(0,height);
+//    for(int i=0,index =0;i<height;++i)
+//    {
+//        poMaskBand->RasterIO(GF_Read,0,i,width,1,&mask[0],width,1,GDT_Byte,0,0);
+//        for(int j=0;j<width;++j,++index)
+//        {
+//            int objectID = 0;
+//            if (mask[j]!=0)
+//            {
+//                int root = graph->find(index);
+//                objectID = mapRootidObjectid.value(root);
+//            }
+//            poFlagBand->RasterIO(GF_Write,j,i,1,1,(int *)&objectID,1,1,GDT_Int32,0,0);
+//        }
+//        if (i%progressGap == 0)
+//            emit progressBarValueChanged(i);
+//    }
+//    emit progressBarValueChanged(height);
+
+    emit progressBarSizeChanged(0,100);
     GDALRasterBand* poFlagBand = poDstDS->GetRasterBand(1);
     GDALRasterBand* poMaskBand = poFlagBand->GetMaskBand();
-    std::vector<uchar> mask(width);
 
-    for(unsigned i=0,index =0;i<height;++i)
+    int nXBlocks, nYBlocks, nXBlockSize, nYBlockSize;
+    int iXBlock, iYBlock;
+    poFlagBand->GetBlockSize( &nXBlockSize, &nYBlockSize );
+    nXBlocks = (width + nXBlockSize - 1) / nXBlockSize;
+    nYBlocks = (height + nYBlockSize - 1) / nYBlockSize;
+    int blocksCount = nXBlocks*nYBlocks;
+    QVector<int> dataOut(nXBlockSize * nYBlockSize);
+
+    for( iYBlock = 0; iYBlock < nYBlocks; ++iYBlock )
     {
-        poMaskBand->RasterIO(GF_Read,0,i,width,1,&mask[0],width,1,GDT_Byte,0,0);
-        for(unsigned j=0;j<width;++j,++index)
+        int nYOff = iYBlock*nYBlockSize;
+
+        for( iXBlock = 0; iXBlock < nXBlocks; ++iXBlock )
         {
-            int objectID = 0;
-            if (mask[j]!=0)
+            int nXValid, nYValid;
+            if( (iXBlock+1) * nXBlockSize > width )
+                nXValid = width - iXBlock * nXBlockSize;
+            else
+                nXValid = nXBlockSize;
+            if( (iYBlock+1) * nYBlockSize > height )
+                nYValid = height - iYBlock * nYBlockSize;
+            else
+                nYValid = nYBlockSize;
+
+            int nXOff = iXBlock*nXBlockSize;
+
+            for( int iY = 0; iY < nYValid; ++iY)
             {
-                int root = graph->find(index);
-                objectID = mapRootidObjectid.value(root);
+                unsigned index = (nYOff+iY)*width+nXOff;
+                for( int iX = 0; iX < nXValid; ++iX,++index)
+                {
+                    int objectID = 0;
+//                    if (mask[j]!=0)
+//                    {
+                        int root = graph->find(index);
+                        objectID = mapRootidObjectid.value(root);
+//                    }
+                    dataOut[iY*nXBlockSize+iX] = objectID;
+//                    poFlagBand->RasterIO(GF_Write,j,i,1,1,(int *)&objectID,1,1,GDT_Int32,0,0);
+                }
             }
-            poFlagBand->RasterIO(GF_Write,j,i,1,1,(int *)&objectID,1,1,GDT_Int32,0,0);
+
+            poFlagBand->WriteBlock(iXBlock, iYBlock, &dataOut[0]);
         }
-        if (i%progressGap == 0)
-            emit progressBarValueChanged(i);
-        //        ++pd;
+        emit progressBarValueChanged((iXBlock+iYBlock*nXBlocks)* 100./blocksCount);
     }
-    emit progressBarValueChanged(height);
+
+    emit progressBarValueChanged(100);
     return true;
 }
 
@@ -509,7 +716,7 @@ bool MSTMethodInterface::_Polygonize()
         return false;
     }
 
-    OGRSFDriver* poOgrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
+    GDALDriver * poOgrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
     if (poOgrDriver == NULL)
     {
         GDALClose(poFlagDS);
@@ -518,9 +725,9 @@ bool MSTMethodInterface::_Polygonize()
 
     QFileInfo info(shapefilePath);
     if (info.exists())
-        poOgrDriver->DeleteDataSource(shapefilePath.toUtf8().constData());
+        poOgrDriver->Delete(shapefilePath.toUtf8().constData());
 
-    OGRDataSource* poDstDataset = poOgrDriver->CreateDataSource(shapefilePath.toUtf8().constData(),0);
+    GDALDataset* poDstDataset = poOgrDriver->Create(shapefilePath.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
     if (poDstDataset == NULL)
     {
         GDALClose(poFlagDS);
@@ -533,7 +740,7 @@ bool MSTMethodInterface::_Polygonize()
     if (poLayer == NULL)
     {
         GDALClose(poFlagDS);
-        OGRDataSource::DestroyDataSource( poDstDataset );
+        GDALClose( poDstDataset );
         return false;
     }
 
@@ -541,7 +748,7 @@ bool MSTMethodInterface::_Polygonize()
     if ( (poLayer->CreateField(&ofDef_DN) != OGRERR_NONE) )
     {
         GDALClose(poFlagDS);
-        OGRDataSource::DestroyDataSource( poDstDataset );
+        GDALClose( poDstDataset );
         return false;
     }
 
@@ -554,14 +761,14 @@ bool MSTMethodInterface::_Polygonize()
     if (err != CE_None)
     {
         GDALClose(poFlagDS);
-        OGRDataSource::DestroyDataSource( poDstDataset );
+        GDALClose( poDstDataset );
         if (pSpecialReference) delete pSpecialReference;
         return false;
     }
 
     if (pSpecialReference) delete pSpecialReference;
     GDALClose(poFlagDS);
-    OGRDataSource::DestroyDataSource( poDstDataset );
+    GDALClose(poDstDataset);
     return true;
 }
 

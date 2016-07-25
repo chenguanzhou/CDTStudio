@@ -14,7 +14,7 @@ public:
 
     virtual QString methodName()const =0;
 
-    virtual float merge(QVector<float> buffer) =0;
+    virtual float merge(QVector<float>::const_iterator begin, QVector<float>::const_iterator end) =0;
 };
 
 Q_DECLARE_INTERFACE(CDTPBCDMergeInterface,"cn.edu.WHU.CDTStudio.CDTPBCDMergeInterface/1.0")

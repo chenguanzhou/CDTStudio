@@ -24,14 +24,14 @@ QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
 QList<CDTVectorChangeDetectionInterface *> vectorDetectionPlugins;
 
 CDTApplication::CDTApplication(int & argc, char ** argv) :
-    QgsApplication(argc, argv,true),
+    QgsApplication(argc, argv,true)/*,
     processor (new QProcess(this)),
     udpReceiver(new QUdpSocket(this)),
-    udpSender(new QUdpSocket(this))
+    udpSender(new QUdpSocket(this))*/
 {
     setOrganizationName("WHU");
     setApplicationName("CDTStudio");
-    setApplicationVersion("v0.2");
+    setApplicationVersion("v0.3.0");
 
     QStringList env = QProcess::systemEnvironment();
     foreach (QString path, env) {
@@ -57,21 +57,21 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
 
     this->setStyleSheet(getStyleSheetByName("default"));
 
-    QSettings setting("WHU","CDTStudio");
-    setting.beginGroup("Settings");
-    portUpload = setting.value("UpPort",59876).toInt();
-    portDownload = setting.value("DownPort",59877).toInt();
+//    QSettings setting("WHU","CDTStudio");
+//    setting.beginGroup("Settings");
+//    portUpload = setting.value("UpPort",59876).toInt();
+//    portDownload = setting.value("DownPort",59877).toInt();
 
-    udpReceiver->bind(QHostAddress::LocalHost,portDownload);
-    connect(udpReceiver,SIGNAL(readyRead()),SLOT(readMessage()));
+//    udpReceiver->bind(QHostAddress::LocalHost,portDownload);
+//    connect(udpReceiver,SIGNAL(readyRead()),SLOT(readMessage()));
 
-    processor->start("CDTProcessor");
+//    processor->start("CDTProcessor");
 }
 
 CDTApplication::~CDTApplication()
 {    
     QSqlDatabase::removeDatabase("category");
-    processor->terminate();
+//    processor->terminate();
 }
 
 QString CDTApplication::getStyleSheetByName(QString styleName)
@@ -91,48 +91,48 @@ QString CDTApplication::getStyleSheetByName(QString styleName)
     return styleSheet;
 }
 
-void CDTApplication::sendTask(const QByteArray &data)
-{
-    QByteArray toSend;
-    QDataStream stream(&toSend,QFile::ReadWrite);
-    stream<<QString("CDTTask")<<data;
-    if (udpSender->writeDatagram(toSend,QHostAddress::LocalHost,portUpload)==-1)
-    {
-        qWarning()<<"Upload failed!";
-    }
-}
+//void CDTApplication::sendTask(const QByteArray &data)
+//{
+//    QByteArray toSend;
+//    QDataStream stream(&toSend,QFile::ReadWrite);
+//    stream<<QString("CDTTask")<<data;
+//    if (udpSender->writeDatagram(toSend,QHostAddress::LocalHost,portUpload)==-1)
+//    {
+//        qWarning()<<"Upload failed!";
+//    }
+//}
 
-void CDTApplication::readMessage()
-{
-    while (udpReceiver->hasPendingDatagrams()) {
-        QByteArray datagram;
-        datagram.resize(udpReceiver->pendingDatagramSize());
-        udpReceiver->readDatagram(datagram.data(), datagram.size());
-        QDataStream in(datagram);
-        QString flag,data;
-        in>>flag;
-        if (flag.toLower()=="debug")
-        {
-            in>>data;
-            qDebug()<<"Debug from server: "<<data;
-        }
-        else if (flag.toLower()=="taskinfo")
-        {
-            int status,currentProgress,totalProgress;
-            QString id,currentStep;
-            in>>id>>status>>currentStep>>currentProgress>>totalProgress;
-            emit taskInfoUpdated(id,status,currentStep,currentProgress,totalProgress);
-        }
-        else if (flag.toLower()=="taskresult")
-        {
-            QString id;
-            QByteArray result;
-            in>>id>>result;
-            emit taskInfoUpdated(id,2,tr("finished"),100,100);
-            emit taskCompleted(id,result);
-        }
-    }
-}
+//void CDTApplication::readMessage()
+//{
+//    while (udpReceiver->hasPendingDatagrams()) {
+//        QByteArray datagram;
+//        datagram.resize(udpReceiver->pendingDatagramSize());
+//        udpReceiver->readDatagram(datagram.data(), datagram.size());
+//        QDataStream in(datagram);
+//        QString flag,data;
+//        in>>flag;
+//        if (flag.toLower()=="debug")
+//        {
+//            in>>data;
+//            qDebug()<<"Debug from server: "<<data;
+//        }
+//        else if (flag.toLower()=="taskinfo")
+//        {
+//            int status,currentProgress,totalProgress;
+//            QString id,currentStep;
+//            in>>id>>status>>currentStep>>currentProgress>>totalProgress;
+//            emit taskInfoUpdated(id,status,currentStep,currentProgress,totalProgress);
+//        }
+//        else if (flag.toLower()=="taskresult")
+//        {
+//            QString id;
+//            QByteArray result;
+//            in>>id>>result;
+//            emit taskInfoUpdated(id,2,tr("finished"),100,100);
+//            emit taskCompleted(id,result);
+//        }
+//    }
+//}
 
 void CDTApplication::initPlugins()
 {
@@ -206,9 +206,8 @@ bool CDTApplication::initDatabase()
                      "shapefilePath text NOT NULL,"
                      "color blob,"
                      "borderColor blob,"
-                     "opacity double,"
                      "imageID text NOT NULL,"
-                     "Primary Key(id) )");
+                     "Primary Key(id))");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table extractionlayer failed!\nerror:")+query.lastError().text());
@@ -227,7 +226,7 @@ bool CDTApplication::initDatabase()
                      "dbUrl blob,"
                      "bordercolor blob,"
                      "imageID text NOT NULL,"
-                     "Primary Key(id) )");
+                     "Primary Key(id))");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table segmentationlayer failed!\nerror:")+query.lastError().text());
@@ -246,7 +245,7 @@ bool CDTApplication::initDatabase()
                      "normalizeMethod text,"
                      "pca text,"
                      "segmentationID text NOT NULL,"
-                     "Primary Key(id) )");
+                     "Primary Key(id))");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table classificationlayer failed!\nerror:")+query.lastError().text());
@@ -260,8 +259,7 @@ bool CDTApplication::initDatabase()
                      "name text NOT NULL, "
                      "color blob, "
                      "imageID text NOT NULL,"
-                     "Primary Key(id),"
-                     "UNIQUE (name,imageID) )");
+                     "Primary Key(id))");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table category failed!\nerror:")+query.lastError().text());
@@ -356,7 +354,7 @@ bool CDTApplication::initDatabase()
                      "image_t1 text NOT NULL,"
                      "image_t2 text NOT NULL,"
                      "params blob,"
-                     "Primary Key(id) )");
+                     "Primary Key(id))");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table pbcd_binary failed!\nerror:")+query.lastError().text());
@@ -372,7 +370,8 @@ bool CDTApplication::initDatabase()
                      "cls_t1 text NOT NULL,"
                      "cls_t2 text NOT NULL,"
                      "params blob,"
-                     "Primary Key(id) )");
+                     "Primary Key(id),"
+                     "UNIQUE (name) )");
     if (ret == false)
     {
         QMessageBox::critical(NULL,tr("Error"),tr("create table vector_change failed!\nerror:")+query.lastError().text());

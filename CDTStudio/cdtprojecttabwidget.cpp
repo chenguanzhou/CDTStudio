@@ -24,6 +24,7 @@ void CDTProjectTabWidget::createNewProject()
 
         CDTProjectWidget *projectWidget = new CDTProjectWidget(this);
         projectWidget->createProject(QUuid::createUuid());
+        projectWidget->project->setPath(dlg->projectPath());
         projectWidget->project->initLayer(dlg->projectName());
 
         if (projectWidget->openProjectFile(dlg->projectPath())==false)return;        
@@ -59,10 +60,8 @@ void CDTProjectTabWidget::openProject()
 {
     QString dir = readLastProjectDir();
     QStringList filepaths = QFileDialog::getOpenFileNames(this,tr("Open an project file"),dir,"*.cdtpro");
-    for(int i=0;i< filepaths.size();++i)
-    {
-        QString filepath = filepaths[i];
-        openProject(filepath);
+    foreach (QString filePath, filepaths) {
+        openProject(filePath);
     }
 }
 
@@ -102,7 +101,7 @@ bool CDTProjectTabWidget::saveAsProject()
     if(!fileName.isEmpty())
     {
         writeLastProjectDir(QFileInfo(fileName).absolutePath());
-        emit menuRecentChanged(fileName);        
+//        emit menuRecentChanged(fileName);
         ((CDTProjectWidget*)(this->currentWidget()))->saveAsProject(fileName);
     }
     return true;
@@ -130,15 +129,11 @@ bool CDTProjectTabWidget::closeAll()
     if(this->count()<=0)
         return true;
 
-    int tabIndex = 0;
     bool isAppClose = true;
-    for(int i=0;i<this->count();++i)
+    while (this->count()!=0)
     {
-        if (this->closeTab(tabIndex)==QMessageBox::Cancel)
-        {
-            ++tabIndex;
+        if (this->closeTab(0)==QMessageBox::Cancel)
             isAppClose = false;
-        }
     }
     return isAppClose;
 }

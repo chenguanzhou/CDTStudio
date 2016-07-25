@@ -1,9 +1,12 @@
 #include "dialognewextraction.h"
 #include "ui_dialognewextraction.h"
-#include "cdtfilesystem.h"
 #include "stable.h"
+#include "cdtfilesystem.h"
+#include "cdtextractionlayer.h"
+#include "cdtlayernamevalidator.h"
 
 DialogNewExtraction::DialogNewExtraction(
+        QUuid imageID,
         const QString &inputImage,
         CDTFileSystem *fileSys,
         QWidget *parent) :
@@ -18,6 +21,15 @@ DialogNewExtraction::DialogNewExtraction(
     ui->borderColorPicker->setStandardColors();
 
     connect(this,SIGNAL(accepted()),SLOT(onAccepted()));
+
+    int index = CDTExtractionLayer::staticMetaObject.indexOfClassInfo("tableName");
+    if (index != -1)
+    {
+        CDTLayerNameValidator *validator = new CDTLayerNameValidator
+                (QSqlDatabase::database("category"),"name",CDTExtractionLayer::staticMetaObject.classInfo(index).value(),QString("imageid='%1'").arg(imageID));
+        ui->lineEditName->setValidator(validator);
+    }
+    ui->lineEditName->setText(tr("Untitled"));
 }
 
 
@@ -41,11 +53,6 @@ QColor DialogNewExtraction::borderColor() const
     return ui->borderColorPicker->currentColor();
 }
 
-double DialogNewExtraction::opacity() const
-{
-    return ui->doubleSpinBoxOpacity->value();
-}
-
 QString DialogNewExtraction::fileID() const
 {
     return shapefileID;
@@ -59,10 +66,10 @@ void DialogNewExtraction::onAccepted()
     GDALDataset *poImageDS = (GDALDataset *)GDALOpen(inputImagePath.toUtf8().constData(),GA_ReadOnly);
     Q_ASSERT(poImageDS);
 
-    OGRSFDriver *poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
+    GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("ESRI Shapefile");
     Q_ASSERT(poDriver);
 
-    OGRDataSource* poDS = poDriver->CreateDataSource(shapefileTempPath.toUtf8().constData(),NULL);
+    GDALDataset* poDS = poDriver->Create(shapefileTempPath.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
     Q_ASSERT(poDS);
     OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
     OGRLayer *layer = poDS->CreateLayer("extraction",reference,wkbPolygon,NULL);
@@ -75,7 +82,7 @@ void DialogNewExtraction::onAccepted()
         return;
     }
 
-    OGRDataSource::DestroyDataSource(poDS);
+    GDALClose(poDS);
     reference->Release();
     GDALClose(poImageDS);
 //    OGRCleanupAll();

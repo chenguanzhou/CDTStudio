@@ -15,6 +15,11 @@ CDTClassifierAssessmentForm::CDTClassifierAssessmentForm(QWidget *parent) :
     ui->setupUi(this);
     ui->comboBoxClassification->setModel(modelClassification);
     ui->comboBoxSample->setModel(modelSample);
+    ui->tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    QAction *actionCopyAll = new QAction(QIcon(":/Icons/Copy.png"),tr("Copy All"),this);
+    ui->tableWidget->addAction(actionCopyAll);
+    connect(actionCopyAll,SIGNAL(triggered()),SLOT(copyTableAll()));
 
     connect(ui->comboBoxClassification,SIGNAL(currentIndexChanged(int)),SLOT(onComboBoxClassificationChanged(int)));
     connect(ui->comboBoxSample,SIGNAL(currentIndexChanged(int)),SLOT(onComboBoxSampleChanged(int)));
@@ -69,6 +74,7 @@ void CDTClassifierAssessmentForm::onComboBoxClassificationChanged(int index)
 
 void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
 {
+    testSamples.clear();
     if (index<0)
         return;
 
@@ -112,7 +118,7 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
     if (!imgMarkLayer->isValid())
         return;
 
-    QMap<int,QString> testSamples;
+//    QMap<int,QString> testSamples;
     QList<QVariant> label = layer->data();
 //    query.exec(QString("select objectid,categoryid from object_samples where sampleid ='%1'").arg(sampleID));
 
@@ -263,7 +269,7 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
         correctCount += matrixData.at<int>(i,i);
     }
 //    qDebug()<<"info.confusionParams.size():"<<info.confusionParams.size();
-    double overall = correctCount*100/info.confusionParams.size();
+    double overall = correctCount*100./info.confusionParams.size();
     ui->overallAcuraccyLineEdit->setText(QString::number(overall)+"%");
 
     //Kappa
@@ -276,4 +282,33 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
     Pe /= (double)(info.confusionParams.size()*info.confusionParams.size());
     double kappa = (Pa-Pe)/(1.-Pe);
     ui->kappaLineEdit->setText(QString::number(kappa));
+}
+
+void CDTClassifierAssessmentForm::on_pushButtonCopySample_clicked()
+{
+    QString copy;
+    foreach (int objID, testSamples.keys()) {
+        QString categoryID = testSamples.value(objID);
+        copy += (QString::number(objID) + "\t" + categoryID + "\n");
+    }
+    QApplication::clipboard()->setText(copy);
+}
+
+void CDTClassifierAssessmentForm::copyTableAll()
+{
+    auto model = ui->tableWidget->model();
+    if (model==NULL || model->rowCount()==0) return;
+
+
+    QString selected_text;
+    for (int i=0;i<model->rowCount();++i)
+    {
+        for (int j=0;j<model->columnCount();++j)
+        {
+            selected_text += (model->data(model->index(i,j)).toString() + "\t");
+        }
+        selected_text += "\n";
+    }
+
+    QApplication::clipboard()->setText(selected_text);
 }

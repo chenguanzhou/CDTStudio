@@ -19,9 +19,6 @@
   <property name="windowTitle">
    <string>Vector Change Detection Wizard</string>
   </property>
-  <property name="wizardStyle">
-   <enum>QWizard::ClassicStyle</enum>
-  </property>
   <widget class="QWizardPage" name="wizardPage1_DataSource">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">

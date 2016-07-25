@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       = core sql
-
+QT       = core gui sql
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CDTTableExporter
 TEMPLATE = lib
 
@@ -27,5 +27,7 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
-
+!unix {
+    CONFIG += qaxcontainer
+}
 

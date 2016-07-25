@@ -54,7 +54,7 @@ CDTMapToolSelectTrainingSamples::~CDTMapToolSelectTrainingSamples()
     }
 }
 
-void CDTMapToolSelectTrainingSamples::canvasMoveEvent(QMouseEvent *e)
+void CDTMapToolSelectTrainingSamples::canvasMoveEvent(QgsMapMouseEvent *e)
 {
     if (( e->buttons() & Qt::LeftButton ) )
     {
@@ -64,7 +64,7 @@ void CDTMapToolSelectTrainingSamples::canvasMoveEvent(QMouseEvent *e)
     }
 }
 
-void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QMouseEvent *e)
+void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QgsMapMouseEvent *e)
 {
     if ( e->button() == Qt::LeftButton )
     {
@@ -83,68 +83,65 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QMouseEvent *e)
     }
     else if (e->button()==Qt::RightButton)
     {
-//        if (!mReadOnly)
-//        {
-            QgsVectorLayer* vlayer = NULL;
-            if ( !mapCanvas->currentLayer()
-                 || ( vlayer = qobject_cast<QgsVectorLayer *>( mapCanvas->currentLayer() ) ) == NULL )
-                return;
+        QgsVectorLayer* vlayer = NULL;
+        if ( !mapCanvas->currentLayer()
+             || ( vlayer = qobject_cast<QgsVectorLayer *>( mapCanvas->currentLayer() ) ) == NULL )
+            return;
 
-            QRect selectRect( 0, 0, 0, 0 );
-            int boxSize = 1;
-            selectRect.setLeft  ( e->pos().x() - boxSize );
-            selectRect.setRight ( e->pos().x() + boxSize );
-            selectRect.setTop   ( e->pos().y() - boxSize );
-            selectRect.setBottom( e->pos().y() + boxSize );
+        QRect selectRect( 0, 0, 0, 0 );
+        int boxSize = 1;
+        selectRect.setLeft  ( e->pos().x() - boxSize );
+        selectRect.setRight ( e->pos().x() + boxSize );
+        selectRect.setTop   ( e->pos().y() - boxSize );
+        selectRect.setBottom( e->pos().y() + boxSize );
 
-            const QgsMapToPixel* transform = mapCanvas->getCoordinateTransform();
-            QgsPoint ll = transform->toMapCoordinates( selectRect.left(), selectRect.bottom() );
-            QgsPoint ur = transform->toMapCoordinates( selectRect.right(), selectRect.top() );
+        const QgsMapToPixel* transform = mapCanvas->getCoordinateTransform();
+        QgsPoint ll = transform->toMapCoordinates( selectRect.left(), selectRect.bottom() );
+        QgsPoint ur = transform->toMapCoordinates( selectRect.right(), selectRect.top() );
 
-            QgsPolyline points;
-            points.push_back(ll);
-            points.push_back(QgsPoint( ur.x(), ll.y() ));
-            points.push_back(ur);
-            points.push_back(QgsPoint( ll.x(), ur.y() ));
+        QgsPolyline points;
+        points.push_back(ll);
+        points.push_back(QgsPoint( ur.x(), ll.y() ));
+        points.push_back(ur);
+        points.push_back(QgsPoint( ll.x(), ur.y() ));
 
-            QgsPolygon polygon;
-            polygon.push_back(points);
-            QgsGeometry selectGeom = *(QgsGeometry::fromPolygon(polygon) );
+        QgsPolygon polygon;
+        polygon.push_back(points);
+        QgsGeometry selectGeom = *(QgsGeometry::fromPolygon(polygon) );
 
-            if ( mapCanvas->mapSettings().hasCrsTransformEnabled() )
+        if ( mapCanvas->mapSettings().hasCrsTransformEnabled() )
+        {
+            QgsCoordinateTransform ct( mapCanvas->mapSettings().destinationCrs(), vlayer->crs() );
+            selectGeom.transform( ct );
+        }
+
+        QgsFeatureIterator fit = vlayer->getFeatures( QgsFeatureRequest().setFilterRect( selectGeom.boundingBox() ).setFlags( QgsFeatureRequest::ExactIntersect ) );
+        QgsFeature f;
+        qint64 closestFeatureId = 0;
+        bool foundSingleFeature = false;
+        double closestFeatureDist = std::numeric_limits<double>::max();
+        while ( fit.nextFeature( f ) )
+        {
+            QgsGeometry* g = f.geometry();
+            if ( !selectGeom.intersects( g ) )
+                continue;
+            foundSingleFeature = true;
+            double distance = g->distance( selectGeom );
+            if ( distance <= closestFeatureDist )
             {
-                QgsCoordinateTransform ct( mapCanvas->mapSettings().destinationCrs(), vlayer->crs() );
-                selectGeom.transform( ct );
+                closestFeatureDist = distance;
+                closestFeatureId = f.attribute("GridCode").toInt();
             }
+        }
 
-            QgsFeatureIterator fit = vlayer->getFeatures( QgsFeatureRequest().setFilterRect( selectGeom.boundingBox() ).setFlags( QgsFeatureRequest::ExactIntersect ) );
-            QgsFeature f;
-            qint64 closestFeatureId = 0;
-            bool foundSingleFeature = false;
-            double closestFeatureDist = std::numeric_limits<double>::max();
-            while ( fit.nextFeature( f ) )
-            {
-                QgsGeometry* g = f.geometry();
-                if ( !selectGeom.intersects( g ) )
-                    continue;
-                foundSingleFeature = true;
-                double distance = g->distance( selectGeom );
-                if ( distance <= closestFeatureDist )
-                {
-                    closestFeatureDist = distance;
-                    closestFeatureId = f.attribute("GridCode").toInt();
-                }
-            }
-
-            if ( foundSingleFeature )
-                addSingleSample( closestFeatureId );
-//        }
+        if ( foundSingleFeature )
+            addSingleSample( closestFeatureId );
     }
 }
 
 void CDTMapToolSelectTrainingSamples::setSampleID(QUuid id)
 {
-    if (id.isNull()) return;    
+    if (id.isNull()) return;
     clearRubberBand();
     
     model->clear();
@@ -158,11 +155,6 @@ void CDTMapToolSelectTrainingSamples::setSampleID(QUuid id)
     updateRubber();
 }
 
-//void CDTMapToolSelectTrainingSamples::setReadOnly(bool readOnly)
-//{
-//    mReadOnly = readOnly;
-//}
-
 void CDTMapToolSelectTrainingSamples::clearRubberBand()
 {
     foreach (QgsRubberBand* band, rubberBands.values()) {
@@ -174,8 +166,6 @@ void CDTMapToolSelectTrainingSamples::clearRubberBand()
 
 void CDTMapToolSelectTrainingSamples::updateRubber()
 {
-    //    clearRubberBand();
-
     QgsVectorLayer* vlayer = NULL;
     if ( !mapCanvas->currentLayer()
          || ( vlayer = qobject_cast<QgsVectorLayer *>( mapCanvas->currentLayer() ) ) == NULL )
@@ -184,15 +174,28 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
         return;
     }
 
+    //Get all geometry
+    QgsFeature f;
+    QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest());
+    QMap<int,QgsPolygon> allGeometry;
+    int objFieldID = vlayer->fieldNameIndex("GridCode");
+    while(features.nextFeature(f))
+    {
+        int objID = f.attribute(objFieldID).toInt();
+        allGeometry.insert(objID,f.geometry()->asPolygon());
+    }
 
+    //Get all samples and put them into rubberBand
     QSqlQuery query(QSqlDatabase::database("category"));
     QList<qint64> newRubberBandsID;
 
     query.prepare("select object_samples.objectid,category.color from object_samples natural join category where object_samples.categoryid = category.id and object_samples.sampleID = ?");
     query.bindValue(0,sampleID.toString());
     query.exec();
+
+
     while (query.next()) {
-        qint64 objectID = query.value(0).toInt();
+        int objectID = query.value(0).toInt();
         newRubberBandsID<<objectID;
         if (!rubberBands.keys().contains(objectID))
         {
@@ -201,17 +204,17 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
 
             rubberBand->setColor(color);
             rubberBand->setBrushStyle(Qt::Dense3Pattern);
-            QgsFeature f;
-            QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest().setFilterExpression("GridCode="+QString::number(objectID)));
-            while(features.nextFeature(f))
-            {
-                rubberBand->addGeometry(f.geometry(),vlayer);
-            }
+            if (!allGeometry.keys().contains(objectID))
+                qDebug()<<objectID;
+            QgsGeometry *geo = QgsGeometry::fromPolygon( allGeometry.value(objectID));
+            if (geo==NULL)
+                qDebug()<<"NULL";
+            rubberBand->addGeometry(geo,vlayer);
             rubberBands.insert(objectID,rubberBand);
         }
     }
 
-    //    foreach (int64 objID, rubberBands.keys()) {
+    //Remove not existed sample
     QList<qint64> objects = rubberBands.keys();
     for (int i=0;i<objects.size();++i)
     {
@@ -224,7 +227,6 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
             rubberBands.remove(objID);
         }
     }
-    //    }
 }
 
 void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
@@ -235,30 +237,23 @@ void CDTMapToolSelectTrainingSamples::addSingleSample(qint64 id)
         return;
     }
 
-//    QUuid categoryID = MainWindow::getSampleDockWidget()->currentCategoryID();
-//    if (categoryID.isNull())
-//    {
-//        qWarning()<<tr("No category selected!");
-//        return;
-//    }
-    qDebug()<<"id:"<<id;
     QUuid categoryID = QUuid(model->data(model->index(comboBoxCategory->currentIndex(),1)).toString());
     QSqlQuery query(QSqlDatabase::database("category"));
     query.prepare("select * from object_samples where objectid = ?  and sampleID = ?");
     query.bindValue(0,id);
-    //    query.bindValue(1,categoryID.toString());
     query.bindValue(1,sampleID.toString());
     query.exec();
     if (query.next())
-    {//Exsist in table
+    {
+        //Exsist in table
         query.prepare("delete from object_samples where objectid = ?  and sampleID = ?");
         query.bindValue(0,id);
-        //        query.bindValue(1,categoryID.toString());
         query.bindValue(1,sampleID.toString());
         query.exec();
     }
     else
-    {//Not exist
+    {
+        //Not exist
         query.prepare("insert into object_samples values(?,?,?)");
         query.bindValue(0,id);
         query.bindValue(1,categoryID.toString());

@@ -40,6 +40,9 @@ private slots:
     void onComboBoxClassificationChanged(int index);
     void onComboBoxSampleChanged(int index);
 
+    void on_pushButtonCopySample_clicked();
+    void copyTableAll();
+
 private:
     void setInfo(const CDTClassificationInformation& info);
     void updateGeneralInfo(const CDTClassificationInformation& info);
@@ -48,6 +51,7 @@ private:
     Ui::CDTClassifierAssessmentForm *ui;
     QSqlQueryModel *modelClassification;
     QSqlQueryModel *modelSample;
+    QMap<int,QString> testSamples;
 };
 
 #endif // CDTCLASSIFIERASSESSMENTFORM_H

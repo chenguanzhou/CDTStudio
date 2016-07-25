@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "recentfilesupervisor.h"
 #include "log4qt/logger.h"
 
 namespace Ui {
@@ -17,6 +16,7 @@ struct QUuid;
 class QgsMapCanvas;
 class QgsScaleComboBox;
 
+class CDTRecentFile;
 class CDTDockWidget;
 class CDTProjectWidget;
 class CDTTrainingSampleDockWidget;
@@ -63,22 +63,20 @@ public:
     static CDTExtractionDockWidget      *getExtractionDockWidget();
     static CDTUndoWidget                *getUndoWidget();
     static CDTLayerInfoWidget           *getLayerInfoWidget();
-    static CDTTaskDockWidget            *getTaskDockWIdget();
+//    static CDTTaskDockWidget            *getTaskDockWIdget();
     static CDTProjectWidget             *getCurrentProjectWidget();
     static QgsMapCanvas                 *getCurrentMapCanvas();
 
     static QUuid getCurrentProjectID();
     static QSize getIconSize();
 
-signals:
-    void loadSetting();
-    void updateSetting();
 public slots:
     void onCurrentTabChanged(int i);
     void showMouseCoordinate(const QgsPoint & p);
     void showScale( double theScale );
     void userCenter();
     void userScale();
+    void updateRecentFiles(QStringList list);
 
 private slots:
     void onActionNew();
@@ -87,11 +85,12 @@ private slots:
     void onActionSaveAll();
     void onActionSaveAs();
     void onRecentFileTriggered();
+    void about();
 
     void on_treeViewObjects_customContextMenuRequested(const QPoint &pos);
     void on_treeViewObjects_clicked(const QModelIndex &index);
 
-    void updateTaskDock();
+//    void updateTaskDock();
     void clearAllDocks();
 
 protected:
@@ -111,7 +110,7 @@ private:
     CDTExtractionDockWidget         *dockWidgetExtraction;
     CDTUndoWidget                   *dockWidgetUndo;
     CDTLayerInfoWidget              *dockWidgetLayerInfo;
-    CDTTaskDockWidget               *dockWidgetTask;
+//    CDTTaskDockWidget               *dockWidgetTask;
 
     QAction *actionNew;
     QAction *actionOpen;
@@ -120,16 +119,14 @@ private:
     QAction *actionSaveAs;
     QAction *actionConsole;
 
-    QMenu *menuFile;
-    QMenu *menuRecent;
+    QMenu *recentFileMenu;
 
     QLineEdit *lineEditCoord;
     QgsScaleComboBox *scaleEdit;
 
     QSize iconSize;
 
-    RecentFileSupervisor *supervisor;
-    int recentFileCount;
+    CDTRecentFile *recentFile;
     QToolButton* recentFileToolButton;
     QStringList recentFilePaths;
 

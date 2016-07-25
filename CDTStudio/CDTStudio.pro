@@ -8,7 +8,6 @@ QT       += core gui sql xml svg network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-VERSION = 0.2
 TARGET = CDTStudio
 TEMPLATE = app
 DESTDIR = ../bin
@@ -22,20 +21,17 @@ SOURCES += main.cpp\
     cdtprojecttabwidget.cpp \
     cdtprojectwidget.cpp \
     cdtprojecttreeitem.cpp \
-    recentfilesupervisor.cpp \    
-    cdtattributegenerator.cpp \
-    cdtapplication.cpp    
+    cdtapplication.cpp \    
+    cdtrecentfile.cpp
 
 HEADERS  += \    
     mainwindow.h \
     cdtprojecttabwidget.h \
     cdtprojectwidget.h \
     cdtprojecttreeitem.h \
-    recentfilesupervisor.h \
-    cdtattributegenerator.h \
-    cdtbasethread.h \
     cdtvariantconverter.h \
-    cdtapplication.h 
+    cdtapplication.h \ 
+    cdtrecentfile.h
 	
 FORMS    += \
     mainwindow.ui \
@@ -49,13 +45,14 @@ include(../Interfaces/Interfaces.pri)
 
 INCLUDEPATH += \
     ../Interfaces \
+    ../Tools\
     ../Tools/QPropertyEditor \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
-    ../Tools\
     ../Tools/CDTClassifierAssessmentWidget\
-    ../Tools/CDTTableExporter
+    ../Tools/CDTTableExporter\
+    ../Tools/wwWidgets
 
 
 DEPENDPATH += \
@@ -65,7 +62,8 @@ DEPENDPATH += \
     ../Tools/CDTFileSystem\
     ../Tools/log4qt\
     ../Tools/CDTClassifierAssessmentWidget\
-    ../Tools/CDTTableExporter
+    ../Tools/CDTTableExporter\
+    ../Tools/wwWidgets
 
 #Libraries
 unix{
@@ -86,11 +84,20 @@ LIBS += -lgdal_i -lgdi32
 }
 
 LIBS +=     -L../lib -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
-             -lCDTFileSystem -llog4qt -lCDTTableExporter\
+             -lCDTFileSystem -llog4qt -lCDTTableExporter -lwwWidgets\
             -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
+
+
+#generate pdb for release version
+#win32-msvc* {
+#QMAKE_CFLAGS_RELEASE += -zi
+#QMAKE_LFLAGS_RELEASE += /INCREMENTAL:NO /DEBUG
+#}
 
 #opencv
 include(../Tools/Config/link2opencv.pri)
 
 RESOURCES += \
     ../resource.qrc
+
+DISTFILES +=

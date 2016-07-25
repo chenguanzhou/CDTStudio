@@ -11,6 +11,7 @@
 #include "cdtpixelchangelayer.h"
 #include "cdtvectorchangelayer.h"
 
+#include "cdtrecentfile.h"
 #include "cdtprojecttabwidget.h"
 #include "cdtprojectwidget.h"
 #include "cdtattributedockwidget.h"
@@ -23,8 +24,9 @@
 #include "cdtprojecttreeitem.h"
 #include "cdtundowidget.h"
 #include "cdtlayerinfowidget.h"
-#include "cdttaskdockwidget.h"
+//#include "cdttaskdockwidget.h"
 
+#include "dialogabout.h"
 #include "dialogconsole.h"
 
 #ifdef Q_OS_WIN
@@ -37,7 +39,7 @@ bool MainWindow::isLocked = false;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    supervisor(new RecentFileSupervisor(this)),
+    recentFile(new CDTRecentFile("Project",this)),
     recentFileToolButton(new QToolButton(this))
 
 {        
@@ -60,17 +62,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->tabWidgetProject,SIGNAL(treeModelUpdated()),ui->treeViewObjects,SLOT(expandAll()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),this,SLOT(onCurrentTabChanged(int)));
-    connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),supervisor,SLOT(updateMenuRecent(QString)));
-    connect(this,SIGNAL(loadSetting()),supervisor,SLOT(loadSetting()));
-    connect(this,SIGNAL(updateSetting()),supervisor,SLOT(updateSetting()));
+    connect(ui->tabWidgetProject,SIGNAL(menuRecentChanged(QString)),recentFile,SLOT(addFile(QString)));
+    connect(recentFile,SIGNAL(filesChanged(QStringList)),SLOT(updateRecentFiles(QStringList)));
 
-    connect(qApp,SIGNAL(taskInfoUpdated(QString ,int ,QString ,int ,int )),dockWidgetTask,SLOT(updateTaskInfo(QString,int,QString,int,int)));
-    connect(qApp,SIGNAL(taskCompleted(QString ,QByteArray )),dockWidgetTask,SLOT(onTaskCompleted(QString ,QByteArray)));
+//    connect(qApp,SIGNAL(taskInfoUpdated(QString ,int ,QString ,int ,int )),dockWidgetTask,SLOT(updateTaskInfo(QString,int,QString,int,int)));
+//    connect(qApp,SIGNAL(taskCompleted(QString ,QByteArray )),dockWidgetTask,SLOT(onTaskCompleted(QString ,QByteArray)));
 
     QSettings setting("WHU","CDTStudio");
     this->restoreGeometry(setting.value("geometry").toByteArray());
     this->restoreState(setting.value("windowState").toByteArray());
-    emit loadSetting();
+
+    updateRecentFiles(recentFile->files());
 
     logger()->info("MainWindow initialized");
 }
@@ -78,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {    
-    emit updateSetting();    
+//    emit updateSetting();
     delete ui;
     logger()->info("MainWindow destruct");
 }
@@ -131,7 +133,7 @@ void MainWindow::initActions()
 
 void MainWindow::initMenuBar()
 {
-    menuFile = new QMenu(tr("&File"),this);
+    QMenu* menuFile = new QMenu(tr("&File"),this);
     menuFile->addActions(QList<QAction*>()
                          <<actionNew
                          <<actionOpen
@@ -139,10 +141,16 @@ void MainWindow::initMenuBar()
                          <<actionSaveAll
                          <<actionSaveAs);
     menuFile->addSeparator();
-    menuRecent = new QMenu(tr("&Recent"),this);
-    menuRecent->setIcon(QIcon(":/Icons/RecentFiles.png"));
-    menuFile->addMenu(menuRecent);
+    recentFileMenu = new QMenu(tr("&Recent"),this);
+    recentFileMenu->setIcon(QIcon(":/Icons/RecentFiles.png"));
+    menuFile->addMenu(recentFileMenu);
+
+    QMenu* menuAbout = new QMenu(tr("&About"),this);
+    menuAbout->addAction(tr("About &Qt"),qApp,SLOT(aboutQt()));
+    menuAbout->addAction(tr("&About"),this,SLOT(about()));
+
     menuBar()->addMenu(menuFile);
+    menuBar()->addMenu(menuAbout);
     logger()->info("MenuBars initialized");
 }
 
@@ -175,10 +183,6 @@ void MainWindow::initStatusBar()
     lineEditCoord->setAlignment( Qt::AlignCenter );
     QRegExp coordValidator( "[+-]?\\d+\\.?\\d*\\s*,\\s*[+-]?\\d+\\.?\\d*" );
     new QRegExpValidator( coordValidator, lineEditCoord );
-    lineEditCoord->setWhatsThis( tr( "Shows the map coordinates at the "
-                                     "current cursor position. The display is continuously updated "
-                                     "as the mouse is moved. It also allows editing to set the canvas "
-                                     "center to a given position. The format is lat,lon or east,north" ) );
     lineEditCoord->setToolTip( tr( "Current map coordinate (lat,lon or east,north)" ) );
     statusBar()->addPermanentWidget( lineEditCoord, 0 );
     connect( lineEditCoord, SIGNAL( returnPressed() ), this, SLOT( userCenter() ) );
@@ -187,7 +191,6 @@ void MainWindow::initStatusBar()
     QLabel *scaleLabel = new QLabel( QString(), statusBar() );
     scaleLabel->setObjectName( "scaleLabel" );
     scaleLabel->setMinimumWidth( 10 );
-//    scaleLabel->setMaximumHeight( 20 );
     scaleLabel->setAlignment( Qt::AlignCenter );
     scaleLabel->setFrameStyle( QFrame::NoFrame );
     scaleLabel->setText( tr( "Scale:" ) );
@@ -197,22 +200,12 @@ void MainWindow::initStatusBar()
     scaleEdit = new QgsScaleComboBox( statusBar() );
     scaleEdit->setObjectName( "scaleEdit" );
     scaleEdit->setMinimumWidth( 10 );
-//    scaleEdit->setMaximumWidth( 200 );
-//    scaleEdit->setMaximumHeight( 20 );
     scaleEdit->lineEdit()->setAlignment(Qt::AlignCenter);
     scaleEdit->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    scaleEdit->setWhatsThis( tr( "Displays the current map scale" ) );
     scaleEdit->setToolTip( tr( "Current map scale (formatted as x:y)" ) );
 
     statusBar()->addPermanentWidget( scaleEdit, 0 );
     connect( scaleEdit, SIGNAL( scaleChanged() ), this, SLOT( userScale() ) );
-
-    //CDTDockWidgetTask
-    QPushButton *pushButtonTask = new QPushButton(tr("Show task progress"),this);
-    pushButtonTask->setCheckable(true);
-    connect(pushButtonTask,SIGNAL(toggled(bool)),SLOT(updateTaskDock()));
-    connect(pushButtonTask,SIGNAL(toggled(bool)),dockWidgetTask,SLOT(setVisible(bool)));
-    statusBar()->addPermanentWidget(pushButtonTask , 0 );
 
     logger()->info("StatusBar initialized");
 }
@@ -252,9 +245,7 @@ void MainWindow::initDockWidgets()
     dockWidgetLayerInfo->setObjectName("dockWidgetLayerInfo");
     registerDocks(Qt::LeftDockWidgetArea,dockWidgetLayerInfo);
 
-    dockWidgetTask = new CDTTaskDockWidget(this);
-//    dockWIdgetTask->setObjectName("dockWIdgetTask");
-//    registerDocks(Qt::AllDockWidgetAreas,dockWIdgetTask);
+//    dockWidgetTask = new CDTTaskDockWidget(this);
 
     logger()->info("Docks initialized");
 }
@@ -273,7 +264,6 @@ void MainWindow::initConsole()
 
 void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
 {
-//    connect(this,SIGNAL(beforeProjectClosed(CDTProjectLayer*)),dock,SLOT(onDockClear()));
     connect(ui->tabWidgetProject,SIGNAL(currentChanged(int)),dock,SLOT(onDockClear()));
     this->addDockWidget(area, dock);
     dock->raise();
@@ -321,10 +311,10 @@ CDTLayerInfoWidget *MainWindow::getLayerInfoWidget()
     return mainWindow->dockWidgetLayerInfo;
 }
 
-CDTTaskDockWidget *MainWindow::getTaskDockWIdget()
-{
-    return mainWindow->dockWidgetTask;
-}
+//CDTTaskDockWidget *MainWindow::getTaskDockWIdget()
+//{
+//    return mainWindow->dockWidgetTask;
+//}
 
 CDTProjectWidget *MainWindow::getCurrentProjectWidget()
 {
@@ -440,6 +430,21 @@ void MainWindow::userScale()
     mapCanvas->zoomScale( 1.0 / scaleEdit->scale() );
 }
 
+void MainWindow::updateRecentFiles(QStringList list)
+{
+    //Clear all existing actions
+    recentFileMenu->clear();
+    while((recentFileToolButton->actions()).size()!=0)
+        recentFileToolButton->removeAction(recentFileToolButton->actions()[0]);
+
+    foreach (QString file, list) {
+        QAction* recentFile = new QAction(file,this);
+        recentFileMenu->addAction(recentFile);
+        recentFileToolButton->addAction(recentFile);
+        connect(recentFile,SIGNAL(triggered()),SLOT(onRecentFileTriggered()));
+    }
+}
+
 
 void MainWindow::onActionNew()
 {
@@ -471,6 +476,12 @@ void MainWindow::onRecentFileTriggered()
 {
     QAction* action = (QAction*)sender();
     ui->tabWidgetProject->openProject(action->text());
+}
+
+void MainWindow::about()
+{
+    DialogAbout *dlg = new DialogAbout(this);
+    dlg->exec();
 }
 
 void MainWindow::on_treeViewObjects_customContextMenuRequested(const QPoint &pos)
@@ -565,12 +576,12 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
     }
 }
 
-void MainWindow::updateTaskDock()
-{
-    QRect rect = this->geometry();
-    dockWidgetTask->resize(rect.width()/2,rect.height()/3);
-    dockWidgetTask->move(QPoint( rect.left()+rect.width()/2,rect.top()+rect.height()*2/3- ui->statusBar->height()));
-}
+//void MainWindow::updateTaskDock()
+//{
+//    QRect rect = this->geometry();
+//    dockWidgetTask->resize(rect.width()/2,rect.height()/3);
+//    dockWidgetTask->move(QPoint( rect.left()+rect.width()/2,rect.top()+rect.height()*2/3- ui->statusBar->height()));
+//}
 
 void MainWindow::clearAllDocks()
 {
@@ -581,13 +592,13 @@ void MainWindow::clearAllDocks()
 
 void MainWindow::moveEvent(QMoveEvent *e)
 {
-    updateTaskDock();
+//    updateTaskDock();
     QMainWindow::moveEvent(e);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *e)
 {
-    updateTaskDock();
+//    updateTaskDock();
     QMainWindow::resizeEvent(e);
 }
 
