@@ -19,13 +19,22 @@ It contains the following GeoOBIA framework:
 
 .. toctree::
    :maxdepth: 2
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   :caption: User Documentation
+   
+   features
+   tutorials
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Developer Documentation
+   
+   3rdparty
+   build
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: About Documentation
+   
+   license
+   about
 
