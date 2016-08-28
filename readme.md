@@ -13,6 +13,10 @@ It contains the following GeoOBIA framework:
 - Semi-automatic feature extraction by Snakes
 - ......
 
+Documentation
+==
+[http://cdtstudio.chenguanzhou.com](http://cdtstudio.chenguanzhou.com)
+
 Scrennshot
 ==
 ![CDTStudio](screenshot.jpg)
