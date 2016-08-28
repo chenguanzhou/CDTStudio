@@ -17,6 +17,7 @@ public:
 
 public slots:
     void onOfficialPageLinkClicked();
+    void onDocumentationLinkClicked();
     void onTable3rdPartyItemClicked(QModelIndex index);
 
 private:

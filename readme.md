@@ -20,14 +20,23 @@ Scrennshot
 3rdParty
 ==
 [Qt](http://qt.io/)
+
 [QGIS](http://qgis.org)
+
 [GDAL](http://gdal.org/)
+
 [OpenCV](http://opencv.org/)
+
 [Boost](http://www.boost.org/)
+
 [Log4Qt](http://log4qt.sourceforge.net/)
+
 [Qwt](http://qwt.sourceforge.net/)
+
 [wwWidgets](http://www.wysota.eu.org/wwwidgets/)
+
 [STXXL](http://stxxl.sourceforge.net/)
+
 [QPropertyEditor](https://github.com/chenguanzhou/QPropertyEditor)
 
 License

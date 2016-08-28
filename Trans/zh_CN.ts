@@ -1746,52 +1746,64 @@ Set it now?</source>
 <context>
     <name>DialogAbout</name>
     <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="14"/>
-        <source>Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="30"/>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="46"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="27"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="43"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="60"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="57"/>
         <location filename="../CDTStudio/Dialogs/dialogabout.cpp" line="12"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message utf8="true">
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="66"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;SimSun&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CDTStudio&lt;/span&gt; is an open-source and cross-platform desktop software in objact-based image analysis (OBIA or GeoOBIA). The first version of it is written by Chen Guanzhou (&lt;a href=&quot;https://github.com/chenguanzhou&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;English&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;www.chenguanzhou.com/about&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;中文&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation type="obsolete">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;SimSun&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CDTStudio&lt;/span&gt; 是一个开源跨平台的面向对象分析（OBIA，GeoOBIA）桌面软件。.该软件第一个公开版本由陈关州设计、发布 (Chen Guanzhou， &lt;a href=&quot;https://github.com/chenguanzhou&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;English&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;www.chenguanzhou.com/about&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;中文&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
+    <message utf8="true">
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="63"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;SimSun&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CDTStudio&lt;/span&gt; is an open-source and cross-platform desktop software in object-based image analysis (OBIA or GeoOBIA). The first version of it is written by Chen Guanzhou (&lt;a href=&quot;https://github.com/chenguanzhou&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;English&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;www.chenguanzhou.com/about&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;中文&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;SimSun&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CDTStudio&lt;/span&gt; 是一个开源跨平台的面向对象分析（OBIA，GeoOBIA）桌面软件。该软件第一个公开版本由陈关州设计、发布 (Chen Guanzhou， &lt;a href=&quot;https://github.com/chenguanzhou&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;English&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;www.chenguanzhou.com/about&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;中文&lt;/span&gt;&lt;/a&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
     <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="80"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="77"/>
         <source>Official webpage</source>
         <translation>官网链接</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="91"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="87"/>
+        <source>Documentation</source>
+        <translation type="unfinished">文档</translation>
+    </message>
+    <message>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="95"/>
         <source>Authors</source>
         <translation>作者</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="97"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="101"/>
         <source>Main Designers</source>
         <translation>主要设计者</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="103"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="107"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -1814,12 +1826,12 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/chenguanzhou&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/chenguanzhou&lt;/span&gt;&lt;/a&gt; &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="125"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="129"/>
         <source>Stable Contributer</source>
         <translation>较大贡献者</translation>
     </message>
     <message utf8="true">
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="131"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="135"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -1862,17 +1874,17 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  &lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="164"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="168"/>
         <source>3rdParty</source>
         <translation>第三方库</translation>
     </message>
     <message>
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="184"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="188"/>
         <source>License</source>
         <translation>许可证</translation>
     </message>
     <message utf8="true">
-        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="190"/>
+        <location filename="../CDTStudio/Dialogs/dialogabout.ui" line="194"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;title&gt;GNU General Public License v3.0 - GNU Project - Free Software Foundation (FSF)&lt;/title&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
