@@ -18,14 +18,14 @@ It contains the following GeoOBIA framework:
 - Semi-automatic feature extraction by Snakes
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: User Documentation
    
    features
    tutorials
    
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Developer Documentation
    
    3rdparty
@@ -33,7 +33,7 @@ It contains the following GeoOBIA framework:
    write_custom_plugins
    
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: About Documentation
    
    screenshots
