@@ -1,3 +1,5 @@
 TEMPLATE = subdirs
 
-SUBDIRS += Snake
+SUBDIRS += \
+            Snake\
+            Grabcut\
