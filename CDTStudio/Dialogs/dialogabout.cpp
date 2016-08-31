@@ -35,8 +35,8 @@ DialogAbout::DialogAbout(QWidget *parent) :
     file.close();
     ui->tableWidget3rdParty->resizeColumnsToContents();
 
-
     connect(ui->commandLinkButtonOfficialPage,SIGNAL(clicked(bool)),SLOT(onOfficialPageLinkClicked()));
+    connect(ui->commandLinkButtonDocumentation,SIGNAL(clicked(bool)),SLOT(onDocumentationLinkClicked()));
     connect(ui->tableWidget3rdParty,SIGNAL(clicked(QModelIndex)),SLOT(onTable3rdPartyItemClicked(QModelIndex)));
 }
 
@@ -48,6 +48,11 @@ DialogAbout::~DialogAbout()
 void DialogAbout::onOfficialPageLinkClicked()
 {
     QDesktopServices::openUrl(QUrl("https://github.com/chenguanzhou/CDTStudio"));
+}
+
+void DialogAbout::onDocumentationLinkClicked()
+{
+    QDesktopServices::openUrl(QUrl("http://cdtstudio.chenguanzhou.com"));
 }
 
 void DialogAbout::onTable3rdPartyItemClicked(QModelIndex index)
