@@ -18,6 +18,9 @@ typedef struct tagVERTEX2D
 
 QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
 {
+    QTime t;
+    t.start();
+
     //init
     GDALAllRegister();
     GDALDataset *poSrcDS = (GDALDataset *)GDALOpen(imagePath.toUtf8().constData(),GA_ReadOnly);
@@ -27,8 +30,6 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
         return QgsPolygon();
     }
     int _bandCount = poSrcDS->GetRasterCount();
-//    GDALDataType type = poSrcDS->GetRasterBand(1)->GetRasterDataType();
-//    int dataSize = GDALGetDataTypeSize(type)/8;
 
     double padfTransform[6] = {0,1,0,0,0,1};
     double padfTransform_i[6];
@@ -86,116 +87,46 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
     int nHeight = rec_nHeight + rec_nHeight/6;
 
     if(nXOff<0)
-    {
         nXOff=0;
-    }
     if(nYOff<0)
-    {
         nYOff=0;
-    }
 
-//    QVector<double> minBandVal_texture(_bandCount),maxBandVal_texture(_bandCount);
-//    double dfMin,dfMax,dfMean,dfStdDev;
-//    for (int k=0;k<_bandCount;++k)
-//    {
-//        GDALRasterBand *poBand =  poSrcDS->GetRasterBand(k+1);
-//        poBand->GetStatistics ( FALSE,  TRUE, &dfMin,  &dfMax,  &dfMean,  &dfStdDev);
-//        minBandVal_texture[k] = dfMin;
-//        maxBandVal_texture[k] = dfMax;
-//        if(dfMin>=0&&dfMax<=255)
-//        {
-//            minBandVal_texture[k] = 0;
-//            maxBandVal_texture[k] = 255;
-//        }else{
-//            //        minBandVal_texture[k]=dfMean-2*dfStdDev;
-//            //        maxBandVal_texture[k]=dfMean+2*dfStdDev;
-//                    GUIntBig *anHistogram=new GUIntBig[int(dfMax-dfMin+1)];
-//                    poBand->GetHistogram( dfMin-0.5, dfMax+0.5, dfMax-dfMin+1, anHistogram, FALSE, FALSE, GDALDummyProgress, NULL );
-
-//                    float nLeft = 5,nRight = 5;
-//                    float histRatioL=nLeft*1.0/100;
-//                    float histRatioH=nRight*1.0/100;
-
-//                    double nXSize = poSrcDS->GetRasterXSize();
-//                    double nYSize = poSrcDS->GetRasterYSize();
-
-//                    GUIntBig lowDes = (GUIntBig) (histRatioL * nXSize*nYSize);
-//                    GUIntBig highDes = (GUIntBig)(histRatioH * nXSize*nYSize);
-//                    int lh[2] = {0, 255};
-//                    GUIntBig h,sum;
-//                    for (h = 0, sum = 0; h < dfMax-dfMin+1; ++h)
-//                    {
-//                        sum += anHistogram[h];
-//                        if (sum >= lowDes)
-//                        {
-//                            lh[0] = h+dfMin;
-//                            break;
-//                        }
-//                    }
-//                    for (h = dfMax-dfMin+1 - 1, sum = 0; h >= 0; --h)
-//                    {
-//                        sum += anHistogram[h];
-//                        if (sum >= highDes)
-//                        {
-//                            lh[1] = h+dfMin;
-//                            break;
-//                        }
-//                    }
-
-//                    delete []anHistogram;
-
-//                    qDebug()<<lh[0];
-//                    qDebug()<<lh[1];
-//                    minBandVal_texture[k] = lh[0];
-//                    maxBandVal_texture[k] = lh[1];
-//        }
-
-//    }
-    cv::Mat  bgdModel, fgdModel;
     cv::Mat  image = cv::Mat::zeros(nHeight,nWidth,CV_8UC3);
     std::vector<int> vecImageData(nWidth*nHeight);
-        for (int k=0;k<3;++k)
+    for (int k=0;k<3;++k)
+    {
+        double minPix = std::numeric_limits<double>::max();
+        double maxPix = std::numeric_limits<double>::min();
+        poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nWidth,nHeight,&vecImageData[0],nWidth,nHeight,GDT_UInt32,0,0);
+        for(int i=0;i<nHeight;i++)
         {
-            double minPix = std::numeric_limits<double>::max();
-            double maxPix = std::numeric_limits<double>::min();
-            poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nWidth,nHeight,&vecImageData[0],nWidth,nHeight,GDT_UInt32,0,0);
-            for(int i=0;i<nHeight;i++)
+            for(int j=0;j<nWidth;j++)
             {
-                for(int j=0;j<nWidth;j++)
-                {
-                    double imagePix = vecImageData[i*nWidth+j];
-                    if(imagePix <minPix) minPix = imagePix;
-                    if(imagePix >maxPix) maxPix = imagePix;
-                }
+                double imagePix = vecImageData[i*nWidth+j];
+                if(imagePix <minPix) minPix = imagePix;
+                if(imagePix >maxPix) maxPix = imagePix;
             }
-
-            const double pixelmin = minPix;
-            const double pixelmax = maxPix;
-            const double ak = (double)255 / (double)(pixelmax - pixelmin);
-            const double bk =-(double)255 * (double)pixelmin/(double)(pixelmax - pixelmin);
-
-            for(int i=0;i<nHeight;i++)
-            {
-                for(int j=0;j<nWidth;j++)
-                {
-                    double imagePix = vecImageData[i*nWidth+j];
-                    //qDebug()<<imagePix;
-                    double pix = ak*imagePix+bk+0.5;
-                    if(pix>255) pix = 255;
-                    if(pix<0)   pix = 0;
-                    //qDebug()<<pix;
-                    image.at<cv::Vec3b>(i,j)[k]= (uchar)pix;
-                }
-            }
-
         }
-//    for (size_t i=0;i<vecInputPoints.size();++i)
-//    {
-//        vecInputPoints[i].x -= rec_nXOff;
-//        vecInputPoints[i].y -= rec_nYOff;
-//    }
-    cv::Rect rect;
 
+        const double pixelmin = minPix;
+        const double pixelmax = maxPix;
+        const double ak = (double)255 / (double)(pixelmax - pixelmin);
+        const double bk =-(double)255 * (double)pixelmin/(double)(pixelmax - pixelmin);
+
+        for(int i=0;i<nHeight;i++)
+        {
+            for(int j=0;j<nWidth;j++)
+            {
+                double imagePix = vecImageData[i*nWidth+j];
+                double pix = ak*imagePix+bk+0.5;
+                if(pix>255) pix = 255;
+                if(pix<0)   pix = 0;
+                image.at<cv::Vec3b>(i,j)[k]= (uchar)pix;
+            }
+        }
+    }
+
+    cv::Rect rect;
     rect.x = rec_nWidth/12;
     rect.y = rec_nHeight/12;
     rect.width = rec_nWidth;
@@ -204,7 +135,6 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
     const cv::Scalar GREEN = cv::Scalar(0,255,0);
     cv::Mat mask = cv::Mat::zeros(nHeight,nWidth,CV_8U);
     mask.setTo(0);
-//    mask(rect).setTo(3);
 
     std::vector<cv::Point> pContourInputPoints;
     std::vector< std::vector<cv::Point> > pContour;
@@ -218,36 +148,26 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
     }
     pContour.push_back(pContourInputPoints);
 
+
+    qDebug()<<t.restart();
+
     cv::drawContours(mask,pContour,0,cv::Scalar(3),CV_FILLED);
 
-//    for(int i =0;i<mask.rows;i++)
-//    {
-//        uchar* pRow = mask.ptr<uchar>(i);
-//        for(int j=0;j<mask.cols;j++)
-//        {
-//            if(i>rec_nWidth/12&&j>rec_nHeight/12
-//                    &&i<(rec_nHeight/12+rec_nHeight)
-//                    &&j<(rec_nHeight/12+rec_nHeight))
-//            pRow[j] = 3;
-//        }
-//    }
+    qDebug()<<t.restart();
 
-    cv::grabCut(image,mask,rect,bgdModel,fgdModel,3,cv::GC_INIT_WITH_MASK);
+    cv::grabCut(image,mask,rect,cv::Mat(),cv::Mat(),3,cv::GC_INIT_WITH_MASK);
+
+    qDebug()<<t.restart();
 
     cv::Mat res,binMask;
     cv::rectangle(image,rect,GREEN,2);
 
-    cv::imwrite("image.tif",image);
     binMask.create( mask.size(), CV_8UC1 );
     binMask = mask & 1;
-    image.copyTo( res, binMask );
-    cv::imwrite("res.tif",res);
-//    cv::imwrite("mask.tif",binMask);
-//     qDebug()<<"ok4";
 
-     std::vector< std::vector<cv::Point> > contours;
-     std::vector<cv::Vec4i> hierarchy;
-     cv::findContours(binMask,contours,hierarchy,  CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+    std::vector< std::vector<cv::Point> > contours;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::findContours(binMask,contours,hierarchy,  CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
 
     std::vector<VERTEX2D> vecAllPoints;
 
@@ -291,8 +211,9 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
             exportPolygon.push_back(polyline);
         }
     }
+
+    qDebug()<<t.restart();
     return exportPolygon;
-//    return polygon;
 
 }
 
@@ -341,13 +262,17 @@ void CDTGrabcutMapTool::canvasPressEvent(QgsMapMouseEvent *e)
             QgsPolygon polygon = polygonGeom->asPolygon();
             delete polygonGeom;
 
+            QTime t;
+            t.start();
             QgsPolygon snakePolygon = grabcut(polygon,imagePath);
+            qDebug()<<t.elapsed();
+
             QgsGeometry* newPolygonGeom = QgsGeometry::fromPolygon(snakePolygon);
             QgsFeature f(vectorLayer->pendingFields(),0);
             f.setGeometry(newPolygonGeom);
             vectorLayer->startEditing();
             qDebug()<<vectorLayer->addFeature(f);
-            qDebug()<<newPolygonGeom->area();
+//            qDebug()<<newPolygonGeom->area();
             vectorLayer->commitChanges();
             canvas()->refresh();
         }
