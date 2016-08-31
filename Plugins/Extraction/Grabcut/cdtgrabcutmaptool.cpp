@@ -94,14 +94,14 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
         nYOff=0;
     }
 
-    QVector<double> minBandVal_texture(_bandCount),maxBandVal_texture(_bandCount);
-    double dfMin,dfMax,dfMean,dfStdDev;
-    for (int k=0;k<_bandCount;++k)
-    {
-        GDALRasterBand *poBand =  poSrcDS->GetRasterBand(k+1);
-        poBand->GetStatistics ( FALSE,  TRUE, &dfMin,  &dfMax,  &dfMean,  &dfStdDev);
-        minBandVal_texture[k] = dfMin;
-        maxBandVal_texture[k] = dfMax;
+//    QVector<double> minBandVal_texture(_bandCount),maxBandVal_texture(_bandCount);
+//    double dfMin,dfMax,dfMean,dfStdDev;
+//    for (int k=0;k<_bandCount;++k)
+//    {
+//        GDALRasterBand *poBand =  poSrcDS->GetRasterBand(k+1);
+//        poBand->GetStatistics ( FALSE,  TRUE, &dfMin,  &dfMax,  &dfMean,  &dfStdDev);
+//        minBandVal_texture[k] = dfMin;
+//        maxBandVal_texture[k] = dfMax;
 //        if(dfMin>=0&&dfMax<=255)
 //        {
 //            minBandVal_texture[k] = 0;
@@ -150,17 +150,30 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
 //                    maxBandVal_texture[k] = lh[1];
 //        }
 
-    }
+//    }
     cv::Mat  bgdModel, fgdModel;
     cv::Mat  image = cv::Mat::zeros(nHeight,nWidth,CV_8UC3);
     std::vector<int> vecImageData(nWidth*nHeight);
         for (int k=0;k<3;++k)
         {
-            const double pixelmin = minBandVal_texture[k];
-            const double pixelmax = maxBandVal_texture[k];
+            double minPix = std::numeric_limits<double>::max();
+            double maxPix = std::numeric_limits<double>::min();
+            poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nWidth,nHeight,&vecImageData[0],nWidth,nHeight,GDT_UInt32,0,0);
+            for(int i=0;i<nHeight;i++)
+            {
+                for(int j=0;j<nWidth;j++)
+                {
+                    double imagePix = vecImageData[i*nWidth+j];
+                    if(imagePix <minPix) minPix = imagePix;
+                    if(imagePix >maxPix) maxPix = imagePix;
+                }
+            }
+
+            const double pixelmin = minPix;
+            const double pixelmax = maxPix;
             const double ak = (double)255 / (double)(pixelmax - pixelmin);
             const double bk =-(double)255 * (double)pixelmin/(double)(pixelmax - pixelmin);
-            poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nWidth,nHeight,&vecImageData[0],nWidth,nHeight,GDT_UInt32,0,0);
+
             for(int i=0;i<nHeight;i++)
             {
                 for(int j=0;j<nWidth;j++)
