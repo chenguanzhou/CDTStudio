@@ -66,6 +66,7 @@ public slots:
     void editDBInfo();
     void generateAttributes();
     void exportShapefile();
+    void deconposeObjects();
     void remove();
 
     void addClassification();

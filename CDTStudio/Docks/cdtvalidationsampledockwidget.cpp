@@ -251,6 +251,7 @@ void CDTValidationSampleDockWidget::createPointsLayer()
     QString uri = "point?field=id:integer";
     pointsLayer = new QgsVectorLayer(uri,validationName, "memory");
     pointsLayer->addAttribute(QgsField("id",QVariant::Int));
+    pointsLayer->enableLabels(true);
     pointsLayer->startEditing();
     pointsLayer->beginEditCommand(tr("Add validations to the tampory layer"));
     while (query.next())
@@ -264,7 +265,8 @@ void CDTValidationSampleDockWidget::createPointsLayer()
     pointsLayer->commitChanges();
 
     //Set label
-    pointsLayer->enableLabels(true);
+
+
     QgsLabel *label = pointsLayer->label();
     label->setLabelField(QgsLabel::Text,0);
     QgsLabelAttributes *attributes= label->labelAttributes();

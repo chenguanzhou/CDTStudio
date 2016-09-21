@@ -15,7 +15,7 @@ public:
     CDTReadOnlyDelegate(QObject *parent = 0)
         :QItemDelegate(parent){}
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &,
+    QWidget *createEditor(QWidget *, const QStyleOptionViewItem &,
                           const QModelIndex &) const
     {
         return NULL;
