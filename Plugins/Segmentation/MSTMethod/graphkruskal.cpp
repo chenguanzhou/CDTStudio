@@ -3,7 +3,7 @@
 
 
 GraphKruskal::GraphKruskal(unsigned elements)
-    :num(elements),elementCount(elements),elts(NULL)
+    :elementCount(elements),elts(NULL)
 {
     file.open();
     if (file.resize(elements*sizeof(GraphElement)) == false)
@@ -20,7 +20,7 @@ GraphKruskal::GraphKruskal(unsigned elements)
     GraphElement* p = elts;
     for (unsigned i = 0; i < elements; ++i,++p)
     {
-        p->rank = 0;
+//        p->rank = 0;
         p->p = i;
         p->sw = 0;
         p->size = 1;
@@ -35,84 +35,63 @@ GraphKruskal::~GraphKruskal()
 unsigned GraphKruskal::find( unsigned x )
 {
     unsigned y = x;
-
     while (y != elts[y].p)
-        y = elts[y].p;//Find root node
-
+    {
+        y = elts[y].p;
+    }
     elts[x].p = y;
     return y;
 }
 
 unsigned GraphKruskal::join_band_sw( unsigned x,unsigned y,float edgeWeight )
 {
-    if (elts[x].rank > elts[y].rank)
-        {
-            elts[x].size += elts[y].size;
-            elts[x].sw += elts[y].sw + edgeWeight;
-            elts[y].p = x;
+    GraphElement &eltx = *(elts + x);
+    GraphElement &elty = *(elts + y);
 
-            num--;
-            return x;
-        }
+    if (eltx.size > elty.size)
+    {
+        eltx.size += elty.size;
+        eltx.sw += elty.sw + edgeWeight;
+        elty.p = x;
 
-        else
-        {
-            elts[y].size += elts[x].size;
-            elts[y].sw += elts[x].sw + edgeWeight;
+        return x;
+    }
 
-            elts[x].p = y;
+    else
+    {
+        elty.size += eltx.size;
+        elty.sw += eltx.sw + edgeWeight;
 
-            if (elts[x].rank == elts[y].rank)
-                elts[y].rank++;
-            num--;
-            return y;
-        }
+        eltx.p = y;
+
+//        if (eltx.rank == elty.rank)
+//            elty.rank++;
+
+        return y;
+    }
 }
 
-
-
-const float LOG20MULTI2 = 2*log(2/0.1f);
+const float LOG20MULTI2 = 2*log(20.f);
 bool GraphKruskal::joinPredicate_sw(unsigned reg1, unsigned reg2, float th, float edgeWeight, int nPredict )
 {
-    GraphElement elt1 = elts[reg1];
-    GraphElement elt2 = elts[reg2];
+    const GraphElement &elt1 = *(elts + reg1);
+    const GraphElement &elt2 = *(elts + reg2);
 
-    float swreg1 = elt1.sw;
-    unsigned size1=elt1.size;
+    float sn1 = (float)(th*sqrt(LOG20MULTI2/elt1.size));
+    float sn2 = (float)(th*sqrt(LOG20MULTI2/elt2.size));
 
-    float swreg2 = elt2.sw;
-    unsigned size2=elt2.size;
-
-    float nedge1 = (float)size1-1+0.000001f;
-    float nedge2 = (float)size2-1+0.000001f;
-
-    double g=th;//255*sqrt(m_Bands);//
-
-    float if1=(swreg1+edgeWeight)/(nedge1+2);
-    float if2=(swreg2+edgeWeight)/(nedge2+2);
-
-
-    float sn1 = (float)(g*sqrt(LOG20MULTI2/size1));
-    float sn2 = (float)(g*sqrt(LOG20MULTI2/size2));
-
-
-    bool bMerge=false;
     if (nPredict==0)//Rule1
     {
-        if(if1<=sn1 || if2<=sn2)//ok
-            bMerge=true;
-        else
-            bMerge=false;
+        float if1=(elt1.sw+edgeWeight)/(elt1.size+1);
+        float if2=(elt2.sw+edgeWeight)/(elt2.size+1);
+        return if1<=sn1 || if2<=sn2;
     }
     if (nPredict==1)//Rule2
     {
-        if ((edgeWeight<=sn1)||(edgeWeight<=sn2))
-            bMerge=true;
-        else
-            bMerge=false;
+        return (edgeWeight<=sn1)||(edgeWeight<=sn2);
     }
 
-    return bMerge;
+    return false;
 }
 
 void GraphKruskal::GetMapNodeidObjectid(GDALRasterBand *&poMaskBand, QMap<unsigned, unsigned> &mapRootidObjectid)
@@ -132,7 +111,9 @@ void GraphKruskal::GetMapNodeidObjectid(GDALRasterBand *&poMaskBand, QMap<unsign
             if (mask[j]==0)
                 continue;
             unsigned RootNode=find(index);
-            if (mapRootidObjectid.find(RootNode)==mapRootidObjectid.end())
+
+//            if (mapRootidObjectid.find(RootNode)==mapRootidObjectid.end())
+            if (!mapRootidObjectid.contains(RootNode))
             {
                 mapRootidObjectid[RootNode] = objectID;
                 objectID++;
