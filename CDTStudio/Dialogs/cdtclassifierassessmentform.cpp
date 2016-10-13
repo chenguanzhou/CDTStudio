@@ -131,11 +131,19 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
 //        info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[objID].toInt()],categoryID_Name[clsIndex]));
 //    }
 
-    query.exec(QString("select x,y,categoryid from "
-                       "(select id,x,y from points where pointset_name= "
-                       "(select pointset_name from image_validation_samples where id = '%1' )) "
-                       "INNER JOIN point_category "
-                       "USING (id)").arg(sampleID));
+    QString sql = QString("select x,y,categoryid "
+                          "from points t1, point_category t2, image_validation_samples t3 "
+                          "where t1.pointset_name = t3.pointset_name and t1.id = t2.id and t2.validationid = t3.id "
+                          "and t3.id = '%1' ").arg(sampleID);
+
+
+//    QString sql = QString("select x,y,categoryid from "
+//                          "(select id,x,y from points where pointset_name= "
+//                          "(select pointset_name from image_validation_samples where id = '%1' )) "
+//                          "INNER JOIN point_category "
+//                          "USING (id)").arg(sampleID);
+    qDebug()<<sql;
+    query.exec(sql);
 
     while(query.next())
     {

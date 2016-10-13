@@ -24,6 +24,8 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
     //init
     GDALAllRegister();
     GDALDataset *poSrcDS = (GDALDataset *)GDALOpen(imagePath.toUtf8().constData(),GA_ReadOnly);
+    int _width      = poSrcDS->GetRasterXSize();
+    int _heith      = poSrcDS->GetRasterYSize();
     if (poSrcDS == NULL)
     {
         qWarning()<<QObject::tr("Open Image File: %1 failed!").arg(imagePath);
@@ -66,6 +68,15 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
 
     for (size_t i=0;i<vecInputPoints.size();++i)
     {
+        if(vecInputPoints[i].x<0)
+            vecInputPoints[i].x = 0;
+        if(vecInputPoints[i].y<0)
+            vecInputPoints[i].y = 0;
+        if(vecInputPoints[i].x>_width)
+            vecInputPoints[i].x = _width;
+        if(vecInputPoints[i].y>_heith)
+            vecInputPoints[i].y = _heith;
+
         if (vecInputPoints[i].x<minX)
             minX = vecInputPoints[i].x;
         if (vecInputPoints[i].x>maxX)
@@ -90,6 +101,10 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
         nXOff=0;
     if(nYOff<0)
         nYOff=0;
+    if(_width<(nXOff+nWidth))
+        nWidth = _width-nXOff;
+    if(_heith<(nYOff+nHeight))
+        nHeight = _heith-nYOff;
 
     cv::Mat  image = cv::Mat::zeros(nHeight,nWidth,CV_8UC3);
     std::vector<int> vecImageData(nWidth*nHeight);
