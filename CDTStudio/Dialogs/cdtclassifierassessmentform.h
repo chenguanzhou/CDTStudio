@@ -51,7 +51,7 @@ private:
     Ui::CDTClassifierAssessmentForm *ui;
     QSqlQueryModel *modelClassification;
     QSqlQueryModel *modelSample;
-    QMap<int,QString> testSamples;
+    QList<QPair<int,QString>> testSamples;
 };
 
 #endif // CDTCLASSIFIERASSESSMENTFORM_H

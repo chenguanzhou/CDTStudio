@@ -142,7 +142,7 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
 //                          "(select pointset_name from image_validation_samples where id = '%1' )) "
 //                          "INNER JOIN point_category "
 //                          "USING (id)").arg(sampleID);
-    qDebug()<<sql;
+//    qDebug()<<sql;
     query.exec(sql);
 
     while(query.next())
@@ -151,14 +151,16 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
         double y = query.value(1).toDouble();
         QString categoryID = query.value(2).toString();
         QgsRasterIdentifyResult result = imgMarkLayer->dataProvider()->identify(QgsPoint(x,y),QgsRaster::IdentifyFormatValue);
-        int objID = result.results().value(1).toInt();
-        testSamples.insert(objID,categoryID);
+        int objID = result.results().value(1).toInt();        
+        testSamples<<qMakePair(objID,categoryID);
     }
 
 
-    foreach (int objID, testSamples.keys()) {
-        QString clsIndex = testSamples.value(objID);
-        info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[objID].toInt()],categoryID_Name[clsIndex]));
+    for (int i=0;i<testSamples.size();++i)
+    {
+        int id = testSamples[i].first;
+        QString c = testSamples[i].second;
+        info.confusionParams.push_back(QPair<QString,QString>(index_CategoryName[label[id].toInt()],categoryID_Name[c]));
     }
 
 
@@ -295,10 +297,11 @@ void CDTClassifierAssessmentForm::updateConfusionMatrix(const CDTClassificationI
 void CDTClassifierAssessmentForm::on_pushButtonCopySample_clicked()
 {
     QString copy;
-    foreach (int objID, testSamples.keys()) {
-        QString categoryID = testSamples.value(objID);
-        copy += (QString::number(objID) + "\t" + categoryID + "\n");
+    for (auto iter = testSamples.begin();iter!=testSamples.end();++iter)
+    {
+        copy += (QString::number(iter->first) + "\t" + iter->second + "\n");
     }
+
     QApplication::clipboard()->setText(copy);
 }
 
