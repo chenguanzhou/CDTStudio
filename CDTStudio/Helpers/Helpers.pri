@@ -7,7 +7,8 @@ HEADERS += \
     $$PWD/cdtexportclassificationlayerhelper.h \
     $$PWD/cdtlayernamevalidator.h \
     $$PWD/cdtattibutestatisticshelper.h \
-    $$PWD/cdtpbcdhelper.h
+    $$PWD/cdtpbcdhelper.h \
+    $$PWD/cdtdecomposeobjecthelper.h
 
 SOURCES += \
     $$PWD/cdtclassificationhelper.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
     $$PWD/cdtexportclassificationlayerhelper.cpp \
     $$PWD/cdtlayernamevalidator.cpp \
     $$PWD/cdtattibutestatisticshelper.cpp \
-    $$PWD/cdtpbcdhelper.cpp
+    $$PWD/cdtpbcdhelper.cpp \
+    $$PWD/cdtdecomposeobjecthelper.cpp
 
 INCLUDEPATH += $$PWD

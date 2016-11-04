@@ -11,6 +11,7 @@
 #include "cdtvariantconverter.h"
 #include "cdtattributedockwidget.h"
 #include "cdtattributesinterface.h"
+#include "cdtdecomposeobjecthelper.h"
 #include "wizardnewclassification.h"
 #include "dialogdecisionfusion.h"
 #include "dialoggenerateattributes.h"
@@ -50,6 +51,8 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
             new QAction(QIcon(":/Icons/AddProperty.png"),tr("Generate Attributes"),this);
     QAction *actionEditDBInfo =
             new QAction(QIcon(":/Icons/DataSource.png"),tr("Edit Attribute DB Source"),this);
+    QAction *actionDeconposeObjects =
+            new QAction(QIcon(":/Icons/gallery-32.png"),tr("Deconpose Objects"),this);
     QAction *actionExportShapefile =
             new QAction(QIcon(":/Icons/Export.png"),tr("Export Shapefile"),this);
     QAction *actionRemoveSegmentation =
@@ -63,7 +66,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
 
     setActions(QList<QList<QAction *> >()
                <<(QList<QAction *>()/*<<actionChangeBorderColor<<actionSetLayerTransparency*/<<actionRename
-                  <<actionEditDBInfo<<actionGenerateAttributes<<actionExportShapefile)
+                  <<actionEditDBInfo<<actionGenerateAttributes<<actionExportShapefile<<actionDeconposeObjects)
                <<(QList<QAction *>()<<actionRemoveSegmentation)
                <<(QList<QAction *>()<<actionAddClassifications<<actionRemoveAllClassifications<<actionAddDecisionFusion));
 
@@ -72,6 +75,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(actionEditDBInfo,SIGNAL(triggered()),SLOT(editDBInfo()));
     connect(actionGenerateAttributes,SIGNAL(triggered()),SLOT(generateAttributes()));
     connect(actionExportShapefile,SIGNAL(triggered()),SLOT(exportShapefile()));
+    connect(actionDeconposeObjects,SIGNAL(triggered()),SLOT(deconposeObjects()));
     connect(actionRemoveSegmentation,SIGNAL(triggered()),SLOT(remove()));
     connect(actionAddClassifications,SIGNAL(triggered()),SLOT(addClassification()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));
@@ -163,6 +167,30 @@ void CDTSegmentationLayer::exportShapefile()
 {
     QString id = shapefilePath();
     fileSystem()->exportFiles(id);
+}
+
+void CDTSegmentationLayer::deconposeObjects()
+{
+    QString imagePath = this->imagePath();
+    QString markfilePath = markfileTempPath();
+    QString dir = QFileDialog::getExistingDirectory(NULL,tr("Select a directory to export"));
+    if (dir.isEmpty())
+        return;
+    QDir d(dir);
+    QString subDir = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+    if (d.mkdir(subDir)==false)
+        return;
+    d.cd(subDir);
+    dir = d.absolutePath();
+
+    CDTDecomposeObjectHelper* helper = new CDTDecomposeObjectHelper(imagePath,markfilePath,dir,this);
+    QProgressDialog *progress = new QProgressDialog("Decompose objects...", "Abort Decompose", 0, 100, NULL);
+    progress->show();
+    connect(helper,SIGNAL(progressBarSizeChanged(int,int)),progress,SLOT(setRange(int,int)));
+    connect(helper,SIGNAL(progressBarValueChanged(int)),progress,SLOT(setValue(int)));
+    connect(helper,SIGNAL(completed()),progress,SLOT(close()));
+    helper->start();
+
 }
 
 void CDTSegmentationLayer::addClassification()

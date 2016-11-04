@@ -16,9 +16,8 @@ CDTAttributeGenerator::CDTAttributeGenerator(
         const QString &shpPath,
         QSqlDatabase db,
         const QMap<QString, QStringList> &attributes,
-        QObject *parent) :
-    CDTBaseThread(parent),
-    _attributes(attributes)
+        QObject *parent)
+    : CDTBaseThread(parent), _attributes(attributes)
 {
     GDALAllRegister();
     OGRRegisterAll();
