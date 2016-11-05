@@ -193,7 +193,7 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
     if (newCanvasLayer->dataProvider()->dataType(1) != QGis::Byte)
     {
         newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
-        comboEnhancement->setCurrentIndex(1);
+        comboEnhancement->setCurrentIndex(0);
     }
     else
         comboEnhancement->setCurrentIndex(0);
