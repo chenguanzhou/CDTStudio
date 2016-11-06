@@ -8,6 +8,7 @@
 #include "cdtprojectwidget.h"
 #include "cdtprojectlayer.h"
 #include "cdtimagelayer.h"
+#include "cdtsegmentationlayer.h"
 #include "dialogvalidationpoints.h"
 #include "dialoggeneratevalidationsample.h"
 
@@ -41,12 +42,15 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     QAction *actionRename = new QAction(QIcon(":/Icons/Rename.png"),tr("Rename"),this);
     QAction *actionAddNew = new QAction(QIcon(":/Icons/Add.png"),tr("Add a sample set"),this);
     QAction *actionRemove = new QAction(QIcon(":/Icons/Remove.png"),tr("Remove"),this);
-    toolBar->addActions(QList<QAction*>()<<actionRename<<actionAddNew<<actionRemove);
+    QAction *actionExport = new QAction(QIcon(":/Icons/Export.png"),tr("Export"),this);
+    toolBar->addActions(QList<QAction*>()<<actionRename<<actionAddNew<<actionRemove<<actionExport);
     toolBar->setIconSize(MainWindow::getIconSize());
 
     connect(groupBox,SIGNAL(toggled(bool)),SLOT(onGroupBoxToggled(bool)));
+    connect(actionRename,SIGNAL(triggered()),SLOT(onActionRename()));
     connect(actionAddNew,SIGNAL(triggered()),SLOT(onActionAdd()));
     connect(actionRemove,SIGNAL(triggered()),SLOT(onActionRemove()));
+    connect(actionExport,SIGNAL(triggered()),SLOT(onActionExport()));
     logger()->info("Constructed");
 }
 
@@ -117,6 +121,35 @@ void CDTValidationSampleDockWidget::onGroupBoxToggled(bool toggled)
     }
 }
 
+void CDTValidationSampleDockWidget::onActionRename()
+{
+    int row = listView->currentIndex().row()<0;
+    if (row)
+        return;
+    QString oldName = sampleModel->data(sampleModel->index(row,0)).toString();
+    QString id = sampleModel->data(sampleModel->index(row,1)).toString();
+
+    bool ok;
+    QString text = QInputDialog::getText(
+                NULL, tr("Input New Name"),
+                tr("Rename:"), QLineEdit::Normal,
+                oldName, &ok);
+    if (ok && !text.isEmpty() && oldName != text){
+        QSqlQuery query(QSqlDatabase::database("category"));
+        bool ret = query.prepare(QString("UPDATE image_validation_samples set name = ? where id =?"));
+        if (ret==false) return;
+        query.bindValue(0,text);
+        query.bindValue(1,id);
+        ret = query.exec();
+        if (ret){
+            updateListView();
+            MainWindow::getCurrentProjectWidget()->setWindowModified(true);
+            QMessageBox::information(this,tr("Completed"),tr("Rename completed!"));
+        }
+    }
+
+}
+
 void CDTValidationSampleDockWidget::onActionAdd()
 {
     QStringList info = DialogGenerateValidationSample::
@@ -159,6 +192,73 @@ void CDTValidationSampleDockWidget::onActionRemove()
         updateListView();
         MainWindow::getCurrentProjectWidget()->setWindowModified(true);
     }
+}
+
+void CDTValidationSampleDockWidget::onActionExport()
+{
+    QString id = sampleModel->data(sampleModel->
+                                   index(listView->currentIndex().row(),1)).toString();
+    qDebug()<<id;
+    if (id.isEmpty())
+        return;
+
+    QString outputPath = QFileDialog::getSaveFileName(this,tr("Export"),QString(),tr("Text file(*.txt)"));
+    if (outputPath.isEmpty())
+        return;
+
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.exec(QString("select id,name from segmentationlayer where imageid='%1'").arg(imageID));
+    QMap<QString,QString> allSegmentationNames;
+    while (query.next()){
+        allSegmentationNames.insert(query.value(1).toString(),query.value(0).toString());
+    }
+
+    QString selectedSegmentationLayerName =
+            QInputDialog::getItem(this,tr("Select a segmentation layer"),tr("Segmentation layer"),allSegmentationNames.keys(),0,false);
+    if (selectedSegmentationLayerName.isEmpty())
+        return;
+    QString segmentationID = allSegmentationNames[selectedSegmentationLayerName];
+    CDTSegmentationLayer *segLayer = CDTSegmentationLayer::getLayer(segmentationID);
+    QString markfilePath = segLayer->markfileTempPath();
+    GDALDataset *poMarkDS = (GDALDataset *)GDALOpen(markfilePath.toUtf8().constData(),GA_ReadOnly);
+    if (poMarkDS==NULL)
+        return;
+    double transform[6],inverse[6];
+    poMarkDS->GetGeoTransform(transform);
+    GDALInvGeoTransform(transform,inverse);
+    auto band = poMarkDS->GetRasterBand(1);
+
+
+    QFile data(outputPath);
+    if (data.open(QFile::WriteOnly))
+    {
+        QTextStream out(&data);
+
+
+        QString sql = QString("select t3.x as x, t3.y as y,t4.name as category "
+                              "from image_validation_samples t1,point_category t2,points t3,category t4 "
+                              "where t1.id=t2.validationID and t2.id=t3.id and t2.categoryID=t4.id "
+                              "and t1.id='%1'").arg(id);
+        if (query.exec(sql))
+        {
+            while(query.next())
+            {
+                double x = query.value(0).toDouble();
+                double y = query.value(1).toDouble();
+                QString name = query.value(2).toString();
+
+                double _x,_y;
+                int buffer = 0;
+                GDALApplyGeoTransform(inverse,x,y,&_x,&_y);
+                band->RasterIO(GF_Read,_x+0.5,_y+0.5,1,1,&buffer,1,1,GDT_Int32,0,0);
+                out<<QString("%1\t%2").arg(buffer).arg(name)<<endl;
+            }
+        }
+        data.close();
+        QMessageBox::information(this,tr("Completed"),tr("Export completed!"));
+    }
+
+    GDALClose(poMarkDS);
 }
 
 void CDTValidationSampleDockWidget::updateListView()

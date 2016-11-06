@@ -571,10 +571,9 @@ bool MSTMethodInterface::_ObjectMerge(GraphKruskal *&graph,
         unsigned b = graph->find(edge_temp.GetNode2());
 
         int nPredict = 0;
-        if ((a != b) && (graph->joinPredicate_sw(a,b,(float)threshold,edge_temp.GetWeight(),nPredict)==true))
+        if ((a != b) && graph->joinPredicate_sw(a,b,(float)threshold,edge_temp.GetWeight(),nPredict))
         {
             graph->join_band_sw(a,b,edge_temp.GetWeight());
-            graph->find(a);
         }
         ++(*vecEdge);
         if (i%progressGap==0)
@@ -607,7 +606,6 @@ bool MSTMethodInterface::_EliminateSmallArea(GraphKruskal * &graph,
         if ((a != b) && ((graph->size(a) <_minObjectSize) || (graph->size(b) < _minObjectSize)) )
         {
             graph->join_band_sw(a,b,edge_temp.GetWeight());
-            graph->find(a);
         }
         ++(*vecEdge);
         if (i%progressGap==0)

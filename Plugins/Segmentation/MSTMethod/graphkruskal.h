@@ -10,9 +10,9 @@
 
 class GraphElement {
 public:
-    GraphElement():rank(0),p(0),size(1),sw(0){}
+    GraphElement():/*rank(0),*/p(0),size(1),sw(0){}
 
-    unsigned rank;
+//    unsigned rank;
     unsigned p; //Root node
     unsigned size;
     float sw;//Sum of weights
@@ -35,7 +35,6 @@ public:
     void GetMapNodeidObjectid(GDALRasterBand*& poMaskBand, QMap<unsigned, unsigned> &mapRootidObjectid);
 
 public:
-    int num;
     int elementCount;
     GraphElement* elts;
     QTemporaryFile file;
