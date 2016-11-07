@@ -1,3 +1,5 @@
 TEMPLATE = subdirs
 
-SUBDIRS +=MSTMethod
+SUBDIRS +=\
+        MSTMethod\
+        SLIC
