@@ -12,9 +12,17 @@
 #include "slic.h"
 #include "gdal2opencv.h"
 
+class SLICMethodPrivate
+{
+public:
+    SLICMethodPrivate():_objectCount(10),_compactness(30){}
+    double _objectCount;
+    int _compactness;
+};
 
 SLICInterface::SLICInterface(QObject *parent)
-    :CDTSegmentationInterface(parent)
+    :CDTSegmentationInterface(parent),
+      pData(new SLICMethodPrivate)
 {
     GDALAllRegister();
 }
@@ -36,7 +44,7 @@ void SLICInterface::startSegmentation()
 
     //Generate SLIC
 //    auto src = cv::imread(inputImagePath.toLocal8Bit().constData());
-    auto slic = cv::ximgproc::createSuperpixelSLIC(src,cv::ximgproc::SLICO,10,30);
+    auto slic = cv::ximgproc::createSuperpixelSLIC(src,cv::ximgproc::SLICO,pData->_objectCount,pData->_compactness);
     slic->iterate();
     cv::Mat labels;
     slic->getLabels(labels);
@@ -107,6 +115,26 @@ void SLICInterface::startSegmentation()
     if (pSpecialReference) delete pSpecialReference;
     GDALClose(poMarkDS);
     GDALClose(poDstDS);
+}
+
+double SLICInterface::objectCount() const
+{
+    return pData->_objectCount;
+}
+
+int SLICInterface::compactness() const
+{
+    return pData->_compactness;
+}
+
+void SLICInterface::setObjectCount(double val)
+{
+    pData->_objectCount = val;
+}
+
+void SLICInterface::setCompactness(int val)
+{
+    pData->_compactness = val;
 }
 
 
