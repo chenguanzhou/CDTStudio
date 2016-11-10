@@ -8,6 +8,8 @@
 #include <QMap>
 #include <QVector>
 #include "cdtsegmentationinterface.h"
+#include <opencv2/opencv.hpp>
+
 
 class SLICMethodPrivate;
 
@@ -21,8 +23,13 @@ class SLICInterface:public CDTSegmentationInterface
 #endif // QT_VERSION >= 0x050000
     Q_PROPERTY(double Object_Count READ objectCount WRITE setObjectCount DESIGNABLE true USER true)
     Q_PROPERTY(int Compactness READ compactness WRITE setCompactness DESIGNABLE true USER true)
+    Q_PROPERTY(Algorithm algorith READ algorith WRITE setAlgorith DESIGNABLE true USER true)
+
+    Q_ENUMS(Algorithm)
 
 public:
+    enum Algorithm {SLIC = 100 , SLICO = 101};
+
     explicit SLICInterface(QObject* parent = 0);
     ~SLICInterface();
     QString segmentationMethod()const;
@@ -30,9 +37,11 @@ public:
 
     double  objectCount()const;
     int compactness() const;
+    Algorithm algorith() const;
 
     void setObjectCount(double val);
     void setCompactness(int val);
+    void setAlgorith(Algorithm val);
 
 private:
     SLICMethodPrivate *pData;
