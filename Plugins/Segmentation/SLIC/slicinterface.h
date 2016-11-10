@@ -8,7 +8,6 @@
 #include <QMap>
 #include <QVector>
 #include "cdtsegmentationinterface.h"
-#include <opencv2/opencv.hpp>
 
 
 class SLICMethodPrivate;
