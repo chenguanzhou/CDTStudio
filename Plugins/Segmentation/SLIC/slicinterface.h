@@ -9,6 +9,7 @@
 #include <QVector>
 #include "cdtsegmentationinterface.h"
 
+class SLICMethodPrivate;
 
 class SLICInterface:public CDTSegmentationInterface
 {
@@ -18,6 +19,8 @@ class SLICInterface:public CDTSegmentationInterface
 #else
     Q_INTERFACES(CDTSegmentationInterface)
 #endif // QT_VERSION >= 0x050000
+    Q_PROPERTY(double Object_Count READ objectCount WRITE setObjectCount DESIGNABLE true USER true)
+    Q_PROPERTY(int Compactness READ compactness WRITE setCompactness DESIGNABLE true USER true)
 
 public:
     explicit SLICInterface(QObject* parent = 0);
@@ -25,7 +28,14 @@ public:
     QString segmentationMethod()const;
     void startSegmentation();
 
+    double  objectCount()const;
+    int compactness() const;
+
+    void setObjectCount(double val);
+    void setCompactness(int val);
+
 private:
+    SLICMethodPrivate *pData;
 };
 
 #endif // MSTMETHODINTERFACE_H
