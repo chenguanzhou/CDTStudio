@@ -19,13 +19,14 @@ public:
     int min_x,min_y,max_x,max_y;
 };
 
-CDTDecomposeObjectHelper::CDTDecomposeObjectHelper(
-        QString imagePath,
+CDTDecomposeObjectHelper::CDTDecomposeObjectHelper(QString imagePath,
         QString markfilePath,
         QString dir,
+        bool withMask,
         QObject *parent)
     : p(new CDTDecomposeObjectHelperPrivate(dir)), CDTBaseThread(parent)
 {
+    this->withMask = withMask;
     GDALAllRegister();
     OGRRegisterAll();
     CPLSetConfigOption("GDAL_FILENAME_IS_UTF8","YES");
@@ -116,11 +117,14 @@ void CDTDecomposeObjectHelper::run()
         for (int k=0;k<bandCount;++k)
         {
             p->poImageDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
-            for (int i=0;i<bufferSrc.size();++i)
-            {
-                if (bufferFlag[i] != objID)
-                    bufferSrc[i] = 0;
+            if (withMask){
+                for (int i=0;i<bufferSrc.size();++i)
+                {
+                    if (bufferFlag[i] != objID)
+                        bufferSrc[i] = 0;
+                }
             }
+
             poDstDS->GetRasterBand(k+1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
         }
 

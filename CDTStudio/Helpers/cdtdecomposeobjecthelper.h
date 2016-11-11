@@ -12,6 +12,7 @@ public:
             QString imagePath,
             QString markfilePath,
             QString dir,
+            bool withMask,
             QObject *parent = 0);
     ~CDTDecomposeObjectHelper();
 
@@ -19,6 +20,7 @@ public:
     void run();
 private:
     CDTDecomposeObjectHelperPrivate *p;
+    bool withMask;
 };
 
 #endif // CDTDECOMPOSEOBJECTHELPER_H
