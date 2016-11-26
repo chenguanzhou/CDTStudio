@@ -173,7 +173,12 @@ void CDTSegmentationLayer::deconposeObjects()
 {
     QString imagePath = this->imagePath();
     QString markfilePath = markfileTempPath();
-    QString dir = QFileDialog::getExistingDirectory(NULL,tr("Select a directory to export"));
+
+    auto ret = QMessageBox::information(MainWindow::getMainWindow(),tr("Mask"),"",tr("With Black Mask Outside Object"), tr("No Mask"), tr("Cancel"));
+    if (ret == 2)
+        return;
+
+    QString dir = QFileDialog::getExistingDirectory(MainWindow::getMainWindow(),tr("Select a directory to export"));
     if (dir.isEmpty())
         return;
     QDir d(dir);
@@ -183,7 +188,8 @@ void CDTSegmentationLayer::deconposeObjects()
     d.cd(subDir);
     dir = d.absolutePath();
 
-    CDTDecomposeObjectHelper* helper = new CDTDecomposeObjectHelper(imagePath,markfilePath,dir,this);
+
+    CDTDecomposeObjectHelper* helper = new CDTDecomposeObjectHelper(imagePath,markfilePath,dir,ret == 0,this);
     QProgressDialog *progress = new QProgressDialog("Decompose objects...", "Abort Decompose", 0, 100, NULL);
     progress->show();
     connect(helper,SIGNAL(progressBarSizeChanged(int,int)),progress,SLOT(setRange(int,int)));
