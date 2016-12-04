@@ -11,8 +11,13 @@
 #define cvLIB(name) \
     "opencv_" name CV_VERSION_ID
 #endif
+
+#if CV_MAJOR_VERSION >= 3
+#pragma comment(lib,cvLIB("world"))
+#else
 #pragma comment(lib,cvLIB("core"))
 #pragma comment(lib,cvLIB("imgproc"))
 #pragma comment(lib,cvLIB("highgui"))
 #pragma comment(lib,cvLIB("ml"))
+#endif
 #endif

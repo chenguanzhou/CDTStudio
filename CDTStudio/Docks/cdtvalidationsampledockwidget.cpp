@@ -51,13 +51,13 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     connect(actionAddNew,SIGNAL(triggered()),SLOT(onActionAdd()));
     connect(actionRemove,SIGNAL(triggered()),SLOT(onActionRemove()));
     connect(actionExport,SIGNAL(triggered()),SLOT(onActionExport()));
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 CDTValidationSampleDockWidget::~CDTValidationSampleDockWidget()
 {
     onDockClear();
-    logger()->info("Deconstructed");
+    qDebug("Deconstructed");
 }
 
 void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
@@ -78,12 +78,12 @@ void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
         this->setEnabled(true);
         this->setVisible(true);
         this->raise();
-        logger()->info("Find CDTImageLayer ancestor");
+        qDebug("Find CDTImageLayer ancestor");
         updateListView();
         this->adjustSize();
     }
     else
-        logger()->info("No CDTImageLayer ancestor!");
+        qDebug("No CDTImageLayer ancestor!");
 }
 
 void CDTValidationSampleDockWidget::onDockClear()
@@ -153,13 +153,13 @@ void CDTValidationSampleDockWidget::onActionRename()
 void CDTValidationSampleDockWidget::onActionAdd()
 {
     QStringList info = DialogGenerateValidationSample::
-            getGeneratedValidationPointsetName(imageID,this);
+            getGeneratedValidationPointsetName(imageID.toString(),this);
 
     QUuid id = QUuid::createUuid();
     QString name = info[0];
     QString pointsSetName = info[1];
 
-    insertPointsIntoDB(pointsSetName,id,name);
+    insertPointsIntoDB(pointsSetName,id.toString(),name);
 }
 
 void CDTValidationSampleDockWidget::onActionRemove()
@@ -183,7 +183,7 @@ void CDTValidationSampleDockWidget::onActionRemove()
         }
         catch (std::runtime_error e)
         {
-            logger()->warn(e.what());
+            qWarning(e.what());
             db.rollback();
             return;
         }
@@ -207,7 +207,7 @@ void CDTValidationSampleDockWidget::onActionExport()
         return;
 
     QSqlQuery query(QSqlDatabase::database("category"));
-    query.exec(QString("select id,name from segmentationlayer where imageid='%1'").arg(imageID));
+    query.exec(QString("select id,name from segmentationlayer where imageid='%1'").arg(imageID.toString()));
     QMap<QString,QString> allSegmentationNames;
     while (query.next()){
         allSegmentationNames.insert(query.value(1).toString(),query.value(0).toString());
@@ -276,7 +276,7 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(
     QSqlQuery query(db);
     db.transaction();
     try{
-        if (query.exec(QString("select id from category where imageid ='%1'").arg(imageID))==false)
+        if (query.exec(QString("select id from category where imageid ='%1'").arg(imageID.toString()))==false)
             throw "Execute SQL of 'insert into points_project' failed!";
 
         if (query.next() == false)
@@ -317,13 +317,13 @@ bool CDTValidationSampleDockWidget::insertPointsIntoDB(
         db.commit();
     }
     catch (const QString &e){
-        logger()->error(e);
+        qCritical()<<e;
         db.rollback();
         return false;
     }
 
     updateListView();
-    logger()->info("Insert points set %1 into DB succeeded!",pointsSetName);
+    qDebug("Insert points set %1 into DB succeeded!",pointsSetName);
     return true;
 }
 

@@ -371,7 +371,7 @@ QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project)
     QStringList pointsetNames;
     QSqlQuery query(QSqlDatabase::database("category"));
     query.exec(QString("select pointset_name from points_project "
-                       "where projectid = '%1'").arg(project.id()));
+                       "where projectid = '%1'").arg(project.id().toString()));
     while (query.next())
     {
         pointsetNames<<query.value(0).toString();

@@ -9,9 +9,8 @@ class Overlay:public CDTVectorChangeDetectionInterface
     Q_OBJECT
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTVectorChangeDetectionInterface" FILE "Overlay.json")
-#else
-    Q_INTERFACES(CDTVectorChangeDetectionInterface)
 #endif // QT_VERSION >= 0x050000
+    Q_INTERFACES(CDTVectorChangeDetectionInterface)
 
 public:
     explicit Overlay(QObject* parent = 0);

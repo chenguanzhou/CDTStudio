@@ -49,7 +49,7 @@ void CDTAttibuteStatisticsHelper::run()
     }
     catch (QString msg)
     {
-        logger()->error(msg);
+        qCritical()<<msg;
     }
 
 }

@@ -74,7 +74,7 @@ QString CDTBaseLayer::tableName() const
     int index = metaObject()->indexOfClassInfo("tableName");
     if (index == -1)
     {
-        logger()->error("Get table name of layer:%1 failed!",metaObject()->className());
+        qCritical("Get table name of layer:%1 failed!",metaObject()->className());
         return QString();
     }
     return metaObject()->classInfo(index).value();

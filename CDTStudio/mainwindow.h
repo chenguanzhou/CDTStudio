@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "log4qt/logger.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -34,7 +34,7 @@ class DialogConsole;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
     friend class RecentFileSupervisor;
     friend class CDTProjectWidget;
 public:

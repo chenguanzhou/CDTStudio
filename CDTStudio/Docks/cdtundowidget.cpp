@@ -41,7 +41,7 @@ CDTUndoWidget::CDTUndoWidget( QWidget * parent, QgsMapCanvas * mapCanvas )
     mUndoStack = NULL;
     mPreviousIndex = 0;
     mPreviousCount = 0;
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 void CDTUndoWidget::setUndoStack( QUndoStack* undoStack )
@@ -230,9 +230,9 @@ void CDTUndoWidget::setupUi( QDockWidget *UndoWidget )
 
 void CDTUndoWidget::retranslateUi( QDockWidget *UndoWidget )
 {
-    UndoWidget->setWindowTitle( QApplication::translate( "UndoWidget", "Undo/Redo", 0, QApplication::UnicodeUTF8 ) );
-    undoButton->setText( QApplication::translate( "UndoWidget", "Undo", 0, QApplication::UnicodeUTF8 ) );
-    redoButton->setText( QApplication::translate( "UndoWidget", "Redo", 0, QApplication::UnicodeUTF8 ) );
+    UndoWidget->setWindowTitle( QApplication::translate( "UndoWidget", "Undo/Redo", 0 ));
+    undoButton->setText( QApplication::translate( "UndoWidget", "Undo", 0) );
+    redoButton->setText( QApplication::translate( "UndoWidget", "Redo", 0 ) );
     Q_UNUSED( UndoWidget );
 }
 

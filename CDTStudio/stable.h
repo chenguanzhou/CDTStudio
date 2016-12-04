@@ -37,8 +37,4 @@
 #include <qgsmaptoolpan.h>
 #include "qgsrubberband.h"
 
-//Log4Qt
-#include "log4qt/logger.h"
-#include "log4qt/basicconfigurator.h"
-
 #endif // STABLE_H

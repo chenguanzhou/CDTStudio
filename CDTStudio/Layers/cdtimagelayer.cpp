@@ -491,7 +491,7 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
     bool ret;
-    ret = query.exec("select id,name,color from category where imageID = '" + image.id() + "'");
+    ret = query.exec("select id,name,color from category where imageID = '" + image.id().toString() + "'");
     if (!ret) qDebug()<<query.lastError();
 
     CDTCategoryInformationList categoryInfo;
@@ -503,7 +503,7 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
     out<<categoryInfo;
 
 
-    query.exec(QString("select id,name,pointset_name from image_validation_samples where imageid = '%1'").arg(image.id()));
+    query.exec(QString("select id,name,pointset_name from image_validation_samples where imageid = '%1'").arg(image.id().toString()));
     QList<QVariantList> validationPoints;
     while(query.next())
     {

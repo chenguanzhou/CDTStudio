@@ -60,7 +60,6 @@ DEPENDPATH += \
     ../Tools/CDTHistogramPlot \
     ../Tools/QtColorPicker\
     ../Tools/CDTFileSystem\
-    ../Tools/log4qt\
     ../Tools/CDTClassifierAssessmentWidget\
     ../Tools/CDTTableExporter\
     ../Tools/wwWidgets
@@ -73,7 +72,7 @@ LIBS += -lgdal -lgomp
 INCLUDEPATH += /usr/include/gdal \
 /usr/local/include/gdal \
 /usr/include/qgis \
-/usr/local/include/qgisS
+/usr/local/include/qgis
 
 DEFINES += CORE_EXPORT=
 DEFINES += GUI_EXPORT=
@@ -84,9 +83,12 @@ LIBS += -lgdal_i -lgdi32
 }
 
 LIBS +=     -L../lib -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
-             -lCDTFileSystem -llog4qt -lCDTTableExporter -lwwWidgets\
-            -lstxxl -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
+             -lCDTFileSystem -lCDTTableExporter -lwwWidgets\
+            -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
 
+win32:CONFIG(release, debug|release): LIBS += -lstxxl
+else:win32:CONFIG(debug, debug|release): LIBS += -lstxxld
+else:unix: LIBS += -lstxxl
 
 #generate pdb for release version
 #win32-msvc* {

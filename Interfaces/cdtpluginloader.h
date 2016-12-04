@@ -2,9 +2,6 @@
 #define CDTPLUGINLOADER_H
 
 #include <QtCore>
-//Log4Qt
-#include "log4qt/logger.h"
-#include "log4qt/basicconfigurator.h"
 
 template <typename T>
 class CDTPluginLoader
@@ -27,10 +24,9 @@ public:
 //        QString className = plugins[0]->metaObject()->className();
         QString className = T::staticMetaObject.className();
         if (plugins.size()!=0)
-            Log4Qt::Logger::rootLogger()->info("%1 plugins of %2 is initialized!",
-                            plugins.size(),className);
+            qDebug()<<QString("%1 plugins of %2 is initialized!").arg(plugins.size()).arg(className);
         else
-            Log4Qt::Logger::rootLogger()->warn("No plugin of %1 found!",className);
+            qWarning()<<QString("No plugin of %1 found!").arg(className);
 
         return plugins;
     }
@@ -39,7 +35,6 @@ private:
     static QDir directoryof(const QString &subDir)
     {
         QDir dir(QCoreApplication::applicationDirPath());
-
 #if defined(Q_OS_WIN)
         if (dir.dirName().toLower()=="debug"||dir.dirName().toLower()=="release")
             dir.cdUp();

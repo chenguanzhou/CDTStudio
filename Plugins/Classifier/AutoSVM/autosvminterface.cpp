@@ -19,11 +19,16 @@ QString AutoSVMInterface::classifierName() const
 cv::Mat AutoSVMInterface::startClassification(const cv::Mat &data, const cv::Mat &train_data, const cv::Mat &responses)
 {
     cv::Mat result(data.rows,1,CV_32FC1);
-    cv::SVM classifier;
 
+#if CV_MAJOR_VERSION >= 3
+    cv::Ptr<cv::ml::SVM> classifier = cv::ml::SVM::create();
+    cv::Ptr<cv::ml::TrainData> d = cv::ml::TrainData::create(train_data, cv::ml::ROW_SAMPLE, responses);
+    classifier->trainAuto(d);
+#else
+    cv::SVM classifier;
     classifier.train_auto(train_data,responses,cv::Mat(),cv::Mat(),cv::SVMParams());
     classifier.predict(data,result);
-
+#endif
     return result;
 }
 

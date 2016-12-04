@@ -15,12 +15,17 @@ QString RTreesInterface::classifierName() const
 cv::Mat RTreesInterface::startClassification(const cv::Mat &data, const cv::Mat &train_data, const cv::Mat &responses)
 {
     cv::Mat result(data.rows,1,CV_32FC1);
+#if CV_MAJOR_VERSION >= 3
+    cv::Ptr<cv::ml::RTrees> classifier = cv::ml::RTrees::create();
+    classifier->setMinSampleCount(4);
+    classifier->setMaxCategories(5);
+    classifier->train(train_data,cv::ml::ROW_SAMPLE,responses);
+    classifier->predict(data,result);
+#elif
     cv::RandomTrees classifier;
-
     cv::RandomTreeParams param;
     param.min_sample_count = 4;
     param.max_categories = 5;
-
     classifier.train(train_data,CV_ROW_SAMPLE,responses,cv::Mat(),cv::Mat(),cv::Mat(),cv::Mat(),param);
 
     cv::Mat testSample(1, data.cols, CV_32FC1);
@@ -32,6 +37,9 @@ cv::Mat RTreesInterface::startClassification(const cv::Mat &data, const cv::Mat 
         }
         result.at<float>(i,0) = classifier.predict(testSample);
     }
+#endif
+
+
     return result;
 }
 

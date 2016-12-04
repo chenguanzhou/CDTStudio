@@ -74,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     updateRecentFiles(recentFile->files());
 
-    logger()->info("MainWindow initialized");
+    qDebug("MainWindow initialized");
 }
 
 
@@ -82,22 +82,26 @@ MainWindow::~MainWindow()
 {    
 //    emit updateSetting();
     delete ui;
-    logger()->info("MainWindow destruct");
+    qDebug("MainWindow destruct");
 }
 
 void MainWindow::initIconSize()
 {
+#if QT_VERSION < 0x050000
+#ifdef Q_OS_WIN
     int dpiX = 96;
     int dpiY = 96;
-#ifdef Q_OS_WIN
     dpiX = GetDeviceCaps(this->getDC(),LOGPIXELSX);
     dpiY = GetDeviceCaps(this->getDC(),LOGPIXELSY);
-
-#endif
     iconSize = QSize(dpiX*16/96,dpiY*16/96);
-
     ui->mainToolBar->setIconSize(iconSize);
-    logger()->info("IconSize initialized");
+#endif
+#else
+    ui->mainToolBar->setIconSize(QSize(32,32));
+#endif
+
+
+    qDebug("IconSize initialized");
 }
 
 void MainWindow::initActions()
@@ -127,7 +131,7 @@ void MainWindow::initActions()
     actionSaveAs->setStatusTip(tr("Save current project as"));
     connect(actionSaveAs,SIGNAL(triggered()),SLOT(onActionSaveAs()));
 
-    logger()->info("Actions initialized");
+    qDebug("Actions initialized");
 }
 
 
@@ -151,7 +155,7 @@ void MainWindow::initMenuBar()
 
     menuBar()->addMenu(menuFile);
     menuBar()->addMenu(menuAbout);
-    logger()->info("MenuBars initialized");
+    qDebug("MenuBars initialized");
 }
 
 void MainWindow::initToolBar()
@@ -162,7 +166,7 @@ void MainWindow::initToolBar()
                                 <<actionSave
                                 <<actionSaveAll
                                 <<actionSaveAs);
-    logger()->info("ToolBar initialized");
+    qDebug("ToolBar initialized");
 }
 
 void MainWindow::initStatusBar()
@@ -207,7 +211,7 @@ void MainWindow::initStatusBar()
     statusBar()->addPermanentWidget( scaleEdit, 0 );
     connect( scaleEdit, SIGNAL( scaleChanged() ), this, SLOT( userScale() ) );
 
-    logger()->info("StatusBar initialized");
+    qDebug("StatusBar initialized");
 }
 
 void MainWindow::initDockWidgets()
@@ -247,7 +251,7 @@ void MainWindow::initDockWidgets()
 
 //    dockWidgetTask = new CDTTaskDockWidget(this);
 
-    logger()->info("Docks initialized");
+    qDebug("Docks initialized");
 }
 
 void MainWindow::initConsole()
@@ -259,7 +263,7 @@ void MainWindow::initConsole()
     connect(actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(show()));
     connect(actionConsole,SIGNAL(triggered()),dialogConsole,SLOT(updateDatabases()));
 
-    logger()->info("Console initialized");
+    qDebug("Console initialized");
 }
 
 void MainWindow::registerDocks(Qt::DockWidgetArea area,CDTDockWidget *dock)
@@ -363,7 +367,7 @@ void MainWindow::onCurrentTabChanged(int i)
         showScale(getCurrentMapCanvas()->scale());
     }
 
-    logger()->info("Current tab is changed to %1",ui->tabWidgetProject->tabText(i));
+    qDebug("Current tab is changed to %1",ui->tabWidgetProject->tabText(i));
 }
 
 void MainWindow::showMouseCoordinate(const QgsPoint &p)
@@ -448,7 +452,7 @@ void MainWindow::updateRecentFiles(QStringList list)
 
 void MainWindow::onActionNew()
 {
-    logger()->info("Create a new project");
+    qDebug("Create a new project");
     ui->tabWidgetProject->createNewProject();
 }
 
@@ -612,6 +616,6 @@ void MainWindow::closeEvent(QCloseEvent *e)
     QSettings setting("WHU","CDTStudio");
     setting.setValue("geometry", saveGeometry());
     setting.setValue("windowState", saveState());
-    logger()->info("The state of Widgets has been saved!");
+    qDebug("The state of Widgets has been saved!");
     QMainWindow::closeEvent(e);
 }

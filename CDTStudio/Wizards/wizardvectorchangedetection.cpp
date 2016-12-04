@@ -31,13 +31,13 @@ WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidge
     initPage3();
 
     connect(this,SIGNAL(currentIdChanged(int)),SLOT(onPageChanged(int)));
-
+#if QT_VERSION < 0x050000
 #ifdef Q_OS_WIN
     int dpiX = GetDeviceCaps(this->getDC(),LOGPIXELSX);
     if(dpiX == 96)
         this->adjustSize();
 #endif
-
+#endif
     QSettings setting("WHU","CDTStudio");
     setting.beginGroup("WizardVectorChangeDetection");
     this->restoreGeometry(setting.value("geometry").toByteArray());
@@ -47,7 +47,7 @@ WizardVectorChangeDetection::WizardVectorChangeDetection(QUuid projectID, QWidge
     if (index != -1)
     {
         CDTLayerNameValidator *validator = new CDTLayerNameValidator
-                (QSqlDatabase::database("category"),"name",CDTVectorChangeLayer::staticMetaObject.classInfo(index).value(),QString("project='%1'").arg(projectID));
+                (QSqlDatabase::database("category"),"name",CDTVectorChangeLayer::staticMetaObject.classInfo(index).value(),QString("project='%1'").arg(projectID.toString()));
         ui->lineEditName->setValidator(validator);
     }
     ui->lineEditName->setText(tr("Untitled"));
@@ -145,7 +145,7 @@ void WizardVectorChangeDetection::updateCombobox(QComboBox *sender,QString IDFie
     QSqlQueryModel* senderModel = qobject_cast<QSqlQueryModel*>(sender->model());
     if (!senderModel)
     {
-        logger()->error("No model in the QComboBox!");
+        qCritical("No model in the QComboBox!");
         return;
     }
 
@@ -295,7 +295,7 @@ void WizardVectorChangeDetection::updateReport_Page1()
     }
     catch(QString msg)
     {
-        logger()->warn(msg);
+        qWarning()<<msg;
         showErrorText_Page1(msg);
         isValid_Page1 = false;
         return;

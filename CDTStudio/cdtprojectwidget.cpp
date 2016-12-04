@@ -87,7 +87,7 @@ bool CDTProjectWidget::readProject(const QString &filepath)
     emit projectChanged();
     setWindowModified(false);
 
-    logger()->info("Open the project cost %1 ms",time.elapsed());
+    qDebug("Open the project cost %1 ms",time.elapsed());
 
     refreshMapCanvas();
     return true;
@@ -122,7 +122,7 @@ bool CDTProjectWidget::writeProject()
     file.flush();
     qDebug()<<"compressedFile:"<<file.size();
     setWindowModified(false);
-    logger()->info("Save the project cost %1 ms",time.elapsed());
+    qDebug("Save the project cost %1 ms",time.elapsed());
 
     return true;
 }

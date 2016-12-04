@@ -20,8 +20,7 @@ target.path = /usr/lib
 INSTALLS += target
 }
 !unix{
-INCLUDEPATH += $(OSGEO4W_ROOT)/include
-LIBS += -L$(OSGEO4W_ROOT)/lib
+include(../../../Tools/Config/win.pri)
 }
 
 #opencv

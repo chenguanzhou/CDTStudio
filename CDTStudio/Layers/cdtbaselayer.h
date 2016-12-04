@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QUuid>
-#include <log4qt/logger.h>
 
 class QAction;
 class QLabel;
@@ -17,7 +16,7 @@ class CDTProjectLayer;
 class CDTBaseLayer : public QObject
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
     Q_CLASSINFO("CDTBaseLayer","Basic information")
     Q_PROPERTY(QString Name READ name WRITE setName DESIGNABLE true USER true)
 public:

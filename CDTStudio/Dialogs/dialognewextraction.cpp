@@ -26,7 +26,7 @@ DialogNewExtraction::DialogNewExtraction(
     if (index != -1)
     {
         CDTLayerNameValidator *validator = new CDTLayerNameValidator
-                (QSqlDatabase::database("category"),"name",CDTExtractionLayer::staticMetaObject.classInfo(index).value(),QString("imageid='%1'").arg(imageID));
+                (QSqlDatabase::database("category"),"name",CDTExtractionLayer::staticMetaObject.classInfo(index).value(),QString("imageid='%1'").arg(imageID.toString()));
         ui->lineEditName->setValidator(validator);
     }
     ui->lineEditName->setText(tr("Untitled"));

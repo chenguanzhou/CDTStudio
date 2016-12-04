@@ -478,7 +478,7 @@ void CDTSegmentationLayer::initLayer(const QString &name,
     ret = query.prepare("insert into segmentationlayer VALUES(?,?,?,?,?,?,?,?,?)");
     if (ret==false)
     {
-        logger()->error("Init CDTSegmentationLayer Fialed!");
+        qCritical("Init CDTSegmentationLayer Fialed!");
         delete newLayer;
         return;
     }
@@ -496,7 +496,7 @@ void CDTSegmentationLayer::initLayer(const QString &name,
     ret = query.exec();
     if (ret==false)
     {
-        logger()->error("Init CDTSegmentationLayer Fialed!");
+        qCritical("Init CDTSegmentationLayer Fialed!");
         delete newLayer;
         return;
     }

@@ -1,9 +1,38 @@
 #include "svminterface.h"
 #include <limits>
 
+#if CV_MAJOR_VERSION >= 3
+class SVMInterfaceProvate{
+    friend class SVMInterface;
+
+    SVMInterfaceProvate()
+    {
+        svm_type = SVMInterface::C_SVC;
+        kernel_type = SVMInterface::RBF;
+        degree = 0;
+        gamma = 1;
+        coef0 = 0;
+        C= 1;
+        nu = 0;
+    }
+
+    SVMInterface::Type svm_type;
+    SVMInterface::Kernel kernel_type;
+    double degree;
+    double gamma;
+    double coef0;
+    double C;
+    double nu;
+};
+#endif
+
 SVMInterface::SVMInterface(QObject *parent)
     :CDTClassifierInterface(parent),
+#if CV_MAJOR_VERSION >= 3
+      data(new SVMInterfaceProvate())
+#else
       data(new cv::SVMParams)
+#endif
 {
 }
 
@@ -20,10 +49,22 @@ QString SVMInterface::classifierName() const
 cv::Mat SVMInterface::startClassification(const cv::Mat &data, const cv::Mat &train_data, const cv::Mat &responses)
 {
     cv::Mat result(data.rows,1,CV_32FC1);
+#if CV_MAJOR_VERSION >= 3
+    cv::Ptr<cv::ml::SVM> classifier = cv::ml::SVM::create();
+    classifier->setType(type());
+    classifier->setKernel(kernel());
+    classifier->setDegree(degree());
+    classifier->setGamma(gamma());
+    classifier->setCoef0(coef0());
+    classifier->setC(c());
+    classifier->setNu(nu());
+    classifier->train(train_data,cv::ml::ROW_SAMPLE,responses);
+    classifier->predict(data,result);
+#else
     cv::SVM classifier;
-
     classifier.train(train_data,responses,cv::Mat(),cv::Mat(),*(this->data));
     classifier.predict(data,result);
+#endif
 
     return result;
 }

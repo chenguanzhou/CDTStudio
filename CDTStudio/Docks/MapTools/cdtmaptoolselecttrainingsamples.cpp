@@ -148,7 +148,7 @@ void CDTMapToolSelectTrainingSamples::setSampleID(QUuid id)
     model->setQuery(QString("select name,id from category where imageid = "
                             "(select imageid from segmentationlayer where id = "
                             "(select segmentationid from sample_segmentation "
-                            "where id = '%1'))").arg(id),
+                            "where id = '%1'))").arg(id.toString()),
                     QSqlDatabase::database("category"));
 
     sampleID = id;

@@ -5,7 +5,6 @@
 #include <gdal_priv.h>
 #include <ogrsf_frmts.h>
 #include <ogr_api.h>
-#include "log4qt/basicconfigurator.h"
 #include "cdtfileinfo.h"
 
 class CDTFileSystemPrivate
@@ -20,8 +19,7 @@ class CDTFileSystemPrivate
 CDTFileSystem::CDTFileSystem(QObject *parent)
     : QObject(parent),
       pData(new CDTFileSystemPrivate)
-{    
-    Log4Qt::BasicConfigurator::configure();
+{
 }
 
 CDTFileSystem::~CDTFileSystem()
@@ -33,9 +31,9 @@ CDTFileSystem::~CDTFileSystem()
         fileToDelete.append(info.affiliatedFiles);
         foreach (QString path, fileToDelete) {
             if (QFile(path).remove()==false)
-                logger()->warn("Remove file:%1 failed!",path);
+                qWarning("Remove file:%1 failed!",path);
             else
-                logger()->info("Remove file:%1 succeded!",path);
+                qDebug("Remove file:%1 succeded!",path);
         }
         QDir::temp().rmdir(id);
     }
@@ -50,12 +48,12 @@ bool CDTFileSystem::registerFile(QString id,
 {
     if (pData->files.contains(id))
     {
-        logger()->error("FileID:%1 was exist in file system already!",id);
+        qCritical("FileID:%1 was exist in file system already!",id);
         return false;
     }
     if (!QFileInfo(filePath).isFile())
     {
-        logger()->error("File:%1 was invalid!",filePath);
+        qCritical("File:%1 was invalid!",filePath);
         return false;
     }
     pData->files.insert(id,CDTFileInfo(prefix,suffix,filePath,affiliatedFiles));
@@ -66,7 +64,7 @@ bool CDTFileSystem::getFile(QString id, QString &filePath)
 {
     if (pData->files.contains(id)==false)
     {
-        logger()->error("FileID:%1 was not exist in file system!",id);
+        qCritical("FileID:%1 was not exist in file system!",id);
         return false;
     }
     filePath = pData->files.value(id).fullPath();
@@ -77,7 +75,7 @@ bool CDTFileSystem::getFile(QString id, QString &filePath, QStringList &affiliat
 {
     if (pData->files.contains(id)==false)
     {
-        logger()->error("FileID:%1 was not exist in file system!",id);
+        qCritical("FileID:%1 was not exist in file system!",id);
         return false;
     }
     filePath = pData->files.value(id).fullPath();
@@ -102,7 +100,7 @@ void CDTFileSystem::removeFile(QString id, bool deleteFiles)
     }
     foreach (QString path, list) {
         QFile(path).remove();
-        logger()->info("file removed! path: %1",path);
+        qDebug("file removed! path: %1",path);
     }
 }
 
@@ -193,13 +191,13 @@ QDataStream &operator<<(QDataStream &out, const CDTFileSystem &files)
             QFile file(path);
             if (!file.exists())
             {
-                files.logger()->warn("File:%1 is not exist!",path);
+                qWarning("File:%1 is not exist!",path);
                 out<<QByteArray();
                 continue;
             }
             if (!file.open(QFile::ReadOnly))
             {
-                files.logger()->warn("Failed to open file:%1!",path);
+                qWarning("Failed to open file:%1!",path);
                 out<<QByteArray();
                 continue;
             }

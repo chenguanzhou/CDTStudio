@@ -16,9 +16,15 @@ QString BayesInterface::classifierName() const
 cv::Mat BayesInterface::startClassification(const cv::Mat &data, const cv::Mat &train_data, const cv::Mat &responses)
 {
     cv::Mat result(data.rows,1,CV_32FC1);
+#if CV_MAJOR_VERSION >=3
+    cv::Ptr<cv::ml::NormalBayesClassifier> classifier = cv::ml::NormalBayesClassifier::create();
+    classifier->train(train_data,cv::ml::ROW_SAMPLE,responses);
+    classifier->predict(data,result);
+#else
     cv::NormalBayesClassifier classifier;
     classifier.train(train_data,responses);
     classifier.predict(data,&result);
+#endif
     return result;
 }
 

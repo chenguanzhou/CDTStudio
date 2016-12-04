@@ -117,7 +117,7 @@ void CDTVectorChangeLayer::initLayer(
     ret = query.prepare("insert into vector_change VALUES(?,?,?,?,?,?)");
     if (ret==false)
     {
-        logger()->error("Init CDTVectorChangeLayer Failed!");
+        qCritical("Init CDTVectorChangeLayer Failed!");
         return;
     }
 

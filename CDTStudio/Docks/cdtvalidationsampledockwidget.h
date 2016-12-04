@@ -2,7 +2,7 @@
 #define CDTVALIDATIONSAMPLEDOCKWIDGET_H
 
 #include "cdtdockwidget.h"
-#include "log4qt/logger.h"
+
 
 class QGroupBox;
 class QToolBar;
@@ -15,7 +15,7 @@ class QgsVectorLayer;
 class CDTValidationSampleDockWidget : public CDTDockWidget
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
 public:
     explicit CDTValidationSampleDockWidget(QWidget *parent = 0);
     ~CDTValidationSampleDockWidget();

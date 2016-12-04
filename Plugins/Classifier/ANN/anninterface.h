@@ -8,9 +8,8 @@ class ANNInterface : public CDTClassifierInterface
     Q_OBJECT
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTClassifierInterface" FILE "ANN.json")
-#else
-    Q_INTERFACES(CDTClassifierInterface)
 #endif // QT_VERSION >= 0x050000
+    Q_INTERFACES(CDTClassifierInterface)
     Q_PROPERTY(QString nodes_in_hidden_layers READ nodes WRITE setNodes DESIGNABLE true USER true)
 
 public:    

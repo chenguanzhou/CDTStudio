@@ -182,7 +182,7 @@ void CDTVectorChangeDetectionHelper::run()
     }
     catch(QString msg)
     {
-        logger()->error(msg);
+        qCritical()<<msg;
     }
 }
 
@@ -237,7 +237,7 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
     QgsVectorLayer layer(shapefilePath,QFileInfo(shapefilePath).completeBaseName(),"ogr");
     if (layer.isValid()==false)
     {
-        logger()->error(layer.error().message(QgsErrorMessage::Text));
+        qCritical()<<layer.error().message(QgsErrorMessage::Text);
         return false;
     }
 
@@ -246,7 +246,7 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
     {
         if (layer.dataProvider()->addAttributes((QList<QgsField>()<<QgsField(fieldName,QVariant::String)))==false)
         {
-            logger()->warn("Add attribute failed!");
+            qWarning("Add attribute failed!");
             return false;
         }
         index = layer.fieldNameIndex(fieldName);
@@ -265,7 +265,7 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
         QString name = nameList[f.attribute("GridCode").toInt()];
         if (f.setAttribute(fieldName,name)==false)
         {
-            logger()->error("Set classification info to the shapefile failed!");
+            qCritical("Set classification info to the shapefile failed!");
             return false;
         }
         layer.updateFeature(f);
@@ -295,19 +295,19 @@ void CDTVectorChangeDetectionHelper::createShapefile(QString path)
     OGRFieldDefn fieldBefore( "before", OFTString );
     if( layer->CreateField( &fieldBefore ) != OGRERR_NONE )
     {
-        logger()->error( "Creating field failed.") ;
+        qCritical( "Creating field failed.") ;
         return ;
     }
     OGRFieldDefn fieldAfter( "after", OFTString );
     if( layer->CreateField( &fieldAfter ) != OGRERR_NONE )
     {
-        logger()->error( "Creating field failed.") ;
+        qCritical( "Creating field failed.") ;
         return ;
     }
     OGRFieldDefn fieldIsChangedd( "ischanged", OFTString );
     if( layer->CreateField( &fieldIsChangedd ) != OGRERR_NONE )
     {
-        logger()->error( "Creating field failed.") ;
+        qCritical( "Creating field failed.") ;
         return ;
     }
     GDALClose(poDS);

@@ -39,14 +39,7 @@ DEFINES += GUI_EXPORT=
 }
 !unix{
 #QGIS
-INCLUDEPATH += $(QGIS_ROOT)/include\
-                $(OSGEO4W_ROOT)/include
-LIBS += -L$(QGIS_ROOT)/lib\
-                -L$(OSGEO4W_ROOT)/lib
-DEFINES += CORE_EXPORT=__declspec(dllimport)
-DEFINES += GUI_EXPORT=__declspec(dllimport)
-DEFINES += noexcept=
-
+include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 

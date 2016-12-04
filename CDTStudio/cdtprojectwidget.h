@@ -3,7 +3,6 @@
 
 #include <qgsmapcanvas.h>
 #include <qgsmaptool.h>
-#include <log4qt/logger.h>
 #include "cdtprojectlayer.h"
 #include "mainwindow.h"
 
@@ -11,7 +10,7 @@ class QStandardItemModel;
 class CDTProjectWidget : public QWidget
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
 public:
     friend class CDTProjectTabWidget;
     friend class MainWindow;

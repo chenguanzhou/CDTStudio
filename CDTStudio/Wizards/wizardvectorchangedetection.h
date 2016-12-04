@@ -2,7 +2,7 @@
 #define WIZARDVECTORCHANGEDETECTION_H
 
 #include <QWizard>
-#include "log4qt/logger.h"
+
 
 namespace Ui {
 class WizardVectorChangeDetection;
@@ -17,7 +17,7 @@ class WizardVectorChangeDetection : public QWizard
     /*                  Wizard                  */
     /********************************************/
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
 public:
     explicit WizardVectorChangeDetection(QUuid projectID,QWidget *parent = 0);
     ~WizardVectorChangeDetection();

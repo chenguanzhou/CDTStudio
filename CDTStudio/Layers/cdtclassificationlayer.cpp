@@ -81,7 +81,7 @@ void CDTClassificationLayer::showAccuracy()
     CDTClassifierAssessmentForm *form = new CDTClassifierAssessmentForm(&dlg);
     vbox->addWidget(form);
 
-    form->setClassification(id());
+    form->setClassification(id().toString());
     dlg.exec();
 }
 

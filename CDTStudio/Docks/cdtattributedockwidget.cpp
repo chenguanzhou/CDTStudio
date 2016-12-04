@@ -33,7 +33,7 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     this->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 //    tabWidget->setSizePolicy(this->sizePolicy());
 //    widget->setSizePolicy(this->sizePolicy());
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()
@@ -55,7 +55,7 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     CDTSegmentationLayer *segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer->getAncestor("CDTSegmentationLayer"));
     if (segmentationLayer)
     {
-        logger()->info("Find ancestor class of CDTSegmentationLayer");
+        qDebug("Find ancestor class of CDTSegmentationLayer");
         if (segmentationLayer->id()==segmentationID)
             return;
         onDockClear();
@@ -67,7 +67,7 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     }
     else
     {
-        logger()->info("No ancestor class of CDTSegmentationLayer found");
+        qDebug("No ancestor class of CDTSegmentationLayer found");
         onDockClear();
         return;
     }

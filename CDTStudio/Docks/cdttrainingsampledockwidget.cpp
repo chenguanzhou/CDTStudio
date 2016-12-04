@@ -42,7 +42,7 @@ CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     connect(actionRemove,SIGNAL(triggered()),SLOT(onActionRemove()));
     connect(groupBoxSamples,SIGNAL(toggled(bool)),SLOT(onGroupBoxToggled(bool)));
     connect(listView,SIGNAL(clicked(QModelIndex)),SLOT(onListViewClicked(QModelIndex)));
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 CDTTrainingSampleDockWidget::~CDTTrainingSampleDockWidget()
@@ -86,11 +86,11 @@ void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
         this->setEnabled(true);
         this->setVisible(true);
         this->raise();
-        logger()->info("Find the ancestor class CDTSegmentationLayer");
+        qDebug("Find the ancestor class CDTSegmentationLayer");
     }
     else
     {
-        logger()->info("The ancestor of class CDTSegmentationLayer is not found!");
+        qDebug("The ancestor of class CDTSegmentationLayer is not found!");
     }
 }
 

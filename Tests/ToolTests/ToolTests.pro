@@ -30,8 +30,3 @@ unix {
 SOURCES += tst_filesystem.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
-#log4qt
-INCLUDEPATH += ../../Tools/
-DEPENDPATH += ../../Tools/log4qt
-LIBS += -L../../lib -llog4qt
-

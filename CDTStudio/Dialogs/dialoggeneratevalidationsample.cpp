@@ -70,7 +70,7 @@ void DialogGenerateValidationSample::onComboBoxChanged(QString pointsetName)
     }
     catch (const std::exception &e)
     {
-        logger()->debug(e.what());
+        qDebug()<<e.what();
         ui->labelPointCount->setText(tr("Pointset is invalid"));
         ui->buttonBox->setEnabled(false);
     }
@@ -169,7 +169,7 @@ bool DialogGenerateValidationSample::insertPointsIntoDB(QVector<QPointF> points,
     catch (QString msg)
     {
         db.rollback();
-        logger()->error(msg);
+        qCritical()<<msg;
         return false;
     }
 }

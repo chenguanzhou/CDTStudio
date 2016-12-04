@@ -5,6 +5,4 @@ SUBDIRS += \
     AutoSVM\
     SVM\
     Bayes\
-    KNN\
-    RTrees\
-    ERTrees\
+    KNN

@@ -5,9 +5,29 @@ QWT_ROOT = $(QWT_ROOT)
 BOOST_ROOT = $(BOOST_ROOT)
 BOOST_LIBRARYDIR = $(BOOST_LIBRARYDIR)
 
-!isEmpty(OSGEO4W_ROOT) {
-    INCLUDEPATH += $(OSGEO4W_ROOT)/include
-    LIBS += -L$(OSGEO4W_ROOT)/lib
+greaterThan(QT_MAJOR_VERSION, 4){
+    GDAL_ROOT = $(GDAL_ROOT)
+    !isEmpty(GDAL_ROOT) {
+        INCLUDEPATH += $(GDAL_ROOT)/include
+        LIBS += -L$(GDAL_ROOT)/lib
+    }
+    GEOS_INCLUDE_PATH = $(GEOS_INCLUDE_PATH)
+    !isEmpty(GEOS_INCLUDE_PATH) {
+        INCLUDEPATH += $(GEOS_INCLUDE_PATH)
+    }
+}
+else{
+    !isEmpty(OSGEO4W_ROOT) {
+        INCLUDEPATH += $(OSGEO4W_ROOT)/include
+        LIBS += -L$(OSGEO4W_ROOT)/lib
+    }
+    !isEmpty(BOOST_ROOT) {
+        INCLUDEPATH += $(BOOST_ROOT)
+    }
+
+    !isEmpty(BOOST_LIBRARYDIR) {
+        LIBS += -L$(BOOST_LIBRARYDIR)
+    }
 }
 
 !isEmpty(QGIS_ROOT) {
@@ -26,14 +46,14 @@ BOOST_LIBRARYDIR = $(BOOST_LIBRARYDIR)
     include($(QWT_ROOT)/features/qwt.prf)
 }
 
-!isEmpty(BOOST_ROOT) {
-    INCLUDEPATH += $(BOOST_ROOT)
-}
-
-!isEmpty(BOOST_LIBRARYDIR) {
-    LIBS += -L$(BOOST_LIBRARYDIR)
-}
 
 DEFINES += CORE_EXPORT=__declspec(dllimport)
 DEFINES += GUI_EXPORT=__declspec(dllimport)
+
+# disable warnings
+greaterThan(QT_MAJOR_VERSION, 4){
+DEFINES += _XKEYCHECK_H
+DEFINES += _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
+} else {
 DEFINES += noexcept=
+}

@@ -55,7 +55,7 @@ CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
     }
 
     setEditState(LOCKED);
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 CDTExtractionDockWidget::~CDTExtractionDockWidget()
@@ -80,14 +80,14 @@ void CDTExtractionDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     CDTExtractionLayer *extLayer = qobject_cast<CDTExtractionLayer *>(layer->getAncestor("CDTExtractionLayer"));
     if (extLayer)
     {
-        logger()->info("Find ancestor class of CDTExtractionLayer");
-        setExtractionLayer(layer->id());
+        qDebug("Find ancestor class of CDTExtractionLayer");
+        setExtractionLayer(layer->id().toString());
         this->setEnabled(true);
         this->setVisible(true);
         this->raise();
     }
     else
-        logger()->info("Ancestor class of CDTExtractionLayer is not found");
+        qDebug("Ancestor class of CDTExtractionLayer is not found");
 }
 
 void CDTExtractionDockWidget::onDockClear()

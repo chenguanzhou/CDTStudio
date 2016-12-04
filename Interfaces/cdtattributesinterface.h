@@ -3,10 +3,12 @@
 
 #include <QtCore>
 
+#ifndef Q_MOC_RUN
 #define CDT_ATTRIBUTE_ALL_BAND
 #define CDT_ATTRIBUTE_SINGLE_BAND
 #define CDT_ATTRIBUTE_SINGLE_BAND_ANGLE
 #define CDT_ATTRIBUTE_CUSTOM
+#endif
 
 class AttributeMethod
 {
@@ -109,15 +111,22 @@ public:
     {
         QList<AttributeMethod> methods;
         const QMetaObject *metaObject = this->metaObject();
+        qDebug()<<"metaObject->methodCount()"<<metaObject->methodCount();
         for (int i=0;i<metaObject->methodCount();++i)
         {
             QMetaMethod metaMethod = metaObject->method(i);
+            qDebug()<<"metaMethod.tag()"<<metaMethod.tag();
             if (QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_ALL_BAND") ||
                     QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_SINGLE_BAND")||
                     QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_SINGLE_BAND_ANGLE")||
                     QString(metaMethod.tag()) == QString("CDT_ATTRIBUTE_CUSTOM"))
             {
+#if QT_VERSION >= 0x050000
+                QString name = (metaMethod.methodSignature());
+                qDebug()<<"name"<<name;
+#else
                 QString name = (metaMethod.signature());
+#endif
                 name = name.left(name.indexOf("("));
                 methods<<AttributeMethod(name,metaMethod.tag());
             }

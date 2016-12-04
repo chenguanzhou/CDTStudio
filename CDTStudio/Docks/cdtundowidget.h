@@ -27,7 +27,7 @@
 //#include <QUndoView>
 //#include <QUndoStack>
 #include "cdtdockwidget.h"
-#include "log4qt/logger.h"
+
 
 class QUndoStack;
 class QUndoView;
@@ -43,7 +43,7 @@ class QgsMapLayer;
 class CDTUndoWidget : public CDTDockWidget
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
   public:
     QWidget *dockWidgetContents;
     QGridLayout *gridLayout;

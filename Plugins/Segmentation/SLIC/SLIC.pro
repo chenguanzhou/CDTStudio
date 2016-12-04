@@ -40,13 +40,7 @@ INCLUDEPATH += /usr/include/gdal \
 }
 
 !unix{
-#stxxl and gdal
-INCLUDEPATH += \
-    $(OSGEO4W_ROOT)/include 
-
-LIBS += \
-    -L$(OSGEO4W_ROOT)/lib
-
+include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 

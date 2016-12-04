@@ -30,7 +30,6 @@ INSTALLS += target
 LIBS += -lgdal
 }
 !unix{
-INCLUDEPATH += $(OSGEO4W_ROOT)/include
-LIBS += -L$(OSGEO4W_ROOT)/lib
+include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }

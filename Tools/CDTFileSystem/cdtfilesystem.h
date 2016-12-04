@@ -3,14 +3,12 @@
 
 #include "cdtfilesystem_global.h"
 #include <QtCore>
-#include "log4qt/logger.h"
 
 class CDTFileSystemPrivate;
 
 class CDTFILESYSTEM_EXPORT CDTFileSystem:public QObject
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     CDTFileSystem(QObject* parent = NULL);
     ~CDTFileSystem();

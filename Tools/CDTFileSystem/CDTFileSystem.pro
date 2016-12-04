@@ -38,9 +38,4 @@ unix {
     include(../Config/win.pri)
     LIBS += -lgdal_i
 }
-#log4qt
-INCLUDEPATH += ../
-INCLUDEPATH += ../log4qt
-DEPENDPATH += ../log4qt
-LIBS += -L../../lib -llog4qt
 

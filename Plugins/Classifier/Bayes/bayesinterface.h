@@ -9,9 +9,8 @@ class BayesInterface : public CDTClassifierInterface
     Q_OBJECT
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTClassifierInterface" FILE "Bayes.json")
-#else
-    Q_INTERFACES(CDTClassifierInterface)
 #endif // QT_VERSION >= 0x050000
+    Q_INTERFACES(CDTClassifierInterface)
 
 public:
     BayesInterface(QObject *parent = 0);

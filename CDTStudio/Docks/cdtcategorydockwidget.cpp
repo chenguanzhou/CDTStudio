@@ -58,7 +58,7 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
 
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
@@ -73,7 +73,7 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     CDTImageLayer *imgLayer = qobject_cast<CDTImageLayer*>(layer->getAncestor("CDTImageLayer"));
     if (imgLayer)
     {
-        logger()->info("Find ancestor class of CDTImageLayer");
+        qDebug("Find ancestor class of CDTImageLayer");
         if (imgLayer->id()==imageLayerID)
             return;
         this->updateImageID(imgLayer->id());
@@ -251,7 +251,7 @@ void CDTCategoryDockWidget::importCategories()
     catch (QString msg)
     {
         QMessageBox::critical(this,tr("Error"),msg);
-        logger()->error(msg);
+        qCritical()<<msg;
     }
 }
 

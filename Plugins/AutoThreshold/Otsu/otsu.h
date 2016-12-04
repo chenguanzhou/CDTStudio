@@ -8,10 +8,9 @@ class Otsu : public CDTAutoThresholdInterface
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTAutoThresholdInterface" FILE "RMS.json")
-#else
-    Q_INTERFACES(CDTAutoThresholdInterface)
+    Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTAutoThresholdInterface" FILE "Otsu.json")
 #endif // QT_VERSION >= 0x050000
+    Q_INTERFACES(CDTAutoThresholdInterface)
 
 public:
     Otsu(QObject *parent = 0);
