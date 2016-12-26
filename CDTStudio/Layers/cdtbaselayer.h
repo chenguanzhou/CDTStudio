@@ -52,7 +52,7 @@ protected slots:
     void setKeyItem(CDTProjectTreeItem *item);
     void setActions(QList<QList<QAction *> > actions);
     void setWidgetActions(QList<QPair<QLabel*,QWidget *> > actions);
-    void setCanvasLayer(QgsMapLayer* layer);
+    void setCanvasLayer(QgsMapLayer* layer, bool addToLegend = true);
     void setMapCanvas(QgsMapCanvas* canvas);
 
 signals:

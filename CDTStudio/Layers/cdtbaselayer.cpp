@@ -176,7 +176,7 @@ void CDTBaseLayer::setWidgetActions(QList<QPair<QLabel *, QWidget *> > actions)
     this->widgetActions = actions;
 }
 
-void CDTBaseLayer::setCanvasLayer(QgsMapLayer *layer)
+void CDTBaseLayer::setCanvasLayer(QgsMapLayer *layer, bool addToLegend)
 {
     if(layer == NULL)
         return;
@@ -188,7 +188,7 @@ void CDTBaseLayer::setCanvasLayer(QgsMapLayer *layer)
     }
 
     mapCanvasLayer = layer;
-    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
+    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,addToLegend);
     treeKeyItem->setMapLayer(mapCanvasLayer);
 }
 

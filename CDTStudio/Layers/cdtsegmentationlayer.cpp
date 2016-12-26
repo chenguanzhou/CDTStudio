@@ -59,6 +59,8 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
             new QAction(QIcon(":/Icons/Remove.png"),tr("Remove Segmentation"),this);
     QAction *actionAddClassifications =
             new QAction(QIcon(":/Icons/Add.png"),tr("Add Classification"),this);
+    QAction *actionAddClassificationsFromTextFile =
+            new QAction(QIcon(":/Icons/Add.png"),tr("Add Classification From Text File"),this);
     QAction *actionRemoveAllClassifications =
             new QAction(QIcon(":/Icons/Remove.png"),tr("Remove All Classifications"),this);
     QAction *actionAddDecisionFusion =
@@ -68,7 +70,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
                <<(QList<QAction *>()/*<<actionChangeBorderColor<<actionSetLayerTransparency*/<<actionRename
                   <<actionEditDBInfo<<actionGenerateAttributes<<actionExportShapefile<<actionDeconposeObjects)
                <<(QList<QAction *>()<<actionRemoveSegmentation)
-               <<(QList<QAction *>()<<actionAddClassifications<<actionRemoveAllClassifications<<actionAddDecisionFusion));
+               <<(QList<QAction *>()<<actionAddClassifications<<actionAddClassificationsFromTextFile<<actionRemoveAllClassifications<<actionAddDecisionFusion));
 
     //Connections
     connect(actionRename,SIGNAL(triggered()),SLOT(rename()));
@@ -78,6 +80,7 @@ CDTSegmentationLayer::CDTSegmentationLayer(QUuid uuid, QObject *parent)
     connect(actionDeconposeObjects,SIGNAL(triggered()),SLOT(deconposeObjects()));
     connect(actionRemoveSegmentation,SIGNAL(triggered()),SLOT(remove()));
     connect(actionAddClassifications,SIGNAL(triggered()),SLOT(addClassification()));
+    connect(actionAddClassificationsFromTextFile,SIGNAL(triggered()),SLOT(actionAddClassificationsFromTextFile()));
     connect(actionRemoveAllClassifications,SIGNAL(triggered()),SLOT(removeAllClassifications()));
     connect(actionAddDecisionFusion,SIGNAL(triggered()),SLOT(decisionFusion()));
 
@@ -226,6 +229,53 @@ void CDTSegmentationLayer::addClassification()
         classificationRootItem->appendRow(classification->standardKeyItem());
         addClassification(classification);
     }
+}
+
+void CDTSegmentationLayer::actionAddClassificationsFromTextFile()
+{
+    QString path = QFileDialog::getOpenFileName(NULL,tr("Open File"),QString(),tr("Text File(*.txt)"));
+    if (path.isEmpty())
+        return;
+    QFile file(path);
+    file.open(QFile::ReadOnly);
+    QTextStream ts(&file);
+
+    QList<QVariant> label;//QList<int>
+
+    while (!ts.atEnd()) {
+        QString index;
+        ts>>index;
+        if (!index.isEmpty())
+            label.append(index);
+    }
+    file.close();
+
+    qDebug()<<label;
+
+    QMap<QString,QVariant>  categoryID_Index;//QMap<QString,int>
+    QSqlQuery query(QSqlDatabase::database("category"));
+    query.exec(QString("select id from category where imageid ='%1'").arg(((CDTImageLayer*)parent())->id().toString()));
+    int index = 0;
+    while(query.next())
+    {
+        categoryID_Index.insert(query.value(0).toString(),index);
+        ++index;
+    }
+
+    CDTClassificationLayer *classification = new CDTClassificationLayer(QUuid::createUuid(),this);
+    classification->initLayer(
+                "Customed",
+                "Customed",
+                QVariantMap(),
+                label,
+                categoryID_Index,
+                "",
+                "",
+                QStringList()
+            );
+    classificationRootItem->appendRow(classification->standardKeyItem());
+    addClassification(classification);
+
 }
 
 void CDTSegmentationLayer::remove()

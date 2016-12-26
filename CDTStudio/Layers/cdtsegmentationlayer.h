@@ -70,6 +70,7 @@ public slots:
     void remove();
 
     void addClassification();
+    void actionAddClassificationsFromTextFile();
     void removeClassification(CDTClassificationLayer *);
     void removeAllClassifications();
     void decisionFusion();
