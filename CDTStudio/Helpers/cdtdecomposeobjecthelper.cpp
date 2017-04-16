@@ -111,24 +111,36 @@ void CDTDecomposeObjectHelper::run()
         QVector<int> bufferFlag(nXSize*nYSize);
 
         QString fileName = p->dir + "/" + QString::number(objID) + ".tif";
-        GDALDataset *poDstDS = poDriver->Create( fileName.toUtf8().constData(), nXSize, nYSize, bandCount, GDT_Byte, NULL);
 
-        flagBand->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferFlag[0],nXSize,nYSize,GDT_Int32,0,0);
-        for (int k=0;k<bandCount;++k)
+
+        if (withMask)
         {
-            p->poImageDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
-            if (withMask){
-                for (int i=0;i<bufferSrc.size();++i)
-                {
-                    if (bufferFlag[i] != objID)
-                        bufferSrc[i] = 0;
-                }
+            GDALDataset *poDstDS = poDriver->Create( fileName.toUtf8().constData(), nXSize, nYSize, 1, GDT_Byte, NULL);
+            flagBand->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferFlag[0],nXSize,nYSize,GDT_Int32,0,0);
+
+            for (int i=0;i<bufferSrc.size();++i)
+            {
+                if (bufferFlag[i] != objID)
+                    bufferSrc[i] = 0;
+                else
+                    bufferSrc[i] = 255;
             }
 
-            poDstDS->GetRasterBand(k+1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
-        }
+            poDstDS->GetRasterBand(1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
 
-        GDALClose(poDstDS);
+            GDALClose(poDstDS);
+        }
+        else
+        {
+            GDALDataset *poDstDS = poDriver->Create( fileName.toUtf8().constData(), nXSize, nYSize, bandCount, GDT_Byte, NULL);
+            for (int k=0;k<bandCount;++k)
+            {
+                p->poImageDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
+                poDstDS->GetRasterBand(k+1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
+            }
+
+            GDALClose(poDstDS);
+        }
 
 
         emit progressBarValueChanged(index++);

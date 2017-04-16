@@ -177,7 +177,7 @@ void CDTSegmentationLayer::deconposeObjects()
     QString imagePath = this->imagePath();
     QString markfilePath = markfileTempPath();
 
-    auto ret = QMessageBox::information(MainWindow::getMainWindow(),tr("Mask"),"",tr("With Black Mask Outside Object"), tr("No Mask"), tr("Cancel"));
+    auto ret = QMessageBox::information(MainWindow::getMainWindow(),tr("Mask"),"",tr("Export Mask of Each Object"), tr("Export Original Image of Each Object"), tr("Cancel"));
     if (ret == 2)
         return;
 
