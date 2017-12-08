@@ -139,6 +139,21 @@ void CDTDecomposeObjectHelper::run()
                 poDstDS->GetRasterBand(k+1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
             }
 
+//            flagBand->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferFlag[0],nXSize,nYSize,GDT_Int32,0,0);
+//            for (int k=0;k<bandCount;++k)
+//            {
+//                p->poImageDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
+
+
+//                for (int i=0;i<bufferSrc.size();++i)
+//                {
+//                    if (bufferFlag[i] != objID)
+//                        bufferSrc[i] = 0;
+//                }
+
+//                poDstDS->GetRasterBand(k+1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
+//            }
+
             GDALClose(poDstDS);
         }
 

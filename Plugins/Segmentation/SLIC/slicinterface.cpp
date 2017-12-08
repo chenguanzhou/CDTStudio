@@ -81,9 +81,12 @@ void SLICInterface::startSegmentation()
         return;
     }
 
-    OGRSpatialReference* pSpecialReference = new OGRSpatialReference(poMarkDS->GetProjectionRef());
+//    OGRSpatialReference* pSpecialReference = new OGRSpatialReference(poMarkDS->GetProjectionRef());
+    OGRSpatialReference pSpecialReference;
+    pSpecialReference.SetProjection(poMarkDS->GetProjectionRef());
+
     const char* layerName = "polygon";
-    OGRLayer* poLayer = poDstDS->CreateLayer(layerName,pSpecialReference,wkbPolygon,0);
+    OGRLayer* poLayer = poDstDS->CreateLayer(layerName,&pSpecialReference,wkbPolygon,0);
     if (poLayer == NULL)
     {
         GDALClose(poMarkDS);
@@ -108,11 +111,9 @@ void SLICInterface::startSegmentation()
     {
         GDALClose(poMarkDS);
         GDALClose( poDstDS );
-        if (pSpecialReference) delete pSpecialReference;
         return;
     }
 
-    if (pSpecialReference) delete pSpecialReference;
     GDALClose(poMarkDS);
     GDALClose(poDstDS);
 }

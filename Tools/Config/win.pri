@@ -31,7 +31,7 @@ else{
 }
 
 !isEmpty(QGIS_ROOT) {
-    INCLUDEPATH += $(QGIS_ROOT)\include
+    INCLUDEPATH += $(QGIS_ROOT)/include
     LIBS += -L$(QGIS_ROOT)/lib
 }
 

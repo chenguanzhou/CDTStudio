@@ -45,4 +45,3 @@ SOURCES += \
     cdtsnakemaptool.cpp
 
 include(../../../Interfaces/Interfaces.pri)
-message($$INCLUDEPATH)

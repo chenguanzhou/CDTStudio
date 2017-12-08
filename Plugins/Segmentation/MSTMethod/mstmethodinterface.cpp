@@ -231,8 +231,8 @@ bool MSTMethodInterface::_CheckAndInit()
 
     //3.Init Output Image
     char** pszOptions = NULL;
-    pszOptions = CSLSetNameValue(pszOptions,"COMPRESS","DEFLATE");
-    pszOptions = CSLSetNameValue(pszOptions,"PREDICTOR","1");
+    pszOptions = CSLSetNameValue(pszOptions,"COMPRESS","LZW");
+    pszOptions = CSLSetNameValue(pszOptions,"PREDICTOR","2");
     pszOptions = CSLSetNameValue(pszOptions,"ZLEVEL","9");
     GDALDriver* poDriver = (GDALDriver*)GDALGetDriverByName("GTiff");
     GDALDataset* poDstDS = poDriver->Create(markfilePath.toUtf8().constData(),poSrcDS->GetRasterXSize(),poSrcDS->GetRasterYSize(),1,GDT_Int32,pszOptions);
@@ -732,9 +732,11 @@ bool MSTMethodInterface::_Polygonize()
         return false;
     }
 
-    OGRSpatialReference* pSpecialReference = new OGRSpatialReference(poFlagDS->GetProjectionRef());
+    OGRSpatialReference pSpecialReference;
+    pSpecialReference.SetProjection(poFlagDS->GetProjectionRef());
+
     const char* layerName = "polygon";
-    OGRLayer* poLayer = poDstDataset->CreateLayer(layerName,pSpecialReference,wkbPolygon,0);
+    OGRLayer* poLayer = poDstDataset->CreateLayer(layerName,&pSpecialReference,wkbPolygon,0);
     if (poLayer == NULL)
     {
         GDALClose(poFlagDS);
@@ -750,7 +752,6 @@ bool MSTMethodInterface::_Polygonize()
         return false;
     }
 
-
     char** papszOptions = NULL;
     papszOptions = CSLSetNameValue(papszOptions,"8CONNECTED","8");
     GDALRasterBand *poFlagBand = poFlagDS->GetRasterBand(1);
@@ -760,11 +761,9 @@ bool MSTMethodInterface::_Polygonize()
     {
         GDALClose(poFlagDS);
         GDALClose( poDstDataset );
-        if (pSpecialReference) delete pSpecialReference;
         return false;
     }
 
-    if (pSpecialReference) delete pSpecialReference;
     GDALClose(poFlagDS);
     GDALClose(poDstDataset);
     return true;

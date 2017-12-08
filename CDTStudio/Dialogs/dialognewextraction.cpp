@@ -71,8 +71,10 @@ void DialogNewExtraction::onAccepted()
 
     GDALDataset* poDS = poDriver->Create(shapefileTempPath.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
     Q_ASSERT(poDS);
-    OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
-    OGRLayer *layer = poDS->CreateLayer("extraction",reference,wkbPolygon,NULL);
+//    OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
+    OGRSpatialReference reference;
+    reference.SetProjection(poImageDS->GetProjectionRef());
+    OGRLayer *layer = poDS->CreateLayer("extraction",&reference,wkbPolygon,NULL);
     Q_ASSERT(layer);
     OGRFieldDefn oField( "id", OFTInteger );
     oField.SetWidth(10);
@@ -83,9 +85,7 @@ void DialogNewExtraction::onAccepted()
     }
 
     GDALClose(poDS);
-    reference->Release();
     GDALClose(poImageDS);
-//    OGRCleanupAll();
 
     shapefileID = QUuid::createUuid().toString();
     fileSystem->registerFile(shapefileID,shapefileTempPath,QString(),QString()

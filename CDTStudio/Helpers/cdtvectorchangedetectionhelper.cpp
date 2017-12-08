@@ -288,7 +288,6 @@ void CDTVectorChangeDetectionHelper::createShapefile(QString path)
     Q_ASSERT(poDriver);
     GDALDataset* poDS = poDriver->Create(path.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
     Q_ASSERT(poDS);
-//    OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
     OGRLayer *layer = poDS->CreateLayer("change",NULL,wkbPolygon,NULL);
     Q_ASSERT(layer);
 
