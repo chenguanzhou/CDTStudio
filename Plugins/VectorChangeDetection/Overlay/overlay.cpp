@@ -51,21 +51,21 @@ void Overlay::detect(QgsVectorLayer *layerT1,
     int idx = 0;
     foreach (QgsFeature f1, featuresT1) {
         auto gT1 = f1.geometry();
-        auto rectT1 = gT1->boundingBox();
+        auto rectT1 = gT1.boundingBox();
         QString beforeCategory = f1.attribute(fieldNameT1).toString();
         foreach (QgsFeature f2, featuresT2) {
             auto gT2 = f2.geometry();
-            auto rectT2 = gT2->boundingBox();
+            auto rectT2 = gT2.boundingBox();
 
-            if (rectT1.intersects(rectT2) && gT1->intersects(gT2))
+            if (rectT1.intersects(rectT2) && gT1.intersects(gT2))
             {
                 //Intersect
                 QString afterCategory = f2.attribute(fieldNameT2).toString();
-                QgsGeometry *intersection = gT1->intersection(gT2);
-                std::vector<QgsGeometry *> afterInter;
+                QgsGeometry intersection = gT1.intersection(gT2);
+                std::vector<QgsGeometry> afterInter;
                 getPolygonList(intersection,afterInter);
-                foreach (QgsGeometry *g, afterInter) {
-                    QgsFeature f(layerResult->pendingFields());
+                foreach (QgsGeometry g, afterInter) {
+                    QgsFeature f(layerResult->fields());
                     f.setGeometry(g);
                     f.setAttribute("before",beforeCategory);
                     f.setAttribute("after",afterCategory);
@@ -85,22 +85,22 @@ void Overlay::detect(QgsVectorLayer *layerT1,
     emit progressBarValueChanged(100);
 }
 
-void Overlay::getPolygonList(QgsGeometry *g,std::vector<QgsGeometry *> &list)
+void Overlay::getPolygonList(QgsGeometry g,std::vector<QgsGeometry> &list)
 {
-    switch (g->wkbType()) {
-    case QGis::WKBPolygon:
+    switch (g.wkbType()) {
+    case QgsWkbTypes::Polygon:
         list.push_back(g);
         break;
-    case QGis::WKBMultiPolygon:
-        foreach (QgsPolygon p, g->asMultiPolygon()) {
-            std::vector<QgsGeometry *> geos;
-            getPolygonList(QgsGeometry::fromPolygon(p),geos);
+    case QgsWkbTypes::MultiPolygon:
+        foreach (QgsPolygonXY p, g.asMultiPolygon()) {
+            std::vector<QgsGeometry> geos;
+            getPolygonList(QgsGeometry::fromPolygonXY(p),geos);
             list.insert(list.end(),geos.begin(),geos.end());
         }
         break;
-    case QGis::WKBUnknown://Collection
-        foreach (QgsGeometry *p, g->asGeometryCollection()) {
-            std::vector<QgsGeometry *> geos;
+    case QgsWkbTypes::Unknown://Collection
+        foreach (QgsGeometry p, g.asGeometryCollection()) {
+            std::vector<QgsGeometry> geos;
             getPolygonList(p,geos);
             list.insert(list.end(),geos.begin(),geos.end());
         }

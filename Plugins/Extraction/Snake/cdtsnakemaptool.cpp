@@ -6,6 +6,8 @@
 #include <qgsvectorlayer.h>
 #include <qgsvectordataprovider.h>
 #include <qgis.h>
+#include <qgspolygon.h>
+#include <qgslinestring.h>
 #include <QMouseEvent>
 #include <gdal_priv.h>
 #include "StatisticSnake.h"
@@ -45,10 +47,9 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
 
     //transform
     std::vector<VERTEX2D> vecInputPoints;
-    QVector<QgsPoint> originalPoints = polygon[0];
-    foreach (QgsPoint pt, originalPoints) {
+    for (auto iter = polygon.boundary()->boundary()->vertices_begin();iter != polygon.boundary()->boundary()->vertices_end();++iter) {
         VERTEX2D newPt;
-        GDALApplyGeoTransform(padfTransform_i,pt.x(),pt.y(),&newPt.x,&newPt.y);
+        GDALApplyGeoTransform(padfTransform_i,(*iter).x(),(*iter).y(),&newPt.x,&newPt.y);
         vecInputPoints.push_back(newPt);
     }
 
@@ -119,16 +120,15 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
     QgsPolyline polyline;
     for (size_t i=0;i<vecExportPoints.size();++i)
     {
-        QgsPoint ptTemp;
-        ptTemp.set(
-                padfTransform[0] + padfTransform[1]*vecExportPoints[i].x
+        QgsPoint ptTemp(padfTransform[0] + padfTransform[1]*vecExportPoints[i].x
                 + padfTransform[2]*vecExportPoints[i].y,
                 padfTransform[3] + padfTransform[4]*vecExportPoints[i].x
                 + padfTransform[5]*vecExportPoints[i].y);
         polyline.push_back(ptTemp);
     }
     QgsPolygon exportPolygon;
-    exportPolygon.push_back(polyline);
+    QgsLineString *curve = new QgsLineString(polyline);
+    exportPolygon.setExteriorRing(curve);
     return exportPolygon;
 
 
@@ -152,7 +152,7 @@ void CDTSnakeMapTool::canvasPressEvent( QgsMapMouseEvent * e )
 {
     if ( mRubberBand == NULL )
     {
-        mRubberBand = new QgsRubberBand( mCanvas, QGis::Polygon );
+        mRubberBand = new QgsRubberBand( mCanvas,  QgsWkbTypes::PolygonGeometry );
         mRubberBand->setColor(QColor(Qt::red));
     }
     if ( e->button() == Qt::LeftButton )
@@ -163,23 +163,22 @@ void CDTSnakeMapTool::canvasPressEvent( QgsMapMouseEvent * e )
     {
         if ( mRubberBand->numberOfVertices() > 2 )
         {
-            QgsGeometry* polygonGeom = mRubberBand->asGeometry();
-            QgsPolygon polygon = polygonGeom->asPolygon();
-            delete polygonGeom;
+            auto polygonGeom = mRubberBand->asGeometry().get();
+            QgsPolygon *polygon = qgsgeometry_cast<QgsPolygon *>( polygonGeom );
 
-            QgsPolygon snakePolygon = snake(polygon,imagePath);
-            QgsGeometry* newPolygonGeom = QgsGeometry::fromPolygon(snakePolygon);
-            QgsFeature f(vectorLayer->pendingFields(),0);
+            QgsPolygon snakePolygon = snake(*polygon,imagePath);
+            delete polygon;
+
+
+            QgsGeometry newPolygonGeom = QgsGeometry(snakePolygon.boundary());
+            QgsFeature f(vectorLayer->fields(),0);
             f.setGeometry(newPolygonGeom);
             vectorLayer->startEditing();
-//            vectorLayer->beginEditCommand( "snake" );
-            qDebug()<<vectorLayer->addFeature(f);
-            qDebug()<<newPolygonGeom->area();
-//            vectorLayer->endEditCommand();
+            vectorLayer->addFeature(f);
             vectorLayer->commitChanges();
             canvas()->refresh();
         }
-        mRubberBand->reset( QGis::Polygon );
+        mRubberBand->reset( QgsWkbTypes::PolygonGeometry );
         delete mRubberBand;
         mRubberBand = 0;
     }

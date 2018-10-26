@@ -50,7 +50,7 @@ public:
     int     layerTransparency() const;
     QList<QAbstractTableModel *> tableModels();
 
-    void setRenderer(QgsFeatureRendererV2 *r);
+    void setRenderer(QgsFeatureRenderer *r);
     void setOriginRenderer();
 
     static QList<CDTSegmentationLayer *> getLayers();

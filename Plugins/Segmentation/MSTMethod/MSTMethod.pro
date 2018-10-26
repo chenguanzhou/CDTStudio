@@ -46,4 +46,6 @@ win32:CONFIG(release, debug|release): LIBS += -lstxxl
 else:win32:CONFIG(debug, debug|release): LIBS += -lstxxld
 else:unix: LIBS += -lstxxl
 
+message($$INCLUDEPATH)
+
 #DEFINES += BOOST_THREAD_USE_LIB

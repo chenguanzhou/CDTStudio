@@ -4,7 +4,7 @@
 #include "cdtdockwidget.h"
 #include "dialogdbconnection.h"
 
-struct QUuid;
+class QUuid;
 class QPainter;
 class QWidget;
 class QTabWidget;

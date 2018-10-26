@@ -183,12 +183,12 @@ void CDTBaseLayer::setCanvasLayer(QgsMapLayer *layer, bool addToLegend)
 
     if (mapCanvasLayer)
     {
-        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
+//        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
         delete mapCanvasLayer;
     }
 
     mapCanvasLayer = layer;
-    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,addToLegend);
+//    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,addToLegend);
     treeKeyItem->setMapLayer(mapCanvasLayer);
 }
 

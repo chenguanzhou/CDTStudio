@@ -155,7 +155,7 @@ QStringList CDTClassificationLayer::selectedFeatures() const
     return featuresList;
 }
 
-QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
+QgsFeatureRenderer *CDTClassificationLayer::renderer()
 {
     QVariantMap clsInfo = this->clsInfo();
 
@@ -173,16 +173,16 @@ QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
     QgsCategoryList categoryList;
     for(int i=0;i<data.size();++i)
     {
-        QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+        QgsSimpleFillSymbolLayer* symbolLayer = new QgsSimpleFillSymbolLayer();
         symbolLayer->setColor(colorList.value(data[i].toInt()));
-        QgsRendererCategoryV2 rend;
+        QgsRendererCategory rend;
         rend.setValue(i);
-        rend.setSymbol(new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer));
+        rend.setSymbol(new QgsFillSymbol(QgsSymbolLayerList()<<symbolLayer));
         rend.setLabel(QString::number(i));
         categoryList<<rend;
     }
 
-    QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("GridCode",categoryList);
+    QgsCategorizedSymbolRenderer* categorizedSymbolRenderer = new QgsCategorizedSymbolRenderer("GridCode",categoryList);
     return categorizedSymbolRenderer;
 }
 

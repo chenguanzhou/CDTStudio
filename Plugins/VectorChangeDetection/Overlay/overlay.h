@@ -26,7 +26,7 @@ public:
     );
 
 private:
-    void getPolygonList(QgsGeometry *g, std::vector<QgsGeometry *> &list);
+    void getPolygonList(QgsGeometry g, std::vector<QgsGeometry> &list);
 };
 
 #endif // OVERLAY_H

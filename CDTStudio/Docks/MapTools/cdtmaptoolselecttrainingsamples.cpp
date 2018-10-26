@@ -76,7 +76,7 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QgsMapMouseEvent *e)
         else // add pan to mouse cursor
         {
             // transform the mouse pos to map coordinates
-            QgsPoint center = mCanvas->getCoordinateTransform()->toMapPoint( e->x(), e->y() );
+            QgsPointXY center = mCanvas->getCoordinateTransform()->toMapPoint( e->x(), e->y() );
             mCanvas->setExtent( QgsRectangle( center, center ) );
             mCanvas->refresh();
         }
@@ -96,24 +96,26 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QgsMapMouseEvent *e)
         selectRect.setBottom( e->pos().y() + boxSize );
 
         const QgsMapToPixel* transform = mapCanvas->getCoordinateTransform();
-        QgsPoint ll = transform->toMapCoordinates( selectRect.left(), selectRect.bottom() );
-        QgsPoint ur = transform->toMapCoordinates( selectRect.right(), selectRect.top() );
+        QgsPointXY ll = transform->toMapCoordinates( selectRect.left(), selectRect.bottom() );
+        QgsPointXY ur = transform->toMapCoordinates( selectRect.right(), selectRect.top() );
 
         QgsPolyline points;
-        points.push_back(ll);
+        points.push_back(QgsPoint( ll.x(), ll.y() ));
         points.push_back(QgsPoint( ur.x(), ll.y() ));
-        points.push_back(ur);
+        points.push_back(QgsPoint( ur.x(), ur.y() ));
         points.push_back(QgsPoint( ll.x(), ur.y() ));
 
         QgsPolygon polygon;
-        polygon.push_back(points);
-        QgsGeometry selectGeom = *(QgsGeometry::fromPolygon(polygon) );
+        QgsLineString *curve = new QgsLineString(points);
+        polygon.setExteriorRing(curve);
 
-        if ( mapCanvas->mapSettings().hasCrsTransformEnabled() )
-        {
-            QgsCoordinateTransform ct( mapCanvas->mapSettings().destinationCrs(), vlayer->crs() );
-            selectGeom.transform( ct );
-        }
+        QgsGeometry selectGeom(polygon.boundary());
+
+//        if ( mapCanvas->mapSettings().hasCrsTransformEnabled() )
+//        {
+//            QgsCoordinateTransform ct( mapCanvas->mapSettings().destinationCrs(), vlayer->crs() );
+//            selectGeom.transform( ct );
+//        }
 
         QgsFeatureIterator fit = vlayer->getFeatures( QgsFeatureRequest().setFilterRect( selectGeom.boundingBox() ).setFlags( QgsFeatureRequest::ExactIntersect ) );
         QgsFeature f;
@@ -122,11 +124,11 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QgsMapMouseEvent *e)
         double closestFeatureDist = std::numeric_limits<double>::max();
         while ( fit.nextFeature( f ) )
         {
-            QgsGeometry* g = f.geometry();
+            QgsGeometry g = f.geometry();
             if ( !selectGeom.intersects( g ) )
                 continue;
             foundSingleFeature = true;
-            double distance = g->distance( selectGeom );
+            double distance = g.distance( selectGeom );
             if ( distance <= closestFeatureDist )
             {
                 closestFeatureDist = distance;
@@ -178,11 +180,13 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
     QgsFeature f;
     QgsFeatureIterator features = vlayer->getFeatures(QgsFeatureRequest());
     QMap<int,QgsPolygon> allGeometry;
-    int objFieldID = vlayer->fieldNameIndex("GridCode");
+    int objFieldID = vlayer->fields().indexFromName("GridCode");
     while(features.nextFeature(f))
     {
         int objID = f.attribute(objFieldID).toInt();
-        allGeometry.insert(objID,f.geometry()->asPolygon());
+        QgsPolygon polygon = *qgsgeometry_cast<QgsPolygon *>( f.geometry().get() );
+        allGeometry.insert(objID, polygon);
+
     }
 
     //Get all samples and put them into rubberBand
@@ -200,17 +204,16 @@ void CDTMapToolSelectTrainingSamples::updateRubber()
         if (!rubberBands.keys().contains(objectID))
         {
             QColor color = query.value(1).value<QColor>();
-            QgsRubberBand *rubberBand = new QgsRubberBand(mapCanvas,QGis::Polygon);
+            QgsRubberBand *rubberBand = new QgsRubberBand(mapCanvas, QgsWkbTypes::PolygonGeometry);
 
             rubberBand->setColor(color);
             rubberBand->setBrushStyle(Qt::Dense3Pattern);
             if (!allGeometry.keys().contains(objectID))
                 qDebug()<<objectID;
-            QgsGeometry *geo = QgsGeometry::fromPolygon( allGeometry.value(objectID));
-            if (geo==NULL)
-                qDebug()<<"NULL";
-            rubberBand->addGeometry(geo,vlayer);
-            rubberBands.insert(objectID,rubberBand);
+
+            QgsGeometry geo = QgsGeometry(allGeometry.value(objectID).boundary());
+            rubberBand->addGeometry(geo, vlayer);
+            rubberBands.insert(objectID, rubberBand);
         }
     }
 

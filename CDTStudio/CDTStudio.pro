@@ -84,7 +84,7 @@ LIBS += -lgdal_i -lgdi32
 
 LIBS +=     -L../lib -lQPropertyEditor -lCDTHistogramPlot -lQtColorPicker\
              -lCDTFileSystem -lCDTTableExporter -lwwWidgets\
-            -lqgis_core -lqgis_gui -lqgis_analysis -lqgis_networkanalysis -lqwt
+            -lqgis_core -lqgis_gui -lqgis_analysis -lqwt
 
 win32:CONFIG(release, debug|release): LIBS += -lstxxl
 else:win32:CONFIG(debug, debug|release): LIBS += -lstxxld

@@ -7,7 +7,7 @@
 namespace Ui {
 class WizardVectorChangeDetection;
 }
-struct QUuid;
+class QUuid;
 class QComboBox;
 class QSqlQueryModel;
 

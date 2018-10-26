@@ -209,7 +209,7 @@ void MainWindow::initStatusBar()
     scaleEdit->setToolTip( tr( "Current map scale (formatted as x:y)" ) );
 
     statusBar()->addPermanentWidget( scaleEdit, 0 );
-    connect( scaleEdit, SIGNAL( scaleChanged() ), this, SLOT( userScale() ) );
+    connect( scaleEdit, SIGNAL( scaleChanged(double) ), this, SLOT( userScale(double) ) );
 
     qDebug("StatusBar initialized");
 }
@@ -367,15 +367,15 @@ void MainWindow::onCurrentTabChanged(int i)
         showScale(getCurrentMapCanvas()->scale());
     }
 
-    qDebug("Current tab is changed to %1",ui->tabWidgetProject->tabText(i));
+    qDebug("Current tab is changed to %s",ui->tabWidgetProject->tabText(i));
 }
 
-void MainWindow::showMouseCoordinate(const QgsPoint &p)
+void MainWindow::showMouseCoordinate(const QgsPointXY &p)
 {
     if (this->getCurrentMapCanvas()==NULL)
         return;
 
-    lineEditCoord->setText( p.toString( ) );
+    lineEditCoord->setText( QString("%1, %2").arg(p.x(), p.y()) );
 
     if ( lineEditCoord->width() > lineEditCoord->minimumWidth() )
     {
@@ -425,7 +425,7 @@ void MainWindow::userCenter()
     mapCanvas->refresh();
 }
 
-void MainWindow::userScale()
+void MainWindow::userScale(double)
 {
     QgsMapCanvas* mapCanvas = getCurrentMapCanvas();
     if (!mapCanvas)
@@ -553,7 +553,7 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
         if (classificationLayer != NULL)
         {
             CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());
-            QgsFeatureRendererV2 *renderer = classificationLayer->renderer();
+            QgsFeatureRenderer *renderer = classificationLayer->renderer();
             segmentationLayer->setRenderer(renderer);
             getCurrentMapCanvas()->refresh();
         }

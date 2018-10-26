@@ -30,7 +30,7 @@ public:
     QString         pcaParams()         const;
     QStringList     selectedFeatures()  const;
 
-    QgsFeatureRendererV2* renderer();
+    QgsFeatureRenderer *renderer();
 
     void initLayer(const QString &name,
             const QString &methodName,

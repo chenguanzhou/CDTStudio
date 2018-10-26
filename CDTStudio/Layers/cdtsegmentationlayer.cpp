@@ -401,7 +401,7 @@ int CDTSegmentationLayer::layerTransparency() const
 {
     QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
-        return p->layerTransparency();
+        return p->opacity();
     else
         return -1;
 }
@@ -443,20 +443,20 @@ QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
     return models;
 }
 
-void CDTSegmentationLayer::setRenderer(QgsFeatureRendererV2* r)
+void CDTSegmentationLayer::setRenderer(QgsFeatureRenderer* r)
 {
     QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
-        p->setRendererV2(r);
+        p->setRenderer(r);
 }
 
 void CDTSegmentationLayer::setOriginRenderer()
 {
-    QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+    QgsSimpleFillSymbolLayer* symbolLayer = new QgsSimpleFillSymbolLayer();
     symbolLayer->setColor(QColor(0,0,0,0));
-    symbolLayer->setBorderColor(borderColor());
-    QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
-    QgsSingleSymbolRendererV2* singleSymbolRenderer = new QgsSingleSymbolRendererV2(fillSymbol);
+    symbolLayer->setStrokeColor(borderColor());
+    QgsFillSymbol *fillSymbol = new QgsFillSymbol(QgsSymbolLayerList()<<symbolLayer);
+    QgsSingleSymbolRenderer* singleSymbolRenderer = new QgsSingleSymbolRenderer(fillSymbol);
     this->setRenderer(singleSymbolRenderer);
 }
 
@@ -495,7 +495,7 @@ void CDTSegmentationLayer::setLayerTransparency(int transparency)
     QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
     {
-        p->setLayerTransparency(transparency);
+        p->setOpacity(transparency);
         canvas()->refresh();
     }
 }

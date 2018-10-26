@@ -23,7 +23,7 @@ void CDTLayerInfoWidget::setCurrentLayer(CDTBaseLayer *layer)
     connect(layer,SIGNAL(destroyed()),SLOT(onDockClear()));
 //    this->setVisible(true);
     this->raise();
-    qDebug("Layer %1 is selected",layer->metaObject()->className());
+    qDebug("Layer %s is selected",layer->metaObject()->className());
 }
 
 void CDTLayerInfoWidget::onDockClear()

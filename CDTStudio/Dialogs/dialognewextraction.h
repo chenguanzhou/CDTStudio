@@ -7,7 +7,7 @@ namespace Ui {
 class DialogNewExtraction;
 }
 class CDTFileSystem;
-struct QUuid;
+class QUuid;
 
 class DialogNewExtraction : public QDialog
 {

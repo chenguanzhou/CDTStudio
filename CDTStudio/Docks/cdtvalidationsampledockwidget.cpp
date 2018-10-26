@@ -1,7 +1,7 @@
 #include "cdtvalidationsampledockwidget.h"
 #include <ctime>
-#include <qgslabel.h>
-#include <qgslabelattributes.h>
+//#include <qgslabel.h>
+//#include <qgslabelattributes.h>
 #include "stable.h"
 #include "cdtvariantconverter.h"
 #include "mainwindow.h"
@@ -351,14 +351,15 @@ void CDTValidationSampleDockWidget::createPointsLayer()
     QString uri = "point?field=id:integer";
     pointsLayer = new QgsVectorLayer(uri,validationName, "memory");
     pointsLayer->addAttribute(QgsField("id",QVariant::Int));
-    pointsLayer->enableLabels(true);
+    pointsLayer->setLabelsEnabled(true);
     pointsLayer->startEditing();
     pointsLayer->beginEditCommand(tr("Add validations to the tampory layer"));
     while (query.next())
     {
-        QgsFeature f(pointsLayer->pendingFields());
-        f.setGeometry(QgsGeometry::fromPoint(QgsPoint(query.value(1).toDouble(),query.value(2).toDouble())));
-        f.setAttribute("id",query.value(0));
+        QgsFeature f(pointsLayer->fields());
+        QgsPoint pt(query.value(1).toDouble(), query.value(2).toDouble());
+        f.setGeometry(QgsGeometry::fromWkt(pt.asWkt()));
+        f.setAttribute("id", query.value(0));
         pointsLayer->addFeature(f);
     }
     pointsLayer->endEditCommand();
@@ -366,23 +367,23 @@ void CDTValidationSampleDockWidget::createPointsLayer()
 
     //Set label
 
+// TODO
+//    QgsLabel *label = pointsLayer->label();
+//    label->setLabelField(QgsLabel::Text,0);
+//    QgsLabelAttributes *attributes= label->labelAttributes();
+//    attributes->setColor(Qt::white);
+//    attributes->setBufferEnabled(true);
+//    attributes->setBufferColor(Qt::black);
+//    attributes->setOffset(10,10,1);
 
-    QgsLabel *label = pointsLayer->label();
-    label->setLabelField(QgsLabel::Text,0);
-    QgsLabelAttributes *attributes= label->labelAttributes();
-    attributes->setColor(Qt::white);
-    attributes->setBufferEnabled(true);
-    attributes->setBufferColor(Qt::black);
-    attributes->setOffset(10,10,1);
 
-    QgsMapLayerRegistry::instance()->addMapLayer(pointsLayer);
     auto layers = MainWindow::getCurrentMapCanvas()->layers();
-    QList<QgsMapCanvasLayer> mapLayers;
+    QList<QgsMapLayer *> mapLayers;
     mapLayers<<pointsLayer;
     foreach (QgsMapLayer *layer, layers) {
-        mapLayers<<QgsMapCanvasLayer(layer);
+        mapLayers<<layer;
     }
-    MainWindow::getCurrentMapCanvas()->setLayerSet(mapLayers);
+    MainWindow::getCurrentMapCanvas()->setLayers(mapLayers);
     MainWindow::getCurrentMapCanvas()->refresh();
 
     //Make a Dialog to set category
@@ -396,7 +397,7 @@ void CDTValidationSampleDockWidget::clearPointsLayer()
 {
     if (pointsLayer)
     {
-        QgsMapLayerRegistry::instance()->removeMapLayer(pointsLayer->id());
+//        QgsMapLayerRegistry::instance()->removeMapLayer(pointsLayer->id());
         if (MainWindow::getCurrentMapCanvas())
             MainWindow::getCurrentMapCanvas()->refresh();
         pointsLayer = NULL;

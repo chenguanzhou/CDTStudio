@@ -8,7 +8,7 @@
 //class CDTSampleAbstractDockWidget;
 //}
 
-struct QUuid;
+class QUuid;
 class QSqlRecord;
 class QColor;
 class QColorDialog;

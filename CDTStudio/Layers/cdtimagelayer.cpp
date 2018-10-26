@@ -3,6 +3,7 @@
 #include <qgsmultibandcolorrenderer.h>
 #include <qgscontrastenhancement.h>
 #include <qgscontrastenhancementfunction.h>
+#include <qgsrasterdataprovider.h>
 #include "mainwindow.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtprojectlayer.h"
@@ -103,10 +104,11 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
     CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
     QDir dir(layer->path());
     QString absoluteFilePath = dir.absoluteFilePath(path);
-    QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(absoluteFilePath,QFileInfo(path).completeBaseName());
+    QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(absoluteFilePath, QFileInfo(path).completeBaseName());
     if (!newCanvasLayer->isValid())
     {
         QMessageBox::critical(NULL,tr("Error"),tr("Open image ")+absoluteFilePath+tr(" failed!"));
+        qDebug()<<newCanvasLayer->error().summary();
         delete newCanvasLayer;
         return;
     }
@@ -190,9 +192,10 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
 
     setWidgetActions(widgets);
 
-    if (newCanvasLayer->dataProvider()->dataType(1) != QGis::Byte)
+    if (newCanvasLayer->dataProvider()->dataType(1) != Qgis::Byte)
     {
-        newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
+        newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,
+                                               QgsRasterMinMaxOrigin::Limits::CumulativeCut, QgsRectangle(), 0);
         comboEnhancement->setCurrentIndex(0);
     }
     else
@@ -472,7 +475,7 @@ void CDTImageLayer::updateRenderer()
     }
 
     //Contrast
-    layer->setContrastEnhancement(enhancementStyle,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle());
+    layer->setContrastEnhancement(enhancementStyle,QgsRasterMinMaxOrigin::Limits::CumulativeCut,QgsRectangle());
     MainWindow::getCurrentMapCanvas()->refresh();
 }
 

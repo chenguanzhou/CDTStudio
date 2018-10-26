@@ -8,7 +8,7 @@ namespace Ui {
 class DialogNewSegmentation;
 }
 class CDTFileSystem;
-struct QUuid;
+class QUuid;
 
 class DialogNewSegmentation : public QDialog
 {

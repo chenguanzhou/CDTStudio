@@ -1,5 +1,6 @@
 #include "cdtapplication.h"
 #include "stable.h"
+#include <qgsproviderregistry.h>
 #include <stxxl.h>
 #include "cdtpluginloader.h"
 #include "cdtsegmentationinterface.h"
@@ -24,7 +25,7 @@ QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
 QList<CDTVectorChangeDetectionInterface *> vectorDetectionPlugins;
 
 CDTApplication::CDTApplication(int & argc, char ** argv) :
-    QgsApplication(argc, argv,true)/*,
+    QgsApplication(argc, argv, true)/*,
     processor (new QProcess(this)),
     udpReceiver(new QUdpSocket(this)),
     udpSender(new QUdpSocket(this))*/
@@ -43,8 +44,11 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
         }
     }
 
-    QgsApplication::setPluginPath(QDir::currentPath()+"/Plugins");
-    QgsApplication::initQgis();
+//    QgsApplication::setPluginPath(QDir::currentPath()+"/Plugins");
+//    qDebug()<<QgsApplication::pluginPath();
+//    QgsApplication::initQgis();
+
+    QgsProviderRegistry::instance(QDir::currentPath()+"/Plugins");
 
     if (initDatabase()==false)
         exit(0);
@@ -166,7 +170,7 @@ bool CDTApplication::initDatabase()
     //    dbPath = dbFile.fileName();
     //    dbFile.close();
 
-    qDebug("Program database is %1!",dbPath);
+    qDebug()<<"Program database is "<<dbPath;
 
     db.setDatabaseName(dbPath);
     if (!db.open())
@@ -392,6 +396,6 @@ void CDTApplication::initStxxl()
     stxxl::config * cfg = stxxl::config::get_instance();
     stxxl::disk_config disk(stxxlFilePath.toLocal8Bit().constData(), /*800 * 1024 * 1024*/0, "wincall delete");
     cfg->add_disk(disk);
-    qDebug("Stxxl file path is %1",stxxlFilePath);
+    qDebug()<<"Stxxl file path is "<<stxxlFilePath;
 }
 #endif

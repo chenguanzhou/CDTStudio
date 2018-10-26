@@ -5,29 +5,9 @@ QWT_ROOT = $(QWT_ROOT)
 BOOST_ROOT = $(BOOST_ROOT)
 BOOST_LIBRARYDIR = $(BOOST_LIBRARYDIR)
 
-greaterThan(QT_MAJOR_VERSION, 4){
-    GDAL_ROOT = $(GDAL_ROOT)
-    !isEmpty(GDAL_ROOT) {
-        INCLUDEPATH += $(GDAL_ROOT)/include
-        LIBS += -L$(GDAL_ROOT)/lib
-    }
-    GEOS_INCLUDE_PATH = $(GEOS_INCLUDE_PATH)
-    !isEmpty(GEOS_INCLUDE_PATH) {
-        INCLUDEPATH += $(GEOS_INCLUDE_PATH)
-    }
-}
-else{
-    !isEmpty(OSGEO4W_ROOT) {
-        INCLUDEPATH += $(OSGEO4W_ROOT)/include
-        LIBS += -L$(OSGEO4W_ROOT)/lib
-    }
-    !isEmpty(BOOST_ROOT) {
-        INCLUDEPATH += $(BOOST_ROOT)
-    }
-
-    !isEmpty(BOOST_LIBRARYDIR) {
-        LIBS += -L$(BOOST_LIBRARYDIR)
-    }
+!isEmpty(OSGEO4W_ROOT) {
+    INCLUDEPATH += $(OSGEO4W_ROOT)/include
+    LIBS += -L$(OSGEO4W_ROOT)/lib
 }
 
 !isEmpty(QGIS_ROOT) {

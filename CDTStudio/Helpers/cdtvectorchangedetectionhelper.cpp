@@ -241,7 +241,7 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
         return false;
     }
 
-    int index = layer.fieldNameIndex(fieldName);
+    int index = layer.fields().indexFromName(fieldName);
     if(index==-1)
     {
         if (layer.dataProvider()->addAttributes((QList<QgsField>()<<QgsField(fieldName,QVariant::String)))==false)
@@ -249,7 +249,7 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
             qWarning("Add attribute failed!");
             return false;
         }
-        index = layer.fieldNameIndex(fieldName);
+        index = layer.fields().indexFromName(fieldName);
     }
 
     layer.startEditing();

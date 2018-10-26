@@ -57,12 +57,12 @@ bool CDTExportClassificationLayerHelper::exportClassification(QUuid clsID, QStri
     if (layer.isValid()==false)
         qCritical("Layer is invalid");
 
-    int index = layer.fieldNameIndex(fieldName);
+    int index = layer.fields().indexFromName(fieldName);
     if(index==-1)
     {
         if (layer.dataProvider()->addAttributes((QList<QgsField>()<<QgsField(fieldName,QVariant::String)))==false)
             qCritical("Add attribute failed!");
-        index = layer.fieldNameIndex(fieldName);
+        index = layer.fields().indexFromName(fieldName);
     }
 
     layer.startEditing();
