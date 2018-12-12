@@ -24,7 +24,7 @@ CDTAttributeGenerator::CDTAttributeGenerator(
     CPLSetConfigOption("GDAL_FILENAME_IS_UTF8","YES");
 
     _poImageDS = (GDALDataset*)GDALOpen(imagePath.toUtf8().constData(),GA_ReadOnly);
-    if (_poImageDS == NULL)
+    if (_poImageDS == Q_NULLPTR)
     {
         _errorInfo = tr("Open Image ")+imagePath+tr(" Failed!");
         _isValid = false;
@@ -32,7 +32,7 @@ CDTAttributeGenerator::CDTAttributeGenerator(
     }
 
     _poFlagDS = (GDALDataset*)GDALOpen(flagPath.toUtf8().constData(),GA_ReadOnly);
-    if (_poFlagDS == NULL)
+    if (_poFlagDS == Q_NULLPTR)
     {
         _errorInfo = tr("Open Flag Image ")+flagPath+tr(" Failed!");
         _isValid = false;
@@ -40,8 +40,8 @@ CDTAttributeGenerator::CDTAttributeGenerator(
     }
 
 
-    _poGeometryDS =  (GDALDataset*)GDALOpenEx( shpPath.toUtf8().constData(),GDAL_OF_VECTOR,NULL,NULL,NULL);
-    if (_poGeometryDS == NULL)
+    _poGeometryDS =  (GDALDataset*)GDALOpenEx( shpPath.toUtf8().constData(), GDAL_OF_VECTOR, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
+    if (_poGeometryDS == Q_NULLPTR)
     {
         _errorInfo = tr("Open Vector File ")+shpPath+tr(" Failed!");
         _isValid = false;
@@ -91,11 +91,11 @@ void CDTAttributeGenerator::run()
 {
     QTime t;
     t.start();
-    if (readGeometry()==false)
+    if (!readGeometry())
         return;
 
     ObjectVector objectInfoVector;
-    if (initAttributeTable(&objectInfoVector)==false)
+    if (!initAttributeTable(&objectInfoVector))
         return;
 
     qDebug()<<"initAttributeTable cost: "<<t.elapsed()<<"ms";
@@ -111,14 +111,14 @@ void CDTAttributeGenerator::run()
 bool CDTAttributeGenerator::readGeometry()
 {
     OGRLayer *layer = _poGeometryDS->GetLayer(0);
-    if (layer == NULL)
+    if (layer == Q_NULLPTR)
     {
         emit showWarningMessage(tr("Open Shapefile Layer failed!"));
         return false;
     }
 
     OGRFeatureDefn* defn = layer->GetLayerDefn();
-    if (defn == NULL)
+    if (defn == Q_NULLPTR)
     {
         emit showWarningMessage(tr("Read Shapefile Defn Failed!"));
         return false;
@@ -133,7 +133,7 @@ bool CDTAttributeGenerator::readGeometry()
     int progressGap = barSize/100;
     int index = 0;
     OGRFeature *feature = layer->GetNextFeature();
-    while (feature != NULL)
+    while (feature != Q_NULLPTR)
     {
         int objectID = feature->GetFieldAsInteger(gridCodeID);
 
@@ -165,7 +165,7 @@ bool CDTAttributeGenerator::initAttributeTable(void *p)
     GDALRasterBand* poFlagBand = _poFlagDS->GetRasterBand(1);
     GDALRasterBand* poMaskBand = poFlagBand->GetMaskBand();
     int* buffer = new int[_width];
-    if (poMaskBand == NULL)//No mask
+    if (poMaskBand == Q_NULLPTR)//No mask
     {
         for(int i=0;i<_height;++i)
         {

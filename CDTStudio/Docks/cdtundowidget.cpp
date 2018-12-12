@@ -38,7 +38,7 @@ CDTUndoWidget::CDTUndoWidget( QWidget * parent, QgsMapCanvas * mapCanvas )
     mMapCanvas = mapCanvas;
     mUndoView = new QUndoView( dockWidgetContents );
     gridLayout->addWidget( mUndoView, 1, 0, 1, 2 );
-    mUndoStack = NULL;
+    mUndoStack = Q_NULLPTR;
     mPreviousIndex = 0;
     mPreviousCount = 0;
     qDebug("Constructed");
@@ -46,11 +46,11 @@ CDTUndoWidget::CDTUndoWidget( QWidget * parent, QgsMapCanvas * mapCanvas )
 
 void CDTUndoWidget::setUndoStack( QUndoStack* undoStack )
 {
-    if ( mUndoView != NULL )
+    if ( mUndoView != Q_NULLPTR )
     {
         mUndoView->close();
         delete mUndoView;
-        mUndoView = NULL;
+        mUndoView = Q_NULLPTR;
     }
 
     mUndoStack = undoStack;
@@ -72,11 +72,11 @@ void CDTUndoWidget::setUndoStack( QUndoStack* undoStack )
 
 void CDTUndoWidget::destroyStack()
 {
-    if ( mUndoStack != NULL )
+    if ( mUndoStack != Q_NULLPTR )
     {
-        mUndoStack = NULL;
+        mUndoStack = Q_NULLPTR;
     }
-    if ( mUndoView != NULL )
+    if ( mUndoView != Q_NULLPTR )
     {
         mUndoView->close();
         delete mUndoView;
@@ -116,7 +116,7 @@ void CDTUndoWidget::setLayer(CDTBaseLayer *layer)
 
 void CDTUndoWidget::setMapLayer( QgsMapLayer * layer )
 {
-    if ( layer != NULL )
+    if ( layer != Q_NULLPTR )
     {
         setUndoStack( layer->undoStack() );
     }

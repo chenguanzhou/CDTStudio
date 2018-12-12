@@ -3,8 +3,6 @@
         <file>Trans/zh_CN.qm</file>
         <file>Icons/Edit.png</file>
         <file>Icons/Export.png</file>
-        <file>Icons/Layers.png</file>
-        <file>Icons/Minus.png</file>
         <file>Icons/New.png</file>
         <file>Icons/Ok.png</file>
         <file>Icons/Open.png</file>
@@ -38,5 +36,7 @@
         <file>LICENSE</file>
         <file>3rdLicenses.txt</file>
         <file>Icons/gallery-32.png</file>
+        <file>Icons/CDTStudio.png</file>
+        <file>Icons/close.png</file>
     </qresource>
 </RCC>

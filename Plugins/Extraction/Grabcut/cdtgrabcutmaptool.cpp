@@ -1,5 +1,6 @@
 #include "cdtgrabcutmaptool.h"
 #include <QtCore>
+#include <QtGui>
 #include <qgsgeometry.h>
 #include <qgsrubberband.h>
 #include <qgsmapcanvas.h>
@@ -8,7 +9,7 @@
 #include <qgis.h>
 #include <qgspolygon.h>
 #include <qgslinestring.h>
-#include <QMouseEvent>
+#include <qgsmapmouseevent.h>
 #include <gdal_priv.h>
 #include <opencv2/opencv.hpp>
 
@@ -28,7 +29,7 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
     GDALDataset *poSrcDS = (GDALDataset *)GDALOpen(imagePath.toUtf8().constData(),GA_ReadOnly);
     int _width      = poSrcDS->GetRasterXSize();
     int _heith      = poSrcDS->GetRasterYSize();
-    if (poSrcDS == NULL)
+    if (poSrcDS == Q_NULLPTR)
     {
         qWarning()<<QObject::tr("Open Image File: %1 failed!").arg(imagePath);
         return QgsPolygon();
@@ -236,8 +237,8 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
 
 CDTGrabcutMapTool::CDTGrabcutMapTool(QgsMapCanvas *canvas) :
     QgsMapTool(canvas),
-    mRubberBand(NULL),
-    vectorLayer(NULL)
+    mRubberBand(Q_NULLPTR),
+    vectorLayer(Q_NULLPTR)
 {
     mCursor = Qt::ArrowCursor;
 }
@@ -249,7 +250,7 @@ CDTGrabcutMapTool::~CDTGrabcutMapTool()
 
 void CDTGrabcutMapTool::canvasMoveEvent(QgsMapMouseEvent *e)
 {
-    if ( mRubberBand == NULL )
+    if ( mRubberBand == Q_NULLPTR )
     {
         return;
     }
@@ -262,7 +263,7 @@ void CDTGrabcutMapTool::canvasMoveEvent(QgsMapMouseEvent *e)
 
 void CDTGrabcutMapTool::canvasPressEvent(QgsMapMouseEvent *e)
 {
-    if ( mRubberBand == NULL )
+    if ( mRubberBand == Q_NULLPTR )
     {
         mRubberBand = new QgsRubberBand( mCanvas, QgsWkbTypes::PolygonGeometry );
         mRubberBand->setColor(QColor(Qt::red));
@@ -293,6 +294,6 @@ void CDTGrabcutMapTool::canvasPressEvent(QgsMapMouseEvent *e)
         }
         mRubberBand->reset( QgsWkbTypes::PolygonGeometry );
         delete mRubberBand;
-        mRubberBand = 0;
+        mRubberBand = Q_NULLPTR;
     }
 }

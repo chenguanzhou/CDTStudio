@@ -49,7 +49,7 @@ void SLICInterface::startSegmentation()
     cv::Mat labels;
     slic->getLabels(labels);
 
-    GDALDataset *poMarkDS = GetGDALDriverManager()->GetDriverByName("GTiff")->Create(markfilePath.toUtf8().constData(),labels.cols,labels.rows,1,GDT_Int32,NULL);
+    GDALDataset *poMarkDS = GetGDALDriverManager()->GetDriverByName("GTiff")->Create(markfilePath.toUtf8().constData(),labels.cols,labels.rows,1,GDT_Int32,Q_NULLPTR);
     double adfGeoTransform[6];
     poSrcDS->GetGeoTransform(adfGeoTransform);
     poMarkDS->SetGeoTransform(adfGeoTransform);
@@ -66,7 +66,7 @@ void SLICInterface::startSegmentation()
 
     //Polygonlization
     GDALDriver * poOgrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
-    if (poOgrDriver == NULL)
+    if (poOgrDriver == Q_NULLPTR)
     {
         GDALClose(poMarkDS);
         return;
@@ -74,8 +74,8 @@ void SLICInterface::startSegmentation()
     QFileInfo info(shapefilePath);
     if (info.exists())
         poOgrDriver->Delete(shapefilePath.toUtf8().constData());
-    GDALDataset* poDstDS = poOgrDriver->Create(shapefilePath.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
-    if (poDstDS == NULL)
+    GDALDataset* poDstDS = poOgrDriver->Create(shapefilePath.toUtf8().constData(),0,0,0,GDT_Unknown,Q_NULLPTR);
+    if (poDstDS == Q_NULLPTR)
     {
         GDALClose(poMarkDS);
         return;
@@ -86,8 +86,8 @@ void SLICInterface::startSegmentation()
     pSpecialReference.SetProjection(poMarkDS->GetProjectionRef());
 
     const char* layerName = "polygon";
-    OGRLayer* poLayer = poDstDS->CreateLayer(layerName,&pSpecialReference,wkbPolygon,0);
-    if (poLayer == NULL)
+    OGRLayer* poLayer = poDstDS->CreateLayer(layerName,&pSpecialReference,wkbPolygon,Q_NULLPTR);
+    if (poLayer == Q_NULLPTR)
     {
         GDALClose(poMarkDS);
         GDALClose( poDstDS );
@@ -103,10 +103,10 @@ void SLICInterface::startSegmentation()
     }
 
 
-    char** papszOptions = NULL;
+    char** papszOptions = Q_NULLPTR;
     papszOptions = CSLSetNameValue(papszOptions,"8CONNECTED","8");
     GDALRasterBand *poMaskBand = poFlagBand->GetMaskBand();
-    CPLErr err = GDALPolygonize((GDALRasterBandH)poFlagBand,(GDALRasterBandH)poMaskBand,(OGRLayerH)poLayer,0,papszOptions,0,0);
+    CPLErr err = GDALPolygonize((GDALRasterBandH)poFlagBand,(GDALRasterBandH)poMaskBand,(OGRLayerH)poLayer,0,papszOptions,Q_NULLPTR,Q_NULLPTR);
     if (err != CE_None)
     {
         GDALClose(poMarkDS);

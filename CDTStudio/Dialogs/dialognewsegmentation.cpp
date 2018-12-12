@@ -100,7 +100,7 @@ void DialogNewSegmentation::startSegmentation()
     CDTSegmentationHelper *thread = new CDTSegmentationHelper(plugin,this);
     thread->setMarkfilePath(markfileTempPath);
     thread->setShapefilePath(shapefileTempPath);
-    if (thread == NULL || !thread->isValid())
+    if (thread == Q_NULLPTR || !thread->isValid())
     {
         qCritical("Start Segmentation Failed!");
         return;

@@ -76,16 +76,16 @@ void CDTMapToolSelectTrainingSamples::canvasReleaseEvent(QgsMapMouseEvent *e)
         else // add pan to mouse cursor
         {
             // transform the mouse pos to map coordinates
-            QgsPointXY center = mCanvas->getCoordinateTransform()->toMapPoint( e->x(), e->y() );
+            QgsPointXY center = mCanvas->getCoordinateTransform()->toMapCoordinates( e->x(), e->y() );
             mCanvas->setExtent( QgsRectangle( center, center ) );
             mCanvas->refresh();
         }
     }
     else if (e->button()==Qt::RightButton)
     {
-        QgsVectorLayer* vlayer = NULL;
+        QgsVectorLayer* vlayer = Q_NULLPTR;
         if ( !mapCanvas->currentLayer()
-             || ( vlayer = qobject_cast<QgsVectorLayer *>( mapCanvas->currentLayer() ) ) == NULL )
+             || ( vlayer = qobject_cast<QgsVectorLayer *>( mapCanvas->currentLayer() ) ) == Q_NULLPTR )
             return;
 
         QRect selectRect( 0, 0, 0, 0 );
@@ -168,9 +168,9 @@ void CDTMapToolSelectTrainingSamples::clearRubberBand()
 
 void CDTMapToolSelectTrainingSamples::updateRubber()
 {
-    QgsVectorLayer* vlayer = NULL;
+    QgsVectorLayer* vlayer = Q_NULLPTR;
     if ( !mapCanvas->currentLayer()
-         || ( vlayer = qobject_cast<QgsVectorLayer *>( mapCanvas->currentLayer() ) ) == NULL )
+         || ( vlayer = qobject_cast<QgsVectorLayer *>( mapCanvas->currentLayer() ) ) == Q_NULLPTR )
     {
         qWarning()<<"Current Layer is not a vector layer!";
         return;

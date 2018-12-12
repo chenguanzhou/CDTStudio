@@ -7,7 +7,7 @@
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
-    project(NULL),
+    project(Q_NULLPTR),
     treeModelObject(new QStandardItemModel(this)),
     mapCanvas(new QgsMapCanvas(this))
 {
@@ -20,14 +20,15 @@ CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     connect(mapCanvas,SIGNAL(renderComplete(QPainter*)),SLOT(onRenderComplete()));
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
-
+    mapCanvas->setFrameStyle(QFrame::Plain);
     mapCanvas->setCanvasColor(this->palette().color(this->backgroundRole()));
 
     vbox->addWidget(mapCanvas);
+    vbox->setMargin(0);
     this->setLayout(vbox);
 
     QToolBar* toolBar = initToolBar();
-    if (toolBar != NULL)
+    if (toolBar != Q_NULLPTR)
         vbox->setMenuBar(toolBar);
 }
 
@@ -161,7 +162,7 @@ void CDTProjectWidget::onOriginalTool(bool toggle)
     if (toggle)
     {
         mapCanvas->unsetMapTool(mapCanvas->mapTool());
-        mapCanvas->setMapTool(NULL);
+        mapCanvas->setMapTool(Q_NULLPTR);
     }
 }
 
@@ -199,7 +200,7 @@ void CDTProjectWidget::onFullExtent()
 
 void CDTProjectWidget::setLayerVisible(QgsMapLayer *layer, bool visible)
 {
-    if (layer==NULL) return;
+    if (layer==Q_NULLPTR) return;
 
     if (layersVisible.keys().contains(layer))
         layersVisible[layer] = visible;

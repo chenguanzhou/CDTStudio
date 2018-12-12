@@ -10,17 +10,17 @@ bool CDTExportClassificationLayerHelper::exportClassification(QUuid clsID, QStri
 {
     CDTClassificationLayer *clsLayer =
             CDTClassificationLayer::getLayer(clsID);
-    if (clsLayer==NULL || clsLayer->parent()==NULL)
+    if (clsLayer==Q_NULLPTR || clsLayer->parent()==Q_NULLPTR)
         qCritical("Classification layer is empty");
 
     CDTSegmentationLayer *segLayer =
             qobject_cast<CDTSegmentationLayer*>(clsLayer->parent());
-    if (segLayer==NULL || segLayer->parent()==NULL)
+    if (segLayer==Q_NULLPTR || segLayer->parent()==Q_NULLPTR)
         qCritical("Segmentation layer is empty");
 
     CDTImageLayer *imgLayer =
             qobject_cast<CDTImageLayer*>(segLayer->parent());
-    if (imgLayer==NULL)
+    if (imgLayer==Q_NULLPTR)
         qCritical("Image layer is empty");
 
     QVariantList data = clsLayer->data();

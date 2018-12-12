@@ -103,7 +103,7 @@ void CDTVectorChangeLayer::initLayer(
     QgsVectorLayer *newLayer = new QgsVectorLayer(/*shpPath*/tempShpPath,QFileInfo(/*shpPath*/tempShpPath).completeBaseName(),"ogr");
     if (!newLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+tempShpPath+tr(" failed!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Open shapefile ")+tempShpPath+tr(" failed!"));
         delete newLayer;
         return;
     }

@@ -149,7 +149,7 @@ void CDTVectorChangeDetectionHelper::run()
 
         auto isLayerValid = [](QgsVectorLayer *l)
         {
-            if (l==NULL) throw "Layer is null";
+            if (l==Q_NULLPTR) throw "Layer is null";
             if (l->isValid()==false) throw "Layer is invalid";
         };
         QgsVectorLayer *layerT1 = new QgsVectorLayer(p->shapefile_t1,QFileInfo(p->shapefile_t1).completeBaseName(),"ogr");
@@ -198,7 +198,7 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
     CDTClassificationLayer *clsLayer =
             CDTClassificationLayer::getLayer(clsID);
 
-    if (segLayer==NULL || segLayer==NULL )
+    if (segLayer==Q_NULLPTR || segLayer==Q_NULLPTR )
         return false;
 
     //Get categoryID_categoryName
@@ -249,7 +249,7 @@ bool CDTVectorChangeDetectionHelper::addClsInfoToShp(QString imageID, QString se
             qWarning("Add attribute failed!");
             return false;
         }
-        index = layer.fields().indexFromName(fieldName);
+//        index = layer.fields().indexFromName(fieldName);
     }
 
     layer.startEditing();
@@ -286,9 +286,9 @@ void CDTVectorChangeDetectionHelper::createShapefile(QString path)
 
     GDALDriver* poDriver = GetGDALDriverManager()->GetDriverByName("ESRI Shapefile");
     Q_ASSERT(poDriver);
-    GDALDataset* poDS = poDriver->Create(path.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
+    GDALDataset* poDS = poDriver->Create(path.toUtf8().constData(),0,0,0,GDT_Unknown,Q_NULLPTR);
     Q_ASSERT(poDS);
-    OGRLayer *layer = poDS->CreateLayer("change",NULL,wkbPolygon,NULL);
+    OGRLayer *layer = poDS->CreateLayer("change",Q_NULLPTR,wkbPolygon,Q_NULLPTR);
     Q_ASSERT(layer);
 
     OGRFieldDefn fieldBefore( "before", OFTString );

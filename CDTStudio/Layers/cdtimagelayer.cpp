@@ -18,7 +18,7 @@ QList<CDTImageLayer *> CDTImageLayer::layers;
 
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent),
-      multibandSelectionWidget(NULL),
+      multibandSelectionWidget(Q_NULLPTR),
       enhancementStyle(QgsContrastEnhancement::NoEnhancement),
       useRelative(false)
 {
@@ -107,7 +107,7 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
     QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(absoluteFilePath, QFileInfo(path).completeBaseName());
     if (!newCanvasLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open image ")+absoluteFilePath+tr(" failed!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Open image ")+absoluteFilePath+tr(" failed!"));
         qDebug()<<newCanvasLayer->error().summary();
         delete newCanvasLayer;
         return;
@@ -121,7 +121,7 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
     QSqlDatabase db = QSqlDatabase::database("category");
     if (db.isValid()==false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("database is invalid"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("database is invalid"));
         return ;
     }
     QSqlQuery query(db);
@@ -129,7 +129,7 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
     ret = query.prepare("insert into imagelayer VALUES(?,?,?,?)");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("insert image layer failed!\nerror:")+query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("insert image layer failed!\nerror:")+query.lastError().text());
         return ;
     }
     query.bindValue(0,id().toString());
@@ -210,7 +210,7 @@ void CDTImageLayer::setCategoryInfo(const CDTCategoryInformationList &info)
     QSqlDatabase db = QSqlDatabase::database("category");
     if (db.isValid()==false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("database is invalid"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("database is invalid"));
         return ;
     }
     QSqlQuery query(db);
@@ -219,7 +219,7 @@ void CDTImageLayer::setCategoryInfo(const CDTCategoryInformationList &info)
     ret = query.prepare("insert into category VALUES(?,?,?,?)");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("insert data failed!\nerror:")+query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("insert data failed!\nerror:")+query.lastError().text());
         return ;
     }
 
@@ -262,7 +262,7 @@ bool CDTImageLayer::useRelativePath() const
 int CDTImageLayer::bandCount() const
 {
     QgsRasterLayer* layer = (QgsRasterLayer*)canvasLayer();
-    if (layer==NULL) return 0;
+    if (layer==Q_NULLPTR) return 0;
     return layer->bandCount();
 }
 
@@ -277,7 +277,7 @@ CDTImageLayer *CDTImageLayer::getLayer(const QUuid &id)
         if (id == layer->id())
             return layer;
     }
-    return NULL;
+    return Q_NULLPTR;
 }
 
 void CDTImageLayer::setPath(QString path)

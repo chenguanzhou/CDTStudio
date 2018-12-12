@@ -33,7 +33,7 @@
 #include "Windows.h"
 #endif
 
-MainWindow* MainWindow::mainWindow = NULL;
+MainWindow* MainWindow::mainWindow = Q_NULLPTR;
 bool MainWindow::isLocked = false;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -97,7 +97,7 @@ void MainWindow::initIconSize()
     ui->mainToolBar->setIconSize(iconSize);
 #endif
 #else
-    ui->mainToolBar->setIconSize(QSize(32,32));
+    ui->mainToolBar->setIconSize(QSize(24,24));
 #endif
 
 
@@ -241,7 +241,7 @@ void MainWindow::initDockWidgets()
     dockWidgetPlot2D->setObjectName("dockWidgetPlot2D");
     registerDocks(Qt::BottomDockWidgetArea,dockWidgetPlot2D);
 
-    dockWidgetUndo = new CDTUndoWidget(this,NULL);
+    dockWidgetUndo = new CDTUndoWidget(this, Q_NULLPTR);
     registerDocks(Qt::BottomDockWidgetArea,dockWidgetUndo);
 
     //Qt::LeftDockWidgetArea
@@ -328,7 +328,7 @@ CDTProjectWidget *MainWindow::getCurrentProjectWidget()
 QgsMapCanvas *MainWindow::getCurrentMapCanvas()
 {
     CDTProjectWidget *projectWidget = getCurrentProjectWidget();
-    if (projectWidget == NULL) return NULL;
+    if (projectWidget == Q_NULLPTR) return Q_NULLPTR;
     return projectWidget->mapCanvas;
 }
 
@@ -349,7 +349,7 @@ void MainWindow::onCurrentTabChanged(int i)
 {
     if(i<0)
     {
-        ui->treeViewObjects->setModel(NULL);
+        ui->treeViewObjects->setModel(Q_NULLPTR);
         lineEditCoord->setText(QString::null);
         scaleEdit->lineEdit()->setText(QString::null);
         return ;
@@ -372,7 +372,7 @@ void MainWindow::onCurrentTabChanged(int i)
 
 void MainWindow::showMouseCoordinate(const QgsPointXY &p)
 {
-    if (this->getCurrentMapCanvas()==NULL)
+    if (this->getCurrentMapCanvas()==Q_NULLPTR)
         return;
 
     lineEditCoord->setText( QString("%1, %2").arg(p.x(), p.y()) );
@@ -492,11 +492,11 @@ void MainWindow::on_treeViewObjects_customContextMenuRequested(const QPoint &pos
 {
     QModelIndex index =ui->treeViewObjects->indexAt(pos);
     CDTProjectWidget* curwidget =(CDTProjectWidget*) ui->tabWidgetProject->currentWidget();
-    if(curwidget == NULL)
+    if(curwidget == Q_NULLPTR)
         return;
 
     CDTProjectTreeItem *item =static_cast<CDTProjectTreeItem *>(static_cast<QStandardItemModel *>(ui->treeViewObjects->model())->itemFromIndex(index));
-    if(item ==NULL)
+    if(item == Q_NULLPTR)
         return;
     CDTBaseLayer* correspondingObject = item->correspondingObject();
     if (correspondingObject)
@@ -510,14 +510,14 @@ void MainWindow::on_treeViewObjects_customContextMenuRequested(const QPoint &pos
 void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
 {
     QStandardItemModel* model = (QStandardItemModel*)(ui->treeViewObjects->model());
-    if (model==NULL)
+    if (model == Q_NULLPTR)
         return;
 
     CDTProjectTreeItem *item =(CDTProjectTreeItem*)(model->itemFromIndex(index));
-    if (item==NULL)
+    if (item==Q_NULLPTR)
         return;
 
-    if (item->correspondingObject() == NULL)
+    if (item->correspondingObject() == Q_NULLPTR)
         return;
 
     foreach (CDTDockWidget *dock, docks) {
@@ -528,7 +528,7 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
     if (type == CDTProjectTreeItem::EXTRACTION)
     {
         CDTExtractionLayer* extractionLayer = qobject_cast<CDTExtractionLayer*>(item->correspondingObject());
-        if (extractionLayer != NULL)
+        if (extractionLayer != Q_NULLPTR)
         {
             extractionLayer->setOriginRenderer();
         }
@@ -536,11 +536,11 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
     else if (type == CDTProjectTreeItem::SEGMENTION)
     {
         CDTSegmentationLayer* segmentationLayer = qobject_cast<CDTSegmentationLayer*>(item->correspondingObject());
-        if (segmentationLayer != NULL)
+        if (segmentationLayer != Q_NULLPTR)
         {
 
             segmentationLayer->setOriginRenderer();
-            if (segmentationLayer->canvasLayer()!=NULL)
+            if (segmentationLayer->canvasLayer()!=Q_NULLPTR)
             {
                 getCurrentMapCanvas()->setCurrentLayer(segmentationLayer->canvasLayer());
                 getCurrentMapCanvas()->refresh();
@@ -550,7 +550,7 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
     else if (type == CDTProjectTreeItem::CLASSIFICATION)
     {
         CDTClassificationLayer* classificationLayer = qobject_cast<CDTClassificationLayer*>(item->correspondingObject());
-        if (classificationLayer != NULL)
+        if (classificationLayer != Q_NULLPTR)
         {
             CDTSegmentationLayer* segmentationLayer = (CDTSegmentationLayer*)(classificationLayer->parent());
             QgsFeatureRenderer *renderer = classificationLayer->renderer();
@@ -561,7 +561,7 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
     else if (type == CDTProjectTreeItem::PIXELCHANGE)
     {
         CDTPixelChangeLayer *layer = qobject_cast<CDTPixelChangeLayer *>(item->correspondingObject());
-        if (layer != NULL)
+        if (layer != Q_NULLPTR)
         {
             getCurrentMapCanvas()->setCurrentLayer(layer->canvasLayer());
             getCurrentMapCanvas()->refresh();
@@ -571,7 +571,7 @@ void MainWindow::on_treeViewObjects_clicked(const QModelIndex &index)
     else if (type == CDTProjectTreeItem::VECTOR_CHANGE)
     {
         CDTVectorChangeLayer *layer = qobject_cast<CDTVectorChangeLayer *>(item->correspondingObject());
-        if (layer != NULL)
+        if (layer != Q_NULLPTR)
         {
             layer->setOriginRenderer();
             getCurrentMapCanvas()->setCurrentLayer(layer->canvasLayer());

@@ -10,19 +10,21 @@
 
 extern QList<CDTExtractionInterface *> extractionPlugins;
 
+
+
 CDTExtractionDockWidget::CDTExtractionDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
     ui(new Ui::CDTExtractionDockWidget),
-    modelExtractions    (new QSqlQueryModel(this)),
+    modelExtractions    (new QSqlQueryModel(reinterpret_cast<QObject *>(this) )),
     isGeometryModified  (false),
     currentEditState    (LOCKED),
-    vectorLayer (NULL),
-    mapCanvas   (NULL),
-    lastMapTool (NULL),
-    actionStartEdit     (new QAction(QIcon(":/Icons/Start.png"),tr("Start Edit"),this)),
-    actionRollBack      (new QAction(QIcon(":/Icons/Undo.png"),tr("Rollback"),this)),
-    actionSave          (new QAction(QIcon(":/Icons/Save.png"),tr("Save"),this)),
-    actionStop          (new QAction(QIcon(":/Icons/Stop.png"),tr("Stop"),this))
+    vectorLayer (Q_NULLPTR),
+    mapCanvas   (Q_NULLPTR),
+    lastMapTool (Q_NULLPTR),
+    actionStartEdit     (new QAction(QIcon(":/Icons/Start.png"), tr("Start Edit"), reinterpret_cast<QObject *>(this))),
+    actionRollBack      (new QAction(QIcon(":/Icons/Undo.png"), tr("Rollback"), reinterpret_cast<QObject *>(this))),
+    actionSave          (new QAction(QIcon(":/Icons/Save.png"), tr("Save"), reinterpret_cast<QObject *>(this))),
+    actionStop          (new QAction(QIcon(":/Icons/Stop.png"), tr("Stop"), reinterpret_cast<QObject *>(this)))
 {
     ui->setupUi(this);
 
@@ -70,11 +72,11 @@ CDTExtractionDockWidget::EDITSTATE CDTExtractionDockWidget::editState() const
 
 void CDTExtractionDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
-    if (layer == NULL)
+    if (layer == Q_NULLPTR)
     {
         this->setEnabled(false);
         return;
-    }    
+    }
 
     onDockClear();
     CDTExtractionLayer *extLayer = qobject_cast<CDTExtractionLayer *>(layer->getAncestor("CDTExtractionLayer"));
@@ -93,10 +95,10 @@ void CDTExtractionDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 void CDTExtractionDockWidget::onDockClear()
 {
     modelExtractions->clear();
-    vectorLayer = NULL;
-    mapCanvas   = NULL;
-    lastMapTool = NULL;
-    currentMapTool = NULL;
+    vectorLayer = Q_NULLPTR;
+    mapCanvas   = Q_NULLPTR;
+    lastMapTool = Q_NULLPTR;
+    currentMapTool = Q_NULLPTR;
     currentImagePath.clear();
     currentExtractionID.clear();
     this->setEnabled(false);
@@ -138,7 +140,7 @@ void CDTExtractionDockWidget::onActionStartEdit()
         return;
     start();
     ui->comboBoxExtraction->setEnabled(false);
-    ui->comboBoxMethod->setEnabled(false);    
+    ui->comboBoxMethod->setEnabled(false);
 }
 
 void CDTExtractionDockWidget::onActionRollBack()
@@ -146,7 +148,7 @@ void CDTExtractionDockWidget::onActionRollBack()
     if (isGeometryModified)
     {
         QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(NULL, tr("Extraction"),
+        ret = QMessageBox::warning(Q_NULLPTR, tr("Extraction"),
                                    tr("The extraction layer has been modified.\n"
                                       "Do you want to roolback your changes without save?"),
                                    QMessageBox::Reset | QMessageBox::Cancel);
@@ -171,7 +173,7 @@ void CDTExtractionDockWidget::onActionStop()
     if (isGeometryModified)
     {
         QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(NULL, tr("Extraction"),
+        ret = QMessageBox::warning(Q_NULLPTR, tr("Extraction"),
                                    tr("The extraction layer has been modified.\n"
                                       "Do you want to save your changes or ignore changes before stopping editing?"),
                                    QMessageBox::Save | QMessageBox::Ignore| QMessageBox::Cancel);

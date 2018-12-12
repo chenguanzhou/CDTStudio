@@ -8,7 +8,7 @@ class CDTRecentFile : public QObject
     Q_OBJECT
     Q_PROPERTY(QStringList files READ files WRITE setFiles NOTIFY filesChanged)
 public:
-    explicit CDTRecentFile(QString keyName, QObject *parent = 0);
+    explicit CDTRecentFile(const QString &keyName, QObject *parent = Q_NULLPTR);
     ~CDTRecentFile();
 
     QStringList files()const;
@@ -18,7 +18,7 @@ signals:
 
 public slots:    
     void addFile(QString file);
-    void setFiles(QStringList f);
+    void setFiles(const QStringList &f);
 
 private:
     QString key;

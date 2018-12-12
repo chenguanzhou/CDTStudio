@@ -15,8 +15,8 @@ CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     listView(new QListView(this)),
     toolBar(new QToolBar(this)),
     sampleModel(new QSqlQueryModel(this)),
-    lastMapTool(NULL),
-    currentMapTool(NULL)
+    lastMapTool(Q_NULLPTR),
+    currentMapTool(Q_NULLPTR)
 {
     this->setEnabled(false);
     this->setWindowTitle(tr("Training sample sets"));
@@ -71,7 +71,7 @@ void CDTTrainingSampleDockWidget::setSegmentationID(QUuid uuid)
 
 void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {    
-    if (layer == NULL)
+    if (layer == Q_NULLPTR)
     {
         this->setEnabled(false);
         return;
@@ -103,7 +103,7 @@ void CDTTrainingSampleDockWidget::onDockClear()
     if (currentMapTool)
     {
         delete currentMapTool;
-        currentMapTool = NULL;
+        currentMapTool = Q_NULLPTR;
     }
 }
 

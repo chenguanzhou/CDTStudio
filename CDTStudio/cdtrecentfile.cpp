@@ -1,7 +1,7 @@
 #include "cdtrecentfile.h"
 #include "stable.h"
 
-CDTRecentFile::CDTRecentFile(QString keyName, QObject *parent)
+CDTRecentFile::CDTRecentFile(const QString &keyName, QObject *parent)
     : QObject(parent),key(keyName)
 {
     QSettings setting;
@@ -42,7 +42,7 @@ void CDTRecentFile::addFile(QString file)
     setFiles(oriList);
 }
 
-void CDTRecentFile::setFiles(QStringList f)
+void CDTRecentFile::setFiles(const QStringList &f)
 {
     if (f==filesList)
         return;

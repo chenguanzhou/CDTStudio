@@ -18,7 +18,7 @@ public:
     QWidget *createEditor(QWidget *, const QStyleOptionViewItem &,
                           const QModelIndex &) const
     {
-        return NULL;
+        return Q_NULLPTR;
     }
 };
 

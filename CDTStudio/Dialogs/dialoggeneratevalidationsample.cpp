@@ -134,7 +134,7 @@ QVector<QPointF> DialogGenerateValidationSample::generatePoints(int pointsCount,
 bool DialogGenerateValidationSample::insertPointsIntoDB(QVector<QPointF> points, QString pointset_name)
 {
     CDTProjectLayer* prjLayer = qobject_cast<CDTProjectLayer*>(CDTImageLayer::getLayer(imgID)->parent());
-    if (prjLayer==NULL)
+    if (prjLayer==Q_NULLPTR)
         return false;
 
     QString prjID = prjLayer->id().toString();

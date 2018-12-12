@@ -49,7 +49,7 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
 //    if (segmentationLayer == layer)
 //        return;
-    if (layer==NULL)
+    if (layer==Q_NULLPTR)
         return;
 
     CDTSegmentationLayer *segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer->getAncestor("CDTSegmentationLayer"));
@@ -119,7 +119,7 @@ void CDTAttributeDockWidget::setTableModels(QList<QAbstractTableModel *> models)
 void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
 {    
     QTableView *view = (QTableView *)(tabWidget->currentWidget());
-    if (view==NULL)return;
+    if (view==Q_NULLPTR)return;
 
     QString tableName = tabWidget->tabText(tabWidget->currentIndex());
     QString featureName = view->model()->headerData(index.column(),Qt::Horizontal).toString();
@@ -140,7 +140,7 @@ void CDTAttributeDockWidget::onActionExportCurrentTable()
         return;
 
     bool isHeader = QMessageBox::information(
-                NULL,
+                Q_NULLPTR,
                 tr("Write headers?"),
                 tr("Write first line as headers?"),
                 QMessageBox::Ok|QMessageBox::No)==QMessageBox::Ok;
@@ -173,7 +173,7 @@ void CDTAttributeDockWidget::onActionExportAllTables()
         return;
 
     bool isHeader = QMessageBox::information(
-                NULL,
+                Q_NULLPTR,
                 tr("Write headers?"),
                 tr("Write first line as headers?"),
                 QMessageBox::Ok|QMessageBox::No)==QMessageBox::Ok;

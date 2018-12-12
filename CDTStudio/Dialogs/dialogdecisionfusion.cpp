@@ -42,7 +42,7 @@ void DialogDecisionFusion::startDecisionFusion()
         auto model = ui->listView->model();
         QString id = model->data(model->index(index.row(),1)).toString();
         CDTClassificationLayer *layer = CDTClassificationLayer::getLayer(QUuid(id));
-        if (layer==NULL)
+        if (layer==Q_NULLPTR)
             return;
         layers<<layer;
         labels.push_back(layer->data());

@@ -6,8 +6,8 @@
 
 CDTBaseLayer::CDTBaseLayer(QUuid uuid, QObject *parent) :
     QObject(parent),
-    mapCanvasLayer(NULL),
-    mapCanvas(NULL)
+    mapCanvasLayer(Q_NULLPTR),
+    mapCanvas(Q_NULLPTR)
 {
     this->uuid = uuid;
     if (parent) connect(this,SIGNAL(appendLayers(QList<QgsMapLayer*> )),parent,SIGNAL(appendLayers(QList<QgsMapLayer*>)));
@@ -89,7 +89,7 @@ QObject *CDTBaseLayer::getAncestor(const char *className)
             return obj;
         obj = obj->parent();
     }
-    return NULL;
+    return Q_NULLPTR;
 }
 
 QList<QList<QAction *> > CDTBaseLayer::allActions() const
@@ -149,7 +149,7 @@ void CDTBaseLayer::rename()
 {
     bool ok;
     QString text = QInputDialog::getText(
-                NULL, tr("Input New Name"),
+                Q_NULLPTR, tr("Input New Name"),
                 tr("Rename:"), QLineEdit::Normal,
                 this->name(), &ok);
     if (ok && !text.isEmpty())
@@ -178,7 +178,7 @@ void CDTBaseLayer::setWidgetActions(QList<QPair<QLabel *, QWidget *> > actions)
 
 void CDTBaseLayer::setCanvasLayer(QgsMapLayer *layer, bool addToLegend)
 {
-    if(layer == NULL)
+    if(layer == Q_NULLPTR)
         return;
 
     if (mapCanvasLayer)
@@ -206,7 +206,7 @@ void CDTBaseLayer::onMenuAboutToHide()
             QWidgetAction *wAction = qobject_cast<QWidgetAction*>(action);
             if (wAction)
             {
-                wAction->requestWidget(NULL);
+                wAction->requestWidget(Q_NULLPTR);
                 QWidget *widget = wAction->defaultWidget();
                 menu->removeAction(wAction);
                 wAction->setDefaultWidget(widget);

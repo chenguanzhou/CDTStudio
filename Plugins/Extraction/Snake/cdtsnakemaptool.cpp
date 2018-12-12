@@ -10,6 +10,7 @@
 #include <qgslinestring.h>
 #include <QMouseEvent>
 #include <gdal_priv.h>
+#include <qgsmapmouseevent.h>
 #include "StatisticSnake.h"
 
 QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
@@ -17,7 +18,7 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
     //init
     GDALAllRegister();
     GDALDataset *poSrcDS = (GDALDataset *)GDALOpen(imagePath.toUtf8().constData(),GA_ReadOnly);
-    if (poSrcDS == NULL)
+    if (poSrcDS == Q_NULLPTR)
     {
         qWarning()<<QObject::tr("Open Image File: %1 failed!").arg(imagePath);
         return QgsPolygon();
@@ -137,8 +138,8 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
 
 CDTSnakeMapTool::CDTSnakeMapTool(QgsMapCanvas *canvas) :
     QgsMapTool(canvas),
-    mRubberBand(NULL),
-    vectorLayer(NULL)
+    mRubberBand(Q_NULLPTR),
+    vectorLayer(Q_NULLPTR)
 {
     mCursor = Qt::ArrowCursor;
 }
@@ -150,7 +151,7 @@ CDTSnakeMapTool::~CDTSnakeMapTool()
 
 void CDTSnakeMapTool::canvasPressEvent( QgsMapMouseEvent * e )
 {
-    if ( mRubberBand == NULL )
+    if ( mRubberBand == Q_NULLPTR )
     {
         mRubberBand = new QgsRubberBand( mCanvas,  QgsWkbTypes::PolygonGeometry );
         mRubberBand->setColor(QColor(Qt::red));
@@ -180,13 +181,13 @@ void CDTSnakeMapTool::canvasPressEvent( QgsMapMouseEvent * e )
         }
         mRubberBand->reset( QgsWkbTypes::PolygonGeometry );
         delete mRubberBand;
-        mRubberBand = 0;
+        mRubberBand = Q_NULLPTR;
     }
 }
 
 void CDTSnakeMapTool::canvasMoveEvent( QgsMapMouseEvent * e )
 {
-    if ( mRubberBand == NULL )
+    if ( mRubberBand == Q_NULLPTR )
     {
         return;
     }

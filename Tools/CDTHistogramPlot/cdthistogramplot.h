@@ -16,7 +16,7 @@ class CDTHISTOGRAMPLOT_EXPORT CDTHistogramPlot:public QwtPlot
 {
     Q_OBJECT
 public:
-    CDTHistogramPlot(QWidget * parent = NULL );
+    CDTHistogramPlot(QWidget * parent = Q_NULLPTR );
     ~CDTHistogramPlot();
 
     QString tableName()const;

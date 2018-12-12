@@ -20,7 +20,7 @@ DialogPBCDBinary::DialogPBCDBinary(QUuid projectID, QWidget *parent) :
     prjID(projectID),
     modelImage(new QSqlQueryModel(this)),
     isDoubleThreshold(false),
-    reply(NULL)
+    reply(Q_NULLPTR)
 {
     ui->setupUi(this);
 

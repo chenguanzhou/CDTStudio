@@ -92,7 +92,7 @@ void CDTPlot2DDockWidget::setDataSource(QSqlDatabase db, QString tableName, QStr
 void CDTPlot2DDockWidget::onStatisticsFinished()
 {
     CDTAttibuteStatisticsHelper *helper = qobject_cast<CDTAttibuteStatisticsHelper *>(sender());
-    if (helper==NULL || helper->isValid())
+    if (helper==Q_NULLPTR || helper->isValid())
         return;
 
     model->removeRows(0,model->rowCount());

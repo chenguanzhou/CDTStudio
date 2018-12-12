@@ -5,7 +5,7 @@
 DialogConsole::DialogConsole(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogConsole),
-    listModel( NULL)
+    listModel( Q_NULLPTR)
 {
     ui->setupUi(this);
     listModel = new QStringListModel(ui->listView);
@@ -140,7 +140,7 @@ void DialogConsole::onSelectionChanged(QItemSelection selection)
 void DialogConsole::copyTableAll()
 {
     auto model = ui->tableView->model();
-    if (model==NULL || model->rowCount()==0) return;
+    if (model==Q_NULLPTR || model->rowCount()==0) return;
 
 
     QString selected_text;

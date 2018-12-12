@@ -8,7 +8,7 @@ class CDTLayerNameValidator : public QValidator
 {
     Q_OBJECT
 public:
-    explicit CDTLayerNameValidator(QSqlDatabase db,QString fieldName,QString tableName,QString filter = QString(),QObject *parent = NULL);
+    explicit CDTLayerNameValidator(QSqlDatabase db,QString fieldName,QString tableName,QString filter = QString(),QObject *parent = Q_NULLPTR);
     ~CDTLayerNameValidator();
 
     State validate(QString &text, int &pos) const;

@@ -14,7 +14,7 @@ CDTSegmentationHelper::~CDTSegmentationHelper()
 
 bool CDTSegmentationHelper::isValid() const
 {
-    return plugin!=NULL;
+    return plugin!=Q_NULLPTR;
 }
 
 void CDTSegmentationHelper::setMarkfilePath(const QString &path)

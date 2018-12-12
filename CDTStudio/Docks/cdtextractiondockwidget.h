@@ -21,7 +21,7 @@ public:
     enum EDITSTATE{
         LOCKED,EDITING
     };
-    explicit CDTExtractionDockWidget(QWidget *parent = 0);
+    explicit CDTExtractionDockWidget(QWidget *parent = Q_NULLPTR);
     ~CDTExtractionDockWidget();
 
     EDITSTATE editState()const;

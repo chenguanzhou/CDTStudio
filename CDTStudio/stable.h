@@ -37,5 +37,6 @@
 #include <qgspolygon.h>
 #include <qgslinestring.h>
 #include <qgsmapsettings.h>
+#include <qgsmapmouseevent.h>
 
 #endif // STABLE_H

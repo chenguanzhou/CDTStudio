@@ -111,7 +111,7 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
     }
 
     CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer->parent());
-    if (segLayer == NULL)
+    if (segLayer == Q_NULLPTR)
         return;
     QString markFIlePath = segLayer->markfileTempPath();
     QgsRasterLayer *imgMarkLayer = new QgsRasterLayer(markFIlePath);
@@ -308,7 +308,7 @@ void CDTClassifierAssessmentForm::on_pushButtonCopySample_clicked()
 void CDTClassifierAssessmentForm::copyTableAll()
 {
     auto model = ui->tableWidget->model();
-    if (model==NULL || model->rowCount()==0) return;
+    if (model==Q_NULLPTR || model->rowCount()==0) return;
 
 
     QString selected_text;

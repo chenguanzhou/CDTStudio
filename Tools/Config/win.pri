@@ -20,12 +20,6 @@ BOOST_LIBRARYDIR = $(BOOST_LIBRARYDIR)
     LIBS += -L$(STXXL_ROOT)/lib
 }
 
-!isEmpty(QWT_ROOT) {
-    INCLUDEPATH += $(QWT_ROOT)/include
-    LIBS += -L$(QWT_ROOT)/lib
-    include($(QWT_ROOT)/features/qwt.prf)
-}
-
 
 DEFINES += CORE_EXPORT=__declspec(dllimport)
 DEFINES += GUI_EXPORT=__declspec(dllimport)

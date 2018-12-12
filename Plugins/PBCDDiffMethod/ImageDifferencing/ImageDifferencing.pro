@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       = core
+QT       = core widgets
 
 TARGET = ImageDifferencing
 TEMPLATE = lib

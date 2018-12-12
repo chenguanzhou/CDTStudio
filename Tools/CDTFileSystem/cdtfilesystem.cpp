@@ -108,7 +108,7 @@ void CDTFileSystem::exportFiles(QString id)
 {
     if (!pData->files.contains(id))
     {
-        QMessageBox::warning(NULL,tr("Warning"),tr("File not exist!"));
+        QMessageBox::warning(Q_NULLPTR,tr("Warning"),tr("File not exist!"));
         return ;
     }
 
@@ -117,7 +117,7 @@ void CDTFileSystem::exportFiles(QString id)
     list<<info.path<<info.affiliatedFiles;
 
 
-    QString dir = QFileDialog::getExistingDirectory(NULL,tr("Choose a directory to export"));
+    QString dir = QFileDialog::getExistingDirectory(Q_NULLPTR,tr("Choose a directory to export"));
     if(dir.isEmpty())
         return;
 
@@ -125,13 +125,13 @@ void CDTFileSystem::exportFiles(QString id)
         QString newPath = dir + "/" + QFileInfo(filePath).fileName();
         if (QFile::copy(filePath,newPath)==false)
         {
-            QMessageBox::warning(NULL,tr("Warning"),tr("Copy file from %1 to %2 failed!")
+            QMessageBox::warning(Q_NULLPTR,tr("Warning"),tr("Copy file from %1 to %2 failed!")
                                  .arg(filePath).arg(newPath));
             return ;
         }
     }
 
-    QMessageBox::information(NULL,tr("Completed"),tr("Export file completed!"));
+    QMessageBox::information(Q_NULLPTR,tr("Completed"),tr("Export file completed!"));
 }
 
 QStringList CDTFileSystem::getShapefileAffaliated(const QString &srcPath)

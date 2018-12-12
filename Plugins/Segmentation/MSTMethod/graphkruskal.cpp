@@ -3,7 +3,7 @@
 
 
 GraphKruskal::GraphKruskal(unsigned elements)
-    :elementCount(elements),elts(NULL)
+    :elementCount(elements),elts(Q_NULLPTR)
 {
     file.open();
     if (file.resize(elements*sizeof(GraphElement)) == false)
@@ -12,7 +12,7 @@ GraphKruskal::GraphKruskal(unsigned elements)
         return;
     }
     elts = (GraphElement*) file.map(0, file.size());
-    if (elts == NULL)
+    if (elts == Q_NULLPTR)
     {
         qDebug()<<"Map Failed!";
         return;

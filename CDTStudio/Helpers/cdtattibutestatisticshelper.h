@@ -10,7 +10,7 @@ class CDTAttibuteStatisticsHelper : public CDTBaseThread
     Q_OBJECT
     
 public:
-    explicit CDTAttibuteStatisticsHelper(QSqlDatabase db, QString tableName, QString fieldName, QObject *parent = NULL);
+    explicit CDTAttibuteStatisticsHelper(QSqlDatabase db, QString tableName, QString fieldName, QObject *parent = Q_NULLPTR);
     ~CDTAttibuteStatisticsHelper();
 
     bool isValid()const;

@@ -69,12 +69,12 @@ void DialogNewExtraction::onAccepted()
     GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("ESRI Shapefile");
     Q_ASSERT(poDriver);
 
-    GDALDataset* poDS = poDriver->Create(shapefileTempPath.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
+    GDALDataset* poDS = poDriver->Create(shapefileTempPath.toUtf8().constData(),0,0,0,GDT_Unknown,Q_NULLPTR);
     Q_ASSERT(poDS);
 //    OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
     OGRSpatialReference reference;
     reference.SetProjection(poImageDS->GetProjectionRef());
-    OGRLayer *layer = poDS->CreateLayer("extraction",&reference,wkbPolygon,NULL);
+    OGRLayer *layer = poDS->CreateLayer("extraction", &reference, wkbPolygon, Q_NULLPTR);
     Q_ASSERT(layer);
     OGRFieldDefn oField( "id", OFTInteger );
     oField.SetWidth(10);

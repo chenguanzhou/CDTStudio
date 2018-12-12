@@ -1,6 +1,6 @@
 TEMPLATE = lib
 TARGET = CDTHistogramPlot
-QT += core sql
+QT += core sql svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,19 +13,15 @@ HEADERS=    \
 
 DESTDIR = ../../lib
 DLLDESTDIR = ../../bin
-DEFINES += CDTHISTOGRAMPLOT_LIBRARY
+DEFINES += CDTHISTOGRAMPLOT_LIBRARY QWT_DLL
 
 macx{
 CONFIG += qwt
 }
-unix:!macx{
-INCLUDEPATH += /usr/include/qwt
-LIBS += -lqwt
-}
-!unix{
-include(../Config/win.pri)
-LIBS += -lqwt
-}
+
+INCLUDEPATH += ../qwt/src
+
+LIBS += -L../../lib -lqwt
 
 RESOURCES += \
     resource.qrc

@@ -31,7 +31,7 @@ void CDTPBCDDiff::run()
     //A Lambda Functor to Open GDALDataset
     auto OpenGDALDataset = [&](const QString& path)->GDALDataset*{
         GDALDataset* poDS = (GDALDataset*)GDALOpen(path.toUtf8().constData(),GA_ReadOnly);
-        if (poDS==NULL)
+        if (poDS==Q_NULLPTR)
             throw tr("Open File: %1 Failed!").arg(path);
         return poDS;
     };
@@ -39,15 +39,15 @@ void CDTPBCDDiff::run()
     //A Lambda Functor to Create GeoTiff Image GDALDataset
     auto CreateTiffDataset = [&](const QString& path,int width,int height,int bandCount,GDALDataType type)->GDALDataset*{
         GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
-        if (poDriver == NULL)
+        if (poDriver == Q_NULLPTR)
             throw tr("No GeoTiff Driver!");
-        char** pszOptions = NULL;
+        char** pszOptions = Q_NULLPTR;
 //        pszOptions = CSLSetNameValue(pszOptions,"COMPRESS","DEFLATE");
 //        pszOptions = CSLSetNameValue(pszOptions,"PREDICTOR","1");
 //        pszOptions = CSLSetNameValue(pszOptions,"ZLEVEL","9");
         GDALDataset *poDS = (GDALDataset *)
                 (poDriver->Create(path.toUtf8().constData(),width,height,bandCount,type,pszOptions));
-        if (poDS == NULL)
+        if (poDS == Q_NULLPTR)
             throw tr("Create diff image: %1 failed!").arg(path);
         return poDS;
     };
@@ -150,12 +150,12 @@ void CDTPBCDDiff::run()
 
     //Start
     GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
-    GDALDataset *poT1DS = NULL;
-    GDALDataset *poT2DS = NULL;
-    GDALDataset *poDiffDS = NULL;
-    GDALDataset *poMergeDS = NULL;
-    GDALDataset *poT1AveDS = NULL;
-    GDALDataset *poT2AveDS = NULL;
+    GDALDataset *poT1DS = Q_NULLPTR;
+    GDALDataset *poT2DS = Q_NULLPTR;
+    GDALDataset *poDiffDS = Q_NULLPTR;
+    GDALDataset *poMergeDS = Q_NULLPTR;
+    GDALDataset *poT1AveDS = Q_NULLPTR;
+    GDALDataset *poT2AveDS = Q_NULLPTR;
 
     QString T1AvePath = GetTempFile(".tif");
     QString T2AvePath = GetTempFile(".tif");
@@ -172,10 +172,10 @@ void CDTPBCDDiff::run()
         if (bandPairs.count()==0)
             throw tr("No band pair selected!");
 
-        if (diffPlugin==NULL)
+        if (diffPlugin==Q_NULLPTR)
             throw tr("No PBCD Diff plugin found!");
 
-        if (bandPairs.count()>1 && mergePlugin==NULL)
+        if (bandPairs.count()>1 && mergePlugin==Q_NULLPTR)
             throw tr("No PBCD Merge plugin found!");
 
         connect(diffPlugin,SIGNAL(currentProgressChanged(QString)),this,SIGNAL(currentProgressChanged(QString)));
@@ -263,7 +263,7 @@ void CDTPBCDDiff::run()
         for (int k=0;k<poMergeDS->GetRasterCount();++k)
         {
             GDALRasterBand *poBand = poMergeDS->GetRasterBand(k+1);
-            poBand->ComputeStatistics(0,NULL,NULL,NULL,NULL,NULL,NULL);
+            poBand->ComputeStatistics(0,Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,Q_NULLPTR,Q_NULLPTR);
         }
         emit progressBarValueChanged(100);
         completed = true;
@@ -281,7 +281,7 @@ void CDTPBCDDiff::run()
     if (poT1DS) GDALClose(poT1DS);
     if (poT2DS) GDALClose(poT2DS);
     if (poDiffDS) GDALClose(poDiffDS);
-    if (poMergeDS!=poDiffDS && poDiffDS!=NULL) GDALClose(poMergeDS);
+    if (poMergeDS!=poDiffDS && poDiffDS!=Q_NULLPTR) GDALClose(poMergeDS);
     if (poT1AveDS) GDALClose(poT1AveDS);
     if (poT2AveDS) GDALClose(poT2AveDS);
 
@@ -382,12 +382,12 @@ void CDTPBCDHistogramHelper::run()
     histogramNegetive.fill(0);
     if (numOfThresholds==1)
     {
-        poBand->GetHistogram(minVal,maxVal,256,&histogramPositive[0],false,false,NULL,NULL);
+        poBand->GetHistogram(minVal,maxVal,256,&histogramPositive[0],false,false,Q_NULLPTR,Q_NULLPTR);
     }
     else if (numOfThresholds==2)
     {
-        poBand->GetHistogram(0,maxVal,256,&histogramPositive[0],false,false,NULL,NULL);
-        poBand->GetHistogram(minVal,0,256,&histogramNegetive[0],false,false,NULL,NULL);
+        poBand->GetHistogram(0,maxVal,256,&histogramPositive[0],false,false,Q_NULLPTR,Q_NULLPTR);
+        poBand->GetHistogram(minVal,0,256,&histogramNegetive[0],false,false,Q_NULLPTR,Q_NULLPTR);
     }
     GDALClose(poDS);
     emit progressBarValueChanged(100);

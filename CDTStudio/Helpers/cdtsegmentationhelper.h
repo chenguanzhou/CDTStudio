@@ -7,7 +7,7 @@ class CDTSegmentationInterface;
 class CDTSegmentationHelper : public CDTBaseThread
 {
 public:
-    explicit CDTSegmentationHelper(CDTSegmentationInterface *plugin, QObject *parent = NULL);
+    explicit CDTSegmentationHelper(CDTSegmentationInterface *plugin, QObject *parent = Q_NULLPTR);
     ~CDTSegmentationHelper();
 
     bool isValid()const;

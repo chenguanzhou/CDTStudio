@@ -52,7 +52,8 @@ INCLUDEPATH += \
     ../Tools/CDTFileSystem\
     ../Tools/CDTClassifierAssessmentWidget\
     ../Tools/CDTTableExporter\
-    ../Tools/wwWidgets
+    ../Tools/wwWidgets\
+    ../Tools/qwt/src
 
 
 DEPENDPATH += \
@@ -62,7 +63,8 @@ DEPENDPATH += \
     ../Tools/CDTFileSystem\
     ../Tools/CDTClassifierAssessmentWidget\
     ../Tools/CDTTableExporter\
-    ../Tools/wwWidgets
+    ../Tools/wwWidgets\
+    ../Tools/qwt/src
 
 #Libraries
 unix{

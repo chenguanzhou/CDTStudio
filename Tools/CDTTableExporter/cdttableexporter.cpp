@@ -132,7 +132,7 @@ bool CDTTableExporter::exportSingleTable(QSqlDatabase &db, const QString &tableN
     }
 
     CDTSingleTableExporterWriter *writer = getWriterByNameSingle(exportPath);
-    if (writer == NULL)
+    if (writer == Q_NULLPTR)
     {
         error = QObject::tr("No fit writer");
         return false;
@@ -246,7 +246,7 @@ bool CDTTableExporter::exportMultiTables(QSqlDatabase &db, const QStringList &ta
     delete excel;
     return true;
 #endif
-    QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("Export multiple tables are not supported in this plateform!"));
+    QMessageBox::critical(Q_NULLPTR,QObject::tr("Error"),QObject::tr("Export multiple tables are not supported in this plateform!"));
     return false;
 }
 
@@ -274,28 +274,28 @@ QString CDTTableExporter::getMiltiExporterFilters()
 CDTSingleTableExporterWriter *CDTTableExporter::getWriterByNameSingle(const QString &path)
 {
     if (path.isEmpty())
-        return NULL;
+        return Q_NULLPTR;
     QString suffix = QFileInfo(path).completeSuffix().toLower();
-    CDTSingleTableExporterWriter *writer = NULL;
+    CDTSingleTableExporterWriter *writer = Q_NULLPTR;
 #ifdef Q_OS_WIN
     if (suffix == "xlsx" || suffix == "xls")
     {
         writer = new ExcelWriter(path);
         if (!writer->isValid())
-            return NULL;
+            return Q_NULLPTR;
     }
 #endif
     if (suffix == "csv")
     {
         writer = new CSVWriter(path);
         if (!writer->isValid())
-            return NULL;
+            return Q_NULLPTR;
     }
     else if (suffix == "txt")
     {
         writer = new TXTWriter(path);
         if (!writer->isValid())
-            return NULL;
+            return Q_NULLPTR;
     }
     return writer;
 }

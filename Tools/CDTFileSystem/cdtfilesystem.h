@@ -10,7 +10,7 @@ class CDTFILESYSTEM_EXPORT CDTFileSystem:public QObject
 {
     Q_OBJECT
 public:
-    CDTFileSystem(QObject* parent = NULL);
+    CDTFileSystem(QObject* parent = Q_NULLPTR);
     ~CDTFileSystem();
 
     friend QDataStream CDTFILESYSTEM_EXPORT &operator<<(QDataStream &out, const CDTFileSystem &files);

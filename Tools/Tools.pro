@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
+    qwt\
     QPropertyEditor\
     CDTFileSystem\
     CDTHistogramPlot\
@@ -8,3 +9,5 @@ SUBDIRS += \
     XMLSchemaValidator\
     CDTTableExporter\
     wwWidgets
+
+CDTHistogramPlot.depends = qwt

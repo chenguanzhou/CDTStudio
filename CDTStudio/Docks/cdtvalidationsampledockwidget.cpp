@@ -18,7 +18,7 @@ CDTValidationSampleDockWidget::CDTValidationSampleDockWidget(QWidget *parent) :
     toolBar(new QToolBar(this)),
     listView(new QListView(this)),
     sampleModel(new QSqlQueryModel(this)),
-    pointsLayer(NULL)
+    pointsLayer(Q_NULLPTR)
 {
     this->setEnabled(false);
     this->setWindowTitle(tr("Validation sample sets"));
@@ -62,7 +62,7 @@ CDTValidationSampleDockWidget::~CDTValidationSampleDockWidget()
 
 void CDTValidationSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
-    if (layer==NULL)
+    if (layer==Q_NULLPTR)
         return;
 
     if (layer->id()==imageID)
@@ -131,7 +131,7 @@ void CDTValidationSampleDockWidget::onActionRename()
 
     bool ok;
     QString text = QInputDialog::getText(
-                NULL, tr("Input New Name"),
+                Q_NULLPTR, tr("Input New Name"),
                 tr("Rename:"), QLineEdit::Normal,
                 oldName, &ok);
     if (ok && !text.isEmpty() && oldName != text){
@@ -221,7 +221,7 @@ void CDTValidationSampleDockWidget::onActionExport()
     CDTSegmentationLayer *segLayer = CDTSegmentationLayer::getLayer(segmentationID);
     QString markfilePath = segLayer->markfileTempPath();
     GDALDataset *poMarkDS = (GDALDataset *)GDALOpen(markfilePath.toUtf8().constData(),GA_ReadOnly);
-    if (poMarkDS==NULL)
+    if (poMarkDS==Q_NULLPTR)
         return;
     double transform[6],inverse[6];
     poMarkDS->GetGeoTransform(transform);
@@ -397,9 +397,8 @@ void CDTValidationSampleDockWidget::clearPointsLayer()
 {
     if (pointsLayer)
     {
-//        QgsMapLayerRegistry::instance()->removeMapLayer(pointsLayer->id());
         if (MainWindow::getCurrentMapCanvas())
             MainWindow::getCurrentMapCanvas()->refresh();
-        pointsLayer = NULL;
+        pointsLayer = Q_NULLPTR;
     }
 }

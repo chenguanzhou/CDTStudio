@@ -138,7 +138,7 @@ void CDTSegmentationLayer::generateAttributes()
 {
     while (databaseURL().isNull())
     {
-        int ret = QMessageBox::warning(NULL,tr("Warning"),tr("Database connection information is not set!\nSet it now?")
+        int ret = QMessageBox::warning(Q_NULLPTR, tr("Warning"),tr("Database connection information is not set!\nSet it now?")
                                        ,QMessageBox::Ok|QMessageBox::Cancel);
         if (ret == QMessageBox::Ok)
             editDBInfo();
@@ -154,7 +154,7 @@ void CDTSegmentationLayer::generateAttributes()
 
     if (!db.open(dbConnInfo.username, dbConnInfo.password)) {
         QSqlDatabase::removeDatabase("attribute");
-        QMessageBox::critical(NULL,tr("Error"),tr("Open database failed!\n information:")+db.lastError().text());
+        QMessageBox::critical(Q_NULLPTR, tr("Error"),tr("Open database failed!\n information:")+db.lastError().text());
         return;
     }
 
@@ -193,7 +193,7 @@ void CDTSegmentationLayer::deconposeObjects()
 
 
     CDTDecomposeObjectHelper* helper = new CDTDecomposeObjectHelper(imagePath,markfilePath,dir,ret == 0,this);
-    QProgressDialog *progress = new QProgressDialog("Decompose objects...", "Abort Decompose", 0, 100, NULL);
+    QProgressDialog *progress = new QProgressDialog("Decompose objects...", "Abort Decompose", 0, 100, Q_NULLPTR);
     progress->show();
     connect(helper,SIGNAL(progressBarSizeChanged(int,int)),progress,SLOT(setRange(int,int)));
     connect(helper,SIGNAL(progressBarValueChanged(int)),progress,SLOT(setValue(int)));
@@ -206,7 +206,7 @@ void CDTSegmentationLayer::addClassification()
 {
     if (databaseURL().isNull())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Please set database connection!"));
+        QMessageBox::critical(Q_NULLPTR, tr("Error"),tr("Please set database connection!"));
         return;
     }
     MainWindow::getAttributesDockWidget()->clearTables();
@@ -233,7 +233,7 @@ void CDTSegmentationLayer::addClassification()
 
 void CDTSegmentationLayer::actionAddClassificationsFromTextFile()
 {
-    QString path = QFileDialog::getOpenFileName(NULL,tr("Open File"),QString(),tr("Text File(*.txt)"));
+    QString path = QFileDialog::getOpenFileName(Q_NULLPTR, tr("Open File"),QString(),tr("Text File(*.txt)"));
     if (path.isEmpty())
         return;
     QFile file(path);
@@ -397,13 +397,13 @@ QString CDTSegmentationLayer::imagePath() const
     return ((CDTImageLayer*)parent())->absolutPath();
 }
 
-int CDTSegmentationLayer::layerTransparency() const
+double CDTSegmentationLayer::layerTransparency() const
 {
     QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
         return p->opacity();
     else
-        return -1;
+        return 0;
 }
 
 QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
@@ -422,7 +422,7 @@ QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
         QSqlError err = db.lastError();
         db = QSqlDatabase();
         QSqlDatabase::removeDatabase("attribute");
-        QMessageBox::critical(NULL,tr("Error"),tr("Open database failed!\n information:")+err.text());
+        QMessageBox::critical(Q_NULLPTR, tr("Error"), tr("Open database failed!\n information:")+err.text());
         return models;
     }
 
@@ -435,7 +435,7 @@ QList<QAbstractTableModel *> CDTSegmentationLayer::tableModels()
     }
 
     foreach (QString tableName, tableNames) {
-        QSqlQueryModel* model = new QSqlQueryModel(NULL);
+        QSqlQueryModel* model = new QSqlQueryModel(Q_NULLPTR);
         model->setQuery(QString("select * from ")+tableName,db);
         model->setProperty("name",tableName);
         models.append(model);
@@ -471,7 +471,7 @@ CDTSegmentationLayer *CDTSegmentationLayer::getLayer(QUuid id)
         if (id == layer->id())
             return layer;
     }
-    return NULL;
+    return Q_NULLPTR;
 }
 
 void CDTSegmentationLayer::setBorderColor(const QColor &clr)
@@ -513,7 +513,7 @@ void CDTSegmentationLayer::initLayer(const QString &name,
     QgsVectorLayer *newLayer = new QgsVectorLayer(/*shpPath*/tempShpPath,QFileInfo(/*shpPath*/tempShpPath).completeBaseName(),"ogr");
     if (!newLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+tempShpPath+tr(" failed!"));
+        QMessageBox::critical(Q_NULLPTR, tr("Error"), tr("Open shapefile ")+tempShpPath+tr(" failed!"));
         delete newLayer;
         return;
     }
@@ -558,7 +558,7 @@ void CDTSegmentationLayer::initLayer(const QString &name,
 
     QList<QPair<QLabel*,QWidget*>> widgets;
     //Widgets for context menu
-    QtColorPicker *borderColorPicker = new QtColorPicker(NULL);
+    QtColorPicker *borderColorPicker = new QtColorPicker(Q_NULLPTR);
     borderColorPicker->setStandardColors();
     borderColorPicker->setToolTip(tr("Border color"));
     connect(borderColorPicker,SIGNAL(colorChanged(QColor)),SLOT(setBorderColor(QColor)));
@@ -567,7 +567,7 @@ void CDTSegmentationLayer::initLayer(const QString &name,
     widgets.append(qMakePair(new QLabel(tr("Border color")),(QWidget*)borderColorPicker));
 
 
-    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal, Q_NULLPTR);
     sliderTransparency->setMinimum(0);
     sliderTransparency->setMaximum(100);
     sliderTransparency->setToolTip(tr("Transparency"));

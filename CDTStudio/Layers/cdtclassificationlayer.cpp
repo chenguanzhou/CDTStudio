@@ -61,14 +61,14 @@ void CDTClassificationLayer::remove()
 
 void CDTClassificationLayer::exportLayer()
 {
-    QString shpPath= QFileDialog::getSaveFileName(NULL,tr("Export"),QString(), "ESRI Shapefile(*.shp)");
+    QString shpPath= QFileDialog::getSaveFileName(Q_NULLPTR,tr("Export"),QString(), "ESRI Shapefile(*.shp)");
     if(shpPath.isEmpty())
         return;
 
     if (CDTExportClassificationLayerHelper::exportClassification(id(),tr("Category"),shpPath))
-        QMessageBox::information(NULL,tr("Completed"),tr("Export file completed!"));
+        QMessageBox::information(Q_NULLPTR,tr("Completed"),tr("Export file completed!"));
     else
-        QMessageBox::critical(NULL,tr("Error"),tr("Export classification layer failed!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Export classification layer failed!"));
 }
 
 void CDTClassificationLayer::showAccuracy()
@@ -218,7 +218,7 @@ void CDTClassificationLayer::initLayer(const QString &name,
 
     QList<QPair<QLabel*,QWidget*>> widgets;
     //Transparency
-    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,Q_NULLPTR);
     sliderTransparency->setMinimum(0);
     sliderTransparency->setMaximum(100);
     sliderTransparency->setToolTip(tr("Transparency"));
@@ -241,7 +241,7 @@ CDTClassificationLayer *CDTClassificationLayer::getLayer(QUuid id)
         if (id == layer->id())
             return layer;
     }
-    return NULL;
+    return Q_NULLPTR;
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification)

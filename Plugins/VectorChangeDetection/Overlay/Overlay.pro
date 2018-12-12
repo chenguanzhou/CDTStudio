@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core xml
+QT       += core widgets xml widgets
 
 TARGET = Overlay
 TEMPLATE = lib

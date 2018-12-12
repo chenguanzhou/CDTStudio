@@ -1,4 +1,4 @@
-QT       += core gui xml
+QT       += core gui widgets xml
 
 TARGET = Grabcut
 TEMPLATE = lib
