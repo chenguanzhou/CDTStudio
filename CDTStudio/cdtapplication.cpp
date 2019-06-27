@@ -1,5 +1,6 @@
 #include "cdtapplication.h"
 #include "stable.h"
+#include <qgsproviderregistry.h>
 #include <stxxl.h>
 #include "cdtpluginloader.h"
 #include "cdtsegmentationinterface.h"
@@ -24,7 +25,7 @@ QList<CDTAutoThresholdInterface *>  autoThresholdPlugins;
 QList<CDTVectorChangeDetectionInterface *> vectorDetectionPlugins;
 
 CDTApplication::CDTApplication(int & argc, char ** argv) :
-    QgsApplication(argc, argv,true)/*,
+    QgsApplication(argc, argv, true)/*,
     processor (new QProcess(this)),
     udpReceiver(new QUdpSocket(this)),
     udpSender(new QUdpSocket(this))*/
@@ -43,8 +44,11 @@ CDTApplication::CDTApplication(int & argc, char ** argv) :
         }
     }
 
-    QgsApplication::setPluginPath(QDir::currentPath()+"/Plugins");
-    QgsApplication::initQgis();
+//    QgsApplication::setPluginPath(QDir::currentPath()+"/Plugins");
+//    qDebug()<<QgsApplication::pluginPath();
+//    QgsApplication::initQgis();
+
+    QgsProviderRegistry::instance(QDir::currentPath()+"/Plugins");
 
     if (initDatabase()==false)
         exit(0);
@@ -152,7 +156,7 @@ bool CDTApplication::initDatabase()
     /// Add database
     if (QSqlDatabase::drivers().contains("QSQLITE")==false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Can't find QSQLITE driver, this application couldn't run!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Can't find QSQLITE driver, this application couldn't run!"));
         return false;
     }
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE","category");
@@ -166,15 +170,15 @@ bool CDTApplication::initDatabase()
     //    dbPath = dbFile.fileName();
     //    dbFile.close();
 
-    Log4Qt::Logger::rootLogger()->info("Program database is %1!",dbPath);
+    qDebug()<<"Program database is "<<dbPath;
 
     db.setDatabaseName(dbPath);
     if (!db.open())
     {
-        QMessageBox::warning(NULL, tr("Unable to open database"),
+        QMessageBox::warning(Q_NULLPTR, tr("Unable to open database"),
                              tr("An error occurred while opening the connection: ")
                              + db.lastError().text());
-        Log4Qt::Logger::rootLogger()->warn("Program db open failed!\nerror msg:%1",db.lastError().text());
+        qWarning("Program db open failed!\nerror msg:%1",db.lastError().text());
         return false;
     }
 
@@ -185,8 +189,8 @@ bool CDTApplication::initDatabase()
     ret = query.exec("CREATE TABLE project (id text NOT NULL, name text NOT NULL,Primary Key(id) )");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table project failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table project failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table project failed!\nerror:")+query.lastError().text());
+        qCritical("create table project failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -194,8 +198,8 @@ bool CDTApplication::initDatabase()
     ret = query.exec("CREATE TABLE imagelayer (id text NOT NULL, name text NOT NULL,path text NOT NULL,projectID text NOT NULL,Primary Key(id) )");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table imagelayer failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table imagelayer failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table imagelayer failed!\nerror:")+query.lastError().text());
+        qCritical("create table imagelayer failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -210,8 +214,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(id))");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table extractionlayer failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table extractionlayer failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table extractionlayer failed!\nerror:")+query.lastError().text());
+        qCritical("create table extractionlayer failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -229,8 +233,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(id))");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table segmentationlayer failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table segmentationlayer failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table segmentationlayer failed!\nerror:")+query.lastError().text());
+        qCritical("create table segmentationlayer failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -248,8 +252,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(id))");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table classificationlayer failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table classificationlayer failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table classificationlayer failed!\nerror:")+query.lastError().text());
+        qCritical("create table classificationlayer failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -262,8 +266,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(id))");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table category failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table category failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table category failed!\nerror:")+query.lastError().text());
+        qCritical("create table category failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -276,8 +280,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(id) )");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table sample_segmentation failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table sample_segmentation failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table sample_segmentation failed!\nerror:")+query.lastError().text());
+        qCritical("create table sample_segmentation failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -289,8 +293,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(objectid,categoryid,sampleid) )");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table object_samples failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table object_samples failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table object_samples failed!\nerror:")+query.lastError().text());
+        qCritical("create table object_samples failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -304,8 +308,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(id) )");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table image_validation_samples failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table image_validation_samples failed!\nmsg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table image_validation_samples failed!\nerror:")+query.lastError().text());
+        qCritical("create table image_validation_samples failed!\nmsg:%1",query.lastError().text());
     }
 
     ///create table points_project
@@ -315,8 +319,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(pointset_name))");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table points_project failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table points_project failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table points_project failed!\nerror:")+query.lastError().text());
+        qCritical("create table points_project failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -329,8 +333,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(id,x,y,pointset_name))");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table points failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table points failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table points failed!\nerror:")+query.lastError().text());
+        qCritical("create table points failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -342,8 +346,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(id,validationID))");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table point_category failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table point_category failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table point_category failed!\nerror:")+query.lastError().text());
+        qCritical("create table point_category failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -357,8 +361,8 @@ bool CDTApplication::initDatabase()
                      "Primary Key(id))");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table pbcd_binary failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table pbcd_binary failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table pbcd_binary failed!\nerror:")+query.lastError().text());
+        qCritical("create table pbcd_binary failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
@@ -374,14 +378,14 @@ bool CDTApplication::initDatabase()
                      "UNIQUE (name) )");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("create table vector_change failed!\nerror:")+query.lastError().text());
-        Log4Qt::Logger::rootLogger()->error("create table vector_change failed!\nerror msg:%1",query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("create table vector_change failed!\nerror:")+query.lastError().text());
+        qCritical("create table vector_change failed!\nerror msg:%1",query.lastError().text());
         return false;
     }
 
     CDTPixelChangeLayer::changeLayerMetaObjects.insert("CDTPBCDBinaryLayer",CDTPBCDBinaryLayer::staticMetaObject);
 
-    Log4Qt::Logger::rootLogger()->info("Program database initialized!");
+    qDebug("Program database initialized!");
     return true;
 }
 
@@ -392,6 +396,6 @@ void CDTApplication::initStxxl()
     stxxl::config * cfg = stxxl::config::get_instance();
     stxxl::disk_config disk(stxxlFilePath.toLocal8Bit().constData(), /*800 * 1024 * 1024*/0, "wincall delete");
     cfg->add_disk(disk);
-    Log4Qt::Logger::rootLogger()->info("Stxxl file path is %1",stxxlFilePath);
+    qDebug()<<"Stxxl file path is "<<stxxlFilePath;
 }
 #endif

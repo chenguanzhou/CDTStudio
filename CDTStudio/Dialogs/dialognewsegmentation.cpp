@@ -40,7 +40,7 @@ DialogNewSegmentation::DialogNewSegmentation(
     if (index != -1)
     {
         CDTLayerNameValidator *validator = new CDTLayerNameValidator
-                (QSqlDatabase::database("category"),"name",CDTSegmentationLayer::staticMetaObject.classInfo(index).value(),QString("imageid='%1'").arg(imageID));
+                (QSqlDatabase::database("category"),"name",CDTSegmentationLayer::staticMetaObject.classInfo(index).value(),QString("imageid='%1'").arg(imageID.toString()));
         ui->lineEditName->setValidator(validator);
     }
     ui->lineEditName->setText(tr("Untitled"));
@@ -100,9 +100,9 @@ void DialogNewSegmentation::startSegmentation()
     CDTSegmentationHelper *thread = new CDTSegmentationHelper(plugin,this);
     thread->setMarkfilePath(markfileTempPath);
     thread->setShapefilePath(shapefileTempPath);
-    if (thread == NULL || !thread->isValid())
+    if (thread == Q_NULLPTR || !thread->isValid())
     {
-        logger()->error("Start Segmentation Failed!");
+        qCritical("Start Segmentation Failed!");
         return;
     }
 

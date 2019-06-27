@@ -20,7 +20,7 @@ DialogNewImage::DialogNewImage(QUuid prjID, QWidget *parent) :
     if (index != -1)
     {
         CDTLayerNameValidator *validator = new CDTLayerNameValidator
-                (QSqlDatabase::database("category"),"name",CDTImageLayer::staticMetaObject.classInfo(index).value(),QString("projectid='%1'").arg(prjID));
+                (QSqlDatabase::database("category"),"name",CDTImageLayer::staticMetaObject.classInfo(index).value(),QString("projectid='%1'").arg(prjID.toString()));
         ui->lineEditName->setValidator(validator);
     }
 }

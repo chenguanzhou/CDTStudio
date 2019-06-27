@@ -70,7 +70,7 @@ void DialogGenerateValidationSample::onComboBoxChanged(QString pointsetName)
     }
     catch (const std::exception &e)
     {
-        logger()->debug(e.what());
+        qDebug()<<e.what();
         ui->labelPointCount->setText(tr("Pointset is invalid"));
         ui->buttonBox->setEnabled(false);
     }
@@ -134,7 +134,7 @@ QVector<QPointF> DialogGenerateValidationSample::generatePoints(int pointsCount,
 bool DialogGenerateValidationSample::insertPointsIntoDB(QVector<QPointF> points, QString pointset_name)
 {
     CDTProjectLayer* prjLayer = qobject_cast<CDTProjectLayer*>(CDTImageLayer::getLayer(imgID)->parent());
-    if (prjLayer==NULL)
+    if (prjLayer==Q_NULLPTR)
         return false;
 
     QString prjID = prjLayer->id().toString();
@@ -169,7 +169,7 @@ bool DialogGenerateValidationSample::insertPointsIntoDB(QVector<QPointF> points,
     catch (QString msg)
     {
         db.rollback();
-        logger()->error(msg);
+        qCritical()<<msg;
         return false;
     }
 }

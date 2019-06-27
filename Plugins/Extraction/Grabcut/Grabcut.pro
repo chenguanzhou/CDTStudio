@@ -1,4 +1,4 @@
-QT       += core gui xml
+QT       += core gui widgets xml
 
 TARGET = Grabcut
 TEMPLATE = lib
@@ -26,13 +26,7 @@ DEFINES += GUI_EXPORT=
 }
 !unix{
 #QGIS
-INCLUDEPATH += $(QGIS_ROOT)/include \
-                $(OSGEO4W_ROOT)/include
-LIBS += -L$(QGIS_ROOT)/lib \
-                -L$(OSGEO4W_ROOT)/lib
-DEFINES += CORE_EXPORT=__declspec(dllimport)
-DEFINES += GUI_EXPORT=__declspec(dllimport)
-DEFINES += noexcept=
+include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
@@ -48,3 +42,4 @@ SOURCES += \
 
 include(../../../Interfaces/Interfaces.pri)
 include(../../../Tools/Config/link2opencv.pri)
+DEFINES += _XKEYCHECK_H

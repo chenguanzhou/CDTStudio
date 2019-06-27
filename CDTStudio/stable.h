@@ -22,23 +22,21 @@
 //QGIS
 #include <qgis.h>
 #include <qgsapplication.h>
-#include <qgisgui.h>
 #include <qgsrasterlayer.h>
 #include <qgsvectorlayer.h>
-#include <qgsmaplayerregistry.h>
-#include <qgssinglesymbolrendererv2.h>
-#include <qgscategorizedsymbolrendererv2.h>
-#include <qgsfillsymbollayerv2.h>
+//#include <qgsmaplayerregistry.h>
+#include <qgssinglesymbolrenderer.h>
+#include <qgscategorizedsymbolrenderer.h>
+#include <qgsfillsymbollayer.h>
 #include <qgsvectordataprovider.h>
 #include <qgsmapcanvas.h>
 #include <qgsrasterlayer.h>
-#include <qgsmaplayerregistry.h>
 #include <qgsmaptoolzoom.h>
 #include <qgsmaptoolpan.h>
-#include "qgsrubberband.h"
-
-//Log4Qt
-#include "log4qt/logger.h"
-#include "log4qt/basicconfigurator.h"
+#include <qgsrubberband.h>
+#include <qgspolygon.h>
+#include <qgslinestring.h>
+#include <qgsmapsettings.h>
+#include <qgsmapmouseevent.h>
 
 #endif // STABLE_H

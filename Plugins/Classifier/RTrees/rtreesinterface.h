@@ -8,10 +8,8 @@ class RTreesInterface : public CDTClassifierInterface
     Q_OBJECT
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTClassifierInterface" FILE "RTrees.json")
-#else
-    Q_INTERFACES(CDTClassifierInterface)
 #endif // QT_VERSION >= 0x050000
-
+    Q_INTERFACES(CDTClassifierInterface)
 public:    
     RTreesInterface(QObject *parent = 0);
     QString classifierName() const;

@@ -27,8 +27,8 @@ public slots:
     void exportShapefile();
     void remove();
     void setOriginRenderer();
-    void setRenderer(QgsFeatureRendererV2 *r);
-    QgsFeatureRendererV2 * changeViewRenderer();
+    void setRenderer(QgsFeatureRenderer *r);
+    QgsFeatureRenderer *changeViewRenderer();
 
     void initLayer(
             const QString& name,

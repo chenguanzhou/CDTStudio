@@ -1,12 +1,15 @@
 #include "cdtgrabcutmaptool.h"
 #include <QtCore>
+#include <QtGui>
 #include <qgsgeometry.h>
 #include <qgsrubberband.h>
 #include <qgsmapcanvas.h>
 #include <qgsvectorlayer.h>
 #include <qgsvectordataprovider.h>
 #include <qgis.h>
-#include <QMouseEvent>
+#include <qgspolygon.h>
+#include <qgslinestring.h>
+#include <qgsmapmouseevent.h>
 #include <gdal_priv.h>
 #include <opencv2/opencv.hpp>
 
@@ -26,7 +29,7 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
     GDALDataset *poSrcDS = (GDALDataset *)GDALOpen(imagePath.toUtf8().constData(),GA_ReadOnly);
     int _width      = poSrcDS->GetRasterXSize();
     int _heith      = poSrcDS->GetRasterYSize();
-    if (poSrcDS == NULL)
+    if (poSrcDS == Q_NULLPTR)
     {
         qWarning()<<QObject::tr("Open Image File: %1 failed!").arg(imagePath);
         return QgsPolygon();
@@ -54,10 +57,9 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
 
     //transform
     std::vector<VERTEX2D> vecInputPoints;
-    QVector<QgsPoint> originalPoints = polygon[0];
-    foreach (QgsPoint pt, originalPoints) {
+    for (auto iter = polygon.boundary()->boundary()->vertices_begin();iter != polygon.boundary()->boundary()->vertices_end();++iter) {
         VERTEX2D newPt;
-        GDALApplyGeoTransform(padfTransform_i,pt.x(),pt.y(),&newPt.x,&newPt.y);
+        GDALApplyGeoTransform(padfTransform_i,(*iter).x(),(*iter).y(),&newPt.x,&newPt.y);
         vecInputPoints.push_back(newPt);
     }
 
@@ -186,7 +188,6 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
 
     std::vector<VERTEX2D> vecAllPoints;
 
-    QgsPolygon exportPolygon;
 
     int maxSize = 0 ;
     foreach(std::vector<cv::Point>  contour,contours)
@@ -196,6 +197,9 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
             maxSize = contour.size();
         }
     }
+
+    QgsPolygon exportPolygon;
+
     foreach(std::vector<cv::Point>  contour,contours)
     {
         vecAllPoints.clear();
@@ -214,16 +218,15 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
             QgsPolyline polyline;
             for (size_t i=vecAllPoints.size()-1;i>0;--i)
             {
-                QgsPoint ptTemp;
-                ptTemp.set(
-                        padfTransform[0] + padfTransform[1]*vecAllPoints[i].x
+                QgsPoint ptTemp (padfTransform[0] + padfTransform[1]*vecAllPoints[i].x
                         + padfTransform[2]*vecAllPoints[i].y,
                         padfTransform[3] + padfTransform[4]*vecAllPoints[i].x
                         + padfTransform[5]*vecAllPoints[i].y);
                 polyline.push_back(ptTemp);
             }
 
-            exportPolygon.push_back(polyline);
+            QgsLineString *curve = new QgsLineString(polyline);
+            exportPolygon.setExteriorRing(curve);
         }
     }
 
@@ -234,8 +237,8 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
 
 CDTGrabcutMapTool::CDTGrabcutMapTool(QgsMapCanvas *canvas) :
     QgsMapTool(canvas),
-    mRubberBand(NULL),
-    vectorLayer(NULL)
+    mRubberBand(Q_NULLPTR),
+    vectorLayer(Q_NULLPTR)
 {
     mCursor = Qt::ArrowCursor;
 }
@@ -247,7 +250,7 @@ CDTGrabcutMapTool::~CDTGrabcutMapTool()
 
 void CDTGrabcutMapTool::canvasMoveEvent(QgsMapMouseEvent *e)
 {
-    if ( mRubberBand == NULL )
+    if ( mRubberBand == Q_NULLPTR )
     {
         return;
     }
@@ -260,9 +263,9 @@ void CDTGrabcutMapTool::canvasMoveEvent(QgsMapMouseEvent *e)
 
 void CDTGrabcutMapTool::canvasPressEvent(QgsMapMouseEvent *e)
 {
-    if ( mRubberBand == NULL )
+    if ( mRubberBand == Q_NULLPTR )
     {
-        mRubberBand = new QgsRubberBand( mCanvas, QGis::Polygon );
+        mRubberBand = new QgsRubberBand( mCanvas, QgsWkbTypes::PolygonGeometry );
         mRubberBand->setColor(QColor(Qt::red));
     }
     if ( e->button() == Qt::LeftButton )
@@ -273,26 +276,24 @@ void CDTGrabcutMapTool::canvasPressEvent(QgsMapMouseEvent *e)
     {
         if ( mRubberBand->numberOfVertices() > 2 )
         {
-            QgsGeometry* polygonGeom = mRubberBand->asGeometry();
-            QgsPolygon polygon = polygonGeom->asPolygon();
-            delete polygonGeom;
+            auto polygonGeom = mRubberBand->asGeometry().get();
+            QgsPolygon *polygon = qgsgeometry_cast<QgsPolygon *>( polygonGeom );
 
             QTime t;
             t.start();
-            QgsPolygon snakePolygon = grabcut(polygon,imagePath);
+            QgsPolygon snakePolygon = grabcut(*polygon,imagePath);
             qDebug()<<t.elapsed();
 
-            QgsGeometry* newPolygonGeom = QgsGeometry::fromPolygon(snakePolygon);
-            QgsFeature f(vectorLayer->pendingFields(),0);
+            QgsGeometry newPolygonGeom = QgsGeometry(snakePolygon.boundary());
+            QgsFeature f(vectorLayer->fields(),0);
             f.setGeometry(newPolygonGeom);
             vectorLayer->startEditing();
-            qDebug()<<vectorLayer->addFeature(f);
-//            qDebug()<<newPolygonGeom->area();
+            vectorLayer->addFeature(f);
             vectorLayer->commitChanges();
             canvas()->refresh();
         }
-        mRubberBand->reset( QGis::Polygon );
+        mRubberBand->reset( QgsWkbTypes::PolygonGeometry );
         delete mRubberBand;
-        mRubberBand = 0;
+        mRubberBand = Q_NULLPTR;
     }
 }

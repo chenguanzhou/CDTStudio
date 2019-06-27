@@ -41,7 +41,7 @@ void CDTPBCDBinaryLayer::initLayer(const QString &name, const QString &image_t1,
     QgsRasterLayer *newLayer = new QgsRasterLayer(tempDiffPath);
     if (!newLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open diff image ")+tempDiffPath+tr(" failed!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Open diff image ")+tempDiffPath+tr(" failed!"));
         delete newLayer;
         return;
     }

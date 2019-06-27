@@ -38,19 +38,19 @@ CDTUndoWidget::CDTUndoWidget( QWidget * parent, QgsMapCanvas * mapCanvas )
     mMapCanvas = mapCanvas;
     mUndoView = new QUndoView( dockWidgetContents );
     gridLayout->addWidget( mUndoView, 1, 0, 1, 2 );
-    mUndoStack = NULL;
+    mUndoStack = Q_NULLPTR;
     mPreviousIndex = 0;
     mPreviousCount = 0;
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 void CDTUndoWidget::setUndoStack( QUndoStack* undoStack )
 {
-    if ( mUndoView != NULL )
+    if ( mUndoView != Q_NULLPTR )
     {
         mUndoView->close();
         delete mUndoView;
-        mUndoView = NULL;
+        mUndoView = Q_NULLPTR;
     }
 
     mUndoStack = undoStack;
@@ -72,11 +72,11 @@ void CDTUndoWidget::setUndoStack( QUndoStack* undoStack )
 
 void CDTUndoWidget::destroyStack()
 {
-    if ( mUndoStack != NULL )
+    if ( mUndoStack != Q_NULLPTR )
     {
-        mUndoStack = NULL;
+        mUndoStack = Q_NULLPTR;
     }
-    if ( mUndoView != NULL )
+    if ( mUndoView != Q_NULLPTR )
     {
         mUndoView->close();
         delete mUndoView;
@@ -116,7 +116,7 @@ void CDTUndoWidget::setLayer(CDTBaseLayer *layer)
 
 void CDTUndoWidget::setMapLayer( QgsMapLayer * layer )
 {
-    if ( layer != NULL )
+    if ( layer != Q_NULLPTR )
     {
         setUndoStack( layer->undoStack() );
     }
@@ -230,9 +230,9 @@ void CDTUndoWidget::setupUi( QDockWidget *UndoWidget )
 
 void CDTUndoWidget::retranslateUi( QDockWidget *UndoWidget )
 {
-    UndoWidget->setWindowTitle( QApplication::translate( "UndoWidget", "Undo/Redo", 0, QApplication::UnicodeUTF8 ) );
-    undoButton->setText( QApplication::translate( "UndoWidget", "Undo", 0, QApplication::UnicodeUTF8 ) );
-    redoButton->setText( QApplication::translate( "UndoWidget", "Redo", 0, QApplication::UnicodeUTF8 ) );
+    UndoWidget->setWindowTitle( QApplication::translate( "UndoWidget", "Undo/Redo", 0 ));
+    undoButton->setText( QApplication::translate( "UndoWidget", "Undo", 0) );
+    redoButton->setText( QApplication::translate( "UndoWidget", "Redo", 0 ) );
     Q_UNUSED( UndoWidget );
 }
 

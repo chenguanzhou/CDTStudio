@@ -53,14 +53,14 @@ bool WizardPagePBCDAutoThreshold::validatePage()
 void WizardPagePBCDAutoThreshold::applyAutoThreshold()
 {
     QString autoMethodName = ui->comboBoxAutoThresholdMethod->currentText();
-    CDTAutoThresholdInterface *thresholdPlugin = NULL;
+    CDTAutoThresholdInterface *thresholdPlugin = Q_NULLPTR;
     foreach (CDTAutoThresholdInterface *plugin, autoThresholdPlugins) {
         if (plugin->methodName()==autoMethodName)
         {
             thresholdPlugin = plugin;
         }
     }
-    if (thresholdPlugin==NULL)
+    if (thresholdPlugin==Q_NULLPTR)
     {
         QMessageBox::critical(this,tr("Error"),tr("No Auto Threshold Method Found!"));
         return;
@@ -92,7 +92,7 @@ void WizardPagePBCDAutoThreshold::generateResult()
     //A Lambda Functor to Open GDALDataset
     auto OpenGDALDataset = [&](const QString& path)->GDALDataset*{
         GDALDataset* poDS = (GDALDataset*)GDALOpen(path.toUtf8().constData(),GA_ReadOnly);
-        if (poDS==NULL)
+        if (poDS==Q_NULLPTR)
             throw tr("Open File: %1 Failed!").arg(path);
         return poDS;
     };
@@ -100,15 +100,15 @@ void WizardPagePBCDAutoThreshold::generateResult()
     //A Lambda Functor to Create GeoTiff Image GDALDataset
     auto CreateTiffDataset = [&](const QString& path,int width,int height,int bandCount,GDALDataType type)->GDALDataset*{
         GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
-        if (poDriver == NULL)
+        if (poDriver == Q_NULLPTR)
             throw tr("No GeoTiff Driver!");
-        char** pszOptions = NULL;
+        char** pszOptions = Q_NULLPTR;
         pszOptions = CSLSetNameValue(pszOptions,"COMPRESS","DEFLATE");
         pszOptions = CSLSetNameValue(pszOptions,"PREDICTOR","1");
         pszOptions = CSLSetNameValue(pszOptions,"ZLEVEL","9");
         GDALDataset *poDS = (GDALDataset *)
                 (poDriver->Create(path.toUtf8().constData(),width,height,bandCount,type,pszOptions));
-        if (poDS == NULL)
+        if (poDS == Q_NULLPTR)
             throw tr("Create diff image: %1 failed!").arg(path);
         return poDS;
     };
@@ -186,16 +186,16 @@ void WizardPagePBCDAutoThreshold::updateParams()
 {
     //Get the main QWizard
     QObject *prt = this;
-    QWizard *wizard = NULL;
+    QWizard *wizard = Q_NULLPTR;
     while(prt)
     {
         wizard = qobject_cast<QWizard *>(prt);
-        if (wizard!=NULL)
+        if (wizard!=Q_NULLPTR)
             break;
         prt = prt->parent();
     }
 
-    if (wizard==NULL)
+    if (wizard==Q_NULLPTR)
         return;
 
     //Fetch and setup the params
@@ -208,7 +208,7 @@ void WizardPagePBCDAutoThreshold::updateParams()
 void WizardPagePBCDAutoThreshold::updateHistogram()
 {
     GDALDataset *poDS = (GDALDataset *)GDALOpen(mergeImagePath.toUtf8().constData(),GA_ReadOnly);
-    if (poDS==NULL)
+    if (poDS==Q_NULLPTR)
     {
         qDebug()<<"Null dataset!";
         return;

@@ -1,6 +1,7 @@
 #include "anninterface.h"
 #include <limits>
 #include <opencv2/opencv.hpp>
+#include <opencv2/core/version.hpp>
 
 ANNInterface::ANNInterface(QObject *parent)
     :CDTClassifierInterface(parent)
@@ -67,14 +68,21 @@ cv::Mat ANNInterface::startClassification(const cv::Mat &data, const cv::Mat &tr
     }
 
     //Create classifier
-    CvANN_MLP classifier;
-    classifier.create(layerSizes);
-    classifier.train(train_data,newResponses,cv::Mat());
+#if CV_MAJOR_VERSION >= 3
+    cv::Ptr<cv::ml::ANN_MLP> classifier = cv::ml::ANN_MLP::create() ;
+    classifier->setLayerSizes(layerSizes);
+    classifier->train(train_data,cv::ml::ROW_SAMPLE,newResponses);
+#else
+    CvANN_MLP *classifier = new CvANN_MLP();
+    classifier->create(layerSizes);
+    classifier->train(train_data,newResponses,cv::Mat());
+#endif
+
 
     //predict
     cv::Mat result = cv::Mat_<float>(data.rows,categoriesInfo.size());
     cv::Mat resultReturn = cv::Mat_<float>(data.rows,1);
-    classifier.predict(data,result);
+    classifier->predict(data,result);
     for (int i=0; i<result.rows;++i)
     {
         float* rowData = result.ptr<float>(i);

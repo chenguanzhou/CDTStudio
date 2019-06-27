@@ -6,8 +6,8 @@
 
 CDTBaseLayer::CDTBaseLayer(QUuid uuid, QObject *parent) :
     QObject(parent),
-    mapCanvasLayer(NULL),
-    mapCanvas(NULL)
+    mapCanvasLayer(Q_NULLPTR),
+    mapCanvas(Q_NULLPTR)
 {
     this->uuid = uuid;
     if (parent) connect(this,SIGNAL(appendLayers(QList<QgsMapLayer*> )),parent,SIGNAL(appendLayers(QList<QgsMapLayer*>)));
@@ -74,7 +74,7 @@ QString CDTBaseLayer::tableName() const
     int index = metaObject()->indexOfClassInfo("tableName");
     if (index == -1)
     {
-        logger()->error("Get table name of layer:%1 failed!",metaObject()->className());
+        qCritical("Get table name of layer:%1 failed!",metaObject()->className());
         return QString();
     }
     return metaObject()->classInfo(index).value();
@@ -89,7 +89,7 @@ QObject *CDTBaseLayer::getAncestor(const char *className)
             return obj;
         obj = obj->parent();
     }
-    return NULL;
+    return Q_NULLPTR;
 }
 
 QList<QList<QAction *> > CDTBaseLayer::allActions() const
@@ -149,7 +149,7 @@ void CDTBaseLayer::rename()
 {
     bool ok;
     QString text = QInputDialog::getText(
-                NULL, tr("Input New Name"),
+                Q_NULLPTR, tr("Input New Name"),
                 tr("Rename:"), QLineEdit::Normal,
                 this->name(), &ok);
     if (ok && !text.isEmpty())
@@ -176,19 +176,19 @@ void CDTBaseLayer::setWidgetActions(QList<QPair<QLabel *, QWidget *> > actions)
     this->widgetActions = actions;
 }
 
-void CDTBaseLayer::setCanvasLayer(QgsMapLayer *layer)
+void CDTBaseLayer::setCanvasLayer(QgsMapLayer *layer, bool addToLegend)
 {
-    if(layer == NULL)
+    if(layer == Q_NULLPTR)
         return;
 
     if (mapCanvasLayer)
     {
-        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
+//        QgsMapLayerRegistry::instance()->removeMapLayer(mapCanvasLayer->id());
         delete mapCanvasLayer;
     }
 
     mapCanvasLayer = layer;
-    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer);
+//    QgsMapLayerRegistry::instance()->addMapLayer(mapCanvasLayer,addToLegend);
     treeKeyItem->setMapLayer(mapCanvasLayer);
 }
 
@@ -206,7 +206,7 @@ void CDTBaseLayer::onMenuAboutToHide()
             QWidgetAction *wAction = qobject_cast<QWidgetAction*>(action);
             if (wAction)
             {
-                wAction->requestWidget(NULL);
+                wAction->requestWidget(Q_NULLPTR);
                 QWidget *widget = wAction->defaultWidget();
                 menu->removeAction(wAction);
                 wAction->setDefaultWidget(widget);

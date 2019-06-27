@@ -61,7 +61,7 @@ void CDTPixelChangeLayer::initLayer(const QString &name, const QString &image_t1
     ret = query.prepare("insert into pbcd_binary VALUES(?,?,?,?,?)");
     if (ret==false)
     {
-        logger()->error("Init CDTPixelChangeLayer Fialed!");
+        qCritical("Init CDTPixelChangeLayer Fialed!");
         return;
     }
     query.bindValue(0,id().toString());

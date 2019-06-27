@@ -113,7 +113,7 @@ void MSTMethodInterface::startSegmentation()
     qDebug()<<"Sort Edge Weights cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
     timer = clock();
 
-    GraphKruskal* graph = NULL;
+    GraphKruskal* graph = Q_NULLPTR;
     emit currentProgressChanged(tr("Merging"));
     _ObjectMerge(graph,vecEdge,poSrcDS->GetRasterXSize()*poSrcDS->GetRasterYSize(),pData->_threshold);
 
@@ -210,7 +210,7 @@ bool MSTMethodInterface::_CheckAndInit()
 
     //2.Check Input Image
     GDALDataset* poSrcDS = ( GDALDataset*)GDALOpen(inputImagePath.toUtf8().constData(),GA_ReadOnly);
-    if (poSrcDS == NULL)
+    if (poSrcDS == Q_NULLPTR)
     {
         return false;
     }
@@ -230,13 +230,13 @@ bool MSTMethodInterface::_CheckAndInit()
     }
 
     //3.Init Output Image
-    char** pszOptions = NULL;
-    pszOptions = CSLSetNameValue(pszOptions,"COMPRESS","DEFLATE");
-    pszOptions = CSLSetNameValue(pszOptions,"PREDICTOR","1");
+    char** pszOptions = Q_NULLPTR;
+    pszOptions = CSLSetNameValue(pszOptions,"COMPRESS","LZW");
+    pszOptions = CSLSetNameValue(pszOptions,"PREDICTOR","2");
     pszOptions = CSLSetNameValue(pszOptions,"ZLEVEL","9");
     GDALDriver* poDriver = (GDALDriver*)GDALGetDriverByName("GTiff");
     GDALDataset* poDstDS = poDriver->Create(markfilePath.toUtf8().constData(),poSrcDS->GetRasterXSize(),poSrcDS->GetRasterYSize(),1,GDT_Int32,pszOptions);
-    if (poDstDS == NULL)
+    if (poDstDS == Q_NULLPTR)
     {
         return false;
     }
@@ -709,13 +709,13 @@ bool MSTMethodInterface::_Polygonize()
 {
     emit progressBarSizeChanged(0,0);
     GDALDataset *poFlagDS = (GDALDataset *)GDALOpen(markfilePath.toUtf8().constData(),GA_ReadOnly);
-    if (poFlagDS == NULL)
+    if (poFlagDS == Q_NULLPTR)
     {
         return false;
     }
 
     GDALDriver * poOgrDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName("ESRI Shapefile");
-    if (poOgrDriver == NULL)
+    if (poOgrDriver == Q_NULLPTR)
     {
         GDALClose(poFlagDS);
         return false;
@@ -726,16 +726,18 @@ bool MSTMethodInterface::_Polygonize()
         poOgrDriver->Delete(shapefilePath.toUtf8().constData());
 
     GDALDataset* poDstDataset = poOgrDriver->Create(shapefilePath.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
-    if (poDstDataset == NULL)
+    if (poDstDataset == Q_NULLPTR)
     {
         GDALClose(poFlagDS);
         return false;
     }
 
-    OGRSpatialReference* pSpecialReference = new OGRSpatialReference(poFlagDS->GetProjectionRef());
+    OGRSpatialReference pSpecialReference;
+    pSpecialReference.SetProjection(poFlagDS->GetProjectionRef());
+
     const char* layerName = "polygon";
-    OGRLayer* poLayer = poDstDataset->CreateLayer(layerName,pSpecialReference,wkbPolygon,0);
-    if (poLayer == NULL)
+    OGRLayer* poLayer = poDstDataset->CreateLayer(layerName,&pSpecialReference,wkbPolygon,0);
+    if (poLayer == Q_NULLPTR)
     {
         GDALClose(poFlagDS);
         GDALClose( poDstDataset );
@@ -750,8 +752,7 @@ bool MSTMethodInterface::_Polygonize()
         return false;
     }
 
-
-    char** papszOptions = NULL;
+    char** papszOptions = Q_NULLPTR;
     papszOptions = CSLSetNameValue(papszOptions,"8CONNECTED","8");
     GDALRasterBand *poFlagBand = poFlagDS->GetRasterBand(1);
     GDALRasterBand *poMaskBand = poFlagBand->GetMaskBand();
@@ -760,11 +761,9 @@ bool MSTMethodInterface::_Polygonize()
     {
         GDALClose(poFlagDS);
         GDALClose( poDstDataset );
-        if (pSpecialReference) delete pSpecialReference;
         return false;
     }
 
-    if (pSpecialReference) delete pSpecialReference;
     GDALClose(poFlagDS);
     GDALClose(poDstDataset);
     return true;

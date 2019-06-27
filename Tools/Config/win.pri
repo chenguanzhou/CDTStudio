@@ -20,20 +20,14 @@ BOOST_LIBRARYDIR = $(BOOST_LIBRARYDIR)
     LIBS += -L$(STXXL_ROOT)/lib
 }
 
-!isEmpty(QWT_ROOT) {
-    INCLUDEPATH += $(QWT_ROOT)/include
-    LIBS += -L$(QWT_ROOT)/lib
-    include($(QWT_ROOT)/features/qwt.prf)
-}
-
-!isEmpty(BOOST_ROOT) {
-    INCLUDEPATH += $(BOOST_ROOT)
-}
-
-!isEmpty(BOOST_LIBRARYDIR) {
-    LIBS += -L$(BOOST_LIBRARYDIR)
-}
 
 DEFINES += CORE_EXPORT=__declspec(dllimport)
 DEFINES += GUI_EXPORT=__declspec(dllimport)
+
+# disable warnings
+greaterThan(QT_MAJOR_VERSION, 4){
+DEFINES += _XKEYCHECK_H
+DEFINES += _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
+} else {
 DEFINES += noexcept=
+}

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string notr="true">CDTStudio</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../resource.qrc">
+    <normaloff>:/Icons/CDTStudio.png</normaloff>:/Icons/CDTStudio.png</iconset>
+  </property>
   <property name="iconSize">
    <size>
     <width>16</width>
@@ -133,6 +137,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

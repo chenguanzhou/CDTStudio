@@ -123,7 +123,7 @@ bool CDTProjectLayer::isCDEnabled(QUuid projectID)
 {
     if (projectID.isNull())
     {
-        QMessageBox::critical(NULL,tr("Warning"),tr("Project ID is null!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Warning"),tr("Project ID is null!"));
         return false;
     }
 
@@ -140,7 +140,7 @@ bool CDTProjectLayer::isCDEnabled(QUuid projectID)
 
     if (imageLayerIDList.count()<2)
     {
-        QMessageBox::critical(NULL,tr("Warning"),tr("The count of images in the current project is less than 2!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Warning"),tr("The count of images in the current project is less than 2!"));
         return false;
     }
     return true;
@@ -163,7 +163,7 @@ void CDTProjectLayer::addImageLayer()
     {
         if (dlg.imageName().isEmpty()||dlg.imagePath().isEmpty())
         {
-            QMessageBox::critical(NULL,tr("Error"),tr("Image path or name is empty!"));
+            QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Image path or name is empty!"));
             return;
         }
         CDTImageLayer *image = new CDTImageLayer(QUuid::createUuid(),this);
@@ -371,7 +371,7 @@ QDataStream &operator <<(QDataStream &out,const CDTProjectLayer &project)
     QStringList pointsetNames;
     QSqlQuery query(QSqlDatabase::database("category"));
     query.exec(QString("select pointset_name from points_project "
-                       "where projectid = '%1'").arg(project.id()));
+                       "where projectid = '%1'").arg(project.id().toString()));
     while (query.next())
     {
         pointsetNames<<query.value(0).toString();
@@ -442,7 +442,7 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
                               .arg(pointSetName).arg(project.id().toString()));
         if (ret == false)
         {
-            QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("Insert into points_project failed"));
+            QMessageBox::critical(Q_NULLPTR,QObject::tr("Error"),QObject::tr("Insert into points_project failed"));
             db.rollback();
             break;
         }
@@ -453,7 +453,7 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
             ret = query.prepare("insert into points values(?,?,?,?)");
             if (ret == false)
             {
-                QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("Prepare insert into points failed"));
+                QMessageBox::critical(Q_NULLPTR,QObject::tr("Error"),QObject::tr("Prepare insert into points failed"));
                 db.rollback();
                 return in;
             }
@@ -464,7 +464,7 @@ QDataStream &operator >>(QDataStream &in, CDTProjectLayer &project)
             ret = query.exec();
             if (ret == false)
             {
-                QMessageBox::critical(NULL,QObject::tr("Error"),QObject::tr("Insert into points failed"));
+                QMessageBox::critical(Q_NULLPTR,QObject::tr("Error"),QObject::tr("Insert into points failed"));
                 db.rollback();
                 return in;
             }

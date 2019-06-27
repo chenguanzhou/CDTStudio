@@ -14,7 +14,7 @@ DialogGenerateAttributes::DialogGenerateAttributes(QUuid segmentationID, int ban
     ui(new Ui::DialogGenerateAttributes),
     segID(segmentationID),
     _bandCount(bandCount),
-    attributeGenerator(NULL)
+    attributeGenerator(Q_NULLPTR)
 {
     ui->setupUi(this);
     showPlugins();
@@ -250,7 +250,7 @@ void DialogGenerateAttributes::onFinished()
     ui->pushButtonGenerate->setEnabled(true);
     ui->pushButtonCancel->setEnabled(true);
     ui->pushButtonCancel->setText(tr("Finish"));
-    attributeGenerator = NULL;
+    attributeGenerator = Q_NULLPTR;
 }
 
 

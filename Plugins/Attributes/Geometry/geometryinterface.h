@@ -9,9 +9,8 @@ class GeometryInterface : public CDTAttributesInterface
     Q_OBJECT
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTAttributesInterface" FILE "Geometry.json")
-#else
-    Q_INTERFACES(CDTAttributesInterface)
 #endif // QT_VERSION >= 0x050000
+    Q_INTERFACES(CDTAttributesInterface)
 
 public:
     GeometryInterface(QObject *parent = 0);

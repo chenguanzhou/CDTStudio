@@ -3,18 +3,16 @@
 
 #include <QDialog>
 #include <QMap>
-#include <log4qt/logger.h>
 
 namespace Ui {
 class DialogNewSegmentation;
 }
 class CDTFileSystem;
-struct QUuid;
+class QUuid;
 
 class DialogNewSegmentation : public QDialog
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 public:
     explicit DialogNewSegmentation(
             QUuid imageID,

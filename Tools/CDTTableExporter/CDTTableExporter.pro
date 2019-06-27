@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       = core gui sql
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets axcontainer
 TARGET = CDTTableExporter
 TEMPLATE = lib
 
@@ -26,8 +26,5 @@ DLLDESTDIR = ../../bin
 unix {
     target.path = /usr/lib
     INSTALLS += target
-}
-!unix {
-    CONFIG += qaxcontainer
 }
 

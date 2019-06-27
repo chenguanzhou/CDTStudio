@@ -61,14 +61,14 @@ void CDTClassificationLayer::remove()
 
 void CDTClassificationLayer::exportLayer()
 {
-    QString shpPath= QFileDialog::getSaveFileName(NULL,tr("Export"),QString(), "ESRI Shapefile(*.shp)");
+    QString shpPath= QFileDialog::getSaveFileName(Q_NULLPTR,tr("Export"),QString(), "ESRI Shapefile(*.shp)");
     if(shpPath.isEmpty())
         return;
 
     if (CDTExportClassificationLayerHelper::exportClassification(id(),tr("Category"),shpPath))
-        QMessageBox::information(NULL,tr("Completed"),tr("Export file completed!"));
+        QMessageBox::information(Q_NULLPTR,tr("Completed"),tr("Export file completed!"));
     else
-        QMessageBox::critical(NULL,tr("Error"),tr("Export classification layer failed!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Export classification layer failed!"));
 }
 
 void CDTClassificationLayer::showAccuracy()
@@ -81,7 +81,7 @@ void CDTClassificationLayer::showAccuracy()
     CDTClassifierAssessmentForm *form = new CDTClassifierAssessmentForm(&dlg);
     vbox->addWidget(form);
 
-    form->setClassification(id());
+    form->setClassification(id().toString());
     dlg.exec();
 }
 
@@ -155,7 +155,7 @@ QStringList CDTClassificationLayer::selectedFeatures() const
     return featuresList;
 }
 
-QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
+QgsFeatureRenderer *CDTClassificationLayer::renderer()
 {
     QVariantMap clsInfo = this->clsInfo();
 
@@ -173,16 +173,16 @@ QgsFeatureRendererV2 *CDTClassificationLayer::renderer()
     QgsCategoryList categoryList;
     for(int i=0;i<data.size();++i)
     {
-        QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+        QgsSimpleFillSymbolLayer* symbolLayer = new QgsSimpleFillSymbolLayer();
         symbolLayer->setColor(colorList.value(data[i].toInt()));
-        QgsRendererCategoryV2 rend;
+        QgsRendererCategory rend;
         rend.setValue(i);
-        rend.setSymbol(new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer));
+        rend.setSymbol(new QgsFillSymbol(QgsSymbolLayerList()<<symbolLayer));
         rend.setLabel(QString::number(i));
         categoryList<<rend;
     }
 
-    QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer = new QgsCategorizedSymbolRendererV2("GridCode",categoryList);
+    QgsCategorizedSymbolRenderer* categorizedSymbolRenderer = new QgsCategorizedSymbolRenderer("GridCode",categoryList);
     return categorizedSymbolRenderer;
 }
 
@@ -218,7 +218,7 @@ void CDTClassificationLayer::initLayer(const QString &name,
 
     QList<QPair<QLabel*,QWidget*>> widgets;
     //Transparency
-    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,Q_NULLPTR);
     sliderTransparency->setMinimum(0);
     sliderTransparency->setMaximum(100);
     sliderTransparency->setToolTip(tr("Transparency"));
@@ -241,7 +241,7 @@ CDTClassificationLayer *CDTClassificationLayer::getLayer(QUuid id)
         if (id == layer->id())
             return layer;
     }
-    return NULL;
+    return Q_NULLPTR;
 }
 
 QDataStream &operator<<(QDataStream &out, const CDTClassificationLayer &classification)

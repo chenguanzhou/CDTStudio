@@ -3,7 +3,7 @@
 
 #include <QSqlDatabase>
 #include "cdtdockwidget.h"
-#include "log4qt/logger.h"
+
 
 class CDTHistogramPlot;
 class QTreeView;
@@ -11,7 +11,7 @@ class QStandardItemModel;
 class CDTPlot2DDockWidget : public CDTDockWidget
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
 public:
     explicit CDTPlot2DDockWidget(QWidget *parent = 0);
     ~CDTPlot2DDockWidget();

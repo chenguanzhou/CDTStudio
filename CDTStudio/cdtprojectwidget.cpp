@@ -7,27 +7,28 @@
 
 CDTProjectWidget::CDTProjectWidget(QWidget *parent) :
     QWidget(parent),
-    project(NULL),
+    project(Q_NULLPTR),
     treeModelObject(new QStandardItemModel(this)),
-    mapCanvas(new QgsMapCanvas(this,"mapCanvas"))
+    mapCanvas(new QgsMapCanvas(this))
 {
     connect(treeModelObject,SIGNAL(itemChanged(QStandardItem*)),SLOT(onObjectItemChanged(QStandardItem*)));
 
     connect(this,SIGNAL(projectChanged()),this,SLOT(onProjectChanged()));
-    connect(mapCanvas,SIGNAL(xyCoordinates(QgsPoint)),MainWindow::getMainWindow(),SLOT(showMouseCoordinate(QgsPoint)));
+    connect(mapCanvas,SIGNAL(xyCoordinates(QgsPointXY)),MainWindow::getMainWindow(),SLOT(showMouseCoordinate(QgsPointXY)));
     connect(mapCanvas,SIGNAL(scaleChanged(double)),MainWindow::getMainWindow(),SLOT(showScale(double)));
     connect(mapCanvas,SIGNAL(renderStarting()),SLOT(onRenderStarting()));
     connect(mapCanvas,SIGNAL(renderComplete(QPainter*)),SLOT(onRenderComplete()));
     QVBoxLayout *vbox = new QVBoxLayout(this);
     mapCanvas->enableAntiAliasing(true);
-
+    mapCanvas->setFrameStyle(QFrame::Plain);
     mapCanvas->setCanvasColor(this->palette().color(this->backgroundRole()));
 
     vbox->addWidget(mapCanvas);
+    vbox->setMargin(0);
     this->setLayout(vbox);
 
     QToolBar* toolBar = initToolBar();
-    if (toolBar != NULL)
+    if (toolBar != Q_NULLPTR)
         vbox->setMenuBar(toolBar);
 }
 
@@ -87,7 +88,7 @@ bool CDTProjectWidget::readProject(const QString &filepath)
     emit projectChanged();
     setWindowModified(false);
 
-    logger()->info("Open the project cost %1 ms",time.elapsed());
+    qDebug("Open the project cost %1 ms",time.elapsed());
 
     refreshMapCanvas();
     return true;
@@ -122,7 +123,7 @@ bool CDTProjectWidget::writeProject()
     file.flush();
     qDebug()<<"compressedFile:"<<file.size();
     setWindowModified(false);
-    logger()->info("Save the project cost %1 ms",time.elapsed());
+    qDebug("Save the project cost %g ms",time.elapsed());
 
     return true;
 }
@@ -161,7 +162,7 @@ void CDTProjectWidget::onOriginalTool(bool toggle)
     if (toggle)
     {
         mapCanvas->unsetMapTool(mapCanvas->mapTool());
-        mapCanvas->setMapTool(NULL);
+        mapCanvas->setMapTool(Q_NULLPTR);
     }
 }
 
@@ -199,7 +200,7 @@ void CDTProjectWidget::onFullExtent()
 
 void CDTProjectWidget::setLayerVisible(QgsMapLayer *layer, bool visible)
 {
-    if (layer==NULL) return;
+    if (layer==Q_NULLPTR) return;
 
     if (layersVisible.keys().contains(layer))
         layersVisible[layer] = visible;
@@ -220,7 +221,7 @@ void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
         if (activeLayers.contains(lyr))
         {
             activeLayers.removeAll(lyr);
-            QgsMapLayerRegistry::instance()->removeMapLayer(lyr->id());
+//            QgsMapLayerRegistry::instance()->removeMapLayer(lyr->id());
         }
     }
     refreshMapCanvas(false);
@@ -228,23 +229,23 @@ void CDTProjectWidget::removeLayer(QList<QgsMapLayer *> layer)
 
 void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
 {
-    QList<QgsMapCanvasLayer> mapLayers;
+    QList<QgsMapLayer*> mapLayers;
 
     foreach (QgsMapLayer *lyr, activeLayers) {
         if (lyr->type()==QgsMapLayer::VectorLayer)
         {
-            mapLayers<<QgsMapCanvasLayer(lyr,layersVisible.value(lyr));
+            mapLayers<<lyr;
         }
     }
     foreach (QgsMapLayer *lyr, activeLayers) {
         if (lyr->type()==QgsMapLayer::RasterLayer)
         {
-            mapLayers<<QgsMapCanvasLayer(lyr,layersVisible.value(lyr));
+            mapLayers<<lyr;
         }
     }
 
 
-    mapCanvas->setLayerSet(mapLayers);
+    mapCanvas->setLayers(mapLayers);
     if (zoomToFullExtent)
         mapCanvas->zoomToFullExtent();
 }

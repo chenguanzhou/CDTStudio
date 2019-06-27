@@ -58,7 +58,7 @@ void CDTClassifierAssessmentForm::onComboBoxClassificationChanged(int index)
     CDTSegmentationLayer *segLayer = CDTSegmentationLayer::getLayer(segmentationID);
     QString segmentationName = segLayer->name();
     QString imageName = static_cast<CDTImageLayer *>(segLayer->parent())->name();
-    QString iamgeID = static_cast<CDTImageLayer *>(segLayer->parent())->id();
+    QString iamgeID = static_cast<CDTImageLayer *>(segLayer->parent())->id().toString();
 
     ui->plainTextEdit->clear();
     ui->plainTextEdit->appendPlainText(tr("Image name:    ")+imageName);
@@ -96,7 +96,7 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
     QMap<QString,QString> categoryID_Name;
     QSqlQuery query(QSqlDatabase::database("category"));
     query.exec(QString("select id,name from category where imageid ='%1'")
-               .arg(static_cast<CDTImageLayer *>(layer->parent()->parent())->id()));
+               .arg(static_cast<CDTImageLayer *>(layer->parent()->parent())->id().toString()));
     while(query.next())
     {
         categoryID_Name.insert(query.value(0).toString(),query.value(1).toString());
@@ -111,7 +111,7 @@ void CDTClassifierAssessmentForm::onComboBoxSampleChanged(int index)
     }
 
     CDTSegmentationLayer *segLayer = qobject_cast<CDTSegmentationLayer*>(layer->parent());
-    if (segLayer == NULL)
+    if (segLayer == Q_NULLPTR)
         return;
     QString markFIlePath = segLayer->markfileTempPath();
     QgsRasterLayer *imgMarkLayer = new QgsRasterLayer(markFIlePath);
@@ -308,7 +308,7 @@ void CDTClassifierAssessmentForm::on_pushButtonCopySample_clicked()
 void CDTClassifierAssessmentForm::copyTableAll()
 {
     auto model = ui->tableWidget->model();
-    if (model==NULL || model->rowCount()==0) return;
+    if (model==Q_NULLPTR || model->rowCount()==0) return;
 
 
     QString selected_text;

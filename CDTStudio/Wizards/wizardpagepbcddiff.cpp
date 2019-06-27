@@ -176,14 +176,14 @@ void WizardPagePBCDDiff::generationFinished()
 {
     this->setEnabled(true);
     CDTPBCDDiff *thread = qobject_cast<CDTPBCDDiff *>(sender());
-    if (thread==NULL)
+    if (thread==Q_NULLPTR)
         return;
 
     if (!thread->isCompleted())//Failed
         return;
 
     QObject *prt = this;
-    QWizard *wizard = NULL;
+    QWizard *wizard = Q_NULLPTR;
     while(prt)
     {
         wizard = qobject_cast<QWizard *>(prt);
@@ -209,7 +209,7 @@ void WizardPagePBCDDiff::generationFinished()
 
 void WizardPagePBCDDiff::showWarningMessage(QString msg)
 {
-    QMessageBox::warning(NULL,tr("Warning"),msg);
+    QMessageBox::warning(Q_NULLPTR,tr("Warning"),msg);
 }
 
 void WizardPagePBCDDiff::generate()

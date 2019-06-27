@@ -9,7 +9,7 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
     CDTDockWidget(parent),
     tableView(new QTableView(this)),
     //    categoryModel(new QSqlRelationalTableModel(this,QSqlDatabase::database("category"))),
-    categoryModel(NULL),
+    categoryModel(Q_NULLPTR),
     delegateColor(new CDTCategoryDelegate(this)),
     actionEdit(new QAction(QIcon(":/Icons/Edit.png"),tr("Edit"),this)),
     actionRevert(new QAction(QIcon(":/Icons/Undo.png"),tr("Revert"),this)),
@@ -58,12 +58,12 @@ CDTCategoryDockWidget::CDTCategoryDockWidget(QWidget *parent) :
 
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
-    if (layer == NULL)
+    if (layer == Q_NULLPTR)
     {
         this->setEnabled(false);
         return;
@@ -73,7 +73,7 @@ void CDTCategoryDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     CDTImageLayer *imgLayer = qobject_cast<CDTImageLayer*>(layer->getAncestor("CDTImageLayer"));
     if (imgLayer)
     {
-        logger()->info("Find ancestor class of CDTImageLayer");
+        qDebug("Find ancestor class of CDTImageLayer");
         if (imgLayer->id()==imageLayerID)
             return;
         this->updateImageID(imgLayer->id());
@@ -96,7 +96,7 @@ void CDTCategoryDockWidget::onDockClear()
     if (categoryModel)
     {
         delete categoryModel;
-        categoryModel = NULL;
+        categoryModel = Q_NULLPTR;
     }
     tableView->setModel(new QSqlTableModel(this));
     imageLayerID = QUuid();
@@ -108,7 +108,7 @@ void CDTCategoryDockWidget::updateImageID(QUuid id)
 {
     imageLayerID = id;
 
-    if (categoryModel == NULL)
+    if (categoryModel == Q_NULLPTR)
     {
         QAbstractItemModel *model = tableView->model();
         if (model) delete model;
@@ -189,7 +189,7 @@ void CDTCategoryDockWidget::on_actionSubmit_triggered()
 
 void CDTCategoryDockWidget::importCategories()
 {
-    if (categoryModel==NULL)
+    if (categoryModel==Q_NULLPTR)
         return;
 
     QString path = QFileDialog::getOpenFileName(this,tr("Import"),QString(),tr("XML file(*.xml)"));
@@ -251,13 +251,13 @@ void CDTCategoryDockWidget::importCategories()
     catch (QString msg)
     {
         QMessageBox::critical(this,tr("Error"),msg);
-        logger()->error(msg);
+        qCritical()<<msg;
     }
 }
 
 void CDTCategoryDockWidget::exportCategories()
 {
-    if (categoryModel==NULL || categoryModel->rowCount()==0)
+    if (categoryModel==Q_NULLPTR || categoryModel->rowCount()==0)
         return;
     QString path = QFileDialog::getSaveFileName(this,tr("Export"),QString(),tr("XML file(*.xml)"));
     if (path.isEmpty())

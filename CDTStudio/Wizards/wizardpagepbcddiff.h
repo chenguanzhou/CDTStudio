@@ -7,7 +7,7 @@ namespace Ui {
 class WizardPagePBCDDiff;
 }
 
-struct QUuid;
+class QUuid;
 class QSqlQueryModel;
 
 class WizardPagePBCDDiff : public QWizardPage

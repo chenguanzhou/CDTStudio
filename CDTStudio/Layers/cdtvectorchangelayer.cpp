@@ -60,23 +60,23 @@ void CDTVectorChangeLayer::setOriginRenderer()
     setRenderer(changeViewRenderer());
 }
 
-void CDTVectorChangeLayer::setRenderer(QgsFeatureRendererV2* r)
+void CDTVectorChangeLayer::setRenderer(QgsFeatureRenderer *r)
 {
     QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
-        p->setRendererV2(r);
+        p->setRenderer(r);
 }
 
-QgsFeatureRendererV2 *CDTVectorChangeLayer::changeViewRenderer()
+QgsFeatureRenderer *CDTVectorChangeLayer::changeViewRenderer()
 {
-    auto getCategorySymbol = [](QString value,QString label,QColor color)->QgsRendererCategoryV2
+    auto getCategorySymbol = [](QString value,QString label,QColor color)->QgsRendererCategory
     {
-        QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+        QgsSimpleFillSymbolLayer* symbolLayer = new QgsSimpleFillSymbolLayer();
         symbolLayer->setColor(color);
-        symbolLayer->setBorderColor(color);
-        QgsRendererCategoryV2 rend;
+        symbolLayer->setStrokeColor(color);
+        QgsRendererCategory rend;
         rend.setValue(value);
-        rend.setSymbol(new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer));
+        rend.setSymbol(new QgsFillSymbol(QgsSymbolLayerList()<<symbolLayer));
         rend.setLabel(label);
         return rend;
     };
@@ -85,8 +85,8 @@ QgsFeatureRendererV2 *CDTVectorChangeLayer::changeViewRenderer()
     categoryList<<getCategorySymbol("Changed","Changed",QColor(255,0,0));
     categoryList<<getCategorySymbol("Unchanged","Unchanged",QColor(0,0,255));
 
-    QgsCategorizedSymbolRendererV2* categorizedSymbolRenderer =
-            new QgsCategorizedSymbolRendererV2("ischanged",categoryList);
+    QgsCategorizedSymbolRenderer* categorizedSymbolRenderer =
+            new QgsCategorizedSymbolRenderer("ischanged",categoryList);
 
     return categorizedSymbolRenderer;
 }
@@ -103,7 +103,7 @@ void CDTVectorChangeLayer::initLayer(
     QgsVectorLayer *newLayer = new QgsVectorLayer(/*shpPath*/tempShpPath,QFileInfo(/*shpPath*/tempShpPath).completeBaseName(),"ogr");
     if (!newLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+tempShpPath+tr(" failed!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Open shapefile ")+tempShpPath+tr(" failed!"));
         delete newLayer;
         return;
     }
@@ -117,7 +117,7 @@ void CDTVectorChangeLayer::initLayer(
     ret = query.prepare("insert into vector_change VALUES(?,?,?,?,?,?)");
     if (ret==false)
     {
-        logger()->error("Init CDTVectorChangeLayer Failed!");
+        qCritical("Init CDTVectorChangeLayer Failed!");
         return;
     }
 

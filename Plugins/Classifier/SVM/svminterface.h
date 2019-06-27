@@ -4,15 +4,14 @@
 #include "cdtclassifierinterface.h"
 #include <opencv2/opencv.hpp>
 
-class SVMInterfacePrivate;
+class SVMInterfaceProvate;
 class SVMInterface : public CDTClassifierInterface
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTClassifierInterface" FILE "SVM.json")
-#else
-    Q_INTERFACES(CDTClassifierInterface)
 #endif // QT_VERSION >= 0x050000
+    Q_INTERFACES(CDTClassifierInterface)
 
     Q_PROPERTY(Type type READ type WRITE setType DESIGNABLE true USER true)
     Q_PROPERTY(Kernel kernel READ kernel WRITE setKernel DESIGNABLE true USER true)
@@ -26,9 +25,14 @@ class SVMInterface : public CDTClassifierInterface
     Q_ENUMS(Kernel)
 
 public:    
+    //Create classifier
+#if CV_MAJOR_VERSION >= 3
+    enum Type {C_SVC = cv::ml::SVM::C_SVC,NU_SVC = cv::ml::SVM::NU_SVC};
+    enum Kernel {LINEAR = cv::ml::SVM::LINEAR,POLY ,RBF,SIGMOID };
+#else
     enum Type {C_SVC = cv::SVM::C_SVC,NU_SVC = cv::SVM::NU_SVC};
     enum Kernel {LINEAR = cv::SVM::LINEAR,POLY ,RBF,SIGMOID };
-
+#endif
 
     SVMInterface(QObject *parent = 0);
     ~SVMInterface();
@@ -54,7 +58,11 @@ public slots:
     void setNu(double val);
 
 private:
+#if CV_MAJOR_VERSION >= 3
+    SVMInterfaceProvate* data;
+#else
     cv::SVMParams* data;
+#endif
 };
 
 #endif // SVMINTERFACE_H

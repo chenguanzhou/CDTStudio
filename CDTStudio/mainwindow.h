@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "log4qt/logger.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -11,7 +11,7 @@ class QToolButton;
 class QLineEdit;
 class QModelIndex;
 class QTreeView;
-struct QUuid;
+class QUuid;
 
 class QgsMapCanvas;
 class QgsScaleComboBox;
@@ -34,7 +34,7 @@ class DialogConsole;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
     friend class RecentFileSupervisor;
     friend class CDTProjectWidget;
 public:
@@ -72,10 +72,10 @@ public:
 
 public slots:
     void onCurrentTabChanged(int i);
-    void showMouseCoordinate(const QgsPoint & p);
+    void showMouseCoordinate(const QgsPointXY &p);
     void showScale( double theScale );
     void userCenter();
-    void userScale();
+    void userScale(double);
     void updateRecentFiles(QStringList list);
 
 private slots:

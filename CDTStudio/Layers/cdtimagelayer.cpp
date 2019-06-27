@@ -3,6 +3,7 @@
 #include <qgsmultibandcolorrenderer.h>
 #include <qgscontrastenhancement.h>
 #include <qgscontrastenhancementfunction.h>
+#include <qgsrasterdataprovider.h>
 #include "mainwindow.h"
 #include "cdtprojecttreeitem.h"
 #include "cdtprojectlayer.h"
@@ -17,7 +18,7 @@ QList<CDTImageLayer *> CDTImageLayer::layers;
 
 CDTImageLayer::CDTImageLayer(QUuid uuid, QObject *parent)
     : CDTBaseLayer(uuid,parent),
-      multibandSelectionWidget(NULL),
+      multibandSelectionWidget(Q_NULLPTR),
       enhancementStyle(QgsContrastEnhancement::NoEnhancement),
       useRelative(false)
 {
@@ -103,10 +104,11 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
     CDTProjectLayer *layer = qobject_cast<CDTProjectLayer *>(parent());
     QDir dir(layer->path());
     QString absoluteFilePath = dir.absoluteFilePath(path);
-    QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(absoluteFilePath,QFileInfo(path).completeBaseName());
+    QgsRasterLayer *newCanvasLayer = new QgsRasterLayer(absoluteFilePath, QFileInfo(path).completeBaseName());
     if (!newCanvasLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open image ")+absoluteFilePath+tr(" failed!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Open image ")+absoluteFilePath+tr(" failed!"));
+        qDebug()<<newCanvasLayer->error().summary();
         delete newCanvasLayer;
         return;
     }
@@ -119,7 +121,7 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
     QSqlDatabase db = QSqlDatabase::database("category");
     if (db.isValid()==false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("database is invalid"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("database is invalid"));
         return ;
     }
     QSqlQuery query(db);
@@ -127,7 +129,7 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
     ret = query.prepare("insert into imagelayer VALUES(?,?,?,?)");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("insert image layer failed!\nerror:")+query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("insert image layer failed!\nerror:")+query.lastError().text());
         return ;
     }
     query.bindValue(0,id().toString());
@@ -190,9 +192,10 @@ void CDTImageLayer::initLayer(const QString &name, const QString &path)
 
     setWidgetActions(widgets);
 
-    if (newCanvasLayer->dataProvider()->dataType(1) != QGis::Byte)
+    if (newCanvasLayer->dataProvider()->dataType(1) != Qgis::Byte)
     {
-        newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle(),0);
+        newCanvasLayer->setContrastEnhancement(QgsContrastEnhancement::StretchToMinimumMaximum,
+                                               QgsRasterMinMaxOrigin::Limits::CumulativeCut, QgsRectangle(), 0);
         comboEnhancement->setCurrentIndex(0);
     }
     else
@@ -207,7 +210,7 @@ void CDTImageLayer::setCategoryInfo(const CDTCategoryInformationList &info)
     QSqlDatabase db = QSqlDatabase::database("category");
     if (db.isValid()==false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("database is invalid"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("database is invalid"));
         return ;
     }
     QSqlQuery query(db);
@@ -216,7 +219,7 @@ void CDTImageLayer::setCategoryInfo(const CDTCategoryInformationList &info)
     ret = query.prepare("insert into category VALUES(?,?,?,?)");
     if (ret == false)
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("insert data failed!\nerror:")+query.lastError().text());
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("insert data failed!\nerror:")+query.lastError().text());
         return ;
     }
 
@@ -259,7 +262,7 @@ bool CDTImageLayer::useRelativePath() const
 int CDTImageLayer::bandCount() const
 {
     QgsRasterLayer* layer = (QgsRasterLayer*)canvasLayer();
-    if (layer==NULL) return 0;
+    if (layer==Q_NULLPTR) return 0;
     return layer->bandCount();
 }
 
@@ -274,7 +277,7 @@ CDTImageLayer *CDTImageLayer::getLayer(const QUuid &id)
         if (id == layer->id())
             return layer;
     }
-    return NULL;
+    return Q_NULLPTR;
 }
 
 void CDTImageLayer::setPath(QString path)
@@ -472,7 +475,7 @@ void CDTImageLayer::updateRenderer()
     }
 
     //Contrast
-    layer->setContrastEnhancement(enhancementStyle,QgsRaster::ContrastEnhancementCumulativeCut,QgsRectangle());
+    layer->setContrastEnhancement(enhancementStyle,QgsRasterMinMaxOrigin::Limits::CumulativeCut,QgsRectangle());
     MainWindow::getCurrentMapCanvas()->refresh();
 }
 
@@ -491,7 +494,7 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
     QSqlDatabase db = QSqlDatabase::database("category");
     QSqlQuery query(db);
     bool ret;
-    ret = query.exec("select id,name,color from category where imageID = '" + image.id() + "'");
+    ret = query.exec("select id,name,color from category where imageID = '" + image.id().toString() + "'");
     if (!ret) qDebug()<<query.lastError();
 
     CDTCategoryInformationList categoryInfo;
@@ -503,7 +506,7 @@ QDataStream &operator<<(QDataStream &out, const CDTImageLayer &image)
     out<<categoryInfo;
 
 
-    query.exec(QString("select id,name,pointset_name from image_validation_samples where imageid = '%1'").arg(image.id()));
+    query.exec(QString("select id,name,pointset_name from image_validation_samples where imageid = '%1'").arg(image.id().toString()));
     QList<QVariantList> validationPoints;
     while(query.next())
     {

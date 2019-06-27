@@ -33,7 +33,7 @@ CDTAttributeDockWidget::CDTAttributeDockWidget(QWidget *parent) :
     this->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 //    tabWidget->setSizePolicy(this->sizePolicy());
 //    widget->setSizePolicy(this->sizePolicy());
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 CDTAttributeDockWidget::~CDTAttributeDockWidget()
@@ -49,13 +49,13 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {
 //    if (segmentationLayer == layer)
 //        return;
-    if (layer==NULL)
+    if (layer==Q_NULLPTR)
         return;
 
     CDTSegmentationLayer *segmentationLayer = qobject_cast<CDTSegmentationLayer *>(layer->getAncestor("CDTSegmentationLayer"));
     if (segmentationLayer)
     {
-        logger()->info("Find ancestor class of CDTSegmentationLayer");
+        qDebug("Find ancestor class of CDTSegmentationLayer");
         if (segmentationLayer->id()==segmentationID)
             return;
         onDockClear();
@@ -67,7 +67,7 @@ void CDTAttributeDockWidget::setCurrentLayer(CDTBaseLayer *layer)
     }
     else
     {
-        logger()->info("No ancestor class of CDTSegmentationLayer found");
+        qDebug("No ancestor class of CDTSegmentationLayer found");
         onDockClear();
         return;
     }
@@ -119,7 +119,7 @@ void CDTAttributeDockWidget::setTableModels(QList<QAbstractTableModel *> models)
 void CDTAttributeDockWidget::onItemClicked(QModelIndex index)
 {    
     QTableView *view = (QTableView *)(tabWidget->currentWidget());
-    if (view==NULL)return;
+    if (view==Q_NULLPTR)return;
 
     QString tableName = tabWidget->tabText(tabWidget->currentIndex());
     QString featureName = view->model()->headerData(index.column(),Qt::Horizontal).toString();
@@ -140,7 +140,7 @@ void CDTAttributeDockWidget::onActionExportCurrentTable()
         return;
 
     bool isHeader = QMessageBox::information(
-                NULL,
+                Q_NULLPTR,
                 tr("Write headers?"),
                 tr("Write first line as headers?"),
                 QMessageBox::Ok|QMessageBox::No)==QMessageBox::Ok;
@@ -173,7 +173,7 @@ void CDTAttributeDockWidget::onActionExportAllTables()
         return;
 
     bool isHeader = QMessageBox::information(
-                NULL,
+                Q_NULLPTR,
                 tr("Write headers?"),
                 tr("Write first line as headers?"),
                 QMessageBox::Ok|QMessageBox::No)==QMessageBox::Ok;

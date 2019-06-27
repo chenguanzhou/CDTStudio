@@ -60,7 +60,7 @@ padding: 5px;
 }
 
 QDockWidget {		
-titlebar-close-icon: url(:/Icons/Remove.png);
+titlebar-close-icon: url(:/Icons/close.png);
 titlebar-normal-icon: url(:/Icons/Maximize.png);
 background:#EEEEF2;
 }

@@ -3,25 +3,25 @@
 
 CStatisticSnake::CStatisticSnake()
 {
-	m_pBMPData=NULL;
-	m_pShapeImage=NULL;
+    m_pBMPData=Q_NULLPTR;
+    m_pShapeImage=Q_NULLPTR;
 
-	m_statistic_n=NULL;
-	m_staticstic_intensity=NULL;
-	m_staticstic_intensity_sqr=NULL;
+    m_statistic_n=Q_NULLPTR;
+    m_staticstic_intensity=Q_NULLPTR;
+    m_staticstic_intensity_sqr=Q_NULLPTR;
 }
 
 CStatisticSnake::~CStatisticSnake()
 {
-	if(m_pShapeImage!=NULL)delete m_pShapeImage;
+    if(m_pShapeImage!=Q_NULLPTR)delete m_pShapeImage;
 }
 
 bool CStatisticSnake::GetStatisticSnake()
 {
-	if(m_pBMPData==NULL)return false;
-	if(m_pShapeImage!=NULL)delete m_pShapeImage;
+    if(m_pBMPData==Q_NULLPTR)return false;
+    if(m_pShapeImage!=Q_NULLPTR)delete m_pShapeImage;
 	m_pShapeImage=FillSeedArrayRgn(m_seedArray,m_statistic_start,m_statistic_w,m_statistic_h);
-	if(m_pShapeImage==NULL)return false;
+    if(m_pShapeImage==Q_NULLPTR)return false;
 
     int i,j;
 
@@ -95,7 +95,7 @@ bool CStatisticSnake::GetStatisticSnake()
 bool* CStatisticSnake::FillSeedArrayRgn(std::vector<VERTEX2D> &seedArray, VERTEX2D &border_start, int &w, int &h)
 {
 	int n=seedArray.size();
-	if(n<3)return NULL;
+    if(n<3)return Q_NULLPTR;
 	int border_w;
 	int border_h;
 	VERTEX2D maxv,minv;
@@ -120,7 +120,7 @@ bool* CStatisticSnake::FillSeedArrayRgn(std::vector<VERTEX2D> &seedArray, VERTEX
 	FREECODEARRAY sgnArray;
 	VERTEX2D* seed=new VERTEX2D[n];
 	for(i=0;i<n;i++)seed[i]=seedArray[i];
-	if(!Statistic_SeedLine2FreeCode(freeCodePolyLine, seed,n))return NULL;
+    if(!Statistic_SeedLine2FreeCode(freeCodePolyLine, seed,n))return Q_NULLPTR;
 	delete seed;
 	Statistic_GetSgnArray(freeCodePolyLine,sgnArray);		
 	/////////////////////////////////////////////////////////////
@@ -173,7 +173,8 @@ bool* CStatisticSnake::FillSeedArrayRgn(std::vector<VERTEX2D> &seedArray, VERTEX
 
 double CStatisticSnake::Statistic_GetIncrement_Polygon(int s, int i, int j, uchar *blockimage, int statistic_w)
 {
-	if(m_pShapeImage==NULL)return 0.0;
+    if(m_pShapeImage==Q_NULLPTR)
+        return 0.0;
 	double rtn=0.0;
 	int k;
 	switch(s)

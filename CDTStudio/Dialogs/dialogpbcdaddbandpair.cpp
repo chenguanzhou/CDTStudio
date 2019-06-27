@@ -23,13 +23,13 @@ DialogPBCDAddBandPair::DialogPBCDAddBandPair(QString path1,
     ui->setupUi(this);
     ui->labelT1->setText(path1);
     ui->labelT2->setText(path2);
-    GDALDataset *poSrcDS1 = NULL;
-    GDALDataset *poSrcDS2 = NULL;
+    GDALDataset *poSrcDS1 = Q_NULLPTR;
+    GDALDataset *poSrcDS2 = Q_NULLPTR;
     try
     {
         poSrcDS1 = (GDALDataset *)GDALOpen(path1.toUtf8().constData(),GA_ReadOnly);
         poSrcDS2 = (GDALDataset *)GDALOpen(path2.toUtf8().constData(),GA_ReadOnly);
-        if (poSrcDS1==NULL || poSrcDS2==NULL)
+        if (poSrcDS1==Q_NULLPTR || poSrcDS2==Q_NULLPTR)
             throw tr("Image path is not valid");
         setListWidget(poSrcDS1->GetRasterCount(),ui->listWidgetT1);
         setListWidget(poSrcDS2->GetRasterCount(),ui->listWidgetT2);

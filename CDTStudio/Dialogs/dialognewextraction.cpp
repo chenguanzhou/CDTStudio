@@ -26,7 +26,7 @@ DialogNewExtraction::DialogNewExtraction(
     if (index != -1)
     {
         CDTLayerNameValidator *validator = new CDTLayerNameValidator
-                (QSqlDatabase::database("category"),"name",CDTExtractionLayer::staticMetaObject.classInfo(index).value(),QString("imageid='%1'").arg(imageID));
+                (QSqlDatabase::database("category"),"name",CDTExtractionLayer::staticMetaObject.classInfo(index).value(),QString("imageid='%1'").arg(imageID.toString()));
         ui->lineEditName->setValidator(validator);
     }
     ui->lineEditName->setText(tr("Untitled"));
@@ -69,10 +69,12 @@ void DialogNewExtraction::onAccepted()
     GDALDriver *poDriver = GetGDALDriverManager()->GetDriverByName("ESRI Shapefile");
     Q_ASSERT(poDriver);
 
-    GDALDataset* poDS = poDriver->Create(shapefileTempPath.toUtf8().constData(),0,0,0,GDT_Unknown,NULL);
+    GDALDataset* poDS = poDriver->Create(shapefileTempPath.toUtf8().constData(),0,0,0,GDT_Unknown,Q_NULLPTR);
     Q_ASSERT(poDS);
-    OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
-    OGRLayer *layer = poDS->CreateLayer("extraction",reference,wkbPolygon,NULL);
+//    OGRSpatialReference *reference = new OGRSpatialReference(poImageDS->GetProjectionRef());
+    OGRSpatialReference reference;
+    reference.SetProjection(poImageDS->GetProjectionRef());
+    OGRLayer *layer = poDS->CreateLayer("extraction", &reference, wkbPolygon, Q_NULLPTR);
     Q_ASSERT(layer);
     OGRFieldDefn oField( "id", OFTInteger );
     oField.SetWidth(10);
@@ -83,9 +85,7 @@ void DialogNewExtraction::onAccepted()
     }
 
     GDALClose(poDS);
-    reference->Release();
     GDALClose(poImageDS);
-//    OGRCleanupAll();
 
     shapefileID = QUuid::createUuid().toString();
     fileSystem->registerFile(shapefileID,shapefileTempPath,QString(),QString()

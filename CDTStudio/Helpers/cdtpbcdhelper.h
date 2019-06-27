@@ -41,7 +41,7 @@ class CDTPBCDGenerateResult:public CDTBaseThread
 {
     Q_OBJECT
 public:
-    explicit CDTPBCDGenerateResult(GDALDataset* mergeDS,GDALDataset* resultDS,int numOfThresholds,double posT,double negT, QObject *parent = NULL);
+    explicit CDTPBCDGenerateResult(GDALDataset* mergeDS,GDALDataset* resultDS,int numOfThresholds,double posT,double negT, QObject *parent = Q_NULLPTR);
     ~CDTPBCDGenerateResult();
     void run();
 private:
@@ -59,7 +59,7 @@ class CDTPBCDHistogramHelper:public CDTBaseThread
     Q_OBJECT
 public:
     friend class WizardPagePBCDAutoThreshold;
-    explicit CDTPBCDHistogramHelper(GDALDataset *ds,int numOfThresholds,QObject *parent = NULL);
+    explicit CDTPBCDHistogramHelper(GDALDataset *ds,int numOfThresholds,QObject *parent = Q_NULLPTR);
 
     void run();
 private:

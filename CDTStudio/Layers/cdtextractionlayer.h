@@ -30,7 +30,7 @@ public:
     QColor  borderColor()   const;
     int     layerTransparency() const;
 
-    void    setRenderer(QgsFeatureRendererV2 *r);
+    void    setRenderer(QgsFeatureRenderer *r);
     void    setOriginRenderer();
 
     static QList<CDTExtractionLayer *>  getLayers();

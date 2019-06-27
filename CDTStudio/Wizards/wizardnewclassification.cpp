@@ -49,12 +49,12 @@ WizardNewClassification::WizardNewClassification(QUuid segmentationID, QWidget *
     if (index != -1)
     {
         CDTLayerNameValidator *validator = new CDTLayerNameValidator
-                (QSqlDatabase::database("category"),"name",CDTClassificationLayer::staticMetaObject.classInfo(index).value(),QString("segmentationid='%1'").arg(segmentationID));
+                (QSqlDatabase::database("category"),"name",CDTClassificationLayer::staticMetaObject.classInfo(index).value(),QString("segmentationid='%1'").arg(segmentationID.toString()));
         ui->lineEditOutputName->setValidator(validator);
     }
     ui->lineEditOutputName->setText(tr("Untitled"));
 
-    logger()->debug("WizardNewClassification constructed");
+    qDebug()<<"WizardNewClassification constructed";
 }
 
 WizardNewClassification::~WizardNewClassification()

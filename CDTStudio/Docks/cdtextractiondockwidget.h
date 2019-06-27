@@ -2,7 +2,7 @@
 #define CDTEXTRACTIONDOCKWIDGET_H
 
 #include "cdtdockwidget.h"
-#include "log4qt/logger.h"
+
 
 namespace Ui {
 class CDTExtractionDockWidget;
@@ -16,12 +16,12 @@ class CDTUndoWidget;
 class CDTExtractionDockWidget : public CDTDockWidget
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
 public:
     enum EDITSTATE{
         LOCKED,EDITING
     };
-    explicit CDTExtractionDockWidget(QWidget *parent = 0);
+    explicit CDTExtractionDockWidget(QWidget *parent = Q_NULLPTR);
     ~CDTExtractionDockWidget();
 
     EDITSTATE editState()const;

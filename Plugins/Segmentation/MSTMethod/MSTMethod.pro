@@ -38,34 +38,14 @@ INCLUDEPATH += /usr/include/gdal \
 }
 
 !unix{
-#stxxl and gdal
-INCLUDEPATH += \
-    $(OSGEO4W_ROOT)/include \
-    $(STXXL_ROOT)/include \
-    $(BOOST_ROOT)
-
-LIBS += \
-    -L$(OSGEO4W_ROOT)/lib \
-    -L$(STXXL_ROOT)/lib \
-    -L$(BOOST_LIBRARYDIR)
-
+include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
-INCLUDEPATH += \
-    $(OSGEO4W_ROOT)/include \
-    $(QGIS_ROOT)/include \
-    $(STXXL_ROOT)/include \
-    $(QWT_ROOT)/include \
-    $(BOOST_ROOT)
+win32:CONFIG(release, debug|release): LIBS += -lstxxl
+else:win32:CONFIG(debug, debug|release): LIBS += -lstxxld
+else:unix: LIBS += -lstxxl
 
-LIBS += \
-    -L$(OSGEO4W_ROOT)/lib \
-    -L$(QGIS_ROOT)/lib \
-    -L$(STXXL_ROOT)/lib \
-    -L$(QWT_ROOT)/lib \
-    -L$(BOOST_LIBRARYDIR)
-
-LIBS += -lstxxl
+message($$INCLUDEPATH)
 
 #DEFINES += BOOST_THREAD_USE_LIB

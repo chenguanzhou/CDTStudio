@@ -6,7 +6,8 @@
 
 class QWidgetAction;
 class QColor;
-class QgsFeatureRendererV2;
+class QAbstractTableModel;
+class QgsFeatureRenderer;
 class CDTClassificationLayer;
 class CDTMapToolSelectTrainingSamples;
 class CDTProjectTreeItem;
@@ -33,7 +34,7 @@ class CDTSegmentationLayer:public CDTBaseLayer
     Q_PROPERTY(QString Method READ method  DESIGNABLE true USER true)
 
 public:
-    explicit CDTSegmentationLayer(QUuid uuid, QObject *parent = 0);
+    explicit CDTSegmentationLayer(QUuid uuid, QObject *parent = Q_NULLPTR);
     ~CDTSegmentationLayer();
 
     friend QDataStream &operator<<(QDataStream &out,const CDTSegmentationLayer &segmentation);
@@ -47,10 +48,10 @@ public:
     CDTDatabaseConnInfo databaseURL() const;
     QColor  borderColor()const;
     QString imagePath()const;
-    int     layerTransparency() const;
+    double     layerTransparency() const;
     QList<QAbstractTableModel *> tableModels();
 
-    void setRenderer(QgsFeatureRendererV2 *r);
+    void setRenderer(QgsFeatureRenderer *r);
     void setOriginRenderer();
 
     static QList<CDTSegmentationLayer *> getLayers();
@@ -70,6 +71,7 @@ public slots:
     void remove();
 
     void addClassification();
+    void actionAddClassificationsFromTextFile();
     void removeClassification(CDTClassificationLayer *);
     void removeAllClassifications();
     void decisionFusion();
@@ -89,7 +91,7 @@ public slots:
     void setDatabaseURL(CDTDatabaseConnInfo url);
 
 private:
-    QgsFeatureRendererV2 *renderer();
+//    QgsFeatureRendererV2 *renderer();
     void addClassification(CDTClassificationLayer* classification);
     void loadSamplesFromStruct(const QMap<QString,QString> &sample_id_name,const QList<SampleElement> &samples);
     void saveSamplesToStruct(QMap<QString,QString> &sample_id_name,QList<SampleElement> &samples) const;

@@ -15,8 +15,8 @@ CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     listView(new QListView(this)),
     toolBar(new QToolBar(this)),
     sampleModel(new QSqlQueryModel(this)),
-    lastMapTool(NULL),
-    currentMapTool(NULL)
+    lastMapTool(Q_NULLPTR),
+    currentMapTool(Q_NULLPTR)
 {
     this->setEnabled(false);
     this->setWindowTitle(tr("Training sample sets"));
@@ -42,7 +42,7 @@ CDTTrainingSampleDockWidget::CDTTrainingSampleDockWidget(QWidget *parent) :
     connect(actionRemove,SIGNAL(triggered()),SLOT(onActionRemove()));
     connect(groupBoxSamples,SIGNAL(toggled(bool)),SLOT(onGroupBoxToggled(bool)));
     connect(listView,SIGNAL(clicked(QModelIndex)),SLOT(onListViewClicked(QModelIndex)));
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 CDTTrainingSampleDockWidget::~CDTTrainingSampleDockWidget()
@@ -71,7 +71,7 @@ void CDTTrainingSampleDockWidget::setSegmentationID(QUuid uuid)
 
 void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
 {    
-    if (layer == NULL)
+    if (layer == Q_NULLPTR)
     {
         this->setEnabled(false);
         return;
@@ -86,11 +86,11 @@ void CDTTrainingSampleDockWidget::setCurrentLayer(CDTBaseLayer *layer)
         this->setEnabled(true);
         this->setVisible(true);
         this->raise();
-        logger()->info("Find the ancestor class CDTSegmentationLayer");
+        qDebug("Find the ancestor class CDTSegmentationLayer");
     }
     else
     {
-        logger()->info("The ancestor of class CDTSegmentationLayer is not found!");
+        qDebug("The ancestor of class CDTSegmentationLayer is not found!");
     }
 }
 
@@ -103,7 +103,7 @@ void CDTTrainingSampleDockWidget::onDockClear()
     if (currentMapTool)
     {
         delete currentMapTool;
-        currentMapTool = NULL;
+        currentMapTool = Q_NULLPTR;
     }
 }
 

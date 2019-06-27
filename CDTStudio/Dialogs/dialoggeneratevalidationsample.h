@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QValidator>
-#include "log4qt/logger.h"
 
 namespace Ui {
 class DialogGenerateValidationSample;
@@ -13,7 +12,6 @@ class QSqlQueryModel;
 class DialogGenerateValidationSample : public QDialog
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
 private:
     explicit DialogGenerateValidationSample(QString imageID,QWidget *parent = 0);
     ~DialogGenerateValidationSample();

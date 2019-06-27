@@ -4,7 +4,7 @@
 
 class CDTDecomposeObjectHelperPrivate{
     CDTDecomposeObjectHelperPrivate(QString directory)
-        :isValid(false),dir(directory),poImageDS(NULL),poFlagDS(NULL)
+        :isValid(false),dir(directory),poImageDS(Q_NULLPTR),poFlagDS(Q_NULLPTR)
     {
     }
     friend class CDTDecomposeObjectHelper;
@@ -32,11 +32,11 @@ CDTDecomposeObjectHelper::CDTDecomposeObjectHelper(QString imagePath,
     CPLSetConfigOption("GDAL_FILENAME_IS_UTF8","YES");
 
     p->poImageDS = (GDALDataset*)GDALOpen(imagePath.toUtf8().constData(),GA_ReadOnly);
-    if (p->poImageDS == NULL)
+    if (p->poImageDS == Q_NULLPTR)
         return;
 
     p->poFlagDS = (GDALDataset*)GDALOpen(markfilePath.toUtf8().constData(),GA_ReadOnly);
-    if (p->poFlagDS == NULL)
+    if (p->poFlagDS == Q_NULLPTR)
         return;
 
 
@@ -111,24 +111,51 @@ void CDTDecomposeObjectHelper::run()
         QVector<int> bufferFlag(nXSize*nYSize);
 
         QString fileName = p->dir + "/" + QString::number(objID) + ".tif";
-        GDALDataset *poDstDS = poDriver->Create( fileName.toUtf8().constData(), nXSize, nYSize, bandCount, GDT_Byte, NULL);
 
-        flagBand->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferFlag[0],nXSize,nYSize,GDT_Int32,0,0);
-        for (int k=0;k<bandCount;++k)
+
+        if (withMask)
         {
-            p->poImageDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
-            if (withMask){
-                for (int i=0;i<bufferSrc.size();++i)
-                {
-                    if (bufferFlag[i] != objID)
-                        bufferSrc[i] = 0;
-                }
+            GDALDataset *poDstDS = poDriver->Create( fileName.toUtf8().constData(), nXSize, nYSize, 1, GDT_Byte, Q_NULLPTR);
+            flagBand->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferFlag[0],nXSize,nYSize,GDT_Int32,0,0);
+
+            for (int i=0;i<bufferSrc.size();++i)
+            {
+                if (bufferFlag[i] != objID)
+                    bufferSrc[i] = 0;
+                else
+                    bufferSrc[i] = 255;
             }
 
-            poDstDS->GetRasterBand(k+1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
-        }
+            poDstDS->GetRasterBand(1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
 
-        GDALClose(poDstDS);
+            GDALClose(poDstDS);
+        }
+        else
+        {
+            GDALDataset *poDstDS = poDriver->Create( fileName.toUtf8().constData(), nXSize, nYSize, bandCount, GDT_Byte, Q_NULLPTR);
+            for (int k=0;k<bandCount;++k)
+            {
+                p->poImageDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
+                poDstDS->GetRasterBand(k+1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
+            }
+
+//            flagBand->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferFlag[0],nXSize,nYSize,GDT_Int32,0,0);
+//            for (int k=0;k<bandCount;++k)
+//            {
+//                p->poImageDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
+
+
+//                for (int i=0;i<bufferSrc.size();++i)
+//                {
+//                    if (bufferFlag[i] != objID)
+//                        bufferSrc[i] = 0;
+//                }
+
+//                poDstDS->GetRasterBand(k+1)->RasterIO(GF_Write,0,0,nXSize,nYSize,&bufferSrc[0],nXSize,nYSize,GDT_Byte,0,0);
+//            }
+
+            GDALClose(poDstDS);
+        }
 
 
         emit progressBarValueChanged(index++);

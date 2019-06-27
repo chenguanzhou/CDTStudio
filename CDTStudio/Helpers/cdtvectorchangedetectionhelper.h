@@ -2,7 +2,7 @@
 #define CDTVECTORCHANGEDETECTIONHELPER_H
 
 #include "cdtbasethread.h"
-#include "log4qt/logger.h"
+
 
 class CDTVectorCHangeDetectionHelperPrivate;
 class CDTVectorChangeDetectionInterface;
@@ -10,7 +10,7 @@ class CDTVectorChangeDetectionInterface;
 class CDTVectorChangeDetectionHelper:public CDTBaseThread
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
 public:
     CDTVectorChangeDetectionHelper(
             QString imageid_t1,

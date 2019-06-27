@@ -2,7 +2,7 @@
 #define WIZARDNEWCLASSIFICATION_H
 
 #include <QWizard>
-#include "log4qt/logger.h"
+
 #include "cdtclassificationhelper.h"
 
 namespace Ui {
@@ -15,7 +15,7 @@ class QStringListModel;
 class WizardNewClassification : public QWizard
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+    
 public:
     explicit WizardNewClassification(QUuid segmentationID,QWidget *parent = 0);
     ~WizardNewClassification();

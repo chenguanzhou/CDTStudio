@@ -79,27 +79,27 @@ int CDTExtractionLayer::layerTransparency() const
 {
     QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
-        return p->layerTransparency();
+        return p->opacity();
     else
         return -1;
 }
 
-void CDTExtractionLayer::setRenderer(QgsFeatureRendererV2 *r)
+void CDTExtractionLayer::setRenderer(QgsFeatureRenderer *r)
 {
     QgsVectorLayer*p = (QgsVectorLayer*)canvasLayer();
-    if (p!=NULL)
+    if (p!=Q_NULLPTR)
     {
-        p->setRendererV2(r);
+        p->setRenderer(r);
     }
 }
 
 void CDTExtractionLayer::setOriginRenderer()
 {
-    QgsSimpleFillSymbolLayerV2* symbolLayer = new QgsSimpleFillSymbolLayerV2();
+    QgsSimpleFillSymbolLayer* symbolLayer = new QgsSimpleFillSymbolLayer();
     symbolLayer->setColor(color());
-    symbolLayer->setBorderColor(borderColor());
-    QgsFillSymbolV2 *fillSymbol = new QgsFillSymbolV2(QgsSymbolLayerV2List()<<symbolLayer);
-    QgsSingleSymbolRendererV2* singleSymbolRenderer = new QgsSingleSymbolRendererV2(fillSymbol);
+    symbolLayer->setStrokeColor(borderColor());
+    QgsFillSymbol *fillSymbol = new QgsFillSymbol(QgsSymbolLayerList()<<symbolLayer);
+    QgsSingleSymbolRenderer* singleSymbolRenderer = new QgsSingleSymbolRenderer(fillSymbol);
     this->setRenderer(singleSymbolRenderer);
 }
 
@@ -114,7 +114,7 @@ CDTExtractionLayer *CDTExtractionLayer::getLayer(QUuid id)
         if (id == layer->id())
             return layer;
     }
-    return NULL;
+    return Q_NULLPTR;
 }
 
 //void CDTExtractionLayer::onContextMenuRequest(QWidget *parent)
@@ -192,7 +192,7 @@ void CDTExtractionLayer::setLayerTransparency(const int &transparency)
     QgsVectorLayer*p = qobject_cast<QgsVectorLayer*>(canvasLayer());
     if (p)
     {
-        p->setLayerTransparency(transparency);
+        p->setOpacity(transparency);
         canvas()->refresh();
     }
 }
@@ -205,7 +205,7 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
     QgsVectorLayer *newLayer = new QgsVectorLayer(tempShpPath,QFileInfo(tempShpPath).completeBaseName(),"ogr");
     if (!newLayer->isValid())
     {
-        QMessageBox::critical(NULL,tr("Error"),tr("Open shapefile ")+tempShpPath+tr(" failed!"));
+        QMessageBox::critical(Q_NULLPTR,tr("Error"),tr("Open shapefile ")+tempShpPath+tr(" failed!"));
         delete newLayer;
         return;
     }
@@ -251,7 +251,7 @@ void CDTExtractionLayer::initLayer(const QString &name, const QString &shpID,
     connect(this,SIGNAL(borderColorChanged(QColor)),borderColorPicker,SLOT(setCurrentColor(QColor)));
     widgets.append(qMakePair(new QLabel(tr("Border color")),(QWidget*)borderColorPicker));
 
-    QSlider *sliderTransparency = new QSlider(Qt::Horizontal,NULL);
+    QSlider *sliderTransparency = new QSlider(Qt::Horizontal, Q_NULLPTR);
     sliderTransparency->setMinimum(0);
     sliderTransparency->setMaximum(100);
     sliderTransparency->setToolTip(tr("Transparency"));

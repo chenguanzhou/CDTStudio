@@ -3,9 +3,8 @@
 
 #include "cdtdockwidget.h"
 #include "dialogdbconnection.h"
-#include "log4qt/logger.h"
 
-struct QUuid;
+class QUuid;
 class QPainter;
 class QWidget;
 class QTabWidget;
@@ -43,7 +42,7 @@ public:
 class CDTAttributeDockWidget : public CDTDockWidget
 {
     Q_OBJECT
-    LOG4QT_DECLARE_QCLASS_LOGGER
+
 public:
     explicit CDTAttributeDockWidget(QWidget *parent = 0);
     ~CDTAttributeDockWidget();

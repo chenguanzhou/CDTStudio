@@ -28,7 +28,7 @@ CDTPlot2DDockWidget::CDTPlot2DDockWidget(QWidget *parent) :
     hbox->setStretchFactor(treeViewStatistices,1);
     hbox->setSpacing(5);
     this->setWidget(widget);
-    logger()->info("Constructed");
+    qDebug("Constructed");
 }
 
 CDTPlot2DDockWidget::~CDTPlot2DDockWidget()
@@ -55,21 +55,21 @@ void CDTPlot2DDockWidget::setDataSource(QSqlDatabase db, QString tableName, QStr
 {
     if (!db.isValid())
     {
-        logger()->error("Database is invalid!");
+        qCritical("Database is invalid!");
         return;
     }
     if (!db.isOpen())
     {
-        logger()->error("Database is not opened!");
+        qCritical("Database is not opened!");
         return;
     }
     if (!db.tables().contains(tableName))
     {
-        logger()->error("Table %1 is not in database %2!",tableName,db.connectionName());
+        qCritical("Table %1 is not in database %2!",tableName,db.connectionName());
         return;
     }
 
-    logger()->info("Data source is set. Connection name: %1 Table name: %2 Field name: %3",
+    qDebug("Data source is set. Connection name: %1 Table name: %2 Field name: %3",
                    db.connectionName(),tableName,fieldName);
     qwtPlot->setDatabase(db);
     qwtPlot->setTableName(tableName);
@@ -92,7 +92,7 @@ void CDTPlot2DDockWidget::setDataSource(QSqlDatabase db, QString tableName, QStr
 void CDTPlot2DDockWidget::onStatisticsFinished()
 {
     CDTAttibuteStatisticsHelper *helper = qobject_cast<CDTAttibuteStatisticsHelper *>(sender());
-    if (helper==NULL || helper->isValid())
+    if (helper==Q_NULLPTR || helper->isValid())
         return;
 
     model->removeRows(0,model->rowCount());

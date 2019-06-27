@@ -12,7 +12,7 @@ class QModelIndex;
 class QTreeWidgetItem;
 class QListWidget;
 class CDTAttributeGenerator;
-struct QUuid;
+class QUuid;
 
 class DialogGenerateAttributes : public QDialog
 {

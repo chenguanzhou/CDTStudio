@@ -8,9 +8,8 @@ class GrabcutInterface : public CDTExtractionInterface
     Q_OBJECT
 #if QT_VERSION >= 0x050000
     Q_PLUGIN_METADATA(IID "cn.edu.WHU.CDTStudio.CDTExtractionInterface" FILE "Grabcut.json")
-#else
-    Q_INTERFACES(CDTExtractionInterface)
 #endif // QT_VERSION >= 0x050000
+    Q_INTERFACES(CDTExtractionInterface)
 public:
     GrabcutInterface(QObject *parent = 0);
 

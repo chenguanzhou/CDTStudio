@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-struct QUuid;
+class QUuid;
 class QSqlQueryModel;
 class CDTTaskReply;
 
