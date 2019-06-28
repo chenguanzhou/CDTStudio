@@ -1,6 +1,5 @@
 #include "cdtgrabcutmaptool.h"
-#include <QtCore>
-#include <QtGui>
+
 #include <qgsgeometry.h>
 #include <qgsrubberband.h>
 #include <qgsmapcanvas.h>
@@ -19,8 +18,9 @@ typedef struct tagVERTEX2D
     double y;
 }VERTEX2D;
 
-QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
+QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
 {
+    qDebug()<<"enter grabcut";
     QTime t;
     t.start();
 
@@ -57,7 +57,10 @@ QgsPolygon grabcut(const QgsPolygon &polygon,QString imagePath)
 
     //transform
     std::vector<VERTEX2D> vecInputPoints;
-    for (auto iter = polygon.boundary()->boundary()->vertices_begin();iter != polygon.boundary()->boundary()->vertices_end();++iter) {
+    auto iter = polygon.vertices_begin();
+    for(;iter!= polygon.vertices_end(); ++iter)
+    {
+
         VERTEX2D newPt;
         GDALApplyGeoTransform(padfTransform_i,(*iter).x(),(*iter).y(),&newPt.x,&newPt.y);
         vecInputPoints.push_back(newPt);
@@ -274,14 +277,14 @@ void CDTGrabcutMapTool::canvasPressEvent(QgsMapMouseEvent *e)
     }
     else if ( e->button() == Qt::RightButton )
     {
+        qDebug()<<"right btn";
         if ( mRubberBand->numberOfVertices() > 2 )
         {
-            auto polygonGeom = mRubberBand->asGeometry().get();
-            QgsPolygon *polygon = qgsgeometry_cast<QgsPolygon *>( polygonGeom );
+            QgsGeometry selectGeom = mRubberBand->asGeometry();
 
             QTime t;
             t.start();
-            QgsPolygon snakePolygon = grabcut(*polygon,imagePath);
+            QgsPolygon snakePolygon = grabcut(selectGeom,imagePath);
             qDebug()<<t.elapsed();
 
             QgsGeometry newPolygonGeom = QgsGeometry(snakePolygon.boundary());

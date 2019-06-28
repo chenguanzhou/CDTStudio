@@ -43,3 +43,4 @@ SOURCES += \
 include(../../../Interfaces/Interfaces.pri)
 include(../../../Tools/Config/link2opencv.pri)
 DEFINES += _XKEYCHECK_H
+

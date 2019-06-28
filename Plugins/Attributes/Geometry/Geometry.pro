@@ -34,4 +34,4 @@ LIBS += -lgdal_i
 }
 
 #opencv
-include(../../../Tools/Config/link2opencv.pri)
+#include(../../../Tools/Config/link2opencv.pri)

@@ -13,7 +13,7 @@
 #include <qgsmapmouseevent.h>
 #include "StatisticSnake.h"
 
-QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
+QgsPolygon snake(const QgsGeometry &polygon,QString imagePath)
 {
     //init
     GDALAllRegister();
@@ -48,7 +48,9 @@ QgsPolygon snake(const QgsPolygon &polygon,QString imagePath)
 
     //transform
     std::vector<VERTEX2D> vecInputPoints;
-    for (auto iter = polygon.boundary()->boundary()->vertices_begin();iter != polygon.boundary()->boundary()->vertices_end();++iter) {
+    auto iter = polygon.vertices_begin();
+    for(;iter!= polygon.vertices_end(); ++iter)
+    {
         VERTEX2D newPt;
         GDALApplyGeoTransform(padfTransform_i,(*iter).x(),(*iter).y(),&newPt.x,&newPt.y);
         vecInputPoints.push_back(newPt);
@@ -164,12 +166,8 @@ void CDTSnakeMapTool::canvasPressEvent( QgsMapMouseEvent * e )
     {
         if ( mRubberBand->numberOfVertices() > 2 )
         {
-            auto polygonGeom = mRubberBand->asGeometry().get();
-            QgsPolygon *polygon = qgsgeometry_cast<QgsPolygon *>( polygonGeom );
-
-            QgsPolygon snakePolygon = snake(*polygon,imagePath);
-            delete polygon;
-
+            QgsGeometry selectGeom = mRubberBand->asGeometry();
+            QgsPolygon snakePolygon = snake(selectGeom,imagePath);
 
             QgsGeometry newPolygonGeom = QgsGeometry(snakePolygon.boundary());
             QgsFeature f(vectorLayer->fields(),0);
