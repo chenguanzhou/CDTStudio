@@ -222,11 +222,17 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
     binMask.create( matMask.size(), CV_8UC1 );
     binMask = matMask & 1;
 
-    qDebug()<<"start find contours";
-    std::vector< std::vector<cv::Point> > contours;
-    std::vector<cv::Vec4i> hierarchy;
-    cv::findContours(binMask,contours,hierarchy,  CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+    cv::threshold(binMask, res, 0.0, 255.0, CV_THRESH_BINARY | CV_THRESH_OTSU);
+    cv::imwrite("binMask.jpg", res);
 
+    qDebug()<<"start find contours";
+    cv::vector< cv::vector<cv::Point> > contours(10000);
+//    std::vector<cv::Vec4i> hierarchy;
+    cv::vector<cv::Mat> hierarchy(10000);
+    cv::findContours(res,contours,hierarchy,  CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+//    cv::findContours(res,contours,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);
+
+    ///TODO:fix bug of cv::findContours, dash the exe
     qDebug()<<"find contours done: "+QString::number(contours.size());
     std::vector<VERTEX2D> vecAllPoints;
 
