@@ -34,7 +34,6 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
         qWarning()<<QObject::tr("Open Image File: %1 failed!").arg(imagePath);
         return QgsPolygon();
     }
-    int _bandCount = poSrcDS->GetRasterCount();
 
     double padfTransform[6] = {0,1,0,0,0,1};
     double padfTransform_i[6];
@@ -73,6 +72,7 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
 
     for (size_t i=0;i<vecInputPoints.size();++i)
     {
+//        qDebug()<< QString::number(i)<<"x: "+ QString::number(vecInputPoints[i].x)<<"y: "+ QString::number(vecInputPoints[i].y)<<endl;
         if(vecInputPoints[i].x<0)
             vecInputPoints[i].x = 0;
         if(vecInputPoints[i].y<0)
@@ -112,7 +112,7 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
         nHeight = _heith-nYOff;
 
     cv::Mat  image = cv::Mat::zeros(nHeight,nWidth,CV_8UC3);
-    std::vector<int> vecImageData(nWidth*nHeight);
+    std::vector<int> vecImageData(nWidth * nHeight);
     for (int k=0;k<3;++k)
     {
         double minPix = std::numeric_limits<double>::max();
@@ -152,31 +152,38 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
     rect.width = rec_nWidth;
     rect.height = rec_nHeight;
 
-    const cv::Scalar GREEN = cv::Scalar(0,255,0);
-    cv::Mat mask = cv::Mat::zeros(nHeight,nWidth,CV_8U);
-    mask.setTo(0);
-
-    std::vector<cv::Point> pContourInputPoints;
-    std::vector< std::vector<cv::Point> > pContour;
-
+    cv::vector<cv::Point> pContourInputPoints(vecInputPoints.size());
     for (size_t i=0;i<vecInputPoints.size();++i)
     {
        cv::Point acvPoint;
        acvPoint.x=vecInputPoints[i].x -nXOff;
        acvPoint.y=vecInputPoints[i].y -nYOff;
        pContourInputPoints.push_back(acvPoint);
+
+       qDebug()<< QString::number(i)<<"x: "+ QString::number(acvPoint.x)<<"y: "+ QString::number(acvPoint.y)<<endl;
     }
+
+    cv::vector< cv::vector<cv::Point> > pContour(1);
     pContour.push_back(pContourInputPoints);
 
+    qDebug()<<t.restart();
+
+    cv::Mat mask = cv::Mat::zeros(nHeight,nWidth,CV_8U);
+    mask.setTo(0);
+
+    ///TODO:fix bug of cv::drawContours, can't draw contours to mask
+    cv::drawContours(mask, pContour, -1, cv::Scalar(3), CV_FILLED);
+    cv::imwrite("mask.jpg", mask);
+
+    const cv::Scalar GREEN = cv::Scalar(0,255,0);
+    cv::rectangle(image,rect,GREEN,2);
+    cv::imwrite("test.jpg", image);
 
     qDebug()<<t.restart();
 
-    cv::drawContours(mask,pContour,0,cv::Scalar(3),CV_FILLED);
+    cv::grabCut(image, mask, rect, cv::Mat(), cv::Mat(), 3, cv::GC_INIT_WITH_MASK);
 
-    qDebug()<<t.restart();
-
-    cv::grabCut(image,mask,rect,cv::Mat(),cv::Mat(),3,cv::GC_INIT_WITH_MASK);
-
+    cv::imwrite("result.jpg", mask);
     qDebug()<<t.restart();
 
     cv::Mat res,binMask;
