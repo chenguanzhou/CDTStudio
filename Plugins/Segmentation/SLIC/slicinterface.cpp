@@ -15,9 +15,10 @@
 class SLICMethodPrivate
 {
 public:
-    SLICMethodPrivate():_objectCount(10),_compactness(30){}
+    SLICMethodPrivate():_objectCount(10),_compactness(30),_algorith(SLICInterface::SLIC){}
     double _objectCount;
     int _compactness;
+    SLICInterface::Algorithm _algorith;
 };
 
 SLICInterface::SLICInterface(QObject *parent)
@@ -44,7 +45,7 @@ void SLICInterface::startSegmentation()
 
     //Generate SLIC
 //    auto src = cv::imread(inputImagePath.toLocal8Bit().constData());
-    auto slic = cv::ximgproc::createSuperpixelSLIC(src,cv::ximgproc::SLICO,pData->_objectCount,pData->_compactness);
+    auto slic = cv::ximgproc::createSuperpixelSLIC(src,pData->_algorith,pData->_objectCount,pData->_compactness);
     slic->iterate();
     cv::Mat labels;
     slic->getLabels(labels);
@@ -128,6 +129,11 @@ int SLICInterface::compactness() const
     return pData->_compactness;
 }
 
+SLICInterface::Algorithm SLICInterface::algorith() const
+{
+    return pData->_algorith;
+}
+
 void SLICInterface::setObjectCount(double val)
 {
     pData->_objectCount = val;
@@ -136,6 +142,11 @@ void SLICInterface::setObjectCount(double val)
 void SLICInterface::setCompactness(int val)
 {
     pData->_compactness = val;
+}
+
+void SLICInterface::setAlgorith(SLICInterface::Algorithm val)
+{
+    pData->_algorith = val;
 }
 
 

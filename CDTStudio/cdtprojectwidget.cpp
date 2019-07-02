@@ -232,13 +232,13 @@ void CDTProjectWidget::refreshMapCanvas(bool zoomToFullExtent)
     QList<QgsMapLayer*> mapLayers;
 
     foreach (QgsMapLayer *lyr, activeLayers) {
-        if (lyr->type()==QgsMapLayer::VectorLayer)
+        if (lyr->type()==QgsMapLayerType::VectorLayer)
         {
             mapLayers<<lyr;
         }
     }
     foreach (QgsMapLayer *lyr, activeLayers) {
-        if (lyr->type()==QgsMapLayer::RasterLayer)
+        if (lyr->type()==QgsMapLayerType::RasterLayer)
         {
             mapLayers<<lyr;
         }

@@ -1,12 +1,12 @@
 QT       += core gui widgets xml
 
-TARGET = Grabcut
+TARGET = PartialSegmentation
 TEMPLATE = lib
 CONFIG += plugin
 
 DESTDIR = ../../../bin/Plugins
 
-OTHER_FILES += Grabcut.json
+OTHER_FILES += PartialSegmentation.json
 
 unix {
     target.path = /usr/lib
@@ -33,12 +33,22 @@ LIBS += -lgdal_i
 LIBS += -lqgis_core -lqgis_gui
 
 HEADERS += \
-    cdtgrabcutmaptool.h \
-    grabcutinterface.h
+    CdtPartialSegmentationMapTool.h \
+    PartialSegmentationInterface.h \
+    MstPartialSegment.h
 
 SOURCES += \
-    cdtgrabcutmaptool.cpp \
-    grabcutinterface.cpp
+    CdtPartialSegmentationMapTool.cpp \
+    PartialSegmentationInterface.cpp \
+    MstPartialSegment.cpp
+
+SOURCES += \
+    mstmethodinterface.cpp \
+    graphkruskal.cpp
+
+HEADERS +=\
+    mstmethodinterface.h \
+    graphkruskal.h
 
 include(../../../Interfaces/Interfaces.pri)
 include(../../../Tools/Config/link2opencv.pri)
