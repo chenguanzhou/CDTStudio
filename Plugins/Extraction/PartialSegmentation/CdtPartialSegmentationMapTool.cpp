@@ -10,6 +10,8 @@
 #include <qgslinestring.h>
 #include <qgsmapmouseevent.h>
 #include <gdal_priv.h>
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <opencv2/opencv.hpp>
 
 #include <MstPartialSegment.h>
@@ -129,10 +131,48 @@ QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
     MPS.m_pSrcDS = poSrcDS;
     MPS.m_pPolygon = &ogrPolygon;
     MPS.m_strMarkfilePath = "D://01.tif";
-    MPS.m_strShapefilePath = "D://01.shp";
+    MPS.m_strShapefilePath = "D://01";
     MPS.Start();
 
+    QFileInfo info( MPS.m_strShapefilePath);
+    QString strPath = (info.absoluteFilePath()+"/"+info.baseName());
+    qDebug()<<strPath;
+
     QgsPolygon exportPolygon;
+    GDALDataset* poGeometryDS =  (GDALDataset*)GDALOpenEx(MPS.m_strShapefilePath.toUtf8().constData(),GDAL_OF_VECTOR,NULL,NULL,NULL);
+    if( Q_NULLPTR == poGeometryDS)
+    {
+        return exportPolygon;
+    }
+
+    OGRLayer* pLayer = poGeometryDS->GetLayer(0);
+    if (Q_NULLPTR == pLayer)
+    {
+        return exportPolygon;
+    }
+    pLayer->ResetReading();
+
+    OGRFeature* pFeature = Q_NULLPTR;
+    while (Q_NULLPTR != (pFeature = pLayer->GetNextFeature()))
+    {
+        OGRGeometry* pGeometry = pFeature->GetGeometryRef();
+        if(Q_NULLPTR != pGeometry)
+        {
+            if(wkbPolygon == pGeometry->getGeometryType())
+            {
+                char** ppWkt = Q_NULLPTR;
+                pGeometry->exportToWkt(ppWkt);
+                 int count = CSLCount(ppWkt);
+                 qDebug()<<count;
+//                ((QgsCurvePolygon*)&exportPolygon)->fromWkt(QString::from);
+            }
+        }
+
+    }
+
+
+
+
 
     qDebug()<<t.restart();
     return exportPolygon;
