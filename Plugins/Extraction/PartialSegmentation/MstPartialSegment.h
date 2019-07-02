@@ -9,7 +9,6 @@
 #include <QObject>
 #include <QMap>
 #include <QVector>
-#include "cdtsegmentationinterface.h"
 
 #ifndef Q_MOC_RUN
 #include <stxxl/vector>
@@ -29,23 +28,31 @@ public:
 
     QVector<double> m_veclayerWeights;
 
-    GDALDataset *m_pSrcDS;
-    GDALDataset *m_pDstDS;
-
+    void* m_pSrcDS;
+    void* m_pPolygon;
     QString m_strMarkfilePath;
+    QString m_strShapefilePath;
 
-    OGRPolygon* m_pPolygon;
+
+    bool Start();
+    bool CheckAndInit();
+    bool CreateEdgeWeights(void *p);
+    bool ObjectMerge(GraphKruskal *&graph, void *p, int num_vertices, float threshold);
+    bool EliminateSmallArea(GraphKruskal *&graph, void *p, double _minObjectSize);
+    bool GenerateFlagImage(GraphKruskal *&graph, const QMap<unsigned, unsigned> &mapRootidObjectid);
+    bool Polygonize();
+
+private:
+    MSTMethodPrivate *pData;
+    void *m_pDstDS;
 
     int m_nXOff;
     int m_nYOff;
     int m_nWidth;
     int m_nHeight;
 
-    bool Start();
-    bool CheckAndInit();
-    bool CreateEdgeWeights();
+    QVector<double> m_layerWeights;
 
-private:
     void onComputeEdgeWeight(unsigned nodeID1, unsigned nodeID2,
                              const QVector<double> &data1, const QVector<double> &data2,
                              const QVector<double> &layerWeight, void *p);

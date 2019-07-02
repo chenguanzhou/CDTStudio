@@ -12,30 +12,13 @@
 #include <gdal_priv.h>
 #include <opencv2/opencv.hpp>
 
+#include <MstPartialSegment.h>
+
 typedef struct tagVERTEX2D
 {
     double x;
     double y;
 }VERTEX2D;
-
-void GetFlagMat(cv::Mat& src, OGRPolygon& polygon)
-{
-    for(int i=0;i<src.rows;++i)
-    {
-        for(int j=0;j<src.cols;++j)
-        {
-            OGRPoint ogrP(j,i);
-            if(polygon.IsPointOnSurface(&ogrP))
-            {
-                src.at<uchar>(i,j)= 42;
-            }
-            else
-            {
-                src.at<uchar>(i,j)= 0;
-            }
-        }
-    }
-}
 
 QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
 {
@@ -116,6 +99,11 @@ QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
     int nWidth  = (int)maxX-nXOff+1;
     int nHeight = (int)maxY-nYOff+1;
 
+    qDebug()<<"nXOff: "+QString::number(nXOff);
+    qDebug()<<"nYOff: "+QString::number(nYOff);
+    qDebug()<<"nWidth: "+QString::number(nWidth);
+    qDebug()<<"nHeight: "+QString::number(nHeight);
+
     if(nXOff<0)
         nXOff=0;
     if(nYOff<0)
@@ -137,13 +125,12 @@ QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
     OGRPolygon ogrPolygon;
     ogrPolygon.addRing(&ring);
 
-    cv::Mat matMask = cv::Mat::zeros(_height,_width,CV_8U);
-    GetFlagMat(matMask, ogrPolygon);
-
-    cv::rectangle(matMask,rect,cv::Scalar(20),2);
-
-    imwrite("matMask.jpg", matMask);
-    qDebug()<<"get matMask";
+    MstPartialSegment MPS;
+    MPS.m_pSrcDS = poSrcDS;
+    MPS.m_pPolygon = &ogrPolygon;
+    MPS.m_strMarkfilePath = "D://01.tif";
+    MPS.m_strShapefilePath = "D://01.shp";
+    MPS.Start();
 
     QgsPolygon exportPolygon;
 
