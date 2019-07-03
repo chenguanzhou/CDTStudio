@@ -22,9 +22,10 @@ typedef struct tagVERTEX2D
     double y;
 }VERTEX2D;
 
-QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
+std::vector<QgsPolygon> partialSegment(const QgsGeometry &polygon,QString imagePath)
 {
     qDebug()<<"enter PartialSegmentat";
+    std::vector<QgsPolygon> vecQgsPolygons;
     QTime t;
     t.start();
 
@@ -36,7 +37,7 @@ QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
     if (poSrcDS == Q_NULLPTR)
     {
         qWarning()<<QObject::tr("Open Image File: %1 failed!").arg(imagePath);
-        return QgsPolygon();
+        return vecQgsPolygons;
     }
 
     double padfTransform[6] = {0,1,0,0,0,1};
@@ -127,28 +128,32 @@ QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
     OGRPolygon ogrPolygon;
     ogrPolygon.addRing(&ring);
 
+
+    QString mkID  = QUuid::createUuid().toString();
+    QString shpID = QUuid::createUuid().toString();
+
     MstPartialSegment MPS;
     MPS.m_pSrcDS = poSrcDS;
     MPS.m_pPolygon = &ogrPolygon;
-    MPS.m_strMarkfilePath = "D://01.tif";
-    MPS.m_strShapefilePath = "D://01";
+    MPS.m_strMarkfilePath = QDir::tempPath()+"//MPS.tif";
+    MPS.m_strShapefilePath =  QDir::tempPath()+"//MPS";
     MPS.Start();
 
-    QFileInfo info( MPS.m_strShapefilePath);
-    QString strPath = (info.absoluteFilePath()+"/"+info.baseName());
-    qDebug()<<strPath;
+    qDebug()<<MPS.m_strMarkfilePath;
+    qDebug()<<MPS.m_strShapefilePath;
 
-    QgsPolygon exportPolygon;
     GDALDataset* poGeometryDS =  (GDALDataset*)GDALOpenEx(MPS.m_strShapefilePath.toUtf8().constData(),GDAL_OF_VECTOR,NULL,NULL,NULL);
     if( Q_NULLPTR == poGeometryDS)
     {
-        return exportPolygon;
+        qDebug()<<"open failed";
+        return vecQgsPolygons;
     }
 
     OGRLayer* pLayer = poGeometryDS->GetLayer(0);
     if (Q_NULLPTR == pLayer)
     {
-        return exportPolygon;
+        qDebug()<<"read layer failed";
+        return vecQgsPolygons;
     }
     pLayer->ResetReading();
 
@@ -160,22 +165,18 @@ QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
         {
             if(wkbPolygon == pGeometry->getGeometryType())
             {
-                char** ppWkt = Q_NULLPTR;
-                pGeometry->exportToWkt(ppWkt);
-                 int count = CSLCount(ppWkt);
-                 qDebug()<<count;
-//                ((QgsCurvePolygon*)&exportPolygon)->fromWkt(QString::from);
+                char* ppWkt = Q_NULLPTR;
+                qDebug()<<"exportToWkt";
+                pGeometry->exportToWkt(&ppWkt);
+                QgsPolygon qgsPolygon;
+                ((QgsCurvePolygon*)&qgsPolygon)->fromWkt(QString::fromUtf8(ppWkt));
+                vecQgsPolygons.push_back(qgsPolygon);
             }
         }
-
     }
 
-
-
-
-
     qDebug()<<t.restart();
-    return exportPolygon;
+    return vecQgsPolygons;
 }
 
 CDTPartialSegmentationMapTool::CDTPartialSegmentationMapTool(QgsMapCanvas *canvas) :
@@ -188,7 +189,10 @@ CDTPartialSegmentationMapTool::CDTPartialSegmentationMapTool(QgsMapCanvas *canva
 
 CDTPartialSegmentationMapTool::~CDTPartialSegmentationMapTool()
 {
-    delete mRubberBand;
+    if(mRubberBand)
+    {
+        delete mRubberBand;
+    }
 }
 
 void CDTPartialSegmentationMapTool::canvasMoveEvent(QgsMapMouseEvent *e)
@@ -217,22 +221,24 @@ void CDTPartialSegmentationMapTool::canvasPressEvent(QgsMapMouseEvent *e)
     }
     else if ( e->button() == Qt::RightButton )
     {
-        qDebug()<<"right btn";
         if ( mRubberBand->numberOfVertices() > 2 )
         {
             QgsGeometry selectGeom = mRubberBand->asGeometry();
 
             QTime t;
             t.start();
-            QgsPolygon snakePolygon = partialSegment(selectGeom,imagePath);
+            std::vector<QgsPolygon> qgsPolygons = partialSegment(selectGeom,imagePath);
             qDebug()<<t.elapsed();
 
-            QgsGeometry newPolygonGeom = QgsGeometry(snakePolygon.boundary());
-            QgsFeature f(vectorLayer->fields(),0);
-            f.setGeometry(newPolygonGeom);
-            vectorLayer->startEditing();
-            vectorLayer->addFeature(f);
-            vectorLayer->commitChanges();
+            foreach(QgsPolygon qgsPolygon, qgsPolygons)
+            {
+                QgsGeometry newPolygonGeom = QgsGeometry(qgsPolygon.boundary());
+                QgsFeature f(vectorLayer->fields(),0);
+                f.setGeometry(newPolygonGeom);
+                vectorLayer->startEditing();
+                vectorLayer->addFeature(f);
+                vectorLayer->commitChanges();
+            }
             canvas()->refresh();
         }
         mRubberBand->reset( QgsWkbTypes::PolygonGeometry );
