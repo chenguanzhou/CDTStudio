@@ -10,6 +10,7 @@
 class QgsMapCanvas;
 class QgsRubberBand;
 class QgsVectorLayer;
+class CDTFileSystem;
 
 class CDTPartialSegmentationMapTool : public QgsMapTool
 {

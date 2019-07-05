@@ -121,3 +121,63 @@ void GraphKruskal::GetMapNodeidObjectid(GDALRasterBand *&poMaskBand, QMap<unsign
         }
     }
 }
+
+void GraphKruskal::GetMapNodeidObjectid(void* vpPolygon, QMap<unsigned, unsigned> &mapRootidObjectid)
+{
+    float minX = std::numeric_limits<float>::max();
+    float minY = std::numeric_limits<float>::max();
+    float maxX = std::numeric_limits<float>::min();
+    float maxY = std::numeric_limits<float>::min();
+
+    OGRPolygon* pPolygon = (OGRPolygon*)vpPolygon;
+    OGRLinearRing* pOgrLinerRing = pPolygon->getExteriorRing();
+    int nRingPointCount = pOgrLinerRing->getNumPoints();
+    if( 0 >= nRingPointCount)
+    {
+        return;
+    }
+
+    OGRRawPoint* ringPoints = new OGRRawPoint[nRingPointCount];
+    pOgrLinerRing->getPoints(ringPoints);
+
+    for (size_t i=0;i < nRingPointCount;++i)
+    {
+        if (ringPoints[i].x<minX)
+            minX = ringPoints[i].x;
+        if (ringPoints[i].x>maxX)
+            maxX = ringPoints[i].x;
+        if (ringPoints[i].y<minY)
+            minY = ringPoints[i].y;
+        if (ringPoints[i].y>maxY)
+            maxY = ringPoints[i].y;
+    }
+
+    unsigned nXOff = minX;
+    unsigned nYOff = minY;
+    unsigned nWidth = maxX - minX + 1;
+    unsigned nHeight = maxY - minY + 1;
+
+    mapRootidObjectid.clear();
+
+    unsigned objectID = 0;
+    unsigned index = 0;
+    for(int i=0;i< nHeight;++i)
+    {
+        for (int j=0;j<nWidth;++j,++index)
+        {
+
+            OGRPoint pPoint(j + nXOff, i + nYOff);
+            if(pPolygon->IsPointOnSurface(&pPoint))
+            {
+                unsigned RootNode=find(index);
+    //            if (mapRootidObjectid.find(RootNode)==mapRootidObjectid.end())
+                if (!mapRootidObjectid.contains(RootNode))
+                {
+                    mapRootidObjectid[RootNode] = objectID;
+                    objectID++;
+                }
+
+            }
+        }
+    }
+}

@@ -18,25 +18,6 @@ typedef struct tagVERTEX2D
     double y;
 }VERTEX2D;
 
-void GetFlagMat(cv::Mat& src, OGRPolygon& polygon)
-{
-    for(int i=0;i<src.rows;++i)
-    {
-        for(int j=0;j<src.cols;++j)
-        {
-            OGRPoint ogrP(j,i);
-            if(polygon.IsPointOnSurface(&ogrP))
-            {
-                src.at<uchar>(i,j)= 3;
-            }
-            else
-            {
-                src.at<uchar>(i,j)= 0;
-            }
-        }
-    }
-}
-
 QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
 {
     qDebug()<<"enter grabcut";
@@ -46,13 +27,16 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
     //init
     GDALAllRegister();
     GDALDataset *poSrcDS = (GDALDataset *)GDALOpen(imagePath.toUtf8().constData(),GA_ReadOnly);
-    int _width      = poSrcDS->GetRasterXSize();
-    int _heith      = poSrcDS->GetRasterYSize();
     if (poSrcDS == Q_NULLPTR)
     {
         qWarning()<<QObject::tr("Open Image File: %1 failed!").arg(imagePath);
         return QgsPolygon();
     }
+
+    int _width      = poSrcDS->GetRasterXSize();
+    int _heith      = poSrcDS->GetRasterYSize();
+    GDALDataType gdalDataType = poSrcDS->GetRasterBand(1)->GetRasterDataType();
+    unsigned pixelSize = GDALGetDataTypeSize(gdalDataType)/8;
 
     double padfTransform[6] = {0,1,0,0,0,1};
     double padfTransform_i[6];
@@ -91,7 +75,6 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
 
     for (size_t i=0;i<vecInputPoints.size();++i)
     {
-//        qDebug()<< QString::number(i)<<"x: "+ QString::number(vecInputPoints[i].x)<<"y: "+ QString::number(vecInputPoints[i].y)<<endl;
         if(vecInputPoints[i].x<0)
             vecInputPoints[i].x = 0;
         if(vecInputPoints[i].y<0)
@@ -131,17 +114,25 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
         nHeight = _heith-nYOff;
 
     cv::Mat  image = cv::Mat::zeros(nHeight,nWidth,CV_8UC3);
-    std::vector<int> vecImageData(nWidth * nHeight);
-    for (int k=0;k<3;++k)
+//    std::vector<int> vecImageData(nWidth * nHeight);
+    std::vector<unsigned char*> vecImageData(3);
+    for (unsigned k=0;k<3;++k)
+    {
+        vecImageData[k] = new unsigned char[nWidth * pixelSize];
+    }
+
+    for (int k=0; k<3; ++k)
     {
         double minPix = std::numeric_limits<double>::max();
         double maxPix = std::numeric_limits<double>::min();
-        poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff,nWidth,nHeight,&vecImageData[0],nWidth,nHeight,GDT_UInt32,0,0);
+
         for(int i=0;i<nHeight;i++)
         {
+            poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff+i,nWidth,1,vecImageData[k],nWidth,1,gdalDataType,0,0);
+
             for(int j=0;j<nWidth;j++)
             {
-                double imagePix = vecImageData[i*nWidth+j];
+                double imagePix = SRCVAL(vecImageData[k],gdalDataType,j);
                 if(imagePix <minPix) minPix = imagePix;
                 if(imagePix >maxPix) maxPix = imagePix;
             }
@@ -149,14 +140,16 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
 
         const double pixelmin = minPix;
         const double pixelmax = maxPix;
-        const double ak = (double)255 / (double)(pixelmax - pixelmin);
-        const double bk =-(double)255 * (double)pixelmin/(double)(pixelmax - pixelmin);
+        const double ak = (double)255 / (double)(pixelmax - pixelmin + 0.000001);
+        const double bk =-(double)255 * (double)pixelmin/(double)(pixelmax - pixelmin + 0.000001);
 
         for(int i=0;i<nHeight;i++)
         {
+            poSrcDS->GetRasterBand(k+1)->RasterIO(GF_Read,nXOff,nYOff+i,nWidth,1,vecImageData[k],nWidth,1,gdalDataType,0,0);
+
             for(int j=0;j<nWidth;j++)
             {
-                double imagePix = vecImageData[i*nWidth+j];
+                double imagePix = SRCVAL(vecImageData[k],gdalDataType,j);
                 double pix = ak*imagePix+bk+0.5;
                 if(pix>255) pix = 255;
                 if(pix<0)   pix = 0;
@@ -165,13 +158,21 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
         }
     }
 
+    for (unsigned k=0;k<3;++k)
+    {
+        delete [](vecImageData[k]);
+    }
+    cv::imwrite("test.jpg", image);
+
     cv::Rect rect;
     rect.x = rec_nWidth/12;
     rect.y = rec_nHeight/12;
     rect.width = rec_nWidth;
     rect.height = rec_nHeight;
 
-    OGRLinearRing ring;
+
+    OGRLinearRing* ring = (OGRLinearRing*)OGRGeometryFactory::createGeometry(wkbLinearRing);
+//    OGRLinearRing ring;
     cv::vector<cv::Point> pContourInputPoints(vecInputPoints.size());
     for (size_t i=0;i<vecInputPoints.size();++i)
     {
@@ -180,114 +181,155 @@ QgsPolygon grabcut(const QgsGeometry &polygon,QString imagePath)
        acvPoint.y = vecInputPoints[i].y -nYOff;
        pContourInputPoints.push_back(acvPoint);
 
-       qDebug()<< QString::number(i)<<"x: "+ QString::number(acvPoint.x)<<"y: "+ QString::number(acvPoint.y)<<endl;
-       ring.addPoint(acvPoint.x , acvPoint.y);
+       ring->addPoint(acvPoint.x , acvPoint.y);
     }
 
-    ring.closeRings();
+    OGRPolygon* ogrPolygon = (OGRPolygon*)OGRGeometryFactory::createGeometry(wkbPolygon);
+//    OGRPolygon ogrPolygon;
+    ogrPolygon->addRing(ring);
+    ring->closeRings();
 
-    OGRPolygon ogrPolygon;
-    ogrPolygon.addRing(&ring);
 
-    cv::Mat matMask = cv::Mat::zeros(nHeight,nWidth,CV_8U);
-    GetFlagMat(matMask, ogrPolygon);
+    cv::Mat matMask = cv::Mat::zeros(nHeight,nWidth,CV_8UC1);
 
-    cv::vector< cv::vector<cv::Point> > pContour(1);
-    pContour.push_back(pContourInputPoints);
+    for(int i=0;i<nHeight;++i)
+    {
+        for(int j=0;j<nWidth;++j)
+        {
+            OGRPoint ogrP(j,i);
+            if(ogrPolygon->IsPointOnSurface(&ogrP))
+            {
+                matMask.at<uchar>(i,j)= 3;
+            }
+            else
+            {
+                matMask.at<uchar>(i,j)= 0;
+            }
+        }
+    }
 
-    qDebug()<<t.restart();
+    cv::imwrite("mask0.jpg", matMask);
 
-    cv::Mat mask = cv::Mat::zeros(nHeight,nWidth,CV_8U);
-    mask.setTo(0);
+    for(int i=0;i<nHeight;++i)
+    {
+        for(int j=0;j<nWidth;++j)
+        {
+            if(i< nHeight/2)
+            {
+                matMask.at<uchar>(i,j)= 3;
+            }
+            else
+            {
+                matMask.at<uchar>(i,j)= 0;
+            }
+        }
+    }
 
-    ///TODO:fix bug of cv::drawContours, can't draw contours to mask
-    ///
+    cv::imwrite("mask1.jpg", matMask);
+
+////  TODO:fix bug of cv::drawContours, can't draw contours to mask
+//    cv::vector< cv::vector<cv::Point> > pContour(100);
+//    pContour.push_back(pContourInputPoints);
+//    cv::Mat mask = cv::Mat::zeros(nHeight,nWidth,CV_8U);
+//    mask.setTo(0);
 //    cv::drawContours(mask, pContour, -1, cv::Scalar(3), CV_FILLED);
 //    cv::imwrite("mask.jpg", mask);
 
-    const cv::Scalar GREEN = cv::Scalar(0,255,0);
-    cv::rectangle(image,rect,GREEN,2);
-    cv::imwrite("test.jpg", image);
+//    const cv::Scalar GREEN = cv::Scalar(0,255,0);
+//    cv::rectangle(image,rect,GREEN,2);
+//    cv::imwrite("test.jpg", image);
 
     qDebug()<<t.restart();
 
-    cv::grabCut(image, matMask, rect, cv::Mat(), cv::Mat(), 3, cv::GC_INIT_WITH_MASK);
+//    cv::grabCut(image, matMask, rect, cv::Mat(), cv::Mat(), 3, cv::GC_INIT_WITH_MASK);
 
-    cv::imwrite("result.jpg", matMask);
     qDebug()<<t.restart();
 
-    cv::Mat res,binMask;
-    cv::rectangle(image,rect,GREEN,2);
+//    cv::imwrite("grabcutbinMask.jpg", matMask);
 
-    binMask.create( matMask.size(), CV_8UC1 );
-    binMask = matMask & 1;
+//    cv::Mat newMatMask = cv::Mat::zeros(nHeight,nWidth,CV_8UC1);
 
-    cv::threshold(binMask, res, 0.0, 255.0, CV_THRESH_BINARY | CV_THRESH_OTSU);
-    cv::imwrite("binMask.jpg", res);
-
-    qDebug()<<"start find contours";
-    cv::vector< cv::vector<cv::Point> > contours(10000);
-//    std::vector<cv::Vec4i> hierarchy;
-    cv::vector<cv::Mat> hierarchy(10000);
-    cv::findContours(res,contours,hierarchy,  CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-//    cv::findContours(res,contours,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);
-
-    ///TODO:fix bug of cv::findContours, dash the exe
-    qDebug()<<"find contours done: "+QString::number(contours.size());
-    std::vector<VERTEX2D> vecAllPoints;
-
-    qDebug()<<"max size: "+QString::number(contours[0].size());
-    int maxSize = contours[0].size();
-//    int maxSize = 0 ;
-//    foreach(std::vector<cv::Point>  contour,contours)
+//    for(int i = 0; i < matMask.rows; ++i)
 //    {
-//        if(contour.size()>maxSize)
+//        for(int j = 0; j < matMask.cols; ++j)
 //        {
-//            maxSize = contour.size();
+//            if((uchar)3 != matMask.at<uchar>(i,j))
+//            {
+//                newMatMask.at<uchar>(i,j) = (uchar)3;
+//            }
 //        }
 //    }
 
-    qDebug()<<"0";
+//    cv::imwrite("binMask1.jpg", newMatMask);
+//    qDebug()<<"write done";
+
+
+//    cv::Mat res,binMask;
+//    cv::rectangle(image,rect,GREEN,2);
+
+//    binMask.create( matMask.size(), CV_8UC1 );
+//    binMask = matMask & 3;
+
+//    cv::imwrite("binMask.jpg", binMask);
+
+//    cv::Mat res;
+//    cv::threshold(matMask, res, 0, 255, CV_THRESH_OTSU);
+//    cv::imwrite("otsuBinMask.jpg", res);
+
+//    qDebug()<<"start find contours";
+//    ///TODO:fix bug of cv::findContours, dash the exe
+    cv::vector<cv::vector<cv::Point> > contours(100);
+    cv::vector<cv::Mat> hierarchy;
+//    cv::findContours(newMatMask,contours,hierarchy,  CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+
+
+//    qDebug()<<"find contours done: "+QString::number(contours.size());
+//    std::vector<VERTEX2D> vecAllPoints;
+
+//    qDebug()<<"contours size: "+QString::number(contours[0].size());
+//    int maxSize = contours[0].size();
+
+//    qDebug()<<"0";
     QgsPolygon exportPolygon;
 
-//    foreach(std::vector<cv::Point>  contour,contours)
-//    {
-        vecAllPoints.clear();
-        if((!contours.empty())&&(contours[0].size()==maxSize))
-        {
-            for(int i =0;i<contours[0].size();i++)
-            {
-                VERTEX2D Pt;
-                Pt.x = contours[0].at(i).x;
-                Pt.y = contours[0].at(i).y;
-                vecAllPoints.push_back(Pt);
-            }
-            for (size_t i=0;i<vecAllPoints.size();++i)
-            {
-                vecAllPoints[i].x += nXOff;
-                vecAllPoints[i].y += nYOff;
-            }
+////    foreach(std::vector<cv::Point>  contour,contours)
+////    {
+//        vecAllPoints.clear();
+//        if((!contours.empty())&&(contours[0].size()==maxSize))
+//        {
+//            for(int i =0;i<contours[0].size();i++)
+//            {
+//                VERTEX2D Pt;
+//                Pt.x = contours[0].at(i).x;
+//                Pt.y = contours[0].at(i).y;
+//                vecAllPoints.push_back(Pt);
+//            }
+//            for (size_t i=0;i<vecAllPoints.size();++i)
+//            {
+//                vecAllPoints[i].x += nXOff;
+//                vecAllPoints[i].y += nYOff;
+//            }
 
-            qDebug()<<"1";
-            QgsPolyline polyline;
-            for (size_t i=vecAllPoints.size()-1;i>0;--i)
-            {
-                QgsPoint ptTemp (padfTransform[0] + padfTransform[1]*vecAllPoints[i].x
-                        + padfTransform[2]*vecAllPoints[i].y,
-                        padfTransform[3] + padfTransform[4]*vecAllPoints[i].x
-                        + padfTransform[5]*vecAllPoints[i].y);
-                polyline.push_back(ptTemp);
-            }
+//            qDebug()<<"1";
+//            QgsPolyline polyline;
+//            for (size_t i=vecAllPoints.size()-1;i>0;--i)
+//            {
+//                QgsPoint ptTemp (padfTransform[0] + padfTransform[1]*vecAllPoints[i].x
+//                        + padfTransform[2]*vecAllPoints[i].y,
+//                        padfTransform[3] + padfTransform[4]*vecAllPoints[i].x
+//                        + padfTransform[5]*vecAllPoints[i].y);
+//                polyline.push_back(ptTemp);
+//            }
 
-            qDebug()<<"2";
-            QgsLineString *curve = new QgsLineString(polyline);
-            exportPolygon.setExteriorRing(curve);
-            qDebug()<<"3";
-        }
-//    }
+//            qDebug()<<"2";
+//            QgsLineString *curve = new QgsLineString(polyline);
+//            exportPolygon.setExteriorRing(curve);
+//            qDebug()<<"3";
+//        }
+////    }
 
-    qDebug()<<t.restart();
-    qDebug()<<"out grabcut";
+//    qDebug()<<t.restart();
+//    qDebug()<<"out grabcut";
     return exportPolygon;
 
 }
@@ -339,17 +381,16 @@ void CDTGrabcutMapTool::canvasPressEvent(QgsMapMouseEvent *e)
             QTime t;
             t.start();
             QgsPolygon snakePolygon = grabcut(selectGeom,imagePath);
-//            qDebug()<<t.elapsed();
+            qDebug()<<t.elapsed();
 
-            qDebug()<<"a";
+
             QgsGeometry newPolygonGeom = QgsGeometry(snakePolygon.boundary());
-            qDebug()<<"b";
             QgsFeature f(vectorLayer->fields(),0);
             f.setGeometry(newPolygonGeom);
             vectorLayer->startEditing();
             vectorLayer->addFeature(f);
             vectorLayer->commitChanges();
-            qDebug()<<"c";
+
             canvas()->refresh();
         }
         mRubberBand->reset( QgsWkbTypes::PolygonGeometry );

@@ -30,6 +30,10 @@ include(../../../Tools/Config/win.pri)
 LIBS += -lgdal_i
 }
 
+win32:CONFIG(release, debug|release): LIBS += -lstxxl
+else:win32:CONFIG(debug, debug|release): LIBS += -lstxxld
+else:unix: LIBS += -lstxxl
+
 LIBS += -lqgis_core -lqgis_gui
 
 HEADERS += \
@@ -43,11 +47,9 @@ SOURCES += \
     MstPartialSegment.cpp
 
 SOURCES += \
-    mstmethodinterface.cpp \
     graphkruskal.cpp
 
 HEADERS +=\
-    mstmethodinterface.h \
     graphkruskal.h
 
 include(../../../Interfaces/Interfaces.pri)

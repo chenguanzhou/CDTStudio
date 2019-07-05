@@ -10,7 +10,11 @@
 #include <qgslinestring.h>
 #include <qgsmapmouseevent.h>
 #include <gdal_priv.h>
+#include <ogr_api.h>
+#include <ogrsf_frmts.h>
 #include <opencv2/opencv.hpp>
+
+#include <MstPartialSegment.h>
 
 typedef struct tagVERTEX2D
 {
@@ -18,28 +22,10 @@ typedef struct tagVERTEX2D
     double y;
 }VERTEX2D;
 
-void GetFlagMat(cv::Mat& src, OGRPolygon& polygon)
-{
-    for(int i=0;i<src.rows;++i)
-    {
-        for(int j=0;j<src.cols;++j)
-        {
-            OGRPoint ogrP(j,i);
-            if(polygon.IsPointOnSurface(&ogrP))
-            {
-                src.at<uchar>(i,j)= 42;
-            }
-            else
-            {
-                src.at<uchar>(i,j)= 0;
-            }
-        }
-    }
-}
-
-QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
+std::vector<QgsPolygon> partialSegment(const QgsGeometry &polygon,QString imagePath)
 {
     qDebug()<<"enter PartialSegmentat";
+    std::vector<QgsPolygon> vecQgsPolygons;
     QTime t;
     t.start();
 
@@ -51,7 +37,7 @@ QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
     if (poSrcDS == Q_NULLPTR)
     {
         qWarning()<<QObject::tr("Open Image File: %1 failed!").arg(imagePath);
-        return QgsPolygon();
+        return vecQgsPolygons;
     }
 
     double padfTransform[6] = {0,1,0,0,0,1};
@@ -116,6 +102,11 @@ QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
     int nWidth  = (int)maxX-nXOff+1;
     int nHeight = (int)maxY-nYOff+1;
 
+    qDebug()<<"nXOff: "+QString::number(nXOff);
+    qDebug()<<"nYOff: "+QString::number(nYOff);
+    qDebug()<<"nWidth: "+QString::number(nWidth);
+    qDebug()<<"nHeight: "+QString::number(nHeight);
+
     if(nXOff<0)
         nXOff=0;
     if(nYOff<0)
@@ -137,18 +128,55 @@ QgsPolygon partialSegment(const QgsGeometry &polygon,QString imagePath)
     OGRPolygon ogrPolygon;
     ogrPolygon.addRing(&ring);
 
-    cv::Mat matMask = cv::Mat::zeros(_height,_width,CV_8U);
-    GetFlagMat(matMask, ogrPolygon);
 
-    cv::rectangle(matMask,rect,cv::Scalar(20),2);
+    QString mkID  = QUuid::createUuid().toString();
+    QString shpID = QUuid::createUuid().toString();
 
-    imwrite("matMask.jpg", matMask);
-    qDebug()<<"get matMask";
+    MstPartialSegment MPS;
+    MPS.m_pSrcDS = poSrcDS;
+    MPS.m_pPolygon = &ogrPolygon;
+    MPS.m_strMarkfilePath = QDir::tempPath()+"//MPS.tif";
+    MPS.m_strShapefilePath =  QDir::tempPath()+"//MPS";
+    MPS.Start();
 
-    QgsPolygon exportPolygon;
+    qDebug()<<MPS.m_strMarkfilePath;
+    qDebug()<<MPS.m_strShapefilePath;
+
+    GDALDataset* poGeometryDS =  (GDALDataset*)GDALOpenEx(MPS.m_strShapefilePath.toUtf8().constData(),GDAL_OF_VECTOR,NULL,NULL,NULL);
+    if( Q_NULLPTR == poGeometryDS)
+    {
+        qDebug()<<"open failed";
+        return vecQgsPolygons;
+    }
+
+    OGRLayer* pLayer = poGeometryDS->GetLayer(0);
+    if (Q_NULLPTR == pLayer)
+    {
+        qDebug()<<"read layer failed";
+        return vecQgsPolygons;
+    }
+    pLayer->ResetReading();
+
+    OGRFeature* pFeature = Q_NULLPTR;
+    while (Q_NULLPTR != (pFeature = pLayer->GetNextFeature()))
+    {
+        OGRGeometry* pGeometry = pFeature->GetGeometryRef();
+        if(Q_NULLPTR != pGeometry)
+        {
+            if(wkbPolygon == pGeometry->getGeometryType())
+            {
+                char* ppWkt = Q_NULLPTR;
+                qDebug()<<"exportToWkt";
+                pGeometry->exportToWkt(&ppWkt);
+                QgsPolygon qgsPolygon;
+                ((QgsCurvePolygon*)&qgsPolygon)->fromWkt(QString::fromUtf8(ppWkt));
+                vecQgsPolygons.push_back(qgsPolygon);
+            }
+        }
+    }
 
     qDebug()<<t.restart();
-    return exportPolygon;
+    return vecQgsPolygons;
 }
 
 CDTPartialSegmentationMapTool::CDTPartialSegmentationMapTool(QgsMapCanvas *canvas) :
@@ -161,7 +189,10 @@ CDTPartialSegmentationMapTool::CDTPartialSegmentationMapTool(QgsMapCanvas *canva
 
 CDTPartialSegmentationMapTool::~CDTPartialSegmentationMapTool()
 {
-    delete mRubberBand;
+    if(mRubberBand)
+    {
+        delete mRubberBand;
+    }
 }
 
 void CDTPartialSegmentationMapTool::canvasMoveEvent(QgsMapMouseEvent *e)
@@ -190,22 +221,24 @@ void CDTPartialSegmentationMapTool::canvasPressEvent(QgsMapMouseEvent *e)
     }
     else if ( e->button() == Qt::RightButton )
     {
-        qDebug()<<"right btn";
         if ( mRubberBand->numberOfVertices() > 2 )
         {
             QgsGeometry selectGeom = mRubberBand->asGeometry();
 
             QTime t;
             t.start();
-            QgsPolygon snakePolygon = partialSegment(selectGeom,imagePath);
+            std::vector<QgsPolygon> qgsPolygons = partialSegment(selectGeom,imagePath);
             qDebug()<<t.elapsed();
 
-            QgsGeometry newPolygonGeom = QgsGeometry(snakePolygon.boundary());
-            QgsFeature f(vectorLayer->fields(),0);
-            f.setGeometry(newPolygonGeom);
-            vectorLayer->startEditing();
-            vectorLayer->addFeature(f);
-            vectorLayer->commitChanges();
+            foreach(QgsPolygon qgsPolygon, qgsPolygons)
+            {
+                QgsGeometry newPolygonGeom = QgsGeometry(qgsPolygon.boundary());
+                QgsFeature f(vectorLayer->fields(),0);
+                f.setGeometry(newPolygonGeom);
+                vectorLayer->startEditing();
+                vectorLayer->addFeature(f);
+                vectorLayer->commitChanges();
+            }
             canvas()->refresh();
         }
         mRubberBand->reset( QgsWkbTypes::PolygonGeometry );

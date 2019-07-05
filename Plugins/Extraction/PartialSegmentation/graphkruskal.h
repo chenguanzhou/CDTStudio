@@ -33,6 +33,7 @@ public:
 
 
     void GetMapNodeidObjectid(GDALRasterBand*& poMaskBand, QMap<unsigned, unsigned> &mapRootidObjectid);
+    void GetMapNodeidObjectid(void *vpPolygon, QMap<unsigned, unsigned> &mapRootidObjectid);
 
 public:
     int elementCount;
