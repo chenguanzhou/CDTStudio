@@ -129,15 +129,15 @@ void MSTMethodInterface::startSegmentation()
     vecEdge->clear();
     delete vecEdge;
 
-    emit currentProgressChanged(tr("Generating index"));
-    //    std::map<unsigned,unsigned> mapRootidObjectid;
+//    emit currentProgressChanged(tr("Generating index"));
+//    //    std::map<unsigned,unsigned> mapRootidObjectid;
     QMap<unsigned,unsigned> mapRootidObjectid;
 
-    GDALRasterBand* poMaskBand = poDstDS->GetRasterBand(1)->GetMaskBand();
-    graph->GetMapNodeidObjectid(poMaskBand, mapRootidObjectid);
+//    GDALRasterBand* poMaskBand = poDstDS->GetRasterBand(1)->GetMaskBand();
+//    graph->GetMapNodeidObjectid(poMaskBand, mapRootidObjectid);
 
-    qDebug()<<"Get Map Nodeid Objectid cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
-    timer = clock();
+//    qDebug()<<"Get Map Nodeid Objectid cost:"<<(clock()-timer)/(double)CLOCKS_PER_SEC<<"s";
+//    timer = clock();
 
     emit currentProgressChanged(tr("Generating result"));
     _GenerateFlagImage(graph,mapRootidObjectid);
@@ -662,6 +662,9 @@ bool MSTMethodInterface::_GenerateFlagImage(GraphKruskal *&graph,const QMap<unsi
     int blocksCount = nXBlocks*nYBlocks;
     QVector<int> dataOut(nXBlockSize * nYBlockSize);
 
+    QMap<unsigned,unsigned> mapRoot2Id;
+    int nObjectId = 1;
+
     for( iYBlock = 0; iYBlock < nYBlocks; ++iYBlock )
     {
         int nYOff = iYBlock*nYBlockSize;
@@ -685,12 +688,18 @@ bool MSTMethodInterface::_GenerateFlagImage(GraphKruskal *&graph,const QMap<unsi
                 unsigned index = (nYOff+iY)*width+nXOff;
                 for( int iX = 0; iX < nXValid; ++iX,++index)
                 {
-                    int objectID = 0;
+//                    int objectID = 0;
 //                    if (mask[j]!=0)
 //                    {
                         int root = graph->find(index);
-                        objectID = mapRootidObjectid.value(root);
+//                        objectID = mapRootidObjectid.value(root);
+                        if(!mapRoot2Id.contains(root))
+                        {
+                            mapRoot2Id.insert(root, nObjectId);
+                            ++nObjectId;
+                        }
 //                    }
+                        int objectID = mapRoot2Id.value(root);
                     dataOut[iY*nXBlockSize+iX] = objectID;
 //                    poFlagBand->RasterIO(GF_Write,j,i,1,1,(int *)&objectID,1,1,GDT_Int32,0,0);
                 }
